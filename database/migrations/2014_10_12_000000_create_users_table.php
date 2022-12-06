@@ -15,12 +15,22 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('first_name', 100);
+            $table->string('last_name', 100);
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
+            $table->string('country', 100);
             $table->string('password');
+            $table->boolean('is_temp_password');
+            $table->boolean('is_enabled');
+            $table->bigInteger('classification_id')->unsigned()->index()->nullable();
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
+            $table->bigInteger('deleted_by')->unsigned()->index()->nullable();
+
+            $table->foreign('deleted_by')->references('id')->on('users');
+            $table->foreign('classification_id')->references('id')->on('classifications');
         });
     }
 
