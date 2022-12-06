@@ -1,4 +1,5 @@
 import { Container } from "@mui/material";
+import Footer from "../components/includes/Footer";
 import Navbar from "../components/includes/Navbar";
 
 const Layout = ({ children }) => {
@@ -9,6 +10,7 @@ const Layout = ({ children }) => {
             <Container>
                 { children }
             </Container>
+            <Footer />
         </>
     )
 }
