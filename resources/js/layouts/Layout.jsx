@@ -1,14 +1,14 @@
-import { Box, Container } from "@mui/material";
+import { Container } from "@mui/material";
+import Navbar from "../components/includes/Navbar";
 
 const Layout = ({ children }) => {
 
     return (
         <>
-            <Box>
-                <Container>
-                    { children }
-                </Container>
-            </Box>
+            <Navbar />
+            <Container>
+                { children }
+            </Container>
         </>
     )
 }
