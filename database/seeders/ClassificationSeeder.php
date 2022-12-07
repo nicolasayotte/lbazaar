@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Classifications;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class ClassificationSeeder extends Seeder
 {
@@ -14,11 +15,19 @@ class ClassificationSeeder extends Seeder
      */
     public function run()
     {
-        for ($i = 0; $i < 3; $i++) {
-            Classifications::create([
-                'name'           => strtoupper(fake()->randomLetter()),
-                'commision_rate' => fake()->numberBetween(0, 50)
-            ]);
-        }
+        DB::table('classifications')->insert([
+            [
+                'name' => 'A',
+                'commision_rate' => 30
+            ],
+            [
+                'name' => 'B',
+                'commision_rate' => 20
+            ],
+            [
+                'name' => 'C',
+                'commision_rate' => 10
+            ]
+        ]);
     }
 }
