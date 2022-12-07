@@ -18,7 +18,8 @@ class DatabaseSeeder extends Seeder
             ClassificationSeeder::class,
             StatusSeeder::class,
             CourseTypeSeeder::class,
-            CourseCategorySeeder::class
+            CourseCategorySeeder::class,
+            RoleSeeder::class
         ]);
     }
 }
