@@ -21,7 +21,8 @@ class DatabaseSeeder extends Seeder
             CourseCategorySeeder::class,
             RoleSeeder::class,
             PermissionSeeder::class,
-            UserSeeder::class
+            UserSeeder::class,
+            CourseApplicationSeeder::class
         ]);
     }
 }
