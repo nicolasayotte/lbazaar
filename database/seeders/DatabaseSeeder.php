@@ -19,7 +19,8 @@ class DatabaseSeeder extends Seeder
             StatusSeeder::class,
             CourseTypeSeeder::class,
             CourseCategorySeeder::class,
-            RoleSeeder::class
+            RoleSeeder::class,
+            PermissionSeeder::class
         ]);
     }
 }
