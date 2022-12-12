@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><?php echo e($title); ?></title>
-    <meta name="description" content="<?php echo e($description); ?>">
+    <title><?php echo e(@$title); ?></title>
+    <meta name="description" content="<?php echo e(@$description); ?>">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
     <?php echo app('Illuminate\Foundation\Vite')->reactRefresh(); ?>

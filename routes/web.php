@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Portal\InquiriesController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -20,3 +21,5 @@ Route::get('/', function () {
         'description' => 'Welcome to Laravel'
     ]);
 });
+
+Route::get('/inquiries', [InquiriesController::class, 'index'])->name('inquiries.index');
