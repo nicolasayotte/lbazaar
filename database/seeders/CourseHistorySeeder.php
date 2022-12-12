@@ -6,6 +6,7 @@ use App\Models\Course;
 use App\Models\CourseHistory;
 use App\Models\Role;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Database\Seeder;
@@ -27,7 +28,8 @@ class CourseHistorySeeder extends Seeder
                 CourseHistory::factory()
                             ->state(new Sequence([
                                 'user_id' => $student->id,
-                                'course_id' => $course->id
+                                'course_id' => $course->id,
+                                'completed_at' => fake()->randomElement([null, Carbon::now(), null])
                             ]))
                             ->create();
             }
