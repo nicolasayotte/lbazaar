@@ -1,12 +1,26 @@
+import { Link } from "@inertiajs/inertia-react";
 import { Menu as MenuIcon } from "@mui/icons-material"
-import { AppBar, Box, Button, Container, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemText, Toolbar, Typography } from "@mui/material"
+import { AppBar, Box, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemText, Toolbar, Typography } from "@mui/material"
 import { useState } from "react"
 
 const Navbar = (props) => {
 
     const [showDrawer, setShowDrawer] = useState(false);
 
-    const navItems = ["Home", "Browse Classes", "Inquiry"]
+    const navItems = [
+        {
+            name: 'Home',
+            link: '/'
+        },
+        {
+            name: 'Browse Classes',
+            link: '/'
+        },
+        {
+            name: 'Inquiries',
+            link: '/inquiries'
+        }
+    ]
 
     const drawerWidth = 240
 
@@ -24,9 +38,9 @@ const Navbar = (props) => {
             <Divider />
             <List>
                 {navItems.map(item => (
-                    <ListItem key={item} disablePadding>
+                    <ListItem key={item.name} disablePadding>
                         <ListItemButton>
-                            <ListItemText primary={item} />
+                            <ListItemText primary={item.name} />
                         </ListItemButton>
                     </ListItem>
                 ))}
@@ -41,7 +55,16 @@ const Navbar = (props) => {
                     <Typography variant="h6" sx={{ my: 3, mr: 4 }}>L-Earning Bazaar</Typography>
                     <Box sx={{ display: { xs: "none", sm: "flex" } }}>
                         {navItems.map(item => (
-                            <Button key={item} color="inherit">{item}</Button>
+                            <Box sx={{ mr: 2 }}>
+                                <Link
+                                    key={item.name}
+                                    color="inherit"
+                                    href={item.link}
+                                    style={{
+                                        textDecoration: 'none'
+                                    }}
+                                >{item.name}</Link>
+                            </Box>
                         ))}
                     </Box>
                     <IconButton
