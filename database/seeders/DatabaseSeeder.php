@@ -25,7 +25,8 @@ class DatabaseSeeder extends Seeder
             CourseApplicationSeeder::class,
             CourseSeeder::class,
             CourseContentSeeder::class,
-            CourseHistorySeeder::class
+            CourseHistorySeeder::class,
+            CourseFeedbackSeeder::class
         ]);
     }
 }
