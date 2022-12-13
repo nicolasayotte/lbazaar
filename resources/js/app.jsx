@@ -7,8 +7,8 @@ import Layout from './layouts/Layout';
 createInertiaApp({
     resolve: async name => {
         const page = await resolvePageComponent(
-            `./pages/${name}.jsx`,
-            import.meta.glob('./pages/**/*.jsx')
+            `./Pages/${name}.jsx`,
+            import.meta.glob('./Pages/**/*.jsx')
         );
 
         if (!page.default.layout) {
