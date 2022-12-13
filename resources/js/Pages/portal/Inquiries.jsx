@@ -3,7 +3,7 @@ import { Box, Button, Card, CardContent, Container, Divider, Grid, TextField, Ty
 
 const Inquiries = () => {
 
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, post, processing, errors, reset, clearErrors } = useForm({
         name: '',
         email: '',
         subject: '',
@@ -17,7 +17,12 @@ const Inquiries = () => {
     const handleSubmit = (e) => {
         e.preventDefault()
 
-        post('/inquiries');
+        post('/inquiries', {
+            onSuccess: (response) => {
+                reset()
+                clearErrors()
+            }
+        });
     }
 
     const errorMessage = (error) => (

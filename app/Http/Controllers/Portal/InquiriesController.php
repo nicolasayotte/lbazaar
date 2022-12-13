@@ -25,8 +25,8 @@ class InquiriesController extends Controller
             'message' => 'required|alpha_num|max:200'
         ]);
 
-        $inquiry = Inquiry::create($validatedData);
+        Inquiry::create($validatedData);
 
-        dd($inquiry);
+        return redirect()->route('inquiries.index');
     }
 }
