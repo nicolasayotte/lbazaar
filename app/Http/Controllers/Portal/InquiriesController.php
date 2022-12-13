@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
+use App\Models\Inquiry;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -17,12 +18,15 @@ class InquiriesController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name'    => 'required|apha',
+        $validatedData = $request->validate([
+            'name'    => 'required|alpha',
             'email'   => 'required|email',
             'subject' => 'required|alpha_num',
             'message' => 'required|alpha_num|max:200'
         ]);
 
+        $inquiry = Inquiry::create($validatedData);
+
+        dd($inquiry);
     }
 }
