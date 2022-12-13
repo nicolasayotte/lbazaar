@@ -16,6 +16,8 @@ const Inquiries = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault()
+
+        post('/inquiries');
     }
 
     const errorMessage = (error) => (
@@ -32,7 +34,7 @@ const Inquiries = () => {
         <Box my={5}>
             <Container>
                 <Grid container>
-                    <Grid item xs={12} sm={8} mx="auto" py={5}>
+                    <Grid item xs={12} md={8} mx="auto" py={5}>
                         <Card>
                             <CardContent sx={{ p: 3 }}>
                                 <Typography variant="h5">Inquiry</Typography>
@@ -76,6 +78,7 @@ const Inquiries = () => {
                                             fullWidth
                                             minRows={9}
                                             name="message"
+                                            helperText="Must be less than 200 characters"
                                             value={data.message}
                                             onChange={e => handleOnChange(e)}
                                         />
