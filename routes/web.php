@@ -23,3 +23,4 @@ Route::get('/', function () {
 });
 
 Route::get('/inquiries', [InquiriesController::class, 'index'])->name('inquiries.index');
+Route::post('/inquiries', [InquiriesController::class, 'store'])->name('inquiries.store');

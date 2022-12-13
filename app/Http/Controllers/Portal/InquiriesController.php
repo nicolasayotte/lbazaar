@@ -14,4 +14,15 @@ class InquiriesController extends Controller
             'title' => 'Inquiries'
         ]);
     }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name'    => 'required|apha',
+            'email'   => 'required|email',
+            'subject' => 'required|alpha_num',
+            'message' => 'required|alpha_num|max:200'
+        ]);
+
+    }
 }
