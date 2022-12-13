@@ -55,7 +55,7 @@ const Navbar = (props) => {
                     <Typography variant="h6" sx={{ my: 3, mr: 4 }}>L-Earning Bazaar</Typography>
                     <Box sx={{ display: { xs: "none", sm: "flex" } }}>
                         {navItems.map(item => (
-                            <Box sx={{ mr: 2 }}>
+                            <Box key={item.name} sx={{ mr: 2 }}>
                                 <Link
                                     key={item.name}
                                     color="inherit"
