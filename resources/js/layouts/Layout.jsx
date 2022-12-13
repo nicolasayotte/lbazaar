@@ -7,7 +7,7 @@ const Layout = ({ children }) => {
     return (
         <div>
             <Navbar />
-            <Container maxWidth={false}>
+            <Container>
                 { children }
             </Container>
             <Footer />

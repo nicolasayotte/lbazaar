@@ -1,6 +1,6 @@
 import { Box, TextField, Button, Grid, Typography, Container } from "@mui/material";
-import Course from "../components/Cards/Course";
-import User from "../components/Cards/User";
+import Course from "../../components/Cards/Course";
+import User from "../../components/Cards/User";
 
 const TopPage = (props) => {
     return (
@@ -73,7 +73,6 @@ const TopPage = (props) => {
                     </Grid>
                 </Grid>
             </Container>
-
         </div>
     )
 }

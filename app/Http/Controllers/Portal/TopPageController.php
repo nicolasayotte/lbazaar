@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Portal;
 
+use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\User;
 use App\Repositories\CourseContentRepository;
@@ -22,7 +23,7 @@ class TopPageController extends Controller
         $featuredClasses = $courseRepository->getFeaturedClass(3);
         $featuredCourseContent = $courseContentRepository->getUpcomingCourseContent(4);
 
-        return Inertia::render('TopPage', [
+        return Inertia::render('Portal/TopPage', [
                 'courses'           => $featuredClasses,
                 'upcomingCourses'   => $featuredCourseContent,
                 'teachers'          => $featuredTeachers

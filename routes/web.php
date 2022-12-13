@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\TopPageController;
+use App\Http\Controllers\Portal\TopPageController;
 use Illuminate\Support\Facades\Route;
 
 /*
