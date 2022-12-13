@@ -1,7 +1,15 @@
 import { useForm } from "@inertiajs/inertia-react"
-import { Box, Button, Card, CardContent, Container, Divider, Grid, TextField, Typography } from "@mui/material"
+import { useState } from 'react'
+import { Alert, Box, Button, Card, CardContent, Container, Divider, Grid, Snackbar, TextField, Typography } from "@mui/material"
+
 
 const Inquiries = () => {
+
+    const [alertState, setAlertState] = useState({
+        open: false,
+        type: 'success',
+        message: ''
+    })
 
     const { data, setData, post, processing, errors, reset, clearErrors } = useForm({
         name: '',
@@ -19,10 +27,25 @@ const Inquiries = () => {
 
         post('/inquiries', {
             onSuccess: (response) => {
+
                 reset()
                 clearErrors()
+
+                setAlertState({
+                    ...alertState,
+                    open: true,
+                    message: 'Inquiry submitted',
+                    type: 'success'
+                })
             }
         });
+    }
+
+    const handleCloseAlert = () => {
+        setAlertState({
+            ...alertState,
+            open: false
+        })
     }
 
     const errorMessage = (error) => (
@@ -102,6 +125,23 @@ const Inquiries = () => {
                     </Grid>
                 </Grid>
             </Container>
+            <Snackbar
+                open={alertState.open}
+                autoHideDuration={5000}
+                onClose={handleCloseAlert}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right'
+                }}
+            >
+                <Alert
+                    severity={alertState.type}
+                    onClose={handleCloseAlert}
+                    sx={{
+                        ml: 'auto'
+                    }}
+                >{alertState.message}</Alert>
+            </Snackbar>
         </Box>
     )
 }
