@@ -9,6 +9,8 @@ class Course extends Model
 {
     use HasFactory;
 
+    const FEATURED_CLASS_COUNT_DISPLAY = 3;
+
     public function professor()
     {
         return $this->belongsTo(User::class, 'professor_id');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
 use App\Models\Course;
+use App\Models\CourseContent;
 use App\Models\User;
 use App\Repositories\CourseContentRepository;
 use App\Repositories\CourseRepository;
@@ -19,11 +20,11 @@ class TopPageController extends Controller
         $courseContentRepository = new CourseContentRepository();
         $userRepository = new UserRepository();
 
-        $featuredTeachers = $userRepository->getFeaturedTeacher(3);
-        $featuredClasses = $courseRepository->getFeaturedClass(3);
-        $featuredCourseContent = $courseContentRepository->getUpcomingCourseContent(4);
+        $featuredTeachers = $userRepository->getFeaturedTeacher(User::FEATURED_TEACHERS_COUNT_DISPLAY);
+        $featuredClasses = $courseRepository->getFeaturedClass(Course::FEATURED_CLASS_COUNT_DISPLAY);
+        $featuredCourseContent = $courseContentRepository->getUpcomingCourseContent(CourseContent::COMING_SOON_COUNT_DISPLAY);
 
-        return Inertia::render('Portal/TopPage', [
+        return Inertia::render('portal/TopPage', [
                 'courses'           => $featuredClasses,
                 'upcomingCourses'   => $featuredCourseContent,
                 'teachers'          => $featuredTeachers

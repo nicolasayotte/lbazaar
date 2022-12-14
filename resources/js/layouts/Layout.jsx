@@ -5,13 +5,13 @@ import Navbar from "../components/includes/Navbar";
 const Layout = ({ children }) => {
 
     return (
-        <div>
+        <>
             <Navbar />
             <Container>
                 { children }
             </Container>
             <Footer />
-        </div>
+        </>
     )
 }
 
