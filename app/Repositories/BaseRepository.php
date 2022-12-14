@@ -1,0 +1,47 @@
+<?php
+
+namespace App\Repositories;
+
+use Illuminate\Database\Eloquent\Model;
+
+abstract class BaseRepository
+{
+    protected $model;
+
+    public function __construct(Model $model)
+    {
+        $this->model = $model;
+    }
+
+    public function findOrFail(int $id)
+    {
+        return $this->model->findOrFail($id);
+    }
+
+    public function count()
+    {
+        return $this->model->count();
+    }
+
+    public function findOne(int $id)
+    {
+        return $this->model->find($id);
+    }
+
+    public function getAll()
+    {
+        return $this->model->all();
+    }
+
+    public function getAllPaginated()
+    {
+        return $this->model->paginate(10);
+    }
+
+    // Eager load database relationships
+    public function with($relations)
+    {
+        return $this->model->with($relations);
+    }
+
+}

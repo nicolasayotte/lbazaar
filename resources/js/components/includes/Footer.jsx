@@ -8,7 +8,8 @@ const Footer = () => {
                 textAlign: "center",
                 justifyContent: "center",
                 backgroundColor: "primary.main",
-                py: 1
+                py: 1,
+                mt: 4
             }}
             component="footer"
         >
