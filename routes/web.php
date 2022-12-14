@@ -1,8 +1,8 @@
 <?php
 
 use App\Http\Controllers\Portal\InquiriesController;
+use App\Http\Controllers\Portal\TopPageController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,13 +14,7 @@ use Inertia\Inertia;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-Route::get('/', function () {
-    return Inertia::render('Welcome')->withViewData([
-        'title'       => 'Laravel',
-        'description' => 'Welcome to Laravel'
-    ]);
-});
+Route::get('/', [TopPageController::class, 'index']);
 
 Route::get('/inquiries', [InquiriesController::class, 'index'])->name('inquiries.index');
 Route::post('/inquiries', [InquiriesController::class, 'store'])->name('inquiries.store');

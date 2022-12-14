@@ -14,6 +14,8 @@ class User extends Authenticatable
     use LaratrustUserTrait;
     use HasApiTokens, HasFactory, Notifiable;
 
+    const FEATURED_TEACHERS_COUNT_DISPLAY = 3;
+
     /**
      * The attributes that are mass assignable.
      *
