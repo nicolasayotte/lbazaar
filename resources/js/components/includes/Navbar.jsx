@@ -48,24 +48,28 @@ const Navbar = (props) => {
         </Box>
     )
 
+    const nav = (
+        navItems.map(item => (
+            <Box key={item.name} sx={{ mr: 2 }}>
+                <Link
+                    key={item.name}
+                    href={item.link}
+                    style={{
+                        textDecoration: 'none',
+                        color: 'white'
+                    }}
+                >{item.name}</Link>
+            </Box>
+        ))
+    )
+
     return (
         <>
             <AppBar position="static" color="primary">
                 <Toolbar>
                     <Typography variant="h6" sx={{ my: 3, mr: 4 }}>L-Earning Bazaar</Typography>
                     <Box sx={{ display: { xs: "none", sm: "flex" } }}>
-                        {navItems.map(item => (
-                            <Box key={item.name} sx={{ mr: 2 }}>
-                                <Link
-                                    key={item.name}
-                                    href={item.link}
-                                    style={{
-                                        textDecoration: 'none',
-                                        color: 'white'
-                                    }}
-                                >{item.name}</Link>
-                            </Box>
-                        ))}
+                        { nav }
                     </Box>
                     <IconButton
                         color="inherit"
