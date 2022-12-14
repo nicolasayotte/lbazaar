@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Portal;
 use App\Http\Controllers\Controller;
 use App\Mail\Inquiry as MailInquiry;
 use App\Models\Inquiry;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
@@ -29,7 +30,13 @@ class InquiriesController extends Controller
 
         $inquiry = Inquiry::create($validatedData);
 
-        Mail::send(new MailInquiry($inquiry));
+        try {
+            Mail::send(new MailInquiry($inquiry));
+        } catch (Exception $e) {
+            return redirect()->back()->withErrors([
+                'error' => $e->getMessage()
+            ]);
+        }
 
         return redirect()->route('inquiries.index');
     }

@@ -28,7 +28,15 @@ const Inquiries = (props) => {
 
                 dispatch(actions.toggle({
                     open: true,
+                    type: 'success',
                     message: 'Inquiry successfully submitted'
+                }))
+            },
+            onError: (response) => {
+                dispatch(actions.toggle({
+                    open: true,
+                    type: 'error',
+                    message: 'There was an error encountered'
                 }))
             }
         });
