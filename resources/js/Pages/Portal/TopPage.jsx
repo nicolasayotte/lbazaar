@@ -5,10 +5,10 @@ import User from "../../components/Cards/User";
 const TopPage = (props) => {
     return (
         <div>
-            <Grid container justifyContent="center" alignItems="center" spacing={2} sx={{mt: 2}}>
+  <Grid container justifyContent="center" alignItems="center" spacing={2} sx={{mt: 2}}>
                 <Grid item xs={12} sm={12} md={6} lg={6}>
                     <Typography variant="h4" align="center" gutterBottom>
-                        Search Class
+                        Search Classes
                     </Typography>
                     <Typography variant="subtitle1" align="center" gutterBottom>
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
@@ -55,6 +55,7 @@ const TopPage = (props) => {
                             </Button>
                         </Grid>
                     </Grid>
+
                     <Grid item xs={12} sm={12} md={4} lg={4}>
                         <Typography variant="h5" gutterBottom>
                             Featured Teachers
