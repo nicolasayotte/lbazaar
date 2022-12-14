@@ -53,7 +53,7 @@ const Inquiries = (props) => {
     )
 
     return (
-        <Box my={5}>
+        <Box>
             <Container>
                 <Grid container>
                     <Grid item xs={12} md={8} mx="auto" py={5}>
