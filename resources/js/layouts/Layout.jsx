@@ -1,4 +1,4 @@
-import {Box, Container } from "@mui/material";
+import { Container } from "@mui/material";
 import Footer from "../components/includes/Footer";
 import Navbar from "../components/includes/Navbar";
 
