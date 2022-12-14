@@ -58,10 +58,10 @@ const Navbar = (props) => {
                             <Box key={item.name} sx={{ mr: 2 }}>
                                 <Link
                                     key={item.name}
-                                    color="inherit"
                                     href={item.link}
                                     style={{
-                                        textDecoration: 'none'
+                                        textDecoration: 'none',
+                                        color: 'white'
                                     }}
                                 >{item.name}</Link>
                             </Box>
