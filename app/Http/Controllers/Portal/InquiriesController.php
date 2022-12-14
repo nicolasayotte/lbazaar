@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
+use App\Mail\Inquiry as MailInquiry;
 use App\Models\Inquiry;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 
 class InquiriesController extends Controller
@@ -25,7 +27,9 @@ class InquiriesController extends Controller
             'message' => 'required|alpha_num|max:200'
         ]);
 
-        Inquiry::create($validatedData);
+        $inquiry = Inquiry::create($validatedData);
+
+        Mail::send(new MailInquiry($inquiry));
 
         return redirect()->route('inquiries.index');
     }
