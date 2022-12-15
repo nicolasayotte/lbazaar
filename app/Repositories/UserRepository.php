@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\Role;
 use App\Models\User;
 
 class UserRepository extends BaseRepository
@@ -13,7 +14,6 @@ class UserRepository extends BaseRepository
 
     public function getFeaturedTeacher($take = 5)
     {
-        return $this->model->take($take)->whereRoleIs(['teacher'])->orderBy('id', 'desc')->get();
+        return $this->model->take($take)->whereRoleIs([Role::TEACHER])->orderBy('id', 'desc')->get();
     }
-
 }

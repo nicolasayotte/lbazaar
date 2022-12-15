@@ -2,6 +2,7 @@ import { useForm } from "@inertiajs/inertia-react"
 import { Box, Button, Card, CardContent, Container, Divider, Grid, TextField, Typography } from "@mui/material"
 import { actions } from '../../store/slices/ToasterSlice'
 import { useDispatch } from "react-redux"
+import ErrorText from "../../components/common/ErrorText"
 
 const Inquiries = (props) => {
 
@@ -42,16 +43,6 @@ const Inquiries = (props) => {
         });
     }
 
-    const errorMessage = (error) => (
-        <Typography
-            variant="p"
-            color="error"
-            sx={{
-                fontSize: '13px'
-            }}
-        >{error}</Typography>
-    )
-
     return (
         <Box my={5}>
             <Container>
@@ -70,7 +61,7 @@ const Inquiries = (props) => {
                                             value={data.name}
                                             onChange={e => handleOnChange(e)}
                                         />
-                                        { errors && errors.name && errorMessage(errors.name)}
+                                        { errors && errors.name && <ErrorText error={errors.name}/>}
                                     </Grid>
                                     <Grid item xs={12} sm={6} >
                                         <TextField
@@ -81,7 +72,7 @@ const Inquiries = (props) => {
                                             value={data.email}
                                             onChange={e => handleOnChange(e)}
                                         />
-                                        { errors && errors.email && errorMessage(errors.email)}
+                                        { errors && errors.email && <ErrorText error={errors.name}/>}
                                     </Grid>
                                     <Grid item xs={12}>
                                         <TextField
@@ -91,7 +82,7 @@ const Inquiries = (props) => {
                                             value={data.subject}
                                             onChange={e => handleOnChange(e)}
                                         />
-                                        { errors && errors.subject && errorMessage(errors.subject)}
+                                        { errors && errors.subject && <ErrorText error={errors.name}/>}
                                     </Grid>
                                     <Grid item xs={12}>
                                         <TextField
@@ -104,7 +95,7 @@ const Inquiries = (props) => {
                                             value={data.message}
                                             onChange={e => handleOnChange(e)}
                                         />
-                                        { errors && errors.message && errorMessage(errors.message)}
+                                        { errors && errors.message && <ErrorText error={errors.name}/>}
                                     </Grid>
                                     <Grid item xs={12} textAlign="right">
                                         <Button
