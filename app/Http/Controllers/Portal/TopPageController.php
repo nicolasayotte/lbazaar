@@ -20,7 +20,7 @@ class TopPageController extends Controller
         $courseContentRepository = new CourseContentRepository();
         $userRepository = new UserRepository();
 
-        $featuredTeachers = $userRepository->getFeaturedTeacher(User::FEATURED_TEACHERS_COUNT_DISPLAY);
+        $featuredTeachers = $userRepository->getFeaturedTeachers(User::FEATURED_TEACHERS_COUNT_DISPLAY);
         $featuredClasses = $courseRepository->getFeaturedClass(Course::FEATURED_CLASS_COUNT_DISPLAY);
         $featuredCourseContent = $courseContentRepository->getUpcomingCourseContent(CourseContent::COMING_SOON_COUNT_DISPLAY);
 

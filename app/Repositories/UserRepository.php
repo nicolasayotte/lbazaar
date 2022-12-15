@@ -12,8 +12,14 @@ class UserRepository extends BaseRepository
         parent::__construct(new User());
     }
 
-    public function getFeaturedTeacher($take = 5)
+    public function getFeaturedTeachers($take = 5)
     {
         return $this->model->take($take)->whereRoleIs([Role::TEACHER])->orderBy('id', 'desc')->get();
     }
+
+    public function getAllTeachers()
+    {
+        return $this->model->whereRoleIs([Role::TEACHER])->orderBy('id', 'desc')->get();
+    }
+
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Portal\CourseController;
 use App\Http\Controllers\Portal\InquiriesController;
 use App\Http\Controllers\Portal\TopPageController;
 use Illuminate\Support\Facades\Route;
@@ -24,3 +25,4 @@ Route::prefix('admin')->name('admin.')->group(function() {
     Route::get('/login', [AuthController::class, 'login'])->name('login');
     Route::post('/authenticate', [AuthController::class, 'authenticate'])->name('authenticate');
 });
+Route::get('/course', [CourseController::class, 'index']);

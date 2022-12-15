@@ -21,4 +21,9 @@ class CourseRepository extends BaseRepository
         return $this->model->take($take)->orderBy('id', 'desc')->with(['professor'])->get();
     }
 
+    public function getLanguages()
+    {
+        return array_values($this->model->select('language')->distinct()->get()->toArray());
+    }
+
 }
