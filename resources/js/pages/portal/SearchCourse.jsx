@@ -18,18 +18,13 @@ const SearchCourse = (props) => {
         language: '',
         professor_id: '',
         year: new Date().getFullYear(),
-        month: new Date().getMonth()
+        month: new Date().getMonth(),
+        page: props.courses.current_page,
     })
 
-    const handleSubmit = (e) => {
-        e.preventDefault()
-
+    const handleSubmit = () => {
         get('/courses', {
             preserveState: true,
-            onSuccess: (response) => {
-
-
-            },
             onError: (response) => {
                 dispatch(actions.toggle({
                     open: true,
@@ -40,11 +35,22 @@ const SearchCourse = (props) => {
         });
     }
 
+    const setPageToOne = () => {
+        setData(data => ({...data, page: 1}))
+        handleSubmit()
+    }
+
+    const handlePageChange = (e, page) => {
+        setData(data => ({...data, page: page}))
+        handleSubmit()
+    }
+
     const handleChangeYearMonth = (year, month) => {
         setData({
             year,
             month
         })
+
     }
 
     const errorMessage = (error) => (
@@ -58,12 +64,15 @@ const SearchCourse = (props) => {
     )
 
     const displayCourses = (courses, showDescription = true) => {
-        if (courses.length > 0) {
+        if (courses.data.length > 0) {
             return (
                 <div>
-                    {courses.map(course => {
+                    {courses.data.map(course => {
                         return <Course showDate={true} key={course.id} course={course} showDescription={showDescription}/>
                     })}
+                    <Grid display="flex" justifyContent="center" alignItems="center">
+                        <Pagination sx={{mt: 2, justifyContent: 'center'}} onChange={handlePageChange} page={data.page} count={props.courses.last_page} color="primary" />
+                    </Grid>
                 </div>
             )
         } else {
@@ -127,7 +136,7 @@ const SearchCourse = (props) => {
                             <Grid item xs={12} sm={12}>
                                 <Grid display="flex" justifyContent="center" alignItems="center">
                                     <Button sx={{ mt: 2}}
-                                        onClick={handleSubmit}
+                                        onClick={setPageToOne}
                                         variant="contained"
                                         disabled={processing}
                                         disableElevation>

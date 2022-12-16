@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Portal;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SearchClassRequest;
 use App\Models\Course;
+use App\Models\CourseContent;
 use App\Models\User;
 use App\Repositories\CourseCategoryRepository;
 use App\Repositories\CourseContentRepository;
@@ -30,15 +31,13 @@ class CourseController extends Controller
         $teachers = $userRepository->getAllTeachers();
 
         $courses = $courseContentRepository->search($request);
-        $coursesTotal = count($courses);
 
         return Inertia::render('portal/SearchCourse', [
                 'course_types'          => $types,
                 'course_categories'     => $categories,
                 'languages'             => $languages,
                 'teachers'              => $teachers,
-                'courses'               => $courses,
-                'coursesTotal'          => $coursesTotal
+                'courses'               => $courses
             ])->withViewData([
                 'title'       => 'Laravel',
                 'description' => 'Top page Screen'

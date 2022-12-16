@@ -7,6 +7,9 @@ use Carbon\Carbon;
 
 class CourseContentRepository extends BaseRepository
 {
+
+    const PERPAGE = 2;
+
     public function __construct()
     {
         parent::__construct(new CourseContent());
@@ -50,6 +53,6 @@ class CourseContentRepository extends BaseRepository
             ->when($request->has('month') && !empty($request->get('month')), function ($q) use ($request)  {
                 return $q->whereMonth('schedule_datetime', $request->get('month') + 1);
             })
-            ->get();
+            ->paginate(self::PERPAGE)->withQueryString();
     }
 }
