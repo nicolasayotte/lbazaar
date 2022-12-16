@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Portal\InquiriesController;
 use App\Http\Controllers\Portal\TopPageController;
 use Illuminate\Support\Facades\Route;
@@ -23,4 +24,8 @@ Route::post('/inquiries', [InquiriesController::class, 'store'])->name('inquirie
 Route::prefix('admin')->name('admin.')->group(function() {
     Route::get('/login', [AuthController::class, 'login'])->name('login');
     Route::post('/authenticate', [AuthController::class, 'authenticate'])->name('authenticate');
+
+    Route::middleware(['auth', 'admin'])->group(function() {
+        Route::get('/profile', [ProfileController::class, 'view'])->name('profile');
+    });
 });
