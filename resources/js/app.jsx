@@ -5,15 +5,19 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import Layout from './layouts/Layout';
 import { Provider } from "react-redux";
 import store from "./store"
+import Admin from "./layouts/Admin";
 
 createInertiaApp({
     resolve: async name => {
+
         const page = await resolvePageComponent(
             `./pages/${name}.jsx`,
             import.meta.glob('./pages/**/*.jsx')
         );
 
-        if (!page.default.layout) {
+        if (name.startsWith('admin')) {
+            page.default.layout = p => <Admin children={p} />
+        } else {
             page.default.layout = p => <Layout children={p} />
         }
 

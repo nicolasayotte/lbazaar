@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Database\Seeder;
 
 class UserSeeder extends Seeder
@@ -23,7 +24,7 @@ class UserSeeder extends Seeder
         $this->createWithRoles(5, Role::TEACHER);
 
         // Admin
-        $this->createWithRoles(2, Role::ADMIN);
+        $this->createWithRoles(1, Role::ADMIN);
     }
 
     /**
@@ -37,6 +38,12 @@ class UserSeeder extends Seeder
 
         if ($role == Role::TEACHER) {
             $users = $users->classified()->temporaryPassword();
+        }
+
+        if ($role == Role::ADMIN) {
+            $users = $users->state(new Sequence([
+                'email' => 'admin@lebazaar.com'
+            ]));
         }
 
         $users = $users->create();
