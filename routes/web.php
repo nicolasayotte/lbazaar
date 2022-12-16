@@ -25,4 +25,4 @@ Route::prefix('admin')->name('admin.')->group(function() {
     Route::get('/login', [AuthController::class, 'login'])->name('login');
     Route::post('/authenticate', [AuthController::class, 'authenticate'])->name('authenticate');
 });
-Route::get('/course', [CourseController::class, 'index'])->name('course.index');
+Route::get('/courses', [CourseController::class, 'index'])->name('course.index');
