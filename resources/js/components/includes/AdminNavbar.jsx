@@ -31,6 +31,18 @@ const AdminNavbar = ({ drawerWidth, setDrawerWidth, window }) => {
         </>
     )
 
+    const logoutBtn = (
+        <ListItemButton>
+            <Link as="span" method="post" href="/admin/logout">Sign Out</Link>
+        </ListItemButton>
+    )
+
+    const profileBtn = (
+        <ListItemButton>
+            <Link as="span" href="/admin/profile">Profile</Link>
+        </ListItemButton>
+    )
+
     const desktopDrawer = (
         <Drawer
             variant="permanent"
@@ -75,12 +87,10 @@ const AdminNavbar = ({ drawerWidth, setDrawerWidth, window }) => {
                 {menu}
                 <Divider sx={{ my: 1 }} />
                 <ListItem key="profile">
-                    <ListItemButton>
-                        <Link href="/admin/profile">Profile</Link>
-                    </ListItemButton>
+                    {profileBtn}
                 </ListItem>
-                <ListItem key="sign out">
-                    <ListItemButton>Sign Out</ListItemButton>
+                <ListItem>
+                    {logoutBtn}
                 </ListItem>
             </List>
         </Drawer>
@@ -102,12 +112,10 @@ const AdminNavbar = ({ drawerWidth, setDrawerWidth, window }) => {
                     <Box sx={{ ml: 'auto' }}>
                         <Grid container sx={{ display: { xs: 'none', md: 'flex' } }}>
                             <Grid item>
-                                <ListItemButton>
-                                    <Link as="span" href="/admin/profile">Profile</Link>
-                                </ListItemButton>
+                                {profileBtn}
                             </Grid>
                             <Grid item>
-                                <ListItemButton>Sign Out</ListItemButton>
+                                {logoutBtn}
                             </Grid>
                         </Grid>
                         <IconButton

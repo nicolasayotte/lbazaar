@@ -26,6 +26,8 @@ Route::prefix('admin')->name('admin.')->group(function() {
     Route::post('/authenticate', [AuthController::class, 'authenticate'])->name('authenticate');
 
     Route::middleware(['auth', 'admin'])->group(function() {
+        Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
         Route::get('/profile', [ProfileController::class, 'view'])->name('profile');
     });
 });
