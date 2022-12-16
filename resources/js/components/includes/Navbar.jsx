@@ -14,7 +14,7 @@ const Navbar = (props) => {
         },
         {
             name: 'Browse Classes',
-            link: '/'
+            link: '/courses'
         },
         {
             name: 'Inquiries',

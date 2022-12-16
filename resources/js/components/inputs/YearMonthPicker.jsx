@@ -11,7 +11,7 @@ const YearMonthPicker = (props) => {
     const [value, setValue] = useState(new Date());
     const currentYear = new Date().getFullYear()
 
-    const onDateChange = (date) => {
+    const handleDateChange = (date) => {
 
         setValue(new Date(date))
         let dateSelected = new Date(date)
@@ -32,7 +32,7 @@ const YearMonthPicker = (props) => {
                     maxDate={dayjs(props.maxDate)}
                     value={value}
                     onChange={(date) => {
-                        onDateChange(date)
+                        handleDateChange(date)
                     }}
                     renderInput={(params) => <TextField {...params} helperText={null} />}
                     />

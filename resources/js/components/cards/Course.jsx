@@ -24,7 +24,7 @@ const Course = (props) => {
     }
 
     return (
-        <Card sx={{ minWidth: 280, m: 2, position: 'relative' }}>
+        <Card sx={{ minWidth: 250, m: 2, position: 'relative' }}>
             { displayScheduledDateTime() }
             <CardContent>
                 <Grid container spacing={2}>

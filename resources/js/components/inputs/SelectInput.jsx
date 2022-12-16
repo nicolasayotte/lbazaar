@@ -8,6 +8,7 @@ const SelectInput = (props) => {
         <FormControl fullWidth size="small" sx={{mt:1}}>
             <InputLabel>{props.label}</InputLabel>
             <Select fullWidth defaultValue="" label={props.label} onChange={props.handleChange}>
+                <MenuItem value=''>&nbsp;</MenuItem>
                 {
                     props.items.map((item, index) => {
                         return (
