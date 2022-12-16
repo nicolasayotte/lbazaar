@@ -5,7 +5,7 @@ import AdminNavbar from "../components/includes/AdminNavbar"
 
 const Admin = ({children}) => {
 
-    const [drawerWidth, setDrawerWidth] = useState(300)
+    const [drawerWidth, setDrawerWidth] = useState(280)
 
     return (
         <>
@@ -13,7 +13,12 @@ const Admin = ({children}) => {
                 drawerWidth={drawerWidth}
                 setDrawerWidth={setDrawerWidth}
             />
-            <Box sx={{ paddingLeft: { xs: 0, md: `${ drawerWidth }px` }}}>
+            <Box
+                sx={{
+                    paddingLeft: { xs: 0, md: `${ drawerWidth }px` },
+                    paddingY: 2
+                }}
+            >
                 <Container>
                     {children}
                 </Container>

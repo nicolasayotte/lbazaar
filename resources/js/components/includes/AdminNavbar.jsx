@@ -75,7 +75,9 @@ const AdminNavbar = ({ drawerWidth, setDrawerWidth, window }) => {
                 {menu}
                 <Divider sx={{ my: 1 }} />
                 <ListItem key="profile">
-                    <ListItemButton>Profile</ListItemButton>
+                    <ListItemButton>
+                        <Link href="/admin/profile">Profile</Link>
+                    </ListItemButton>
                 </ListItem>
                 <ListItem key="sign out">
                     <ListItemButton>Sign Out</ListItemButton>
@@ -100,7 +102,9 @@ const AdminNavbar = ({ drawerWidth, setDrawerWidth, window }) => {
                     <Box sx={{ ml: 'auto' }}>
                         <Grid container sx={{ display: { xs: 'none', md: 'flex' } }}>
                             <Grid item>
-                                <ListItemButton>Profile</ListItemButton>
+                                <ListItemButton>
+                                    <Link as="span" href="/admin/profile">Profile</Link>
+                                </ListItemButton>
                             </Grid>
                             <Grid item>
                                 <ListItemButton>Sign Out</ListItemButton>
