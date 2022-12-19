@@ -43,4 +43,18 @@ class CourseController extends Controller
                 'description' => 'Course Lists'
             ]);
     }
+
+    public function details($id)
+    {
+        $courseRepository = new CourseRepository();
+
+        $course = $courseRepository->findById($id);
+        
+        return Inertia::render('portal/course/Details', [
+            'course'          => $course,
+        ])->withViewData([
+            'title'       => 'Course - ' . $course->title,
+            'description' => 'Course Details'
+        ]);
+    }
 }

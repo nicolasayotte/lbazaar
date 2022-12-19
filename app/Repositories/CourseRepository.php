@@ -64,4 +64,9 @@ class CourseRepository extends BaseRepository
             ->paginate(self::PERPAGE)->withQueryString();
     }
 
+    public function findById($id)
+    {
+        return $this->model->with(['professor', 'feedbacks', 'feedbacks.user'])->findOrFail($id);
+    }
+
 }

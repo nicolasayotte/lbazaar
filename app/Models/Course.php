@@ -30,4 +30,9 @@ class Course extends Model
     {
         return $this->hasMany(CourseContent::class);
     }
+    
+    public function feedbacks()
+    {
+        return $this->hasMany(CourseFeedback::class);
+    }
 }

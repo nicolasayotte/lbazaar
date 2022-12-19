@@ -1,4 +1,4 @@
-
+import { Link } from "@inertiajs/inertia-react";
 import {Box, Grid, Card, ImageList, ImageListItem, CardActions, CardContent, Button, Typography} from "@mui/material"
 import { Fragment, useState } from "react"
 
@@ -40,11 +40,13 @@ const Course = (props) => {
                 </Grid>
             </CardContent>
             <CardActions sx={{justifyContent: 'flex-end'}}>
-                <Button sx={{
-                        float: 'right',
-                        position: 'absolute',
-                        bottom: '0px'}}
-                    size="small">View More</Button>
+
+            <Link href={`/courses/details/${props.course[props.viewDetailId]}`}
+                sx={{
+                    float: 'right',
+                    position: 'absolute',
+                    bottom: '0px'}}
+                size="small">View More</Link>
             </CardActions>
         </Card>
     );

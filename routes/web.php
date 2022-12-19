@@ -40,4 +40,7 @@ Route::prefix('admin')->name('admin.')->group(function() {
     });
 });
 
-Route::get('/courses', [CourseController::class, 'index'])->name('course.index');
+Route::prefix('courses')->name('course.')->group(function() {
+    Route::get('/', [CourseController::class, 'index'])->name('index');
+    Route::get('/details/{id}', [CourseController::class, 'details'])->name('details');
+});

@@ -10,4 +10,14 @@ class CourseFeedback extends Model
     use HasFactory;
 
     protected $table = 'course_feedbacks';
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
+    }
 }
