@@ -7,8 +7,7 @@ use Carbon\Carbon;
 
 class CourseContentRepository extends BaseRepository
 {
-
-    const PERPAGE = 2;
+    const PERPAGE = 5;
 
     public function __construct()
     {

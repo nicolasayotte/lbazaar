@@ -23,7 +23,6 @@ const YearMonthPicker = (props) => {
         <LocalizationProvider dateAdapter={AdapterDayjs}>
             <FormControl fullWidth size="small" sx={{mt:1}}>
                 <InputLabel>{props.label}</InputLabel>
-
                 <DatePicker
                     views={['year', 'month']}
                     openTo="year"
@@ -35,7 +34,7 @@ const YearMonthPicker = (props) => {
                         handleDateChange(date)
                     }}
                     renderInput={(params) => <TextField {...params} helperText={null} />}
-                    />
+                />
             </FormControl>
         </LocalizationProvider>
     );
