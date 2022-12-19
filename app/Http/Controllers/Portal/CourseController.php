@@ -30,7 +30,7 @@ class CourseController extends Controller
         $categories = $courseCategoryRepository->getAll();
         $teachers = $userRepository->getAllTeachers();
 
-        $courses = $courseContentRepository->search($request);
+        $courses = $courseRepository->search($request);
 
         return Inertia::render('portal/SearchCourse', [
                 'course_types'          => $types,

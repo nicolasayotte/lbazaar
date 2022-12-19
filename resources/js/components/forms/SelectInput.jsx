@@ -14,8 +14,8 @@ const SelectInput = (props) => {
     return (
         <FormControl fullWidth size="small" sx={{mt:1}}>
             <InputLabel>{props.label}</InputLabel>
-            <Select fullWidth defaultValue={props.value} value={props.value} label={props.label} onChange={props.handleChange}>
-                <MenuItem value=''>&nbsp;</MenuItem>
+            <Select fullWidth defaultValue="" value={props.value} label={props.label} onChange={props.handleChange}>
+                <MenuItem value="">&nbsp;</MenuItem>
                 {displayMenuItem()}
             </Select>
         </FormControl>

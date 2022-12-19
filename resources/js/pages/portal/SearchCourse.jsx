@@ -52,10 +52,11 @@ const SearchCourse = (props) => {
     }
 
     const handleChangeYearMonth = (year, month) => {
-        setData({
+        setData(data => ({ 
+            ...data, 
             year,
             month
-        }) 
+        })) 
     }
 
     const displayCourses = (courses, showDescription = true) => {
@@ -77,12 +78,10 @@ const SearchCourse = (props) => {
                 </Typography>
             )
         }
-
     }
 
     const displayProcessing = () => {
         return (
-          
                <Stack spacing={1} sx={{p:2}}>
                     <Skeleton animation="wave" variant="rounded" width='100%' height={200}/>
                     <Skeleton animation="wave" variant="rounded" width='100%' height={200}/>
