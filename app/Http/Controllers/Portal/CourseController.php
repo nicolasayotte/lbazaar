@@ -39,8 +39,8 @@ class CourseController extends Controller
                 'teachers'              => $teachers,
                 'courses'               => $courses
             ])->withViewData([
-                'title'       => 'Laravel',
-                'description' => 'Top page Screen'
+                'title'       => 'Browse Courses',
+                'description' => 'Course Lists'
             ]);
     }
 }
