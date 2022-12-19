@@ -16,6 +16,15 @@ const Details = (props) => {
             <Card sx={{mt: 2}}>
                 <Grid container sx={{m: 4}}>
                     <Grid item xs={10} sm={11} md={11} lg={11}>
+                        <Typography variant="subtitle1">
+                            {props.course.course_category.name}
+                        </Typography>
+                        <Typography variant="h6">
+                            {props.course.title}
+                        </Typography>
+                        <Typography variant="subtitle2" sx={{p:2}}>
+                            {props.course.description}
+                        </Typography>
                         <Divider sx={{ my: 2 }}>Feedbacks</Divider>
                         {displayFeedbacks()}
                     </Grid>

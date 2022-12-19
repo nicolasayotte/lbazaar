@@ -66,7 +66,7 @@ class CourseRepository extends BaseRepository
 
     public function findById($id)
     {
-        return $this->model->with(['professor', 'feedbacks', 'feedbacks.user'])->findOrFail($id);
+        return $this->model->with(['professor', 'courseCategory', 'feedbacks', 'feedbacks.user'])->findOrFail($id);
     }
 
 }

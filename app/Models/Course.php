@@ -18,12 +18,12 @@ class Course extends Model
 
     public function courseType()
     {
-        return $this->hasOne(CourseType::class);
+        return $this->belongsTo(CourseType::class);
     }
 
     public function courseCategory()
     {
-        return $this->hasOne(CourseCategory::class);
+        return $this->belongsTo(CourseCategory::class);
     }
 
     public function contents()
