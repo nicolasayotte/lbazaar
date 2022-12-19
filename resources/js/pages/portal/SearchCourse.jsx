@@ -1,6 +1,6 @@
-import { Box, TextField, Button, Pagination, CircularProgress, FormControl, InputLabel, Select, MenuItem, Grid, Typography, Container, Card } from "@mui/material";
-import SelectInput from '../../components/inputs/SelectInput';
-import YearMonthPicker from '../../components/inputs/YearMonthPicker';
+import { Box, TextField, Button, Pagination, Skeleton, Stack, InputLabel, Select, MenuItem, Grid, Typography, Container, Card } from "@mui/material";
+import SelectInput from '../../components/forms/SelectInput';
+import YearMonthPicker from '../../components/forms/YearMonthPicker';
 import { useForm } from '@inertiajs/inertia-react'
 import { actions } from '../../store/slices/ToasterSlice'
 import { useDispatch } from "react-redux"
@@ -13,10 +13,10 @@ const SearchCourse = (props) => {
 
     const FIRST_PAGE = 1
 
-    const { data, setData, get, errors, processing } = useForm({
+    const { data, setData, get, errors, processing, reset, clearErrors } = useForm({
         search_text: '',
-        type_id: null,
-        category_id: null,
+        type_id: '',
+        category_id: '',
         language: '',
         professor_id: '',
         year: new Date().getFullYear(),
@@ -35,6 +35,10 @@ const SearchCourse = (props) => {
                 }))
             }
         });
+    }
+
+    const handleReset = () => {
+        reset()
     }
 
     const setPageToOne = () => {
@@ -78,9 +82,11 @@ const SearchCourse = (props) => {
 
     const displayProcessing = () => {
         return (
-            <Typography variant="subtitle1" sx={{mt: 3 }} align="center">
-                <CircularProgress />
-            </Typography>
+          
+               <Stack spacing={1} sx={{p:2}}>
+                    <Skeleton animation="wave" variant="rounded" width='100%' height={200}/>
+                    <Skeleton animation="wave" variant="rounded" width='100%' height={200}/>
+               </Stack>
         )
     }
 
@@ -89,6 +95,7 @@ const SearchCourse = (props) => {
             <Card sx={{mt: 2}}>
                 <Grid container sx={{m: 4}}>
                     <Grid item xs={10} sm={3} md={3} lg={3}>
+                        {data.category_id}
                             <Typography variant="h6">
                                 Filter
                             </Typography>
@@ -99,6 +106,7 @@ const SearchCourse = (props) => {
                                     placeholder="Search for classes"
                                     size="small"
                                     sx={{mt:1}}
+                                    value={data.search_text}
                                     onChange={e => setData('search_text', e.target.value)}
                                 />
                                 { errors && errors.search_text && <ErrorText error={errors.search_text}/>}
@@ -132,6 +140,12 @@ const SearchCourse = (props) => {
                                         disabled={processing}
                                         disableElevation>
                                         Filter
+                                    </Button>
+                                    <Button sx={{ mt: 2, ml: 2}}
+                                        onClick={handleReset}
+                                        variant="outlined"
+                                        disableElevation>
+                                        Reset
                                     </Button>
                                 </Grid>
                             </Grid>

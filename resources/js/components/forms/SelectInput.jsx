@@ -1,5 +1,3 @@
-
-
 import {FormControl, InputLabel, Select, MenuItem} from "@mui/material"
 import { useState } from "react"
 
@@ -16,7 +14,7 @@ const SelectInput = (props) => {
     return (
         <FormControl fullWidth size="small" sx={{mt:1}}>
             <InputLabel>{props.label}</InputLabel>
-            <Select fullWidth defaultValue="" label={props.label} onChange={props.handleChange}>
+            <Select fullWidth defaultValue={props.value} value={props.value} label={props.label} onChange={props.handleChange}>
                 <MenuItem value=''>&nbsp;</MenuItem>
                 {displayMenuItem()}
             </Select>

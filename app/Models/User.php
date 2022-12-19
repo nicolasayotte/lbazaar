@@ -16,7 +16,7 @@ class User extends Authenticatable
 
     const FEATURED_TEACHERS_COUNT_DISPLAY = 3;
 
-    protected $appends = array('fullname');
+    protected $appends = ['fullname'];
 
     /**
      * The attributes that are mass assignable.

@@ -70,11 +70,6 @@ const TopPage = (props) => {
                                     Featured Teachers
                                 </Typography>
                                 { displayTeachers(props.teachers) }
-                                <Grid display="flex" justifyContent="center" alignItems="center">
-                                    <Button sx={{mt: 2}} variant="contained" disableElevation>
-                                        Browse All Teachers
-                                    </Button>
-                                </Grid>
                             </Grid>
                         </Grid>
                     </Container>

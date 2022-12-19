@@ -14,7 +14,7 @@ class CourseContentRepository extends BaseRepository
         parent::__construct(new CourseContent());
     }
 
-    public function getUpcomingCourseContent($take = 5)
+    public function getUpcomingCourseContent($take = self::PERPAGE)
     {
         return $this->model->where('schedule_datetime', '>=', Carbon::now('Asia/Tokyo'))->take($take)->orderBy('id', 'desc')->with('professor')->get();
     }

@@ -28,7 +28,7 @@ class SearchClassRequest extends FormRequest
             'type_id'           => 'integer|nullable',
             'category_id'       => 'integer|nullable',
             'language'          => 'nullable',
-            'professor_id'        => 'integer|nullable',
+            'professor_id'      => 'integer|nullable',
             'year'              => 'digits:4|nullable',
             'month'             => 'min:0|max:11|nullable'
         ];
