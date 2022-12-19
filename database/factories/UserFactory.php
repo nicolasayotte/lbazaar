@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Classifications;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 /**
@@ -18,12 +19,14 @@ class UserFactory extends Factory
      */
     public function definition()
     {
+        $countryIds = DB::table('countries')->select('id')->pluck('id');
+
         return [
             'first_name'        => fake()->firstName(),
             'last_name'         => fake()->lastName(),
             'email'             => fake()->unique()->safeEmail(),
             'email_verified_at' => fake()->dateTime(),
-            'country'           => fake()->country(),
+            'country_id'        => fake()->randomElement($countryIds),
             'password'          => Hash::make('test1234'),
             'is_temp_password'  => false,
             'is_enabled'        => true,
