@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Portal\InquiriesController;
 use App\Http\Controllers\Portal\TopPageController;
 use Illuminate\Support\Facades\Route;
+use Symfony\Component\HttpKernel\Profiler\Profile;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +29,9 @@ Route::prefix('admin')->name('admin.')->group(function() {
     Route::middleware(['auth', 'admin'])->group(function() {
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-        Route::get('/profile', [ProfileController::class, 'view'])->name('profile');
+        Route::prefix('profile')->group(function() {
+            Route::get('/', [ProfileController::class, 'view'])->name('profile');
+            Route::post('/', [ProfileController::class, 'update'])->name('profile.update');
+        });
     });
 });
