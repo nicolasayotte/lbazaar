@@ -1,6 +1,6 @@
 import { Link } from "@inertiajs/inertia-react"
 import { Menu } from "@mui/icons-material"
-import { AppBar, Box, Button, Divider, Drawer, Grid, IconButton, List, ListItem, ListItemButton, Toolbar, Typography } from "@mui/material"
+import { AppBar, Box, Divider, Drawer, Grid, IconButton, List, ListItem, ListItemButton, Toolbar, Typography } from "@mui/material"
 import { useState } from "react"
 
 const AdminNavbar = ({ drawerWidth, setDrawerWidth, window }) => {
@@ -54,9 +54,7 @@ const AdminNavbar = ({ drawerWidth, setDrawerWidth, window }) => {
                 '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth }
             }}
         >
-            <Toolbar>
-                <Typography variant="h6" textAlign="center">ADMIN</Typography>
-            </Toolbar>
+            <Toolbar />
             <Divider />
             <List>
                 {menu}
@@ -79,9 +77,7 @@ const AdminNavbar = ({ drawerWidth, setDrawerWidth, window }) => {
                 '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
             }}
         >
-            <Toolbar>
-                <Typography variant="h6" textAlign="center">ADMIN</Typography>
-            </Toolbar>
+            <Toolbar />
             <Divider />
             <List>
                 {menu}
@@ -99,7 +95,7 @@ const AdminNavbar = ({ drawerWidth, setDrawerWidth, window }) => {
     return (
         <>
             <AppBar
-                position="static"
+                position="sticky"
                 color="primary"
                 sx={{ zIndex: theme => theme.zIndex.drawer + 1 }}
             >
@@ -107,7 +103,6 @@ const AdminNavbar = ({ drawerWidth, setDrawerWidth, window }) => {
                     <Typography
                         variant="h6"
                         textAlign="center"
-                        sx={{ display: { xs: 'inline-block', md: 'none' } }}
                     >ADMIN</Typography>
                     <Box sx={{ ml: 'auto' }}>
                         <Grid container sx={{ display: { xs: 'none', md: 'flex' } }}>
