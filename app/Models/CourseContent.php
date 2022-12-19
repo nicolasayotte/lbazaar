@@ -15,4 +15,19 @@ class CourseContent extends Model
     {
         return $this->hasOneThrough(User::class, Course::class, 'id', 'id', 'course_id', 'professor_id');
     }
+
+    public function type()
+    {
+        return $this->hasOneThrough(CourseType::class, Course::class, 'id', 'id', 'course_id', 'course_type_id');
+    }
+
+    public function category()
+    {
+        return $this->hasOneThrough(CourseCategory::class, Course::class, 'id', 'id', 'course_id', 'course_category_id');
+    }
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
+    }
 }

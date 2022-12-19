@@ -16,6 +16,8 @@ class User extends Authenticatable
 
     const FEATURED_TEACHERS_COUNT_DISPLAY = 3;
 
+    protected $appends = ['fullname'];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -46,4 +48,10 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function getFullnameAttribute()
+    {
+        return $this->first_name . ' ' . $this->last_name;
+    }
+
 }

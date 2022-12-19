@@ -25,4 +25,9 @@ class Course extends Model
     {
         return $this->hasOne(CourseCategory::class);
     }
+
+    public function contents()
+    {
+        return $this->hasMany(CourseContent::class);
+    }
 }
