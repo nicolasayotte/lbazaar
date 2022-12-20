@@ -6,6 +6,7 @@ const Input = (props) => {
         <Box>
             <TextField
                 {...props}
+                error={(props.errors && props.errors[props.name]) ? true : false}
             >
                 { props.children }
             </TextField>
