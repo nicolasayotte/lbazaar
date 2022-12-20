@@ -1,8 +1,17 @@
 
-import {Box, Grid, Divider, Card, CardActions, CardContent, Button, Typography} from "@mui/material"
+import {Box, Rating, Grid, Divider, Card, CardActions, CardContent, Button, Typography} from "@mui/material"
 import { useState } from "react"
 
 const Feedback = (props) => {
+
+    const displayRating = (rating) => {
+        var stars = Math.floor(rating / 10) / 2
+
+        return (
+            <Rating size="small" defaultValue={stars == 0 ? 1 : stars} />
+        )
+    }
+    
     return (
         <Card sx={{ minWidth: 275, m: 2, position: 'relative' }}>
             <CardContent>
@@ -14,6 +23,7 @@ const Feedback = (props) => {
                         {`${props.feedback.rating} / 100`}
                     </Typography>
                 </Grid>
+                {displayRating(props.feedback.rating)}
                 <Divider />
                 <Typography variant="caption" gutterBottom>
                     {props.feedback.comments}

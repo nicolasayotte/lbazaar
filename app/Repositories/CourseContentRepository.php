@@ -54,4 +54,9 @@ class CourseContentRepository extends BaseRepository
             })
             ->paginate(self::PERPAGE)->withQueryString();
     }
+
+    public function findByCourseId($id)
+    {
+        return $this->model->where('course_id', $id)->orderBy('sort', 'ASC')->get();
+    }
 }

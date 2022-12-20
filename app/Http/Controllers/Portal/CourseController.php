@@ -32,7 +32,7 @@ class CourseController extends Controller
 
         $courses = $courseRepository->search($request);
 
-        return Inertia::render('portal/SearchCourse', [
+        return Inertia::render('portal/course/Search', [
                 'course_types'          => $types,
                 'course_categories'     => $categories,
                 'languages'             => $languages,
@@ -47,11 +47,14 @@ class CourseController extends Controller
     public function details($id)
     {
         $courseRepository = new CourseRepository();
+        $courseContentRepository = new CourseContentRepository();
 
         $course = $courseRepository->findById($id);
+        $contents = $courseContentRepository->findByCourseId($course->id);
         
         return Inertia::render('portal/course/Details', [
             'course'          => $course,
+            'contents'        => $contents,
         ])->withViewData([
             'title'       => 'Course - ' . $course->title,
             'description' => 'Course Details'
