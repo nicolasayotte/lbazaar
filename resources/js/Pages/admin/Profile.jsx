@@ -3,6 +3,7 @@ import { Box, Button, Card, CardContent, Grid, Typography } from "@mui/material"
 import { useDispatch } from "react-redux"
 import Input from "../../components/forms/Input"
 import { actions } from "../../store/slices/ToasterSlice"
+import { displaySelectOptions } from "../../components/helpers/form.helper"
 
 const Profile = ({ auth, countries, errors }) => {
 
@@ -14,10 +15,6 @@ const Profile = ({ auth, countries, errors }) => {
         email: auth.user.email,
         country_id: auth.user.country_id
     })
-
-    const countryOptions = Object.keys(countries).map(key =>
-        <option value={key} key={key}>{countries[key]}</option>
-    )
 
     const handleOnChange = e => {
         setData(e.target.name, e.target.value)
@@ -54,7 +51,6 @@ const Profile = ({ auth, countries, errors }) => {
                             <Grid item xs={12} md={6}>
                                 <Input
                                     label="First Name"
-                                    fullWidth
                                     name="first_name"
                                     value={data.first_name}
                                     onChange={handleOnChange}
@@ -64,7 +60,6 @@ const Profile = ({ auth, countries, errors }) => {
                             <Grid item xs={12} md={6}>
                                 <Input
                                     label="Last Name"
-                                    fullWidth
                                     name="last_name"
                                     value={data.last_name}
                                     onChange={handleOnChange}
@@ -74,7 +69,6 @@ const Profile = ({ auth, countries, errors }) => {
                             <Grid item xs={12}>
                                 <Input
                                     label="Email"
-                                    fullWidth
                                     disabled
                                     name="email"
                                     value={data.email}
@@ -84,17 +78,13 @@ const Profile = ({ auth, countries, errors }) => {
                             <Grid item xs={12}>
                                 <Input
                                     label="Country"
-                                    fullWidth
                                     select
-                                    SelectProps={{
-                                        native: true,
-                                    }}
                                     name="country_id"
                                     value={data.country_id}
                                     onChange={handleOnChange}
                                     errors={errors}
                                 >
-                                    {countryOptions}
+                                    {displaySelectOptions(countries)}
                                 </Input>
                             </Grid>
                             <Grid item xs={12} textAlign="right">

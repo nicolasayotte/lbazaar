@@ -14,7 +14,7 @@ class ProfileController extends Controller
 
     public function index()
     {
-        $countries = Country::pluck('name', 'id')->toArray();
+        $countries = Country::all();
 
         return Inertia::render('admin/Profile', [
             'countries' => $countries,
