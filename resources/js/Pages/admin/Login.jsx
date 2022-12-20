@@ -9,7 +9,7 @@ const Login = ({errors}) => {
 
     const dispatch = useDispatch()
 
-    const { data, setData, post, processing, clearErrors, reset } = useForm({
+    const { data, setData, post, processing } = useForm({
         email: '',
         password: ''
     })
