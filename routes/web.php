@@ -24,16 +24,20 @@ Route::get('/inquiries', [InquiriesController::class, 'index'])->name('inquiries
 Route::post('/inquiries', [InquiriesController::class, 'store'])->name('inquiries.store');
 
 Route::prefix('admin')->name('admin.')->group(function() {
+
+    # Login Routes
     Route::get('/login', [AuthController::class, 'login'])->name('login');
     Route::post('/authenticate', [AuthController::class, 'authenticate'])->name('authenticate');
 
     Route::middleware(['auth', 'admin'])->group(function() {
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-        Route::prefix('profile')->group(function() {
-            Route::get('/', [ProfileController::class, 'view'])->name('profile');
-            Route::post('/', [ProfileController::class, 'update'])->name('profile.update');
+        # Admin Profile Routes
+        Route::prefix('profile')->name('profile.')->group(function() {
+            Route::get('/', [ProfileController::class, 'index'])->name('index');
+            Route::post('/', [ProfileController::class, 'update'])->name('update');
         });
     });
 });
+
 Route::get('/courses', [CourseController::class, 'index'])->name('course.index');
