@@ -1,59 +1,62 @@
 import { useForm } from "@inertiajs/inertia-react"
-import { Box, Button, Card, CardContent, Grid, Typography } from "@mui/material"
+import { Box, Button, Card, CardContent, Divider, Grid, Typography } from "@mui/material"
 import { useDispatch } from "react-redux"
 import Input from "../../components/forms/Input"
 import { actions } from "../../store/slices/ToasterSlice"
 import { displaySelectOptions } from "../../components/helpers/form.helper"
 
-const Profile = ({ auth, countries, errors }) => {
+const Profile = ({ auth, countries, errors, messages }) => {
 
     const dispatch = useDispatch()
 
-    const { data, setData, post, processing } = useForm({
+    const { data: profile, setData: setProfile, post: profileRequest, processing: profileProcessing } = useForm('ProfileForm', {
         first_name: auth.user.first_name,
         last_name: auth.user.last_name,
         email: auth.user.email,
         country_id: auth.user.country_id
     })
 
-    const handleOnChange = e => {
-        setData(e.target.name, e.target.value)
+    const { data: passwords, setData: setPasswords, post: passwordRequest, processing: passwordProcessing } = useForm('PasswordForm', {
+        current_password: '',
+        new_password: '',
+        confirm_password: ''
+    })
+
+    const onChangeSetters = {
+        setProfile,
+        setPasswords
     }
 
-    const handleSubmit = (e) => {
+    const handleOnChange = (e, setMethod) => {
+        onChangeSetters[setMethod](e.target.name, e.target.value)
+    }
+
+    const handleProfileSubmit = (e) => {
         e.preventDefault()
 
-        post('/admin/profile', {
-            onSuccess: response => {
-                dispatch(actions.toggle({
-                    open: true,
-                    type: 'success',
-                    message: 'Profile successfully updated'
-                }))
-            },
-            onError: response => {
-                dispatch(actions.toggle({
-                    open: true,
-                    type: 'error',
-                    message: 'There was an error encountered'
-                }))
-            },
+        profileRequest('/admin/profile', {
+            onSuccess: () => dispatch(actions.showSuccess({
+                message: messages.success.profile
+            })),
+            onError: () => dispatch(actions.showError({
+                message: messages.error
+            }))
         })
     }
 
     return (
         <Box>
-            <Card>
-                <form onSubmit={handleSubmit}>
+            <Card key="Profile Form Card">
+                <form onSubmit={handleProfileSubmit}>
                     <CardContent sx={{ p: 4 }}>
-                        <Typography fontFamily="inherit" variant="h5" component="div" sx={{ mb: 4 }}>Profile</Typography>
+                        <Typography fontFamily="inherit" variant="h5" component="div" sx={{ mb: 4 }}>Edit Profile</Typography>
                         <Grid container spacing={3}>
                             <Grid item xs={12} md={6}>
                                 <Input
                                     label="First Name"
                                     name="first_name"
-                                    value={data.first_name}
-                                    onChange={handleOnChange}
+                                    value={profile.first_name}
+                                    onChange={e => handleOnChange(e, 'setProfile')}
                                     errors={errors}
                                 />
                             </Grid>
@@ -61,8 +64,8 @@ const Profile = ({ auth, countries, errors }) => {
                                 <Input
                                     label="Last Name"
                                     name="last_name"
-                                    value={data.last_name}
-                                    onChange={handleOnChange}
+                                    value={profile.last_name}
+                                    onChange={e => handleOnChange(e, 'setProfile')}
                                     errors={errors}
                                 />
                             </Grid>
@@ -71,8 +74,8 @@ const Profile = ({ auth, countries, errors }) => {
                                     label="Email"
                                     disabled
                                     name="email"
-                                    value={data.email}
-                                    onChange={handleOnChange}
+                                    value={profile.email}
+                                    onChange={e => handleOnChange(e, 'setProfile')}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -80,8 +83,8 @@ const Profile = ({ auth, countries, errors }) => {
                                     label="Country"
                                     select
                                     name="country_id"
-                                    value={data.country_id}
-                                    onChange={handleOnChange}
+                                    value={profile.country_id}
+                                    onChange={e => handleOnChange(e, 'setProfile')}
                                     errors={errors}
                                 >
                                     {displaySelectOptions(countries)}
@@ -91,9 +94,48 @@ const Profile = ({ auth, countries, errors }) => {
                                 <Button
                                     type="submit"
                                     variant="contained"
-                                    onClick={handleSubmit}
-                                    disabled={processing}
+                                    onClick={handleProfileSubmit}
+                                    disabled={profileProcessing}
                                 >Update</Button>
+                            </Grid>
+                        </Grid>
+                    </CardContent>
+                </form>
+            </Card>
+            <Card key="Password Form Card" sx={{ mt: 2 }}>
+                <form>
+                    <CardContent sx={{ p: 4 }}>
+                        <Typography fontFamily="inherit" variant="h5" component="div" sx={{ mb: 4 }}>Update Password</Typography>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <Input
+                                    type="password"
+                                    label="Current Password"
+                                    name="current_password"
+                                    data={passwords.current_password}
+                                    helperText="Enter your current password for verification"
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Input
+                                    type="password"
+                                    label="New Password"
+                                    name="new_password"
+                                    data={passwords.new_password}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Input
+                                    type="password"
+                                    label="Confirm Password"
+                                    name="confirm_password"
+                                    data={passwords.confirm_password}
+                                />
+                            </Grid>
+                            <Grid item xs={12} textAlign="right">
+                                <Button
+                                    variant="contained"
+                                >Update Password</Button>
                             </Grid>
                         </Grid>
                     </CardContent>
