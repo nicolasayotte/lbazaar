@@ -5,11 +5,11 @@ import ErrorText from "../../components/common/ErrorText"
 import Input from "../../components/forms/Input"
 import { actions } from "../../store/slices/ToasterSlice"
 
-const Login = ({errors}) => {
+const Login = ({errors, messages}) => {
 
     const dispatch = useDispatch()
 
-    const { data, setData, post, processing } = useForm({
+    const { data, setData, post, processing } = useForm('AdminLogin', {
         email: '',
         password: ''
     })
@@ -22,20 +22,12 @@ const Login = ({errors}) => {
         e.preventDefault()
 
         post('/admin/authenticate', {
-            onSuccess: response => {
-                dispatch(actions.toggle({
-                    open: true,
-                    type: 'success',
-                    message: 'User successfully authenticated'
-                }))
-            },
-            onError: response => {
-                dispatch(actions.toggle({
-                    open: true,
-                    type: 'error',
-                    message: 'There was an error encountered'
-                }))
-            }
+            onSuccess: () => dispatch(actions.showSuccess({
+                message: messages.success.auth
+            })),
+            onError: () => dispatch(actions.showError({
+                message: messages.error
+            }))
         })
     }
 
