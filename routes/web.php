@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Portal\CourseController;
 use App\Http\Controllers\Portal\InquiriesController;
 use App\Http\Controllers\Portal\TopPageController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpKernel\Profiler\Profile;
 
@@ -24,6 +25,10 @@ Route::get('/inquiries', [InquiriesController::class, 'index'])->name('inquiries
 Route::post('/inquiries', [InquiriesController::class, 'store'])->name('inquiries.store');
 
 Route::prefix('admin')->name('admin.')->group(function() {
+
+    Route::get('/', function(Request $request) {
+        return redirect()->route(@$request->user() ? 'admin.profile.index' : 'admin.login');
+    });
 
     # Login Routes
     Route::get('/login', [AuthController::class, 'login'])->name('login');
