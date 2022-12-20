@@ -13,6 +13,10 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
+        if (auth()->check() && auth()->user()->hasRole(Role::ADMIN)) {
+            return redirect()->back();
+        }
+
         return Inertia::render('admin/Login', [])->withViewData([
             'title' => 'Admin Login'
         ]);
@@ -30,9 +34,18 @@ class AuthController extends Controller
             'password'  => $credentials['password'],
             fn ($query) => $query->whereRoleIs(Role::ADMIN)
         ])) {
-            return redirect()->intended('/');
+            return redirect()->intended('admin/profile');
         }
 
         return redirect()->back()->withErrors(['email' => 'Invalid credentials']);
+    }
+
+    public function logout(Request $request)
+    {
+        auth()->logout();
+
+        $request->session()->invalidate();
+
+        return redirect()->route('top');
     }
 }

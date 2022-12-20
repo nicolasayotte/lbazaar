@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Portal\CourseController;
 use App\Http\Controllers\Portal\InquiriesController;
 use App\Http\Controllers\Portal\TopPageController;
 use Illuminate\Support\Facades\Route;
+use Symfony\Component\HttpKernel\Profiler\Profile;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,7 +24,20 @@ Route::get('/inquiries', [InquiriesController::class, 'index'])->name('inquiries
 Route::post('/inquiries', [InquiriesController::class, 'store'])->name('inquiries.store');
 
 Route::prefix('admin')->name('admin.')->group(function() {
+
+    # Login Routes
     Route::get('/login', [AuthController::class, 'login'])->name('login');
     Route::post('/authenticate', [AuthController::class, 'authenticate'])->name('authenticate');
+
+    Route::middleware(['auth', 'admin'])->group(function() {
+        Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+        # Admin Profile Routes
+        Route::prefix('profile')->name('profile.')->group(function() {
+            Route::get('/', [ProfileController::class, 'index'])->name('index');
+            Route::post('/', [ProfileController::class, 'update'])->name('update');
+        });
+    });
 });
+
 Route::get('/courses', [CourseController::class, 'index'])->name('course.index');

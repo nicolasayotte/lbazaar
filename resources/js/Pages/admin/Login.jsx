@@ -1,14 +1,15 @@
 import { Link, useForm } from "@inertiajs/inertia-react"
-import { Box, Button, Card, CardContent, Container, Divider, Grid, TextField, Typography } from "@mui/material"
+import { Box, Button, Card, CardContent, Container, Grid, Typography } from "@mui/material"
 import { useDispatch } from "react-redux"
 import ErrorText from "../../components/common/ErrorText"
+import Input from "../../components/forms/Input"
 import { actions } from "../../store/slices/ToasterSlice"
 
-const Login = () => {
+const Login = ({errors}) => {
 
     const dispatch = useDispatch()
 
-    const { data, setData, post, processing, errors, clearErrors, reset } = useForm({
+    const { data, setData, post, processing } = useForm({
         email: '',
         password: ''
     })
@@ -54,26 +55,26 @@ const Login = () => {
                             <form method="POST" onSubmit={handleSubmit}>
                                 <Typography variant="h5" textAlign='center' sx={{ mb: 2 }}>ADMIN</Typography>
                                 <Box>
-                                    <TextField
+                                    <Input
                                         label="Email"
                                         type="email"
                                         fullWidth
                                         name="email"
                                         value={data.email}
                                         onChange={handleOnChange}
+                                        errors={errors}
                                     />
-                                    {errors && errors.email && <ErrorText error={errors.email}/>}
                                 </Box>
                                 <Box sx={{ my: 2 }}>
-                                    <TextField
+                                    <Input
                                         label="Password"
                                         type="password"
                                         fullWidth
                                         name="password"
                                         value={data.password}
                                         onChange={handleOnChange}
+                                        errors={errors}
                                     />
-                                    {errors && errors.password && <ErrorText error={errors.password} />}
                                 </Box>
                                 <Button
                                     variant="contained"

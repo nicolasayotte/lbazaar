@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('last_name', 100);
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('country', 100);
+            $table->bigInteger('country_id')->unsigned()->index();
             $table->string('password');
             $table->boolean('is_temp_password');
             $table->boolean('is_enabled');
@@ -31,6 +31,7 @@ return new class extends Migration
 
             $table->foreign('deleted_by')->references('id')->on('users');
             $table->foreign('classification_id')->references('id')->on('classifications');
+            $table->foreign('country_id')->references('id')->on('countries');
         });
     }
 

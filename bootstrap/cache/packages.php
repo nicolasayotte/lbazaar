@@ -27,6 +27,17 @@
       0 => 'Laravel\\Tinker\\TinkerServiceProvider',
     ),
   ),
+  'monarobase/country-list' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Monarobase\\CountryList\\CountryListServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'Countries' => 'Monarobase\\CountryList\\CountryListFacade',
+    ),
+  ),
   'nesbot/carbon' => 
   array (
     'providers' => 
