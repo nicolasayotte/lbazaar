@@ -1,7 +1,7 @@
 import { useForm } from "@inertiajs/inertia-react"
-import { Box, Button, Card, CardContent, Grid, TextField, Typography } from "@mui/material"
+import { Box, Button, Card, CardContent, Divider, Grid, Typography } from "@mui/material"
 import { useDispatch } from "react-redux"
-import Input from "../../components/form/Input"
+import Input from "../../components/forms/Input"
 import { actions } from "../../store/slices/ToasterSlice"
 
 const Profile = ({ auth, countries, errors }) => {
@@ -46,10 +46,10 @@ const Profile = ({ auth, countries, errors }) => {
 
     return (
         <Box>
-            <Typography fontFamily="inherit" variant="h4" sx={{ mb: 2 }}>Profile</Typography>
             <Card>
                 <form onSubmit={handleSubmit}>
                     <CardContent sx={{ p: 4 }}>
+                        <Typography fontFamily="inherit" variant="h5" component="div" sx={{ mb: 4 }}>Profile</Typography>
                         <Grid container spacing={3}>
                             <Grid item xs={12} md={6}>
                                 <Input
@@ -82,7 +82,7 @@ const Profile = ({ auth, countries, errors }) => {
                                 />
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField
+                                <Input
                                     label="Country"
                                     fullWidth
                                     select
@@ -92,9 +92,10 @@ const Profile = ({ auth, countries, errors }) => {
                                     name="country_id"
                                     value={data.country_id}
                                     onChange={handleOnChange}
+                                    errors={errors}
                                 >
                                     {countryOptions}
-                                </TextField>
+                                </Input>
                             </Grid>
                             <Grid item xs={12} textAlign="right">
                                 <Button
