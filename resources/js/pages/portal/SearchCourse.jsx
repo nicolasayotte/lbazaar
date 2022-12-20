@@ -1,4 +1,4 @@
-import { Box, TextField, Button, Pagination, Skeleton, Stack, InputLabel, Select, MenuItem, Grid, Typography, Container, Card } from "@mui/material";
+import { Box, TextField, Button, Pagination, Skeleton, Stack, InputLabel, Select, MenuItem, Grid, Typography, Container, Card, CardContent } from "@mui/material";
 import SelectInput from '../../components/forms/SelectInput';
 import YearMonthPicker from '../../components/forms/YearMonthPicker';
 import { useForm } from '@inertiajs/inertia-react'
@@ -6,6 +6,8 @@ import { actions } from '../../store/slices/ToasterSlice'
 import { useDispatch } from "react-redux"
 import ErrorText from '../../components/common/ErrorText'
 import Course from "../../components/cards/Course";
+import Input from "../../components/forms/Input";
+import { displaySelectOptions } from "../../components/helpers/form.helper";
 
 const SearchCourse = (props) => {
 
@@ -13,14 +15,26 @@ const SearchCourse = (props) => {
 
     const FIRST_PAGE = 1
 
+    const getCurrentDate = () => {
+        const today = new Date()
+
+        let year  = today.getFullYear().toString(),
+            month = (today.getMonth() + 1).toString(),
+            day   = today.getDate().toString()
+
+        month.padStart(2, '0')
+        day.padStart(2, '0')
+
+        return [year, month, day].join('-')
+    }
+
     const { data, setData, get, errors, processing, reset, clearErrors } = useForm({
         search_text: '',
         type_id: '',
         category_id: '',
         language: '',
         professor_id: '',
-        year: new Date().getFullYear(),
-        month: new Date().getMonth(),
+        month: getCurrentDate().slice(0, 7),
         page: props.courses.current_page,
     })
 
@@ -49,14 +63,6 @@ const SearchCourse = (props) => {
     const handlePageChange = (e, page) => {
         data.page = page
         handleSubmit()
-    }
-
-    const handleChangeYearMonth = (year, month) => {
-        setData(data => ({ 
-            ...data, 
-            year,
-            month
-        })) 
     }
 
     const displayCourses = (courses, showDescription = true) => {
@@ -89,71 +95,112 @@ const SearchCourse = (props) => {
         )
     }
 
+    const handleOnChange = e => {
+        setData(e.target.name, e.target.value)
+    }
+
     return (
         <Box>
-            <Card sx={{mt: 2}}>
-                <Grid container sx={{m: 4}}>
-                    <Grid item xs={10} sm={3} md={3} lg={3}>
-                        {data.category_id}
-                            <Typography variant="h6">
-                                Filter
-                            </Typography>
-                            <Grid item xs={12} sm={12}>
-                                <TextField
-                                    required
-                                    fullWidth
-                                    placeholder="Search for classes"
-                                    size="small"
-                                    sx={{mt:1}}
-                                    value={data.search_text}
-                                    onChange={e => setData('search_text', e.target.value)}
-                                />
-                                { errors && errors.search_text && <ErrorText error={errors.search_text}/>}
-                            </Grid>
-                            <Grid item  xs={12} sm={12}>
-                                <SelectInput itemValue="id" itemLabel="name" value={data.type_id} handleChange={e => setData('type_id', e.target.value)} label="Type" items={props.course_types}></SelectInput>
-                                { errors && errors.type_id && <ErrorText error={errors.type_id}/>}
-                            </Grid>
-                            <Grid item xs={12} sm={12}>
-                                <SelectInput itemValue="id" itemLabel="name" value={data.category_id} handleChange={e => setData('category_id', e.target.value)} label="Categories" items={props.course_categories}></SelectInput>
-                                { errors && errors.category_id && <ErrorText error={errors.category_id}/>}
-                            </Grid>
-                            <Grid item xs={12} sm={12}>
-                                <SelectInput itemValue="id" itemLabel="fullname" value={data.professor_id} handleChange={e => setData('professor_id', e.target.value)} label="Teachers" items={props.teachers}></SelectInput>
-                                { errors && errors.professor_id && <ErrorText error={errors.professor_id}/>}
-                            </Grid>
-                            <Grid item xs={12} sm={12}>
-                                <SelectInput itemValue="language" itemLabel="language" value={data.language} handleChange={e => setData('language', e.target.value)} label="Languages" items={props.languages}></SelectInput>
-                                { errors && errors.language && <ErrorText error={errors.language}/>}
-                            </Grid>
-                            <Grid item xs={12} sm={12}>
-                                <YearMonthPicker errors={errors} minDate="2022-01-01" maxDate="2030-12-01" handleChange={handleChangeYearMonth}></YearMonthPicker>
-                                { errors && errors.year && <ErrorText error={errors.year}/>}
-                                { errors && errors.month && <ErrorText error={errors.month}/>}
-                            </Grid>
-                            <Grid item xs={12} sm={12}>
-                                <Grid display="flex" justifyContent="center" alignItems="center">
-                                    <Button sx={{ mt: 2}}
-                                        onClick={setPageToOne}
-                                        variant="contained"
-                                        disabled={processing}
-                                        disableElevation>
-                                        Filter
-                                    </Button>
-                                    <Button sx={{ mt: 2, ml: 2}}
-                                        onClick={handleReset}
-                                        variant="outlined"
-                                        disableElevation>
-                                        Reset
-                                    </Button>
+            <Grid container sx={{m: 4}}>
+                <Grid item xs={10} sm={3} md={3} lg={3}>
+                    <Card>
+                        <CardContent>
+                            {data.category_id}
+                                <Typography variant="h6" sx={{ mb: 2 }}>
+                                    Filter
+                                </Typography>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={12} sm={12}>
+                                        <Input
+                                            placeholder="Search for classes"
+                                            name="search_text"
+                                            value={data.search_text}
+                                            onChange={handleOnChange}
+                                            errors={errors}
+                                        />
+                                    </Grid>
+                                    <Grid item  xs={12} sm={12}>
+                                        <Input
+                                            label="Type"
+                                            select
+                                            name="type_id"
+                                            value={data.type_id}
+                                            onChange={handleOnChange}
+                                            errors={errors}
+                                        >
+                                            {displaySelectOptions(props.course_types)}
+                                        </Input>
+                                    </Grid>
+                                    <Grid item xs={12} sm={12}>
+                                        <Input
+                                            label="Category"
+                                            select
+                                            name="category_id"
+                                            value={data.category_id}
+                                            onChange={handleOnChange}
+                                            errors={errors}
+                                        >
+                                            {displaySelectOptions(props.course_categories)}
+                                        </Input>
+                                    </Grid>
+                                    <Grid item xs={12} sm={12}>
+                                        <Input
+                                            label="Teachers"
+                                            select
+                                            name="professor_id"
+                                            value={data.professor_id}
+                                            onChange={handleOnChange}
+                                            errors={errors}
+                                        >
+                                            {displaySelectOptions(props.teachers, 'id', 'fullname')}
+                                        </Input>
+                                    </Grid>
+                                    <Grid item xs={12} sm={12}>
+                                        <Input
+                                            label="Languages"
+                                            select
+                                            name="language"
+                                            value={data.language}
+                                            onChange={handleOnChange}
+                                            errors={errors}
+                                        >
+                                            {displaySelectOptions(props.languages, 'language', 'language')}
+                                        </Input>
+                                    </Grid>
+                                    <Grid item xs={12} sm={12}>
+                                        <Input
+                                            type="month"
+                                            name="month"
+                                            value={data.month}
+                                            onChange={handleOnChange}
+                                            errors={errors}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} sm={12}>
+                                        <Grid display="flex" justifyContent="center" alignItems="center">
+                                            <Button sx={{ mt: 2}}
+                                                onClick={setPageToOne}
+                                                variant="contained"
+                                                disabled={processing}
+                                                disableElevation>
+                                                Filter
+                                            </Button>
+                                            <Button sx={{ mt: 2, ml: 2}}
+                                                onClick={handleReset}
+                                                variant="outlined"
+                                                disableElevation>
+                                                Reset
+                                            </Button>
+                                        </Grid>
+                                    </Grid>
                                 </Grid>
-                            </Grid>
-                    </Grid>
-                    <Grid item xs={6} sm={8} md={8} lg={8}>
-                        {processing ? displayProcessing() : displayCourses(props.courses)}
-                    </Grid>
+                        </CardContent>
+                    </Card>
                 </Grid>
-            </Card>
+                <Grid item xs={6} sm={8} md={8} lg={8}>
+                    {processing ? displayProcessing() : displayCourses(props.courses)}
+                </Grid>
+            </Grid>
         </Box>
     )
 }

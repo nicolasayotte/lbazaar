@@ -3,6 +3,8 @@
 namespace App\Repositories;
 
 use App\Models\Course;
+use Carbon\Carbon;
+use DateTime;
 
 class CourseRepository extends BaseRepository
 {
@@ -47,14 +49,16 @@ class CourseRepository extends BaseRepository
             ->when($request->has('language') && !empty($request->get('language')), function ($q) use ($request)  {
                 return $q->where('language', $request->get('language'));
             })
-            ->when($request->has('year') && !empty($request->get('year')), function ($q) use ($request)  {
-                return $q->whereHas('contents', function($query) use ($request) {
-                    return $query->whereYear('schedule_datetime', $request->get('year'));
-                });
-            })
             ->when($request->has('month') && !empty($request->get('month')), function ($q) use ($request)  {
                 return $q->whereHas('contents', function($query) use ($request) {
-                    return $query->whereMonth('schedule_datetime', $request->get('month') + 1);
+
+                    $startDate = date('Y-m-d', strtotime($request->get('month') . '-01'));
+                    $endDate   = date('Y-m-t', strtotime($startDate));
+
+                    return $query->whereBetween('schedule_datetime', [
+                        $startDate,
+                        $endDate
+                    ]);
                 });
             })
             ->paginate(self::PERPAGE)->withQueryString();

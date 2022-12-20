@@ -5,6 +5,8 @@ const Input = (props) => {
     return (
         <Box>
             <TextField
+                size="small"
+                fullWidth
                 {...props}
                 error={(props.errors && props.errors[props.name]) ? true : false}
             >
