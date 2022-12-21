@@ -1,0 +1,17 @@
+{
+    "sanctum.csrf-cookie": "sanctum\/csrf-cookie",
+    "ignition.healthCheck": "_ignition\/health-check",
+    "ignition.executeSolution": "_ignition\/execute-solution",
+    "ignition.updateConfig": "_ignition\/update-config",
+    "top": "\/",
+    "inquiries.index": "inquiries",
+    "inquiries.store": "inquiries",
+    "admin.": "admin",
+    "admin.login": "admin\/login",
+    "admin.authenticate": "admin\/authenticate",
+    "admin.logout": "admin\/logout",
+    "admin.profile.index": "admin\/profile",
+    "admin.profile.update": "admin\/profile",
+    "admin.password.update": "admin\/password\/update",
+    "course.index": "courses"
+}
