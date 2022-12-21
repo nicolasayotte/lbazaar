@@ -13,12 +13,12 @@ const ToasterSlice = createSlice({
             state.type = action.payload.type ?? state.type
             state.message = action.payload.message ?? state.message
         },
-        showSuccess: (state, action) => {
+        success: (state, action) => {
             state.open = true
             state.type = 'success'
             state.message = action.payload.message ?? state.message
         },
-        showError: (state, action) => {
+        error: (state, action) => {
             state.open = true
             state.type = 'error'
             state.message = action.payload.message ?? state.message

@@ -26,10 +26,10 @@ const ProfileForm = ({ errors, auth, countries, messages, routes }) => {
         patch(routes["admin.profile.update"], {
             preserveScroll: true,
             errorBag: 'profile',
-            onSuccess: () => dispatch(actions.showSuccess({
+            onSuccess: () => dispatch(actions.success({
                 message: messages.success.profile
             })),
-            onError: () => dispatch(actions.showError({
+            onError: () => dispatch(actions.error({
                 message: messages.error
             }))
         })

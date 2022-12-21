@@ -23,7 +23,7 @@ const PasswordForm = ({ errors, messages, routes }) => {
 
         patch(routes['admin.password.update'], {
             errorBag: 'passwords',
-            onError: () => dispatch(actions.showError({
+            onError: () => dispatch(actions.error({
                 message: messages.error
             }))
         })

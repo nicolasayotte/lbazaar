@@ -22,10 +22,10 @@ const Login = ({errors, messages}) => {
         e.preventDefault()
 
         post('/admin/authenticate', {
-            onSuccess: () => dispatch(actions.showSuccess({
+            onSuccess: () => dispatch(actions.success({
                 message: messages.success.auth
             })),
-            onError: () => dispatch(actions.showError({
+            onError: () => dispatch(actions.error({
                 message: messages.error
             }))
         })
