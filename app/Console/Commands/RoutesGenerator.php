@@ -34,7 +34,7 @@ class RoutesGenerator extends Command
         $data = [];
 
         foreach ($routes as $routeName => $route) {
-            $data[$routeName] = $route->uri();
+            $data[$routeName] = '/' . $route->uri();
         }
 
         File::put('resources/js/routes.json', json_encode($data, JSON_PRETTY_PRINT));
