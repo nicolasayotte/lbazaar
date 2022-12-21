@@ -46,11 +46,17 @@ class CourseContentRepository extends BaseRepository
                     return $query->where('language', $request->get('language'));
                 });
             })
-            ->when($request->has('year') && !empty($request->get('year')), function ($q) use ($request)  {
-                return $q->whereYear('schedule_datetime', $request->get('year'));
-            })
             ->when($request->has('month') && !empty($request->get('month')), function ($q) use ($request)  {
-                return $q->whereMonth('schedule_datetime', $request->get('month') + 1);
+                return $q->whereHas('contents', function($query) use ($request) {
+
+                    $startDate = date('Y-m-d', strtotime($request->get('month') . '-01'));
+                    $endDate   = date('Y-m-t', strtotime($startDate));
+
+                    return $query->whereBetween('schedule_datetime', [
+                        $startDate,
+                        $endDate
+                    ]);
+                });
             })
             ->paginate(self::PERPAGE)->withQueryString();
     }
