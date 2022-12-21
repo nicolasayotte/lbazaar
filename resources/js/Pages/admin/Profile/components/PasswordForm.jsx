@@ -1,5 +1,5 @@
 import { useForm } from "@inertiajs/inertia-react"
-import { Button, Card, CardContent, Grid, Typography } from "@mui/material"
+import { Box, Button, Card, CardContent, Grid, Typography } from "@mui/material"
 import { useDispatch } from "react-redux"
 import Input from "../../../../components/forms/Input"
 import { actions } from "../../../../store/slices/ToasterSlice"
@@ -8,7 +8,7 @@ const PasswordForm = ({ errors, messages, routes }) => {
 
     const dispatch = useDispatch()
 
-    const { data, setData, patch, processing } = useForm('PasswordForm', {
+    const { data, setData, patch, processing, post, progress } = useForm('PasswordForm', {
         current_password: '',
         new_password: '',
         new_password_confirmation: ''
@@ -23,6 +23,22 @@ const PasswordForm = ({ errors, messages, routes }) => {
 
         patch(routes['admin.password.update'], {
             errorBag: 'passwords',
+            onSuccess: () => {
+
+                dispatch(actions.success({
+                    message: messages.success.password
+                }))
+
+                setTimeout(() => {
+                    post(routes['admin.logout'], {
+                        onSuccess: () => {
+                            dispatch(actions.success({
+                                message: messages.user.logout
+                            }))
+                        }
+                    })
+                }, 2000)
+            },
             onError: () => dispatch(actions.error({
                 message: messages.error
             }))
@@ -33,7 +49,10 @@ const PasswordForm = ({ errors, messages, routes }) => {
         <Card key="Password Form Card" sx={{ mt: 2 }}>
             <form onSubmit={handleSubmit}>
                 <CardContent sx={{ p: 4 }}>
-                    <Typography fontFamily="inherit" variant="h5" component="div" sx={{ mb: 4 }}>Update Password</Typography>
+                    <Box sx={{ mb: 3 }}>
+                        <Typography fontFamily="inherit" variant="h5" component="div">Update Password</Typography>
+                        <Typography variant="p" fontSize="small" color={"GrayText"}>You will be signed out when your password is updated</Typography>
+                    </Box>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <Input
