@@ -4,7 +4,7 @@ import { actions } from '../../../store/slices/ToasterSlice'
 import { useDispatch } from "react-redux"
 import Course from "../../../components/cards/Course";
 import Input from "../../../components/forms/Input";
-import { displaySelectOptions } from "../../components/helpers/form.helper";
+import { displaySelectOptions } from "../../../components/helpers/form.helper";
 
 const SearchCourse = (props) => {
 
@@ -67,7 +67,7 @@ const SearchCourse = (props) => {
             return (
                 <div>
                     {courses.data.map(course => {
-                        return <Course showDate={true} key={course.id} course={course} viewDetailId="course_id" showDescription={showDescription}/>
+                        return <Course showDate={true} key={course.id} course={course} viewDetailId="id" showDescription={showDescription}/>
                     })}
                     <Grid display="flex" justifyContent="center" alignItems="center">
                         <Pagination sx={{mt: 2, justifyContent: 'center'}} onChange={handlePageChange} page={data.page} count={props.courses.last_page} color="primary" />
