@@ -1,4 +1,3 @@
-
 import {Box, Rating, Grid, Divider, Card, CardActions, CardContent, Button, Typography} from "@mui/material"
 import { useState } from "react"
 
@@ -17,7 +16,7 @@ const Feedback = (props) => {
             <CardContent>
                 <Grid container justifyContent="space-between">  
                     <Typography inline="true" align="left" variant="subtitle1">
-                        {`${props.feedback.user.fullname}`}
+                        {`${props.feedback.user.fullname}`}  <Typography inline="true" align="left" variant="caption">{ props.feedback.created_at}</Typography>
                     </Typography>
                     <Typography inline="true" align="right" variant="subtitle1">
                         {`${props.feedback.rating} / 100`}
