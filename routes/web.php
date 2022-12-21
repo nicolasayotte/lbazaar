@@ -24,24 +24,28 @@ Route::get('/', [TopPageController::class, 'index'])->name('top');
 Route::get('/inquiries', [InquiriesController::class, 'index'])->name('inquiries.index');
 Route::post('/inquiries', [InquiriesController::class, 'store'])->name('inquiries.store');
 
+# Admin Routes
 Route::prefix('admin')->name('admin.')->group(function() {
 
     Route::get('/', function(Request $request) {
         return redirect()->route(@$request->user() ? 'admin.profile.index' : 'admin.login');
     });
 
-    # Login Routes
+    # Authentication
     Route::get('/login', [AuthController::class, 'login'])->name('login');
     Route::post('/authenticate', [AuthController::class, 'authenticate'])->name('authenticate');
 
     Route::middleware(['auth', 'admin'])->group(function() {
+        # Logout
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-        # Admin Profile Routes
+        # Profile
         Route::prefix('profile')->name('profile.')->group(function() {
             Route::get('/', [ProfileController::class, 'index'])->name('index');
-            Route::post('/', [ProfileController::class, 'update'])->name('update');
+            Route::patch('/', [ProfileController::class, 'update'])->name('update');
         });
+
+        Route::patch('/password/update', [ProfileController::class, 'update_password'])->name('password.update');
     });
 });
 
