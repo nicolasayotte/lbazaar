@@ -72,7 +72,7 @@ const Inquiries = (props) => {
                                             value={data.email}
                                             onChange={e => handleOnChange(e)}
                                         />
-                                        { errors && errors.email && <ErrorText error={errors.name}/>}
+                                        { errors && errors.email && <ErrorText error={errors.email}/>}
                                     </Grid>
                                     <Grid item xs={12}>
                                         <TextField
@@ -82,7 +82,7 @@ const Inquiries = (props) => {
                                             value={data.subject}
                                             onChange={e => handleOnChange(e)}
                                         />
-                                        { errors && errors.subject && <ErrorText error={errors.name}/>}
+                                        { errors && errors.subject && <ErrorText error={errors.subject}/>}
                                     </Grid>
                                     <Grid item xs={12}>
                                         <TextField
@@ -95,7 +95,7 @@ const Inquiries = (props) => {
                                             value={data.message}
                                             onChange={e => handleOnChange(e)}
                                         />
-                                        { errors && errors.message && <ErrorText error={errors.name}/>}
+                                        { errors && errors.message && <ErrorText error={errors.message}/>}
                                     </Grid>
                                     <Grid item xs={12} textAlign="right">
                                         <Button
