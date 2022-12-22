@@ -4,10 +4,10 @@ import User from "../../components/cards/User";
 
 const TopPage = (props) => {
 
-    const displayCourses = (courses, showDescription = true) => {
+    const displayCourses = (courses, showDescription = true, detailId = 'id') => {
         return (
             courses.map(course => {
-                return <Course showDate={true} key={course.id} course={course} showDescription={showDescription}/>
+                return <Course showDate={true} viewDetailId={detailId} key={course.id} course={course} showDescription={showDescription}/>
             })
         )
     }
@@ -51,7 +51,7 @@ const TopPage = (props) => {
                             Coming Soon
                         </Typography>
                         <Grid display="flex" style={{maxWidth: '100%', overflow: 'auto'}}>
-                            { displayCourses(props.upcomingCourses, false) }
+                            { displayCourses(props.upcomingCourses, false, 'course_id') }
                         </Grid>
                         <Grid container spacing={2} sx={{mt:2}}>
                             <Grid item xs={12} sm={12} md={8} lg={8}>

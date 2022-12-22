@@ -17,22 +17,31 @@ use Inertia\Inertia;
 
 class CourseController extends Controller
 {
+    public $courseTypeRepositoryl;
+    public $courseCategoryRepository;
+    public $courseRepository;
+    public $courseContentRepository;
+    public $userRepository;
+
+    public function __construct()
+    {
+        $this->courseTypeRepository = new CourseTypeRepository();
+        $this->courseCategoryRepository = new CourseCategoryRepository();
+        $this->courseRepository = new CourseRepository();
+        $this->courseContentRepository = new CourseContentRepository();
+        $this->userRepository = new UserRepository();
+    }
+
     public function index(SearchClassRequest $request)
     {
-        $courseTypeRepository = new CourseTypeRepository();
-        $courseCategoryRepository = new CourseCategoryRepository();
-        $courseRepository = new CourseRepository();
-        $courseContentRepository = new CourseContentRepository();
-        $userRepository = new UserRepository();
+        $languages = $this->courseRepository->getLanguages();
+        $types = $this->courseTypeRepository->getAll();
+        $categories = $this->courseCategoryRepository->getAll();
+        $teachers = $this->userRepository->getAllTeachers();
 
-        $languages = $courseRepository->getLanguages();
-        $types = $courseTypeRepository->getAll();
-        $categories = $courseCategoryRepository->getAll();
-        $teachers = $userRepository->getAllTeachers();
+        $courses = $this->courseRepository->search($request);
 
-        $courses = $courseRepository->search($request);
-
-        return Inertia::render('portal/SearchCourse', [
+        return Inertia::render('Portal/Course/Search', [
                 'course_types'          => $types,
                 'course_categories'     => $categories,
                 'languages'             => $languages,
@@ -42,5 +51,19 @@ class CourseController extends Controller
                 'title'       => 'Browse Courses',
                 'description' => 'Course Lists'
             ]);
+    }
+
+    public function details($id)
+    {
+        $course = $this->courseRepository->findById($id);
+        $contents = $this->courseContentRepository->findByCourseId($course->id);
+        
+        return Inertia::render('Portal/Course/Details', [
+            'course'          => $course,
+            'contents'        => $contents,
+        ])->withViewData([
+            'title'       => 'Course - ' . $course->title,
+            'description' => 'Course Details'
+        ]);
     }
 }

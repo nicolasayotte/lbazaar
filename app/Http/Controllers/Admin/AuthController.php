@@ -18,7 +18,7 @@ class AuthController extends Controller
             return redirect()->back();
         }
 
-        return Inertia::render('admin/Login', [])->withViewData([
+        return Inertia::render('Admin/Login', [])->withViewData([
             'title' => 'Admin Login'
         ]);
     }
