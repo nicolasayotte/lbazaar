@@ -1,13 +1,11 @@
 import { Box, TextField, Button, Pagination, Skeleton, Stack, InputLabel, Select, MenuItem, Grid, Typography, Container, Card, CardContent } from "@mui/material";
-import SelectInput from '../../components/forms/SelectInput';
-import YearMonthPicker from '../../components/forms/YearMonthPicker';
 import { useForm } from '@inertiajs/inertia-react'
-import { actions } from '../../store/slices/ToasterSlice'
+import { actions } from '../../../store/slices/ToasterSlice'
 import { useDispatch } from "react-redux"
-import ErrorText from '../../components/common/ErrorText'
-import Course from "../../components/cards/Course";
-import Input from "../../components/forms/Input";
-import { displaySelectOptions } from "../../components/helpers/form.helper";
+import Course from "../../../components/cards/Course";
+import Input from "../../../components/forms/Input";
+import { displaySelectOptions } from "../../../helpers/form.helper";
+import routes from "../../../helpers/routes.helper"
 
 const SearchCourse = (props) => {
 
@@ -39,7 +37,7 @@ const SearchCourse = (props) => {
     })
 
     const handleSubmit = () => {
-        get('/courses', {
+        get(routes['course.index'], {
             preserveState: true,
             onError: (response) => {
                 dispatch(actions.toggle({
@@ -70,7 +68,7 @@ const SearchCourse = (props) => {
             return (
                 <div>
                     {courses.data.map(course => {
-                        return <Course showDate={true} key={course.id} course={course} showDescription={showDescription}/>
+                        return <Course showDate={true} key={course.id} course={course} viewDetailId="id" showDescription={showDescription}/>
                     })}
                     <Grid display="flex" justifyContent="center" alignItems="center">
                         <Pagination sx={{mt: 2, justifyContent: 'center'}} onChange={handlePageChange} page={data.page} count={props.courses.last_page} color="primary" />

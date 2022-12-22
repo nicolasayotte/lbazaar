@@ -18,16 +18,21 @@ class Course extends Model
 
     public function courseType()
     {
-        return $this->hasOne(CourseType::class);
+        return $this->belongsTo(CourseType::class);
     }
 
     public function courseCategory()
     {
-        return $this->hasOne(CourseCategory::class);
+        return $this->belongsTo(CourseCategory::class);
     }
 
     public function contents()
     {
         return $this->hasMany(CourseContent::class);
+    }
+    
+    public function feedbacks()
+    {
+        return $this->hasMany(CourseFeedback::class);
     }
 }
