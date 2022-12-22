@@ -1,9 +1,9 @@
 import { Link, useForm } from "@inertiajs/inertia-react"
 import { Box, Button, Card, CardContent, Container, Grid, Typography } from "@mui/material"
 import { useDispatch } from "react-redux"
-import ErrorText from "../../components/common/ErrorText"
 import Input from "../../components/forms/Input"
 import { actions } from "../../store/slices/ToasterSlice"
+import routes from "../../helpers/routes.helper"
 
 const Login = ({errors, messages}) => {
 
@@ -21,7 +21,7 @@ const Login = ({errors, messages}) => {
     const handleSubmit = (e) => {
         e.preventDefault()
 
-        post('/admin/authenticate', {
+        post(routes["admin.authenticate"], {
             onSuccess: () => dispatch(actions.success({
                 message: messages.success.auth
             })),
