@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\InquiryRequest;
 use App\Mail\Inquiry as MailInquiry;
 use App\Models\Inquiry;
 use Exception;
@@ -19,16 +20,9 @@ class InquiriesController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(InquiryRequest $request)
     {
-        $validatedData = $request->validate([
-            'name'    => 'required|alpha',
-            'email'   => 'required|email',
-            'subject' => 'required|alpha_num',
-            'message' => 'required|alpha_num|max:200'
-        ]);
-
-        $inquiry = Inquiry::create($validatedData);
+        $inquiry = Inquiry::create($request->all());
 
         try {
             Mail::send(new MailInquiry($inquiry));

@@ -3,39 +3,48 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProfileRequest;
+use App\Http\Requests\UpdatePasswordRequest;
 use App\Models\Country;
-use App\Models\User;
 use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 
 class ProfileController extends Controller
 {
+    private $userRepository;
+
+    public function __construct()
+    {
+        $this->userRepository = new UserRepository();
+    }
 
     public function index()
     {
         $countries = Country::all();
 
-        return Inertia::render('admin/Profile', [
+        return Inertia::render('admin/Profile/Index', [
             'countries' => $countries
         ])->withViewData([
             'title' => 'Profile'
         ]);
     }
 
-    public function update(Request $request)
+    public function update(ProfileRequest $request)
     {
-        $userRepository = new UserRepository();
+        $user = $this->userRepository->findOne(auth()->user()->id);
 
-        $validatedData = $request->validate([
-            'first_name' => 'required|alpha',
-            'last_name'  => 'required|alpha',
-            'country_id' => 'required'
-        ]);
+        $user->update($request->all());
 
-        $user = $userRepository->findOne(auth()->user()->id);
+        return redirect()->route('admin.profile.index');
+    }
 
-        $user->update($validatedData);
+    public function update_password(UpdatePasswordRequest $request)
+    {
+        $user = $this->userRepository->findOne(auth()->user()->id);
+
+        $user->update(['password' => bcrypt($request['new_password'])]);
 
         return redirect()->route('admin.profile.index');
     }

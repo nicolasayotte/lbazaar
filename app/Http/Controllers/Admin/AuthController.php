@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AuthRequest;
 use App\Models\Role;
 use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
@@ -11,7 +12,7 @@ use Inertia\Inertia;
 
 class AuthController extends Controller
 {
-    public function login(Request $request)
+    public function login()
     {
         if (auth()->check() && auth()->user()->hasRole(Role::ADMIN)) {
             return redirect()->back();
@@ -22,16 +23,11 @@ class AuthController extends Controller
         ]);
     }
 
-    public function authenticate(Request $request)
+    public function authenticate(AuthRequest $request)
     {
-        $credentials = $request->validate([
-            'email'    => 'required|email',
-            'password' => 'required'
-        ]);
-
         if (Auth::attempt([
-            'email'     => $credentials['email'],
-            'password'  => $credentials['password'],
+            'email'     => $request['email'],
+            'password'  => $request['password'],
             fn ($query) => $query->whereRoleIs(Role::ADMIN)
         ])) {
             return redirect()->intended('admin/profile');

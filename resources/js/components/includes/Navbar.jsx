@@ -2,6 +2,7 @@ import { Link } from "@inertiajs/inertia-react";
 import { Menu as MenuIcon } from "@mui/icons-material"
 import { AppBar, Box, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemText, Toolbar, Typography } from "@mui/material"
 import { useState } from "react"
+import routes from "../../helpers/routes.helper"
 
 const Navbar = (props) => {
 
@@ -14,11 +15,11 @@ const Navbar = (props) => {
         },
         {
             name: 'Browse Classes',
-            link: '/courses'
+            link: routes["course.index"]
         },
         {
             name: 'Inquiries',
-            link: '/inquiries'
+            link: routes["inquiries.index"]
         }
     ]
 

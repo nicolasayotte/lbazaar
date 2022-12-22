@@ -1,15 +1,15 @@
 import { Link, useForm } from "@inertiajs/inertia-react"
 import { Box, Button, Card, CardContent, Container, Grid, Typography } from "@mui/material"
 import { useDispatch } from "react-redux"
-import ErrorText from "../../components/common/ErrorText"
 import Input from "../../components/forms/Input"
 import { actions } from "../../store/slices/ToasterSlice"
+import routes from "../../helpers/routes.helper"
 
-const Login = ({errors}) => {
+const Login = ({errors, messages}) => {
 
     const dispatch = useDispatch()
 
-    const { data, setData, post, processing } = useForm({
+    const { data, setData, post, processing } = useForm('AdminLogin', {
         email: '',
         password: ''
     })
@@ -21,21 +21,13 @@ const Login = ({errors}) => {
     const handleSubmit = (e) => {
         e.preventDefault()
 
-        post('/admin/authenticate', {
-            onSuccess: response => {
-                dispatch(actions.toggle({
-                    open: true,
-                    type: 'success',
-                    message: 'User successfully authenticated'
-                }))
-            },
-            onError: response => {
-                dispatch(actions.toggle({
-                    open: true,
-                    type: 'error',
-                    message: 'There was an error encountered'
-                }))
-            }
+        post(routes["admin.authenticate"], {
+            onSuccess: () => dispatch(actions.success({
+                message: messages.success.auth
+            })),
+            onError: () => dispatch(actions.error({
+                message: messages.error
+            }))
         })
     }
 

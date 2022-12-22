@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Portal\CourseController;
 use App\Http\Controllers\Portal\InquiriesController;
 use App\Http\Controllers\Portal\TopPageController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpKernel\Profiler\Profile;
 
@@ -23,20 +24,28 @@ Route::get('/', [TopPageController::class, 'index'])->name('top');
 Route::get('/inquiries', [InquiriesController::class, 'index'])->name('inquiries.index');
 Route::post('/inquiries', [InquiriesController::class, 'store'])->name('inquiries.store');
 
+# Admin Routes
 Route::prefix('admin')->name('admin.')->group(function() {
 
-    # Login Routes
+    Route::get('/', function(Request $request) {
+        return redirect()->route(@$request->user() ? 'admin.profile.index' : 'admin.login');
+    });
+
+    # Authentication
     Route::get('/login', [AuthController::class, 'login'])->name('login');
     Route::post('/authenticate', [AuthController::class, 'authenticate'])->name('authenticate');
 
     Route::middleware(['auth', 'admin'])->group(function() {
+        # Logout
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-        # Admin Profile Routes
+        # Profile
         Route::prefix('profile')->name('profile.')->group(function() {
             Route::get('/', [ProfileController::class, 'index'])->name('index');
-            Route::post('/', [ProfileController::class, 'update'])->name('update');
+            Route::patch('/', [ProfileController::class, 'update'])->name('update');
         });
+
+        Route::patch('/password/update', [ProfileController::class, 'update_password'])->name('password.update');
     });
 });
 

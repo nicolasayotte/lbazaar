@@ -9,6 +9,9 @@ const Input = (props) => {
                 fullWidth
                 {...props}
                 error={(props.errors && props.errors[props.name]) ? true : false}
+                FormHelperTextProps={{
+                    variant: 'standard'
+                }}
             >
                 { props.children }
             </TextField>
