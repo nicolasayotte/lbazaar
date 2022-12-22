@@ -1,4 +1,5 @@
-import { Alert, Snackbar } from "@mui/material"
+import { Close } from "@mui/icons-material"
+import { Alert, Button, IconButton, Snackbar } from "@mui/material"
 import { useSelector, useDispatch } from 'react-redux'
 import { actions } from '../../store/slices/ToasterSlice'
 
@@ -8,13 +9,13 @@ const Toaster = () => {
     const dispatch = useDispatch()
 
     const handleCloseToaster = () => {
-        dispatch(actions.toggle({ open: false }))
+        dispatch(actions.hide())
     }
 
     return (
         <Snackbar
             open={toaster.open}
-            autoHideDuration={5000}
+            autoHideDuration={toaster.duration}
             onClose={handleCloseToaster}
             anchorOrigin={{
                 vertical: 'bottom',
@@ -28,7 +29,17 @@ const Toaster = () => {
                 sx={{
                     ml: 'auto'
                 }}
-            >{toaster.message}</Alert>
+                action={
+                    <IconButton
+                        color="inherit"
+                        size="small"
+                        onClick={handleCloseToaster}
+                    >
+                        <Close fontSize="small" />
+                    </IconButton>
+                }
+                children={toaster.message}
+            />
         </Snackbar>
     )
 }

@@ -2,6 +2,7 @@ import { Link } from "@inertiajs/inertia-react"
 import { Menu } from "@mui/icons-material"
 import { AppBar, Box, Divider, Drawer, Grid, IconButton, List, ListItem, ListItemButton, Toolbar, Typography } from "@mui/material"
 import { useState } from "react"
+import routes from "../../helpers/routes.helper"
 
 const AdminNavbar = ({ drawerWidth, setDrawerWidth, window }) => {
 
@@ -33,13 +34,13 @@ const AdminNavbar = ({ drawerWidth, setDrawerWidth, window }) => {
 
     const logoutBtn = (
         <ListItemButton>
-            <Link as="span" method="post" href="/admin/logout">Sign Out</Link>
+            <Link as="span" method="post" href={routes["admin.logout"]}>Sign Out</Link>
         </ListItemButton>
     )
 
     const profileBtn = (
         <ListItemButton>
-            <Link as="span" href="/admin/profile">Profile</Link>
+            <Link as="span" href={routes["admin.profile.index"]}>Profile</Link>
         </ListItemButton>
     )
 
