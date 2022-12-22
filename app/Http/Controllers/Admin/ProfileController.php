@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProfileRequest;
 use App\Models\Country;
 use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
@@ -29,17 +30,11 @@ class ProfileController extends Controller
         ]);
     }
 
-    public function update(Request $request)
+    public function update(ProfileRequest $request)
     {
-        $validatedData = $request->validate([
-            'first_name' => 'required|alpha',
-            'last_name'  => 'required|alpha',
-            'country_id' => 'required'
-        ]);
-
         $user = $this->userRepository->findOne(auth()->user()->id);
 
-        $user->update($validatedData);
+        $user->update($request->all());
 
         return redirect()->route('admin.profile.index');
     }
