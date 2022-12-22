@@ -8,7 +8,7 @@ const PasswordForm = ({ errors, messages, routes }) => {
 
     const dispatch = useDispatch()
 
-    const { data, setData, patch, processing, post, progress } = useForm('PasswordForm', {
+    const { data, setData, patch, processing, post } = useForm('PasswordForm', {
         current_password: '',
         new_password: '',
         new_password_confirmation: ''
@@ -24,18 +24,15 @@ const PasswordForm = ({ errors, messages, routes }) => {
         patch(routes['admin.password.update'], {
             errorBag: 'passwords',
             onSuccess: () => {
-
                 dispatch(actions.success({
                     message: messages.success.password
                 }))
 
                 setTimeout(() => {
                     post(routes['admin.logout'], {
-                        onSuccess: () => {
-                            dispatch(actions.success({
-                                message: messages.user.logout
-                            }))
-                        }
+                        onSuccess: () => dispatch(actions.success({
+                            message: messages.user.logout
+                        }))
                     })
                 }, 2000)
             },
