@@ -1,7 +1,7 @@
 import { Link } from "@inertiajs/inertia-react";
 import {Box, Grid, Card, ImageList, ImageListItem, CardActions, CardContent, Button, Typography} from "@mui/material"
 import { Fragment, useState } from "react"
-
+import { getRoute } from "../../helpers/routes.helper"
 const Course = (props) => {
 
     const showDescription = props.showDescription !== undefined ? props.showDescription : true;
@@ -40,7 +40,7 @@ const Course = (props) => {
                 </Grid>
             </CardContent>
             <CardActions sx={{justifyContent: 'flex-end'}}>
-                <Link href={`/courses/details/${props.course[props.viewDetailId]}`}
+                <Link href={getRoute('course.details', {id : props.course[props.viewDetailId]})}
                     sx={{
                         float: 'right',
                         position: 'absolute',

@@ -4,7 +4,8 @@ import { actions } from '../../../store/slices/ToasterSlice'
 import { useDispatch } from "react-redux"
 import Course from "../../../components/cards/Course";
 import Input from "../../../components/forms/Input";
-import { displaySelectOptions } from "../../../components/helpers/form.helper";
+import { displaySelectOptions } from "../../../helpers/form.helper";
+import routes from "../../../helpers/routes.helper"
 
 const SearchCourse = (props) => {
 
@@ -36,7 +37,7 @@ const SearchCourse = (props) => {
     })
 
     const handleSubmit = () => {
-        get('/courses', {
+        get(routes['course.index'], {
             preserveState: true,
             onError: (response) => {
                 dispatch(actions.toggle({
