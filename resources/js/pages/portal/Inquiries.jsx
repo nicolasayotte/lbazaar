@@ -3,8 +3,10 @@ import { Box, Button, Card, CardContent, Container, Divider, Grid, TextField, Ty
 import { actions } from '../../store/slices/ToasterSlice'
 import { useDispatch } from "react-redux"
 import ErrorText from "../../components/common/ErrorText"
+import routes from "../../helpers/routes.helper"
+import Input from "../../components/forms/Input"
 
-const Inquiries = (props) => {
+const Inquiries = ({ messages }) => {
 
     const dispatch = useDispatch()
 
@@ -22,29 +24,23 @@ const Inquiries = (props) => {
     const handleSubmit = (e) => {
         e.preventDefault()
 
-        post('/inquiries', {
-            onSuccess: (response) => {
+        post(routes["inquiries.store"], {
+            onSuccess: () => {
                 reset()
                 clearErrors()
 
-                dispatch(actions.toggle({
-                    open: true,
-                    type: 'success',
-                    message: 'Inquiry successfully submitted'
+                dispatch(actions.success({
+                    message: messages.success.inquiry
                 }))
             },
-            onError: (response) => {
-                dispatch(actions.toggle({
-                    open: true,
-                    type: 'error',
-                    message: 'There was an error encountered'
-                }))
-            }
+            onError: () => dispatch(actions.error({
+                message: messages.error
+            }))
         });
     }
 
     return (
-        <Box>
+        <Box sx={{ minHeight: '80.75vh' }}>
             <Container>
                 <Grid container>
                     <Grid item xs={12} md={8} mx="auto" py={5}>
@@ -54,48 +50,41 @@ const Inquiries = (props) => {
                                 <Divider sx={{ my: 2 }} />
                                 <Grid container spacing={2}>
                                     <Grid item xs={12} sm={6}>
-                                        <TextField
+                                        <Input
                                             label="Name"
-                                            fullWidth
-                                            name="name"
+                                            name="names"
                                             value={data.name}
-                                            onChange={e => handleOnChange(e)}
+                                            onChange={handleOnChange}
+                                            errors={errors}
                                         />
-                                        { errors && errors.name && <ErrorText error={errors.name}/>}
                                     </Grid>
                                     <Grid item xs={12} sm={6} >
-                                        <TextField
+                                        <Input
                                             label="Email Address"
                                             type="email"
-                                            fullWidth
                                             name="email"
                                             value={data.email}
-                                            onChange={e => handleOnChange(e)}
+                                            onChange={handleOnChange}
                                         />
-                                        { errors && errors.email && <ErrorText error={errors.email}/>}
                                     </Grid>
                                     <Grid item xs={12}>
-                                        <TextField
+                                        <Input
                                             label="Subject"
-                                            fullWidth
                                             name="subject"
                                             value={data.subject}
-                                            onChange={e => handleOnChange(e)}
+                                            onChange={handleOnChange}
                                         />
-                                        { errors && errors.subject && <ErrorText error={errors.subject}/>}
                                     </Grid>
                                     <Grid item xs={12}>
-                                        <TextField
+                                        <Input
                                             label="Message"
                                             multiline
-                                            fullWidth
                                             minRows={9}
                                             name="message"
                                             helperText="Must be less than 200 characters"
                                             value={data.message}
-                                            onChange={e => handleOnChange(e)}
+                                            onChange={handleOnChange}
                                         />
-                                        { errors && errors.message && <ErrorText error={errors.message}/>}
                                     </Grid>
                                     <Grid item xs={12} textAlign="right">
                                         <Button

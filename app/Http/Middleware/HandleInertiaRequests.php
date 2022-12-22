@@ -47,7 +47,8 @@ class HandleInertiaRequests extends Middleware
                 'success' => [
                     'profile'  => 'Profile successfully updated',
                     'auth'     => 'User successfully authenticated',
-                    'password' => 'Password successfully updated'
+                    'password' => 'Password successfully updated',
+                    'inquiry'  => 'Inquiry successfully submitted'
                 ]
             ]
         ]);
