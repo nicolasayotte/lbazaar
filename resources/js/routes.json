@@ -13,6 +13,7 @@
     "admin.profile.index": "\/admin\/profile",
     "admin.profile.update": "\/admin\/profile",
     "admin.password.update": "\/admin\/password\/update",
+    "admin.inquiries.index": "\/admin\/inquiries",
     "course.index": "\/courses",
     "course.details": "\/courses\/details\/{id}"
 }

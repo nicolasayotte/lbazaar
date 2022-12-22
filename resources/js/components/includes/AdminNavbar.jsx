@@ -4,7 +4,7 @@ import { AppBar, Box, Divider, Drawer, Grid, IconButton, List, ListItem, ListIte
 import { useState } from "react"
 import routes from "../../helpers/routes.helper"
 
-const AdminNavbar = ({ drawerWidth, setDrawerWidth, window }) => {
+const AdminNavbar = ({ drawerWidth, window }) => {
 
     const container = window !== undefined ? () => window().document.body : undefined;
 
@@ -15,18 +15,42 @@ const AdminNavbar = ({ drawerWidth, setDrawerWidth, window }) => {
     }
 
     const navItems = [
-        'Class Applications',
-        'Class List',
-        'Manage Users',
-        'Inquiries',
-        'Settings'
+        {
+            name: 'Class Applications',
+            link: ''
+        },
+        {
+            name: 'Class List',
+            link: ''
+        },
+        {
+            name: 'Manage Users',
+            link: ''
+        },
+        {
+            name: 'Inquiries',
+            link: routes["admin.inquiries.index"]
+        },
+        {
+            name: 'Settings',
+            link: ''
+        }
     ]
 
     const menu = (
         <>
             {navItems.map(item => (
-                <ListItem key={item}>
-                    <ListItemButton>{item}</ListItemButton>
+                <ListItem key={item.name}>
+                    <ListItemButton>
+                        <Link
+                            as="span"
+                            href={item.link}
+                            children={item.name}
+                            style={{
+                                width: '100%'
+                            }}
+                        />
+                    </ListItemButton>
                 </ListItem>
             ))}
         </>
