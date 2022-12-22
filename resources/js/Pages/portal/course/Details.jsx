@@ -1,7 +1,8 @@
-import { Box, Divider, TextField, Button, Pagination, FormControl, InputLabel, Select, MenuItem, Grid, Typography, Card } from "@mui/material";
+import { Box, Grid, Typography, Card, CardContent } from "@mui/material";
 import Feedback from "../../../components/cards/Feedback";
 import CourseContent from "../../../components/cards/CourseContent";
 import User from "../../../components/cards/User";
+import DividerSection from "../../../components/common/DividerSection"
 
 const Details = (props) => {
 
@@ -33,27 +34,32 @@ const Details = (props) => {
 
     return (
         <Box>
-            <Card sx={{mt: 2}}>
-                <Grid container sx={{m: 4}}>
-                    <Grid item xs={10} sm={11} md={11} lg={11}>
-                        <Typography variant="h6">
-                            {props.course.course_category.name}
-                        </Typography>
-                        <Typography variant="h4">
-                            {props.course.title}
-                        </Typography>
-                        <Typography variant="subtitle2" sx={{p:2}}>
-                            {props.course.description}
-                        </Typography>
-                        <Divider sx={{ my: 2 }}>Courses Contents</Divider>
-                        {displayCourses(props.contents)}
-                        <Divider sx={{ my: 2 }}>Teacher Information</Divider>
-                        <User user={props.course.professor}/>
-                        <Divider sx={{ my: 2 }}>Feedbacks</Divider>
-                        {displayFeedbacks()}
+            <Grid container sx={{m: 4}}>
+                <Grid item xs={10} sm={11} md={11} lg={11}>
+                    <Grid item sx={{p:2}}>
+                        <Card>
+                            <CardContent>
+                                <Typography variant="h6">
+                                    {props.course.course_category.name}
+                                </Typography>
+                                <Typography variant="h4">
+                                    {props.course.title}
+                                </Typography>
+                                    <Typography variant="subtitle1">
+                                        {`Lectured by ${props.course.professor.fullname}`}
+                                    </Typography>
+                                <Typography variant="subtitle2" sx={{p:2}}>
+                                    {props.course.description}
+                                </Typography>
+                            </CardContent>
+                        </Card>
                     </Grid>
+                    <DividerSection title="Course Content"/>
+                    {displayCourses(props.contents)}
+                    <DividerSection title="Feedbacks"/>
+                    {displayFeedbacks()}
                 </Grid>
-            </Card>
+            </Grid>
         </Box>
     )
 }
