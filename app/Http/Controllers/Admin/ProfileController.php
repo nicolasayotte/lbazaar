@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProfileRequest;
+use App\Http\Requests\UpdatePasswordRequest;
 use App\Models\Country;
 use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
@@ -39,14 +40,8 @@ class ProfileController extends Controller
         return redirect()->route('admin.profile.index');
     }
 
-    public function update_password(Request $request)
+    public function update_password(UpdatePasswordRequest $request)
     {
-        $request->validate([
-            'current_password'          => 'required|current_password',
-            'new_password'              => 'required|alpha_num|confirmed',
-            'new_password_confirmation' => 'required'
-        ]);
-
         $user = $this->userRepository->findOne(auth()->user()->id);
 
         $user->update(['password' => bcrypt($request['new_password'])]);
