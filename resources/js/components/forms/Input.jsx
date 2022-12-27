@@ -7,11 +7,14 @@ const Input = (props) => {
             <TextField
                 size="small"
                 fullWidth
-                {...props}
                 error={(props.errors && props.errors[props.name]) ? true : false}
                 FormHelperTextProps={{
                     variant: 'standard'
                 }}
+                SelectProps={{
+                    native: true
+                }}
+                {...props}
             >
                 { props.children }
             </TextField>
