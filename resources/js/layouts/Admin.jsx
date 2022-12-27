@@ -1,5 +1,5 @@
 import { usePage } from "@inertiajs/inertia-react"
-import { Container } from "@mui/material"
+import { Container, Toolbar } from "@mui/material"
 import { Box } from "@mui/system"
 import { useState } from "react"
 import AdminNavbar from "../components/includes/AdminNavbar"
@@ -26,7 +26,7 @@ const Admin = ({children}) => {
                             paddingY: 2
                         }}
                     >
-                        <Container>
+                        <Container maxWidth={false}>
                             {children}
                         </Container>
                     </Box>
