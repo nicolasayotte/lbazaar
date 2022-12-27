@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Portal\CourseController;
 use App\Http\Controllers\Portal\InquiriesController;
+use App\Http\Controllers\Portal\RegisterStudentController;
 use App\Http\Controllers\Portal\TopPageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -52,4 +53,9 @@ Route::prefix('admin')->name('admin.')->group(function() {
 Route::prefix('courses')->name('course.')->group(function() {
     Route::get('/', [CourseController::class, 'index'])->name('index');
     Route::get('/details/{id}', [CourseController::class, 'details'])->name('details');
+});
+
+Route::prefix('register')->name('register.')->group(function() {
+    Route::get('/student', [RegisterStudentController::class, 'index'])->name('index');
+    Route::post('/student', [RegisterStudentController::class, 'store'])->name('store');
 });
