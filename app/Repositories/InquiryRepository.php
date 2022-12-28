@@ -29,6 +29,7 @@ class InquiryRepository extends BaseRepository
         return $this->model
                     ->where(function($q) use($filters) {
                         $q->where('name', 'LIKE', '%'. @$filters['keyword'] .'%')
+                            ->orWhere('email', 'LIKE', '%'. @$filters['keyword'] .'%')
                             ->orWhere('subject', 'LIKE', '%'. @$filters['keyword'] .'%');
                     })
                     ->orderBy($sortBy, $sortOrder)
@@ -37,6 +38,7 @@ class InquiryRepository extends BaseRepository
                         return [
                             'id'         => $item->id,
                             'name'       => $item->name,
+                            'email'      => $item->email,
                             'subject'    => $item->subject,
                             'created_at' => Carbon::parse($item->created_at)->format('Y-m-d')
                         ];

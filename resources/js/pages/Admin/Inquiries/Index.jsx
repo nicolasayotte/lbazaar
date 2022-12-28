@@ -4,7 +4,7 @@ import TableLoader from "../../../components/common/TableLoader"
 import Input from "../../../components/forms/Input"
 import { displaySelectOptions } from "../../../helpers/form.helper"
 import routes from "../../../helpers/routes.helper"
-import Table from "./components/Table"
+import InquiryTable from "./components/InquiryTable"
 
 const Index = () => {
 
@@ -62,7 +62,7 @@ const Index = () => {
                             <Grid item xs={12} md={8}>
                                 <Input
                                     label="Keyword"
-                                    placeholder="Search for keyword"
+                                    placeholder="Search for name, email or subject"
                                     size="small"
                                     name="keyword"
                                     value={filters.keyword}
@@ -95,7 +95,7 @@ const Index = () => {
             {
                 processing
                 ? <TableLoader />
-                : <Table data={inquiries.data} />
+                : <InquiryTable data={inquiries.data} />
             }
             <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
                 <Pagination
