@@ -1,30 +1,52 @@
-import { Box, Button, Card, CardContent, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
+import { useForm, usePage } from "@inertiajs/inertia-react"
+import { Box, Button, Card, CardContent, Grid, Pagination, Typography } from "@mui/material"
+import TableLoader from "../../../components/common/TableLoader"
 import Input from "../../../components/forms/Input"
 import { displaySelectOptions } from "../../../helpers/form.helper"
+import routes from "../../../helpers/routes.helper"
+import Table from "./components/Table"
 
 const Index = () => {
 
-    const testRows = (size) => {
-        const rows = []
-
-        for (let i = 0; i < size; i++) {
-            rows.push({
-                id: i + 1,
-                name: 'John Smith',
-                subject: 'Lorem Ipsum Dolor Sit Amet',
-                date: (new Date()).toDateString()
-            })
-        }
-
-        return rows
-    }
+    const { inquiries, page, keyword, sort } = usePage().props
 
     const sortItems = [
-        { name: 'Name A-Z' },
-        { name: 'Name Z-A' },
-        { name: 'Date ASC' },
-        { name: 'Date DESC' }
+        { name: 'Name A-Z', value: 'name:asc' },
+        { name: 'Name Z-A', value: 'name:desc' },
+        { name: 'Date ASC', value: 'created_at:asc' },
+        { name: 'Date DESC', value: 'created_at:desc' }
     ]
+
+    const { data: filters, setData: setFilters, get, processing, transform } = useForm({
+        keyword: keyword,
+        sort: sort,
+        page: page
+    })
+
+    const handleOnSortChange = e => {
+        transform(data => ({
+            ...data,
+            page: 1,
+            [e.target.name]: e.target.value,
+        }))
+
+        handleFilterSubmit(e)
+    }
+
+    const handleFilterSubmit = (e) => {
+        e.preventDefault()
+
+        get(routes["admin.inquiries.index"])
+    }
+
+    const handleOnPaginate = (e, page) => {
+        transform(data => ({
+            ...data,
+            page
+        }))
+
+        handleFilterSubmit(e)
+    }
 
     return (
         <Box>
@@ -35,59 +57,54 @@ const Index = () => {
             />
             <Card sx={{ mb: 2 }}>
                 <CardContent>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12} md={6}>
-                            <Input
-                                label="Keyword"
-                                placeholder="Search for keyword"
-                                size="small"
-                            />
+                    <form onSubmit={handleFilterSubmit}>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12} md={8}>
+                                <Input
+                                    label="Keyword"
+                                    placeholder="Search for keyword"
+                                    size="small"
+                                    name="keyword"
+                                    value={filters.keyword}
+                                    onChange={e => setFilters(e.target.name, e.target.value)}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={2}>
+                                <Input
+                                    label="Sort By"
+                                    select
+                                    name="sort"
+                                    children={displaySelectOptions(sortItems, 'value', 'name')}
+                                    value={filters.sort}
+                                    onChange={handleOnSortChange}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={2}>
+                                <Button
+                                    variant="contained"
+                                    children="Filter"
+                                    fullWidth
+                                    type="submit"
+                                    onClick={handleFilterSubmit}
+                                />
+                            </Grid>
                         </Grid>
-                        <Grid item xs={12} md={4}>
-                            <Input
-                                label="Sort By"
-                                select
-                                children={displaySelectOptions(sortItems, 'name', 'name')}
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={2}>
-                            <Button
-                                variant="contained"
-                                children="Filter"
-                                fullWidth
-                            />
-                        </Grid>
-                    </Grid>
+                    </form>
                 </CardContent>
             </Card>
-            <TableContainer component={Paper}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell children="Name"/>
-                            <TableCell children="Subject"/>
-                            <TableCell children="Date"/>
-                            <TableCell children="Actions"/>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {testRows(10).map((row, index) => (
-                            <TableRow key={index}>
-                                <TableCell children={row.name}/>
-                                <TableCell children={row.subject}/>
-                                <TableCell children={row.date}/>
-                                <TableCell>
-                                    <Button
-                                        variant="text"
-                                        size="small"
-                                        children="View"
-                                    />
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+            {
+                processing
+                ? <TableLoader />
+                : <Table data={inquiries.data} />
+            }
+            <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+                <Pagination
+                    onChange={handleOnPaginate}
+                    count={inquiries.last_page}
+                    page={inquiries.current_page}
+                    color="primary"
+                />
+            </Box>
         </Box>
     )
 }
