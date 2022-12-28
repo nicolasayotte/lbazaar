@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\InquiriesController as AdminInquiriesController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Portal\CourseController;
 use App\Http\Controllers\Portal\InquiriesController;
@@ -46,6 +47,11 @@ Route::prefix('admin')->name('admin.')->group(function() {
         });
 
         Route::patch('/password/update', [ProfileController::class, 'update_password'])->name('password.update');
+
+        # Inquiries
+        Route::prefix('inquiries')->name('inquiries.')->group(function() {
+            Route::get('/', [AdminInquiriesController::class, 'index'])->name('index');
+        });
     });
 });
 

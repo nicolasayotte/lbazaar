@@ -28,7 +28,8 @@ class DatabaseSeeder extends Seeder
             CourseContentSeeder::class,
             CourseHistorySeeder::class,
             CourseFeedbackSeeder::class,
-            EmailSettingsSeeder::class
+            EmailSettingsSeeder::class,
+            InquirySeeder::class
         ]);
     }
 }
