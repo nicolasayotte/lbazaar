@@ -35,9 +35,9 @@ class InquiryRepository extends BaseRepository
                     ->paginate(InquiryRepository::PER_PAGE)
                     ->through(function($item) {
                         return [
-                            'id' => $item->id,
-                            'name' => $item->name,
-                            'subject' => $item->subject,
+                            'id'         => $item->id,
+                            'name'       => $item->name,
+                            'subject'    => $item->subject,
                             'created_at' => Carbon::parse($item->created_at)->format('Y-m-d')
                         ];
                     });
