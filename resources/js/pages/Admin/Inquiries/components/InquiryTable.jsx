@@ -15,12 +15,13 @@ const InquiryTable = ({ data }) => {
                 <Button
                     variant="text"
                     size="small"
-                >
-                    <Link
-                        href={getRoute('admin.inquiries.view', { id: row.id })}
-                        children="View"
-                    />
-                </Button>
+                    children={
+                        <Link
+                            href={getRoute('admin.inquiries.view', { id: row.id })}
+                            children="View"
+                        />
+                    }
+                />
             </TableCell>
         </TableRow>
     ))
