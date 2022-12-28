@@ -1,5 +1,7 @@
+import { Link } from "@inertiajs/inertia-react"
 import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
 import EmptyCard from "../../../../components/common/EmptyCard"
+import { getRoute } from "../../../../helpers/routes.helper"
 
 const InquiryTable = ({ data }) => {
 
@@ -13,8 +15,12 @@ const InquiryTable = ({ data }) => {
                 <Button
                     variant="text"
                     size="small"
-                    children="View"
-                />
+                >
+                    <Link
+                        href={getRoute('admin.inquiries.view', { id: row.id })}
+                        children="View"
+                    />
+                </Button>
             </TableCell>
         </TableRow>
     ))

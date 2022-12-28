@@ -51,6 +51,7 @@ Route::prefix('admin')->name('admin.')->group(function() {
         # Inquiries
         Route::prefix('inquiries')->name('inquiries.')->group(function() {
             Route::get('/', [AdminInquiriesController::class, 'index'])->name('index');
+            Route::get('/{id}', [AdminInquiriesController::class, 'view'])->name('view');
         });
     });
 });
