@@ -15,6 +15,7 @@
     "admin.password.update": "\/admin\/password\/update",
     "admin.inquiries.index": "\/admin\/inquiries",
     "admin.inquiries.view": "\/admin\/inquiries\/{id}",
+    "admin.users.index": "\/admin\/users",
     "course.index": "\/courses",
     "course.details": "\/courses\/details\/{id}"
 }

@@ -25,7 +25,7 @@ const AdminNavbar = ({ drawerWidth, window }) => {
         },
         {
             name: 'Manage Users',
-            link: ''
+            link: routes["admin.users.index"]
         },
         {
             name: 'Inquiries',
@@ -43,7 +43,6 @@ const AdminNavbar = ({ drawerWidth, window }) => {
                 <ListItem key={item.name}>
                     <ListItemButton>
                         <Link
-                            as="span"
                             href={item.link}
                             children={item.name}
                             style={{
