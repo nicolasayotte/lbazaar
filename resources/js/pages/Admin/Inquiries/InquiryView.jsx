@@ -17,7 +17,7 @@ const InquiryView = () => {
             <Box sx={{ mb: 2 }}>
                 <Breadcrumbs>
                     <Link href={routes["admin.inquiries.index"]} children="Inquiries" />
-                    <Typography color={'text.primary'} children="Lorem Ipsum" />
+                    <Typography color={'text.primary'} children={inquiry.subject} />
                 </Breadcrumbs>
             </Box>
             <Grid container>
