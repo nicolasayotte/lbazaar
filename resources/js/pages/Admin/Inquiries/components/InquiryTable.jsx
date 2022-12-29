@@ -1,5 +1,6 @@
 import { Link } from "@inertiajs/inertia-react"
-import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
+import { Search } from "@mui/icons-material"
+import { Button, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
 import EmptyCard from "../../../../components/common/EmptyCard"
 import { getRoute } from "../../../../helpers/routes.helper"
 
@@ -12,12 +13,11 @@ const InquiryTable = ({ data }) => {
             <TableCell children={row.subject}/>
             <TableCell align="center" children={row.created_at}/>
             <TableCell align="center">
-                <Button variant="text" size="small">
-                    <Link
-                        href={getRoute('admin.inquiries.view', { id: row.id })}
-                        children="View"
-                    />
-                </Button>
+                <Link href={getRoute('admin.inquiries.view', { id: row.id })}>
+                    <IconButton title="View" variant="text" size="small">
+                        <Search />
+                    </IconButton>
+                </Link>
             </TableCell>
         </TableRow>
     ))
