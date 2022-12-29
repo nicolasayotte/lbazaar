@@ -1,9 +1,14 @@
+import { usePage } from "@inertiajs/inertia-react"
 import { Block, Check, Search } from "@mui/icons-material"
-import { Box, Button, ButtonGroup, Card, CardContent, Grid, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
+import { Box, Button, Card, CardContent, Grid, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
 import Input from "../../../components/forms/Input"
 import { displaySelectOptions } from "../../../helpers/form.helper"
+import UserTable from "./components/UserTable"
 
 const Index = () => {
+
+    const { users } = usePage().props
+    console.log(users)
 
     const roleOptions = [
         { name: 'Student', value: 'student' },
@@ -78,40 +83,7 @@ const Index = () => {
                     </Grid>
                 </CardContent>
             </Card>
-            <TableContainer component={Paper}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell children="Name"/>
-                            <TableCell children="Email"/>
-                            <TableCell children="Role" align="center"/>
-                            <TableCell children="Status" align="center"/>
-                            <TableCell children="Date Joined" align="center"/>
-                            <TableCell children="Actions" align="center"/>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        <TableRow>
-                            <TableCell children={dummyRow.name}/>
-                            <TableCell children={dummyRow.email}/>
-                            <TableCell children={dummyRow.role} align="center"/>
-                            <TableCell children={dummyRow.status} align="center"/>
-                            <TableCell children={dummyRow.date} align="center"/>
-                            <TableCell align="center">
-                                <IconButton title="View">
-                                    <Search />
-                                </IconButton>
-                                <IconButton color="success" title="Disable">
-                                    <Check />
-                                </IconButton>
-                                <IconButton color="error" title="Disable">
-                                    <Block />
-                                </IconButton>
-                            </TableCell>
-                        </TableRow>
-                    </TableBody>
-                </Table>
-            </TableContainer>
+            <UserTable data={users.data} />
         </Box>
     )
 }
