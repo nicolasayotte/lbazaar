@@ -27,7 +27,7 @@ class ProfileController extends Controller
         return Inertia::render('Admin/Profile/Index', [
             'countries' => $countries
         ])->withViewData([
-            'title' => 'Admin - Profile'
+            'title' => 'Profile | Admin'
         ]);
     }
 

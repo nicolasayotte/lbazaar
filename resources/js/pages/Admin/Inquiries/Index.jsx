@@ -23,6 +23,14 @@ const Index = () => {
         page: page
     })
 
+    const handleKeywordChange = e => {
+        setFilters(filters => ({
+            ...filters,
+            page: 1,
+            [e.target.name]: e.target.value
+        }))
+    }
+
     const handleOnSortChange = e => {
         transform(data => ({
             ...data,
@@ -65,8 +73,9 @@ const Index = () => {
                                     placeholder="Search for name, email or subject"
                                     size="small"
                                     name="keyword"
+                                    autoFocus
                                     value={filters.keyword}
-                                    onChange={e => setFilters(e.target.name, e.target.value)}
+                                    onChange={handleKeywordChange}
                                 />
                             </Grid>
                             <Grid item xs={12} md={2}>

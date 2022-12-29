@@ -25,7 +25,16 @@ class InquiriesController extends Controller
             'keyword'   => @$request['keyword'] ?? '',
             'sort'      => @$request['sort'] ?? 'created_at:desc'
         ])->withViewData([
-            'title' => 'Admin - Inquiries'
+            'title' => 'Inquiries | Admin'
+        ]);
+    }
+
+    public function view($id)
+    {
+        return Inertia::render('Admin/Inquiries/InquiryView', [
+            'inquiry' => $this->inquiryRepository->findOne($id)
+        ])->withViewData([
+            'title' => 'View Inquiry | Admin'
         ]);
     }
 }
