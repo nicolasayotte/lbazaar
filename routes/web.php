@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Portal\AuthPortalController;
 use App\Http\Controllers\Portal\CourseController;
 use App\Http\Controllers\Portal\InquiriesController;
 use App\Http\Controllers\Portal\RegisterStudentController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\Portal\TopPageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpKernel\Profiler\Profile;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 /*
 |--------------------------------------------------------------------------
@@ -59,3 +61,38 @@ Route::prefix('register')->name('register.')->group(function() {
     Route::get('/student', [RegisterStudentController::class, 'index'])->name('index');
     Route::post('/student', [RegisterStudentController::class, 'store'])->name('store');
 });
+
+# Portal Routes
+Route::prefix('portal')->name('portal.')->group(function() {
+
+    Route::get('/', function(Request $request) {
+        return redirect()->route(@$request->user() ? 'verify.email' : 'portal.login');
+    });
+
+    # Portal Authentication
+    Route::get('/login', [AuthPortalController::class, 'login'])->name('login');
+    Route::post('/authenticate', [AuthPortalController::class, 'authenticate'])->name('authenticate');
+
+    Route::middleware(['auth'])->group(function() {
+        # Logout
+        Route::post('/logout', [AuthPortalController::class, 'logout'])->name('logout');
+    });
+
+});
+# Email verification notice
+Route::get('/email/verify', [RegisterStudentController::class, 'verifyEmail'])->name('verify.email');
+
+# Email verification handler
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect('/');
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+# Resending The Verification Email
+Route::get('/email/resend', [RegisterStudentController::class, 'resendEmailVerification'])->name('resend.email')->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
+
+
+
+
+

@@ -14,5 +14,9 @@
     "admin.profile.update": "\/admin\/profile",
     "admin.password.update": "\/admin\/password\/update",
     "course.index": "\/courses",
-    "course.details": "\/courses\/details\/{id}"
+    "course.details": "\/courses\/details\/{id}",
+    "student.signup": "\/register/student",
+    "portal.login": "\/portal\/login",
+    "portal.logout": "\/portal\/logout",
+    "email.verify": "\/email\/verify"
 }
