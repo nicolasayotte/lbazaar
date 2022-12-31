@@ -35,7 +35,7 @@ const RegisterStudent  = ({ countries, errors }) => {
                 dispatch(actions.success({
                     open: true,
                     type: 'success',
-                    message: 'Inquiry successfully submitted'
+                    message: 'Student is successfully registered'
                 }))
             },
             onError: () => dispatch(actions.error({
@@ -47,7 +47,7 @@ const RegisterStudent  = ({ countries, errors }) => {
     }
 
     return (
-        <Box>
+        <Box sx={{ minHeight: '80.75vh' }}>
             <Container>
                 <Grid container>
                     <Grid item xs={12} md={8} mx="auto" py={5}>
@@ -124,7 +124,7 @@ const RegisterStudent  = ({ countries, errors }) => {
                                         </Grid>
                                         <Grid item xs={12} textAlign="center">
                                             <Button
-                                                alignItems="center"
+                                                alignitems="center"
                                                 onClick={handleSubmit}
                                                 variant="contained"
                                                 disabled={processing}
