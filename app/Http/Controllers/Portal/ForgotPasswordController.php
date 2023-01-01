@@ -3,15 +3,29 @@
 namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ResetPasswordRequest;
+use App\Repositories\PasswordResetRepository;
+use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Inertia\Inertia;
 
 class ForgotPasswordController extends Controller
 {
+    private $userRepository;
+
+    private $passwordResetRepository;
+
+    public function __construct()
+    {
+        $this->userRepository = new UserRepository();
+        $this->passwordResetRepository = new PasswordResetRepository();
+    }
+    
     public function index()
     {
-        return Inertia::render('portal/ForgotPassword')->withViewData([
+        return Inertia::render('Portal/ForgotPassword')->withViewData([
                 'title'       => 'Forgot Password',
                 'description' => 'forgot password'
             ]);
@@ -31,9 +45,28 @@ class ForgotPasswordController extends Controller
     }
 
     public function passwordReset($token) {
-        return Inertia::render('portal/ResetPassword', ['token' => $token])->withViewData([
+        return Inertia::render('Portal/ResetPassword', ['token' => $token])->withViewData([
             'title'       => 'Reset Password',
-            'description' => 'resetting the password'
+            'description' => 'resetting the password',
         ]);
     }
+
+    public function updatePassword(ResetPasswordRequest $request)
+    {
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password)
+                ]);
+                $user->save();
+            }
+        );
+     
+        return $status === Password::PASSWORD_RESET
+                    ? redirect()->route('top')->with('status', __($status))
+                    : back()->withErrors(['email' => [__($status)]]);
+    }
+
 }

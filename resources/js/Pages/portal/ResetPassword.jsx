@@ -1,97 +1,92 @@
-import { Link, useForm } from "@inertiajs/inertia-react"
-import { Box, Button, Card, CardContent, Container, Grid, Typography } from "@mui/material"
+import { useForm } from "@inertiajs/inertia-react"
+import { Box, Button, Card, CardContent, Grid, Typography } from "@mui/material"
 import { useDispatch } from "react-redux"
-import ErrorText from "../../components/common/ErrorText"
 import Input from "../../components/forms/Input"
 import { actions } from "../../store/slices/ToasterSlice"
+import { getRoute } from "../../helpers/routes.helper"
 
-const ResetPassword = ({errors}) => {
+const ResetPassword = ({ errors, messages, token }) => {
 
     const dispatch = useDispatch()
 
-    const { data, setData, post, processing } = useForm({
+    const email = new URLSearchParams(window.location.search).get('email');
+
+    const { data, setData, patch, processing } = useForm({
+        email: email,
         password: '',
-        confirm_password: ''
+        token: token,
+        password_confirmation: ''
     })
 
-    const handleOnChange = (e) => {
+    const handleOnChange = e => {
         setData(e.target.name, e.target.value)
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = e => {
         e.preventDefault()
 
-        post('/forgot-password', {
-            onSuccess: response => {
-                dispatch(actions.toggle({
-                    open: true,
-                    type: 'success',
-                    message: 'Reset password link already sent to your email.'
+        patch(getRoute('password.reset.update', {token}), {
+            onSuccess: () => {
+                dispatch(actions.success({
+                    message: messages.success.password
                 }))
             },
-            onError: response => {
-                dispatch(actions.toggle({
-                    open: true,
-                    type: 'error',
-                    message: 'There was an error encountered'
-                }))
-            }
+            onError: () => dispatch(actions.error({
+                message: messages.error
+            }))
         })
     }
 
     return (
-        <Container>
-            <Grid
-                container
-                alignItems='center'
-                justifyContent='center'
-                sx={{
-                    minHeight: '100vh'
-                }}
-            >
-                <Grid item xs={12} sm={8} md={5}>
-                    <Card>
-                        <CardContent sx={{ p: 3 }}>
-                            <form method="POST" onSubmit={handleSubmit}>
-                                <Typography variant="h5" textAlign='center' sx={{ mb: 2 }}>Update Password</Typography>
-                                <Box>
-                                    <Input
-                                        label="Password"
-                                        type="password"
-                                        fullWidth
-                                        name="password"
-                                        value={data.password}
-                                        onChange={handleOnChange}
-                                        errors={errors}
-                                    />
-                                </Box>
-                                <Box sx={{ my: 2 }}>
-                                    <Input
-                                        label="Confirm Password"
-                                        type="password"
-                                        fullWidth
-                                        name="confirm_password"
-                                        value={data.confirm_password}
-                                        onChange={handleOnChange}
-                                        errors={errors}
-                                    />
-                                </Box>
-                                <Button
-                                    variant="contained"
-                                    fullWidth
-                                    type="submit"
-                                    onClick={handleSubmit}
-                                    disabled={processing}
-                                >Submit</Button>
-                            </form>
-                        </CardContent>
-                    </Card>
-                    <Box sx={{ textAlign: 'center', mt: 3 }}>
-                        <Link href="/">Back to Top Page</Link>
+        <Card key="Password Form Card" sx={{ mt: 2 }}>
+            <form onSubmit={handleSubmit}>
+                <CardContent sx={{ p: 4 }}>
+                    <Box sx={{ mb: 3 }}>
+                        <Typography fontFamily="inherit" variant="h5" component="div">Update Password</Typography>
                     </Box>
-                </Grid>
-            </Grid>
-        </Container>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <Input
+                                label="Email"
+                                name="email"
+                                disabled
+                                errors={errors}
+                                value={data.email}
+                                onChange={handleOnChange}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Input
+                                type="password"
+                                label="New Password"
+                                name="password"
+                                data={data.new_password}
+                                errors={errors}
+                                onChange={handleOnChange}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Input
+                                type="password"
+                                label="Confirm Password"
+                                name="password_confirmation"
+                                data={data.new_password_confirmation}
+                                errors={errors}
+                                onChange={handleOnChange}
+                            />
+                        </Grid>
+                        <Grid item xs={12} textAlign="right">
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                onClick={handleSubmit}
+                                disabled={processing}
+                            >Update Password</Button>
+                        </Grid>
+                    </Grid>
+                </CardContent>
+            </form>
+        </Card>
     )
 }
 
