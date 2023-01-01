@@ -5,7 +5,7 @@ import ErrorText from "../../components/common/ErrorText"
 import Input from "../../components/forms/Input"
 import { actions } from "../../store/slices/ToasterSlice"
 
-const ForgotPassword = ({errors}) => {
+const ForgotPassword = ({errors, messages}) => {
 
     const dispatch = useDispatch()
 
@@ -22,19 +22,13 @@ const ForgotPassword = ({errors}) => {
 
         post('/forgot-password', {
             onSuccess: response => {
-                dispatch(actions.toggle({
-                    open: true,
-                    type: 'success',
-                    message: 'Reset password link already sent to your email.'
+                dispatch(actions.success({
+                    message: messages.success.forgotPassword
                 }))
             },
-            onError: response => {
-                dispatch(actions.toggle({
-                    open: true,
-                    type: 'error',
-                    message: 'There was an error encountered'
-                }))
-            }
+            onError: () => dispatch(actions.error({
+                message: messages.error
+            }))
         })
     }
 
