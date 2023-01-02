@@ -7,10 +7,6 @@ use Carbon\Carbon;
 
 class UserData
 {
-    const ACTIVE = 'active';
-
-    const DISABLED = 'disabled';
-
     private $id;
 
     private $name;
@@ -102,10 +98,16 @@ class UserData
         $userData->setId($user->id);
         $userData->setName($user->fullname);
         $userData->setEmail($user->email);
-        $userData->setRoles($user->roles()->pluck('name'));
-        $userData->setStatus($user->is_enabled ? ucfirst(self::ACTIVE) : ucfirst(self::DISABLED));
+        $userData->setStatus($user->is_enabled ? ucfirst(User::ACTIVE) : ucfirst(User::DISABLED));
         $userData->setDateJoined(Carbon::parse($user->created_at)->format('Y-m-d'));
         $userData->setIsActive($user->is_enabled);
+
+        $userRoles = $user->roles()->pluck('name');
+        $userData->setRoles($userRoles->map(function($role) {
+            return [
+                ucfirst($role)
+            ];
+        }));
 
         return $userData->convertToArray();
     }
