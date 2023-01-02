@@ -1,5 +1,6 @@
 import { Block, Check, Search } from "@mui/icons-material"
 import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
+import EmptyCard from "../../../../components/common/EmptyCard"
 
 const UserTable = ({ data }) => {
 
@@ -7,7 +8,7 @@ const UserTable = ({ data }) => {
         <TableRow key={index}>
             <TableCell children={row.name}/>
             <TableCell children={row.email}/>
-            <TableCell children={row.roles} align="center"/>
+            <TableCell children={row.roles.join(', ')} align="center"/>
             <TableCell children={row.status} align="center"/>
             <TableCell children={row.date_joined} align="center"/>
             <TableCell align="center">
@@ -23,6 +24,10 @@ const UserTable = ({ data }) => {
             </TableCell>
         </TableRow>
     ))
+
+    if (data && data.length <= 0) {
+        return <EmptyCard />
+    }
 
     return (
         <TableContainer component={Paper}>

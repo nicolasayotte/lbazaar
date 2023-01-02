@@ -4,7 +4,6 @@ namespace App\Repositories;
 
 use App\Models\Role;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 use App\Data\UserData;
 
 class UserRepository extends BaseRepository
@@ -18,26 +17,22 @@ class UserRepository extends BaseRepository
 
     public function get($filters)
     {
-        if (@$filters['sort']) {
-            $sortFilterArr = explode(':', $filters['sort']);
+        $sortFilterArr = explode(':', @$filters['sort'] ?? 'created_at:desc');
 
-            $sortBy = $sortFilterArr[0];
-            $sortOrder = $sortFilterArr[1];
-        } else {
-            $sortBy = 'created_at';
-            $sortOrder = 'desc';
-        }
+        $sortBy = $sortFilterArr[0];
+        $sortOrder = $sortFilterArr[1];
 
         return $this->model
-                ->where(function($q) use($filters){
-                    return $q->where(DB::raw("CONCAT('first_name', ' ', 'last_name')"), 'LIKE', '%'. @$filters['keyword'] . '%')
-                             ->orWhere('email', 'LIKE', '%', @$filters['keyword'] . '%');
+                ->where('id', '!=', auth()->user()->id)
+                ->where( function($q) use($filters){
+                    return $q->whereRaw("CONCAT(`first_name`, ' ', `last_name`) LIKE ?", ['%'. @$filters['keyword'] .'%'])
+                             ->orWhere('email', 'LIKE', '%'. @$filters['keyword'] .'%');
                 })
                 ->when(@$filters['role'] && !empty(@$filters['role']), function($q) use($filters) {
                     return $q->whereRoleIs($filters['role']);
                 })
                 ->when(@$filters['status'] && !empty(@$filters['status']), function($q) use($filters) {
-                    return $q->where('is_enabled', @$filters['status']);
+                    return $q->where('is_enabled', @$filters['status'] == User::ACTIVE ? 1 : 0);
                 })
                 ->orderBy($sortBy, $sortOrder)
                 ->paginate(self::PER_PAGE)
@@ -56,4 +51,17 @@ class UserRepository extends BaseRepository
         return $this->model->whereRoleIs([Role::TEACHER])->orderBy('id', 'desc')->get();
     }
 
+    public function getStatusFilterData()
+    {
+        return [
+            [
+                'name'  => ucfirst(User::ACTIVE),
+                'value' => User::ACTIVE
+            ],
+            [
+                'name'  => ucfirst(User::DISABLED),
+                'value' => User::DISABLED
+            ]
+        ];
+    }
 }
