@@ -16,6 +16,10 @@ class User extends Authenticatable
 
     const FEATURED_TEACHERS_COUNT_DISPLAY = 3;
 
+    public const ACTIVE = 'active';
+
+    public const DISABLED = 'disabled';
+
     protected $appends = ['fullname'];
 
     /**
