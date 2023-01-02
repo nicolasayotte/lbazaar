@@ -56,24 +56,19 @@ const AdminNavbar = ({ drawerWidth, window }) => {
     )
 
     const logoutBtn = (
-        <ListItemButton>
-            <Link
-                as="span"
-                method="post"
-                href={routes["admin.logout"]}
-                children="Sign Out"
-            />
-        </ListItemButton>
+        <Link
+            as="span"
+            method="post"
+            href={routes["admin.logout"]}
+        >
+            <ListItemButton children="Sign Out" />
+        </Link>
     )
 
     const profileBtn = (
-        <ListItemButton>
-            <Link
-                as="span"
-                href={routes["admin.profile.index"]}
-                children="Profile"
-            />
-        </ListItemButton>
+        <Link href={routes["admin.profile.index"]}>
+            <ListItemButton children="Profile" />
+        </Link>
     )
 
     const desktopDrawer = (
