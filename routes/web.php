@@ -104,3 +104,8 @@ Route::get('/forgot-password', [ForgotPasswordController::class, 'index'])->name
 Route::post('/forgot-password', [ForgotPasswordController::class, 'validateEmail'])->name('forgot.password.store');
 Route::get('/reset-password/{token}', [ForgotPasswordController::class, 'passwordReset'])->middleware('guest')->name('password.reset');
 Route::patch('/reset-password/{token}', [ForgotPasswordController::class, 'updatePassword'])->middleware('guest')->name('password.reset.update');
+
+# Profile
+Route::prefix('profile')->name('profile.')->group(function() {
+    Route::get('/', [PortalProfileController::class, 'index'])->name('index');
+});
