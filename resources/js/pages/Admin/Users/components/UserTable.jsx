@@ -1,6 +1,8 @@
+import { Link } from "@inertiajs/inertia-react"
 import { Block, Check, Search } from "@mui/icons-material"
 import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
 import EmptyCard from "../../../../components/common/EmptyCard"
+import { getRoute } from "../../../../helpers/routes.helper"
 
 const UserTable = ({ data }) => {
 
@@ -12,9 +14,11 @@ const UserTable = ({ data }) => {
             <TableCell children={row.status} align="center"/>
             <TableCell children={row.date_joined} align="center"/>
             <TableCell align="center">
-                <IconButton title="View">
-                    <Search />
-                </IconButton>
+                <Link href={getRoute('admin.users.view', { id: row.id })}>
+                    <IconButton title="View">
+                        <Search />
+                    </IconButton>
+                </Link>
                 <IconButton color="success" title="Disable">
                     <Check />
                 </IconButton>

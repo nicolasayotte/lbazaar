@@ -34,4 +34,12 @@ class UserController extends Controller
             'title' => 'Users | Admin'
         ]);
     }
+
+    public function view($id)
+    {
+        return Inertia::render('Admin/Users/UserView', [])
+        ->withViewData([
+            'title' => 'User Details | Admin'
+        ]);
+    }
 }
