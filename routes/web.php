@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\InquiriesController as AdminInquiriesController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Portal\CourseController;
 use App\Http\Controllers\Portal\InquiriesController;
 use App\Http\Controllers\Portal\TopPageController;
@@ -52,6 +53,11 @@ Route::prefix('admin')->name('admin.')->group(function() {
         Route::prefix('inquiries')->name('inquiries.')->group(function() {
             Route::get('/', [AdminInquiriesController::class, 'index'])->name('index');
             Route::get('/{id}', [AdminInquiriesController::class, 'view'])->name('view');
+        });
+
+        # Users
+        Route::prefix('users')->name('users.')->group(function() {
+            Route::get('/', [UserController::class, 'index'])->name('index');
         });
     });
 });
