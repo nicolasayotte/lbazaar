@@ -59,4 +59,9 @@ class User extends Authenticatable
         return $this->first_name . ' ' . $this->last_name;
     }
 
+    public function country()
+    {
+        return $this->belongsTo(Country::class, 'country_id');
+    }
+
 }
