@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\RegisterStudentRequest;
+use App\Mail\EmailNotification;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Country;
@@ -11,6 +14,7 @@ use App\Models\Role;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\Events\Registered;
+use Exception;
 
 class RegisterStudentController extends Controller
 {
@@ -39,27 +43,18 @@ class RegisterStudentController extends Controller
         return redirect()->back()->with('message', 'Verification link sent!');
     }
 
-    public function store(Request $request)
+    public function store(RegisterStudentRequest $request)
     {
-        $validatedData = $request->validate([
-            'first_name'            => 'required|alpha_spaces',
-            'last_name'             => 'required|alpha_spaces',
-            'email'                 => 'required|email|unique:users',
-            'country_id'            => 'required',
-            'password'              => 'required|confirmed|min:8',
-            'password_confirmation' => 'required'
-        ]);
+        $notHashPassword = $request['password'];
+        $request['password'] = Hash::make($request['password']);
 
-        $notHashPassword = $validatedData['password'];
-        $validatedData['password'] = Hash::make($validatedData['password']);
-
-        $user = User::create($validatedData);
+        $user = User::create($request->all());
         $user->attachRole(Role::STUDENT);
 
         event(new Registered($user));
 
         if (Auth::attempt([
-            'email'     => $validatedData['email'],
+            'email'     => $request['email'],
             'password'  => $notHashPassword,
             fn ($query) => $query->whereRoleIs(Role::STUDENT)
         ])) {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AuthPortalRequest;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,17 +23,12 @@ class AuthPortalController extends Controller
         ]);
     }
 
-    public function authenticate(Request $request)
+    public function authenticate(AuthPortalRequest $request)
     {
-        $credentials = $request->validate([
-            'email'    => 'required',
-            'password' => 'required'
-        ]);
-
         if (Auth::attempt([
-            'email'     => $credentials['email'],
-            'password'  => $credentials['password'],
-            fn ($query) => $query->whereRoleIs(Role::STUDENT)
+            'email'     => $request['email'],
+            'password'  => $request['password'],
+            fn ($query) => $query->whereRoleIs(Role::STUDENT)->where('email_verified_at', '!=', NULL)
         ])) {
             return redirect()->intended('/');
         }
