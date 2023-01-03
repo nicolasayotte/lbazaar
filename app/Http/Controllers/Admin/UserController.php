@@ -37,7 +37,9 @@ class UserController extends Controller
 
     public function view($id)
     {
-        return Inertia::render('Admin/Users/UserView', [])
+        return Inertia::render('Admin/Users/UserView', [
+            'user' => $this->userRepository->findOne($id)
+        ])
         ->withViewData([
             'title' => 'User Details | Admin'
         ]);

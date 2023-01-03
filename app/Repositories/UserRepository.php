@@ -19,7 +19,7 @@ class UserRepository extends BaseRepository
     {
         $sortFilterArr = explode(':', @$filters['sort'] ?? 'created_at:desc');
 
-        $sortBy = $sortFilterArr[0];
+        $sortBy    = $sortFilterArr[0];
         $sortOrder = $sortFilterArr[1];
 
         return $this->model
@@ -37,8 +37,15 @@ class UserRepository extends BaseRepository
                 ->orderBy($sortBy, $sortOrder)
                 ->paginate(self::PER_PAGE)
                 ->through(function($user) {
-                    return UserData::fromModel($user);
+                    return UserData::fromModel($user, true);
                 });
+    }
+
+    public function findOne(int $id)
+    {
+        $user = $this->findOrFail($id);
+
+        return UserData::fromModel($user);
     }
 
     public function getFeaturedTeachers($take = self::PER_PAGE)
