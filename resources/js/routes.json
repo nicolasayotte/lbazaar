@@ -17,5 +17,9 @@
     "admin.inquiries.view": "\/admin\/inquiries\/{id}",
     "admin.users.index": "\/admin\/users",
     "course.index": "\/courses",
-    "course.details": "\/courses\/details\/{id}"
+    "course.details": "\/courses\/details\/{id}",
+    "forgot.password.index": "\/forgot-password",
+    "forgot\/password.store": "\/forgot-password",
+    "password.reset": "\/reset-password\/{token}",
+    "password.reset.update": "\/reset-password\/{token}"
 }

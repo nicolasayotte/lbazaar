@@ -7,7 +7,7 @@ import Input from "../../../components/forms/Input";
 import { displaySelectOptions } from "../../../helpers/form.helper";
 import routes from "../../../helpers/routes.helper"
 
-const SearchCourse = (props) => {
+const SearchCourse = ({courses, course_types, course_categories, teachers, languages, messages }) => {
 
     const dispatch = useDispatch()
 
@@ -20,8 +20,8 @@ const SearchCourse = (props) => {
             month = (today.getMonth() + 1).toString(),
             day   = today.getDate().toString()
 
-        month.padStart(2, '0')
-        day.padStart(2, '0')
+            month = month.padStart(2, '0')
+            day = day.padStart(2, '0')
 
         return [year, month, day].join('-')
     }
@@ -33,19 +33,15 @@ const SearchCourse = (props) => {
         language: '',
         professor_id: '',
         month: getCurrentDate().slice(0, 7),
-        page: props.courses.current_page,
+        page: courses.current_page,
     })
 
     const handleSubmit = () => {
         get(routes['course.index'], {
             preserveState: true,
-            onError: (response) => {
-                dispatch(actions.toggle({
-                    open: true,
-                    type: 'error',
-                    message: 'There was an error encountered'
-                }))
-            }
+            onError: () => dispatch(actions.error({
+                message: messages.error
+            }))
         });
     }
 
@@ -71,7 +67,7 @@ const SearchCourse = (props) => {
                         return <Course showDate={true} key={course.id} course={course} viewDetailId="id" showDescription={showDescription}/>
                     })}
                     <Grid display="flex" justifyContent="center" alignItems="center">
-                        <Pagination sx={{mt: 2, justifyContent: 'center'}} onChange={handlePageChange} page={data.page} count={props.courses.last_page} color="primary" />
+                        <Pagination sx={{mt: 2, justifyContent: 'center'}} onChange={handlePageChange} page={data.page} count={courses.last_page} color="primary" />
                     </Grid>
                 </div>
             )
@@ -103,100 +99,103 @@ const SearchCourse = (props) => {
                 <Grid item xs={10} sm={3} md={3} lg={3}>
                     <Card>
                         <CardContent>
-                            {data.category_id}
-                                <Typography variant="h6" sx={{ mb: 2 }}>
-                                    Filter
-                                </Typography>
-                                <Grid container spacing={2}>
-                                    <Grid item xs={12} sm={12}>
-                                        <Input
-                                            placeholder="Search for classes"
-                                            name="search_text"
-                                            value={data.search_text}
-                                            onChange={handleOnChange}
-                                            errors={errors}
-                                        />
-                                    </Grid>
-                                    <Grid item  xs={12} sm={12}>
-                                        <Input
-                                            label="Type"
-                                            select
-                                            name="type_id"
-                                            value={data.type_id}
-                                            onChange={handleOnChange}
-                                            errors={errors}
-                                        >
-                                            {displaySelectOptions(props.course_types)}
-                                        </Input>
-                                    </Grid>
-                                    <Grid item xs={12} sm={12}>
-                                        <Input
-                                            label="Category"
-                                            select
-                                            name="category_id"
-                                            value={data.category_id}
-                                            onChange={handleOnChange}
-                                            errors={errors}
-                                        >
-                                            {displaySelectOptions(props.course_categories)}
-                                        </Input>
-                                    </Grid>
-                                    <Grid item xs={12} sm={12}>
-                                        <Input
-                                            label="Teachers"
-                                            select
-                                            name="professor_id"
-                                            value={data.professor_id}
-                                            onChange={handleOnChange}
-                                            errors={errors}
-                                        >
-                                            {displaySelectOptions(props.teachers, 'id', 'fullname')}
-                                        </Input>
-                                    </Grid>
-                                    <Grid item xs={12} sm={12}>
-                                        <Input
-                                            label="Languages"
-                                            select
-                                            name="language"
-                                            value={data.language}
-                                            onChange={handleOnChange}
-                                            errors={errors}
-                                        >
-                                            {displaySelectOptions(props.languages, 'language', 'language')}
-                                        </Input>
-                                    </Grid>
-                                    <Grid item xs={12} sm={12}>
-                                        <Input
-                                            type="month"
-                                            name="month"
-                                            value={data.month}
-                                            onChange={handleOnChange}
-                                            errors={errors}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} sm={12}>
-                                        <Grid display="flex" justifyContent="center" alignItems="center">
-                                            <Button sx={{ mt: 2}}
-                                                onClick={setPageToOne}
-                                                variant="contained"
-                                                disabled={processing}
-                                                disableElevation>
-                                                Filter
-                                            </Button>
-                                            <Button sx={{ mt: 2, ml: 2}}
-                                                onClick={handleReset}
-                                                variant="outlined"
-                                                disableElevation>
-                                                Reset
-                                            </Button>
-                                        </Grid>
+                            <Typography variant="h6" sx={{ mb: 2 }}>
+                                Filter
+                            </Typography>
+                            <Grid container spacing={2}>
+                                <Grid item xs={12} sm={12}>
+                                    <Input
+                                        placeholder="Search for classes"
+                                        name="search_text"
+                                        value={data.search_text}
+                                        onChange={handleOnChange}
+                                        errors={errors}
+                                    />
+                                </Grid>
+                                <Grid item  xs={12} sm={12}>
+                                    <Input
+                                        label="Type"
+                                        select
+                                        name="type_id"
+                                        value={data.type_id}
+                                        onChange={handleOnChange}
+                                        errors={errors}
+                                    >
+                                        <option value=""></option>
+                                        {displaySelectOptions(course_types)}
+                                    </Input>
+                                </Grid>
+                                <Grid item xs={12} sm={12}>
+                                    <Input
+                                        label="Category"
+                                        select
+                                        name="category_id"
+                                        value={data.category_id}
+                                        onChange={handleOnChange}
+                                        errors={errors}
+                                    >
+                                        <option value=""></option>
+                                        {displaySelectOptions(course_categories)}
+                                    </Input>
+                                </Grid>
+                                <Grid item xs={12} sm={12}>
+                                    <Input
+                                        label="Teachers"
+                                        select
+                                        name="professor_id"
+                                        value={data.professor_id}
+                                        onChange={handleOnChange}
+                                        errors={errors}
+                                    >
+                                        <option value=""></option>
+                                        {displaySelectOptions(teachers, 'id', 'fullname')}
+                                    </Input>
+                                </Grid>
+                                <Grid item xs={12} sm={12}>
+                                    <Input
+                                        label="Languages"
+                                        select
+                                        name="language"
+                                        value={data.language}
+                                        onChange={handleOnChange}
+                                        errors={errors}
+                                    >
+                                        <option value=""></option>
+                                        {displaySelectOptions(languages, 'language', 'language')}
+                                    </Input>
+                                </Grid>
+                                <Grid item xs={12} sm={12}>
+                                    <Input
+                                        type="month"
+                                        name="month"
+                                        value={data.month}
+                                        onChange={handleOnChange}
+                                        errors={errors}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={12}>
+                                    <Grid display="flex" justifyContent="center" alignItems="center">
+                                        <Button sx={{ mt: 2}}
+                                            onClick={setPageToOne}
+                                            variant="contained"
+                                            disabled={processing}
+                                            disableElevation>
+                                            Filter
+                                        </Button>
+                                        <Button sx={{ mt: 2, ml: 2}}
+                                            onClick={handleReset}
+                                            variant="outlined"
+                                            disableElevation>
+                                            Reset
+                                        </Button>
                                     </Grid>
                                 </Grid>
+                            </Grid>
                         </CardContent>
                     </Card>
                 </Grid>
                 <Grid item xs={6} sm={8} md={8} lg={8}>
-                    {processing ? displayProcessing() : displayCourses(props.courses)}
+                    {processing ? displayProcessing() : displayCourses(courses)}
                 </Grid>
             </Grid>
         </Box>

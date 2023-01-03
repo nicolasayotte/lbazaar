@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\InquiriesController as AdminInquiriesController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Portal\CourseController;
+use App\Http\Controllers\Portal\ForgotPasswordController;
 use App\Http\Controllers\Portal\InquiriesController;
 use App\Http\Controllers\Portal\TopPageController;
 use Illuminate\Http\Request;
@@ -66,3 +67,9 @@ Route::prefix('courses')->name('course.')->group(function() {
     Route::get('/', [CourseController::class, 'index'])->name('index');
     Route::get('/details/{id}', [CourseController::class, 'details'])->name('details');
 });
+
+
+Route::get('/forgot-password', [ForgotPasswordController::class, 'index'])->name('forgot.password.index');
+Route::post('/forgot-password', [ForgotPasswordController::class, 'validateEmail'])->name('forgot.password.store');
+Route::get('/reset-password/{token}', [ForgotPasswordController::class, 'passwordReset'])->middleware('guest')->name('password.reset');
+Route::patch('/reset-password/{token}', [ForgotPasswordController::class, 'updatePassword'])->middleware('guest')->name('password.reset.update');
