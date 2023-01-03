@@ -15,7 +15,7 @@ createInertiaApp({
             import.meta.glob('./pages/**/*.jsx')
         );
 
-        if (name.startsWith('admin')) {
+        if (name.startsWith('Admin')) {
             page.default.layout = p => <Admin children={p} />
         } else {
             page.default.layout = p => <Layout children={p} />

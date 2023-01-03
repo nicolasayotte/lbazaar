@@ -2,7 +2,6 @@ import { useForm } from "@inertiajs/inertia-react"
 import { Box, Button, Card, CardContent, Container, Divider, Grid, TextField, Typography } from "@mui/material"
 import { actions } from '../../store/slices/ToasterSlice'
 import { useDispatch } from "react-redux"
-import ErrorText from "../../components/common/ErrorText"
 import routes from "../../helpers/routes.helper"
 import Input from "../../components/forms/Input"
 
@@ -10,7 +9,7 @@ const Inquiries = ({ messages }) => {
 
     const dispatch = useDispatch()
 
-    const { data, setData, post, processing, errors, reset, clearErrors } = useForm({
+    const { data, setData, post, processing, reset, errors, clearErrors } = useForm({
         name: '',
         email: '',
         subject: '',
@@ -52,7 +51,7 @@ const Inquiries = ({ messages }) => {
                                     <Grid item xs={12} sm={6}>
                                         <Input
                                             label="Name"
-                                            name="names"
+                                            name="name"
                                             value={data.name}
                                             onChange={handleOnChange}
                                             errors={errors}
@@ -65,6 +64,7 @@ const Inquiries = ({ messages }) => {
                                             name="email"
                                             value={data.email}
                                             onChange={handleOnChange}
+                                            errors={errors}
                                         />
                                     </Grid>
                                     <Grid item xs={12}>
@@ -73,6 +73,7 @@ const Inquiries = ({ messages }) => {
                                             name="subject"
                                             value={data.subject}
                                             onChange={handleOnChange}
+                                            errors={errors}
                                         />
                                     </Grid>
                                     <Grid item xs={12}>
@@ -84,6 +85,7 @@ const Inquiries = ({ messages }) => {
                                             helperText="Must be less than 200 characters"
                                             value={data.message}
                                             onChange={handleOnChange}
+                                            errors={errors}
                                         />
                                     </Grid>
                                     <Grid item xs={12} textAlign="right">

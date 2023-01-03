@@ -2,10 +2,17 @@
 
 namespace App\Models;
 
+<<<<<<< HEAD
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+=======
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Mail\ResetPassword;
+>>>>>>> develop
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Mail;
 use Laratrust\Traits\LaratrustUserTrait;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -16,6 +23,10 @@ class User extends Authenticatable implements MustVerifyEmail
     use  HasApiTokens, HasFactory, Notifiable;
 
     const FEATURED_TEACHERS_COUNT_DISPLAY = 3;
+
+    public const ACTIVE = 'active';
+
+    public const DISABLED = 'disabled';
 
     protected $appends = ['fullname'];
 
@@ -55,4 +66,14 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->first_name . ' ' . $this->last_name;
     }
+<<<<<<< HEAD
+=======
+
+    public function sendPasswordResetNotification($token)
+    {
+        $url = route('password.reset', ['token' => $token, 'email' => $this->email]);
+    
+        Mail::send( New ResetPassword($this->email, $url));
+    }
+>>>>>>> develop
 }

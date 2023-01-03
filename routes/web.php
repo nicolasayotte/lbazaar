@@ -1,9 +1,12 @@
 <?php
 
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\InquiriesController as AdminInquiriesController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Portal\AuthPortalController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Portal\CourseController;
+use App\Http\Controllers\Portal\ForgotPasswordController;
 use App\Http\Controllers\Portal\InquiriesController;
 use App\Http\Controllers\Portal\RegisterStudentController;
 use App\Http\Controllers\Portal\TopPageController;
@@ -49,6 +52,17 @@ Route::prefix('admin')->name('admin.')->group(function() {
         });
 
         Route::patch('/password/update', [ProfileController::class, 'update_password'])->name('password.update');
+
+        # Inquiries
+        Route::prefix('inquiries')->name('inquiries.')->group(function() {
+            Route::get('/', [AdminInquiriesController::class, 'index'])->name('index');
+            Route::get('/{id}', [AdminInquiriesController::class, 'view'])->name('view');
+        });
+
+        # Users
+        Route::prefix('users')->name('users.')->group(function() {
+            Route::get('/', [UserController::class, 'index'])->name('index');
+        });
     });
 });
 
@@ -91,8 +105,7 @@ Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $requ
 # Resending The Verification Email
 Route::get('/email/resend', [RegisterStudentController::class, 'resendEmailVerification'])->name('resend.email')->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
-
-
-
-
-
+Route::get('/forgot-password', [ForgotPasswordController::class, 'index'])->name('forgot.password.index');
+Route::post('/forgot-password', [ForgotPasswordController::class, 'validateEmail'])->name('forgot.password.store');
+Route::get('/reset-password/{token}', [ForgotPasswordController::class, 'passwordReset'])->middleware('guest')->name('password.reset');
+Route::patch('/reset-password/{token}', [ForgotPasswordController::class, 'updatePassword'])->middleware('guest')->name('password.reset.update');
