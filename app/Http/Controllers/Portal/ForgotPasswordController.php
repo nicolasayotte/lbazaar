@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Portal;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ForgotPasswordRequest;
 use App\Http\Requests\ResetPasswordRequest;
-use App\Repositories\PasswordResetRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -16,12 +15,9 @@ class ForgotPasswordController extends Controller
 {
     private $userRepository;
 
-    private $passwordResetRepository;
-
     public function __construct()
     {
         $this->userRepository = new UserRepository();
-        $this->passwordResetRepository = new PasswordResetRepository();
     }
     
     public function index()

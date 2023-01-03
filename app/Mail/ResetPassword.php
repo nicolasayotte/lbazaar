@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Repositories\SettingRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -34,9 +35,11 @@ class ResetPassword extends Mailable
      */
     public function envelope()
     {
+        $settingRepository = new SettingRepository();
+        
         return new Envelope(
             subject: "Reset Password Link",
-            from: "noreply@lebazaar.com",
+            from: $settingRepository->getSetting('no-reply-email'),
             to: [$this->email]
         );
     }
