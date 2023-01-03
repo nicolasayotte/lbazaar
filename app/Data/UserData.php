@@ -104,9 +104,7 @@ class UserData
 
         $userRoles = $user->roles()->pluck('name');
         $userData->setRoles($userRoles->map(function($role) {
-            return [
-                ucfirst($role)
-            ];
+            return ucfirst($role);
         }));
 
         return $userData->convertToArray();
