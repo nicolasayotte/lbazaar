@@ -27,7 +27,7 @@ const RegisterStudent  = ({ countries, errors }) => {
     const handleSubmit = (e) => {
         e.preventDefault()
 
-        post(routes["student.signup"], {
+        post(routes["register.store"], {
             onSuccess: () => {
                 reset()
                 clearErrors()

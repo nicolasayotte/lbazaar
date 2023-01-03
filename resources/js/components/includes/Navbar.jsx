@@ -30,7 +30,10 @@ const Navbar = (props) => {
     const signInButton = (
         <Box sx={{ flexGrow: 0, display: { xs: "none", sm: "flex" } }}>
             <ListItemButton>
-            <Link as="span" href={routes["portal.login"]}>Login</Link>
+                <Link as="span" href={routes["register.index"]}>Sign Up</Link>
+            </ListItemButton>
+            <ListItemButton>
+                <Link as="span" href={routes["portal.login"]}>Login</Link>
             </ListItemButton>
         </Box>
     )

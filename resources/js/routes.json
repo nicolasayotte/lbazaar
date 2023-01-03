@@ -15,8 +15,13 @@
     "admin.password.update": "\/admin\/password\/update",
     "course.index": "\/courses",
     "course.details": "\/courses\/details\/{id}",
-    "student.signup": "\/register/student",
+    "register.index": "\/register\/student",
+    "register.store": "\/register\/student",
+    "portal.": "\/portal",
     "portal.login": "\/portal\/login",
+    "portal.authenticate": "\/portal\/authenticate",
     "portal.logout": "\/portal\/logout",
-    "email.verify": "\/email\/verify"
+    "verify.email": "\/email\/verify",
+    "verification.verify": "\/email\/verify\/{id}\/{hash}",
+    "resend.emailverification.send": "\/email\/resend"
 }

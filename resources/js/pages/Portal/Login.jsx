@@ -1,5 +1,5 @@
-import { useForm } from "@inertiajs/inertia-react"
-import { Alert, Box, Button, Card, CardContent, Container, Link, Grid, TextField, Typography, FormControl, FormControlLabel, FormLabel, RadioGroup, Radio } from "@mui/material"
+import { useForm, Link } from "@inertiajs/inertia-react"
+import { Alert, Box, Button, Card, CardContent, Container, Grid, TextField, Typography, FormControl, FormControlLabel, FormLabel, RadioGroup, Radio } from "@mui/material"
 import { actions } from '../../store/slices/ToasterSlice'
 import { useDispatch } from "react-redux"
 import Input from "../../components/forms/Input"
@@ -23,7 +23,7 @@ const Login = ({errors}) => {
     const handleSubmit = (e) => {
         e.preventDefault()
 
-        post('/portal/authenticate', {
+        post(routes["portal.authenticate"], {
             onSuccess: response => {
                 dispatch(actions.success({
                     open: true,
@@ -77,7 +77,7 @@ const Login = ({errors}) => {
                                     />
                                 </Box>
                                 <Box sx={{ textAlign: 'center', mt: 3, mb: 3 }}>
-                                    <Link href="/register/student">Create account</Link>
+                                    <Link href={routes["register.index"]}>Create account</Link>
                                 </Box>
                                 <Button
                                     variant="contained"
