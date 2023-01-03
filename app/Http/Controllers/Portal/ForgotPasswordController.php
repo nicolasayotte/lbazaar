@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ForgotPasswordRequest;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Repositories\PasswordResetRepository;
 use App\Repositories\UserRepository;
@@ -31,10 +32,8 @@ class ForgotPasswordController extends Controller
             ]);
     }
 
-    public function validateEmail(Request $request)
+    public function validateEmail(ForgotPasswordRequest $request)
     {
-        $request->validate(['email' => 'required|email']);
- 
         $status = Password::sendResetLink(
             $request->only('email')
         );
@@ -53,7 +52,6 @@ class ForgotPasswordController extends Controller
 
     public function updatePassword(ResetPasswordRequest $request)
     {
-
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {
@@ -64,6 +62,7 @@ class ForgotPasswordController extends Controller
             }
         );
      
+        //TODO: REDIRECT TO LOGIN SCREEN
         return $status === Password::PASSWORD_RESET
                     ? redirect()->route('top')->with('status', __($status))
                     : back()->withErrors(['email' => [__($status)]]);
