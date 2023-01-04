@@ -37,7 +37,7 @@ class UserRepository extends BaseRepository
                 ->orderBy($sortBy, $sortOrder)
                 ->paginate(self::PER_PAGE)
                 ->through(function($user) {
-                    return UserData::fromModel($user, true);
+                    return UserData::fromModel($user);
                 });
     }
 
