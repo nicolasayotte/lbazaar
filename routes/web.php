@@ -3,14 +3,17 @@
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\InquiriesController as AdminInquiriesController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Portal\AuthPortalController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Portal\CourseController;
 use App\Http\Controllers\Portal\ForgotPasswordController;
 use App\Http\Controllers\Portal\InquiriesController;
+use App\Http\Controllers\Portal\RegisterStudentController;
 use App\Http\Controllers\Portal\TopPageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpKernel\Profiler\Profile;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 /*
 |--------------------------------------------------------------------------
@@ -68,6 +71,32 @@ Route::prefix('courses')->name('course.')->group(function() {
     Route::get('/details/{id}', [CourseController::class, 'details'])->name('details');
 });
 
+Route::prefix('register')->name('register.')->group(function() {
+    Route::get('/student', [RegisterStudentController::class, 'index'])->name('index');
+    Route::post('/student', [RegisterStudentController::class, 'store'])->name('store');
+});
+
+# Portal Routes
+Route::prefix('portal')->name('portal.')->group(function() {
+
+    Route::get('/', function(Request $request) {
+        return redirect()->route(@$request->user() ? 'verify.email' : 'portal.login');
+    });
+
+    # Portal Authentication
+    Route::get('/login', [AuthPortalController::class, 'login'])->name('login');
+    Route::post('/authenticate', [AuthPortalController::class, 'authenticate'])->name('authenticate');
+
+    Route::middleware(['auth'])->group(function() {
+        # Logout
+        Route::post('/logout', [AuthPortalController::class, 'logout'])->name('logout');
+    });
+
+});
+# Email verification
+Route::get('/email/verify', [RegisterStudentController::class, 'verifyEmail'])->name('verify.email');
+Route::get('/email/verify/{id}/{hash}', [RegisterStudentController::class, 'verificationHanlder'])->middleware(['auth', 'signed'])->name('verification.verify');
+Route::get('/email/resend', [RegisterStudentController::class, 'resendEmailVerification'])->name('resend.email')->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
 Route::get('/forgot-password', [ForgotPasswordController::class, 'index'])->name('forgot.password.index');
 Route::post('/forgot-password', [ForgotPasswordController::class, 'validateEmail'])->name('forgot.password.store');
