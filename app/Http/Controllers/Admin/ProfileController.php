@@ -33,7 +33,7 @@ class ProfileController extends Controller
 
     public function update(ProfileRequest $request)
     {
-        $user = $this->userRepository->findOne(auth()->user()->id);
+        $user = $this->userRepository->findOrFail(auth()->user()->id);
 
         $user->update($request->all());
 
@@ -42,7 +42,7 @@ class ProfileController extends Controller
 
     public function update_password(UpdatePasswordRequest $request)
     {
-        $user = $this->userRepository->findOne(auth()->user()->id);
+        $user = $this->userRepository->findOrFail(auth()->user()->id);
 
         $user->update(['password' => bcrypt($request['new_password'])]);
 
