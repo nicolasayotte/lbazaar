@@ -21,6 +21,8 @@ class UserData
 
     private $is_active;
 
+    private $country;
+
     public function setId($id)
     {
         $this->id = $id;
@@ -54,6 +56,11 @@ class UserData
     public function setIsActive($is_active)
     {
         $this->is_active = $is_active;
+    }
+
+    public function setCountry($country)
+    {
+        $this->country = $country;
     }
 
     public function getId()
@@ -91,6 +98,11 @@ class UserData
         return $this->is_active;
     }
 
+    public function getCountry()
+    {
+        return $this->country;
+    }
+
     public static function fromModel(User $user)
     {
         $userData = new UserData();
@@ -101,12 +113,11 @@ class UserData
         $userData->setStatus($user->is_enabled ? ucfirst(User::ACTIVE) : ucfirst(User::DISABLED));
         $userData->setDateJoined(Carbon::parse($user->created_at)->format('Y-m-d'));
         $userData->setIsActive($user->is_enabled);
+        $userData->setCountry($user->country->name);
 
         $userRoles = $user->roles()->pluck('name');
         $userData->setRoles($userRoles->map(function($role) {
-            return [
-                ucfirst($role)
-            ];
+            return ucfirst($role);
         }));
 
         return $userData->convertToArray();

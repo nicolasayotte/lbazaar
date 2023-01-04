@@ -16,6 +16,7 @@
     "admin.inquiries.index": "\/admin\/inquiries",
     "admin.inquiries.view": "\/admin\/inquiries\/{id}",
     "admin.users.index": "\/admin\/users",
+    "admin.users.view": "\/admin\/users\/{id}",
     "course.index": "\/courses",
     "course.details": "\/courses\/details\/{id}",
     "register.index": "\/register\/student",

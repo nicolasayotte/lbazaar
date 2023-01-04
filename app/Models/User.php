@@ -62,6 +62,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->first_name . ' ' . $this->last_name;
     }
 
+    public function country()
+    {
+        return $this->belongsTo(Country::class, 'country_id');
+    }
+
     public function sendPasswordResetNotification($token)
     {
         $url = route('password.reset', ['token' => $token, 'email' => $this->email]);
