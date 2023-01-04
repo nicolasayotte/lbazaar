@@ -17,7 +17,7 @@ use Inertia\Inertia;
 
 class CourseController extends Controller
 {
-    public $courseTypeRepositoryl;
+    public $courseTypeRepository;
     public $courseCategoryRepository;
     public $courseRepository;
     public $courseContentRepository;

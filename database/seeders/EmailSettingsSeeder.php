@@ -22,6 +22,13 @@ class EmailSettingsSeeder extends Seeder
                 'type'     => 'text',
                 'value'    => 'inquiry@lebazaar.com',
                 'category' => 'email'
+            ],
+            [
+                'name'     => 'No Reply Email Generator',
+                'slug'     => 'no-reply-email',
+                'type'     => 'text',
+                'value'    => 'noreply@lebazaar.com',
+                'category' => 'email'
             ]
         ]);
     }
