@@ -19,12 +19,6 @@ const UserTable = ({ data }) => {
                         <Search />
                     </IconButton>
                 </Link>
-                <IconButton color="success" title="Disable">
-                    <Check />
-                </IconButton>
-                <IconButton color="error" title="Disable">
-                    <Block />
-                </IconButton>
             </TableCell>
         </TableRow>
     ))
