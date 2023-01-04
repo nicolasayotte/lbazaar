@@ -1,10 +1,12 @@
-import { Link } from "@inertiajs/inertia-react";
-import { Menu as MenuIcon } from "@mui/icons-material"
-import { AppBar, Box, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemText, Toolbar, Typography } from "@mui/material"
+import { Link, usePage } from "@inertiajs/inertia-react";
+import { ImportantDevicesRounded, Menu as MenuIcon } from "@mui/icons-material"
+import { AppBar, Box, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemText, Toolbar, Typography, Tooltip, Avatar, Container, useRadioGroup } from "@mui/material"
 import { useState } from "react"
 import routes from "../../helpers/routes.helper"
 
 const Navbar = (props) => {
+
+    const { isLoggedIn, auth } = usePage().props
 
     const [showDrawer, setShowDrawer] = useState(false);
 
@@ -22,6 +24,28 @@ const Navbar = (props) => {
             link: routes["inquiries.index"]
         }
     ]
+
+    const signInButton = (
+        <Box sx={{ flexGrow: 0, display: { xs: "none", sm: "flex" } }}>
+            <ListItemButton>
+                <Link as="span" href={routes["register.index"]}>Sign Up</Link>
+            </ListItemButton>
+            <ListItemButton>
+                <Link as="span" href={routes["portal.login"]}>Login</Link>
+            </ListItemButton>
+        </Box>
+    )
+
+    const signOutButton = (
+        <Box sx={{ flexGrow: 0, display: { xs: "none", sm: "flex" } }}>
+            <ListItemButton>
+                <Link as="span" href="#">Profile </Link>
+            </ListItemButton>
+            <ListItemButton>
+                <Link as="span" method= "POST" href={routes["portal.logout"]}>Sign Out</Link>
+            </ListItemButton>
+        </Box>
+    )
 
     const drawerWidth = 240
 
@@ -69,7 +93,7 @@ const Navbar = (props) => {
             <AppBar position="static" color="primary">
                 <Toolbar>
                     <Typography variant="h6" sx={{ my: 3, mr: 4 }}>L-Earning Bazaar</Typography>
-                    <Box sx={{ display: { xs: "none", sm: "flex" } }}>
+                    <Box sx={{ flexGrow: 1, display: { xs: "none", sm: "flex" } }}>
                         { nav }
                     </Box>
                     <IconButton
@@ -82,6 +106,7 @@ const Navbar = (props) => {
                     >
                         <MenuIcon />
                     </IconButton>
+                    { isLoggedIn? signOutButton : signInButton }
                 </Toolbar>
             </AppBar>
             <Box>

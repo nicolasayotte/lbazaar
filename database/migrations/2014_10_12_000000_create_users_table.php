@@ -21,8 +21,8 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->bigInteger('country_id')->unsigned()->index();
             $table->string('password');
-            $table->boolean('is_temp_password');
-            $table->boolean('is_enabled');
+            $table->boolean('is_temp_password')->nullable();
+            $table->boolean('is_enabled')->nullable();
             $table->bigInteger('classification_id')->unsigned()->index()->nullable();
             $table->rememberToken();
             $table->timestamps();
