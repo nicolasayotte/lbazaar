@@ -14,6 +14,7 @@ use App\Models\Role;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Exception;
 
 class RegisterStudentController extends Controller
@@ -41,6 +42,12 @@ class RegisterStudentController extends Controller
     {
         event(new Registered(auth()->user()));
         return redirect()->back()->with('message', 'Verification link sent!');
+    }
+
+    public function verificationHanlder(EmailVerificationRequest $request)
+    {
+        $request->fulfill();
+        return redirect('/');
     }
 
     public function store(RegisterStudentRequest $request)
