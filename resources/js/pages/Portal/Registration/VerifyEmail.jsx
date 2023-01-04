@@ -1,5 +1,4 @@
-import { Link } from "@inertiajs/inertia-react"
-import { Alert, Box, Card, CardContent, Container, Divider, Grid, TextField, Typography, FormControl, FormControlLabel, FormLabel, RadioGroup, Radio } from "@mui/material"
+import { Box, Card, CardContent, Container, Divider, Grid, Typography, Link } from "@mui/material"
 import routes from "../../../helpers/routes.helper"
 import React,{useState} from "react"
 
@@ -18,8 +17,8 @@ const VerifyEmail  = ({ isEmailVerified }) => {
                             <CardContent sx={{ p: 3 }}>
                                 { notification }
                                     <Divider sx={{ my: 2 }} />
-                                    <Typography variant="h8">Before proceeding, please check your email for a verification link. </Typography>
-                                    <Typography>If you did not receive the email, <Link method = "POST" href={routes["resend.emailverification.send"]}>Click here to request another</Link>.</Typography>
+                                    <Typography variant="h8">Before proceeding, please check your email for a verification link. If you did not receive the email,</Typography>
+                                    <Link method = "POST" href={routes["resend.emailverification.send"]}> Click here to request another.</Link>
                             </CardContent>
                         </Card>
                     </Grid>

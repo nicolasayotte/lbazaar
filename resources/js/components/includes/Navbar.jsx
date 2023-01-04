@@ -6,9 +6,7 @@ import routes from "../../helpers/routes.helper"
 
 const Navbar = (props) => {
 
-    const { isLoggedIn } = usePage().props
-
-    const { auth  } = usePage().props
+    const { isLoggedIn, auth } = usePage().props
 
     const [showDrawer, setShowDrawer] = useState(false);
 
