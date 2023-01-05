@@ -77,7 +77,9 @@ const Login = ({errors}) => {
                                     />
                                 </Box>
                                 <Box sx={{ textAlign: 'center', mt: 3, mb: 3 }}>
-                                    <Link href={routes["register.index"]}>Create account</Link>
+                                    <Grid container justifyContent="space-between">  
+                                        <Link href={routes["forgot.password.index"]}><Button>Forgot password?</Button></Link>
+                                    </Grid>
                                 </Box>
                                 <Button
                                     variant="contained"
@@ -89,7 +91,9 @@ const Login = ({errors}) => {
                             </form>
                         </CardContent>
                     </Card>
-
+                    <Box sx={{ textAlign: 'center', mt: 3 }}>
+                        <Link href={routes["register.index"]}><Button>Create account</Button></Link>
+                    </Box>
                 </Grid>
             </Grid>
         </Container>

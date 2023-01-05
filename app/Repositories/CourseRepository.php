@@ -17,12 +17,12 @@ class CourseRepository extends BaseRepository
 
     public function getFeaturedClass($take = self::PERPAGE)
     {
-        return $this->model->take($take)->orderBy('id', 'desc')->with(['professor'])->get();
+        return $this->model->take($take)->orderBy('id', 'desc')->with(['professor', 'courseType', 'courseCategory'])->get();
     }
 
     public function getUpcomingClasses($take = self::PERPAGE)
     {
-        return $this->model->take($take)->orderBy('id', 'desc')->with(['professor'])->get();
+        return $this->model->take($take)->orderBy('id', 'desc')->with(['professor', 'courseType', 'courseCategory'])->get();
     }
 
     public function getLanguages()
@@ -32,11 +32,7 @@ class CourseRepository extends BaseRepository
 
     public function search($request)
     {
-        return $this->model->with(['professor', 'contents'])
-            ->when($request->has('search_text') && !empty($request->get('search_text')), function ($q) use ($request)  {
-                return $q->where('title', 'like', '%' . $request->get('search_text') . '%')
-                         ->orWhere('description', 'like', '%' . $request->get('search_text') . '%');
-            })
+        return $this->model->with(['professor', 'contents', 'courseCategory', 'courseType'])
             ->when($request->has('professor_id') && !empty($request->get('professor_id')), function ($q) use ($request)  {
                 return $q->where('professor_id', $request->get('professor_id'));
             })
@@ -60,6 +56,10 @@ class CourseRepository extends BaseRepository
                         $endDate
                     ]);
                 });
+            })
+            ->when($request->has('search_text') && !empty($request->get('search_text')), function ($q) use ($request)  {
+                return ($q->where('title', 'like', '%' . $request->get('search_text') . '%')
+                         ->orWhere('description', 'like', '%' . $request->get('search_text') . '%'));
             })
             ->paginate(self::PERPAGE)->withQueryString();
     }

@@ -55,7 +55,7 @@ class RegisterStudentController extends Controller
         $notHashPassword = $request['password'];
         $request['password'] = Hash::make($request['password']);
 
-        $user = User::create($request->all());
+        $user = User::create([...$request->all(), 'is_enabled' => true]);
         $user->attachRole(Role::STUDENT);
 
         event(new Registered($user));

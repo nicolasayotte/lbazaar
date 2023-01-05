@@ -16,12 +16,12 @@ class CourseContent extends Model
         return $this->hasOneThrough(User::class, Course::class, 'id', 'id', 'course_id', 'professor_id');
     }
 
-    public function type()
+    public function courseType()
     {
         return $this->hasOneThrough(CourseType::class, Course::class, 'id', 'id', 'course_id', 'course_type_id');
     }
 
-    public function category()
+    public function courseCategory()
     {
         return $this->hasOneThrough(CourseCategory::class, Course::class, 'id', 'id', 'course_id', 'course_category_id');
     }
