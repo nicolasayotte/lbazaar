@@ -12,7 +12,7 @@ use Inertia\Inertia;
 
 class AuthPortalController extends Controller
 {
-    public function login(Request $request)
+    public function login()
     {
         if (auth()->check() && auth()->user()->hasRole(Role::STUDENT)) {
             return redirect()->back();
@@ -26,11 +26,12 @@ class AuthPortalController extends Controller
     public function authenticate(AuthPortalRequest $request)
     {
         if (Auth::attempt([
-            'email'     => $request['email'],
-            'password'  => $request['password'],
+            'email'      => $request['email'],
+            'password'   => $request['password'],
+            'is_enabled' => 1,
             fn ($query) => $query->whereRoleIs(Role::STUDENT)->where('email_verified_at', '!=', NULL)
         ])) {
-            return redirect()->intended('/');
+            return redirect()->intended('/inquiries');
         }
         return redirect()->back()->withErrors(['email' => 'Invalid credentials']);
     }

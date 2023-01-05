@@ -23,7 +23,7 @@ const Login = ({errors, messages}) => {
 
         post(routes["admin.authenticate"], {
             onSuccess: () => dispatch(actions.success({
-                message: messages.success.user.login
+                message: messages.success.auth
             })),
             onError: () => dispatch(actions.error({
                 message: messages.error
@@ -79,7 +79,7 @@ const Login = ({errors, messages}) => {
                         </CardContent>
                     </Card>
                     <Box sx={{ textAlign: 'center', mt: 3 }}>
-                        <Link href={routes.top}>Back to Top Page</Link>
+                        <Link href="/">Back to Top Page</Link>
                     </Box>
                 </Grid>
             </Grid>
