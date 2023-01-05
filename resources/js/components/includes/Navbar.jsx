@@ -42,7 +42,7 @@ const Navbar = (props) => {
                 <Link as="span" href="#">Profile </Link>
             </ListItemButton>
             <ListItemButton>
-                <Link as="span" method= "POST" href={routes["portal.logout"]}>Sign Out</Link>
+                <Link as="span" method="POST" href={routes["portal.logout"]}>Sign Out</Link>
             </ListItemButton>
         </Box>
     )

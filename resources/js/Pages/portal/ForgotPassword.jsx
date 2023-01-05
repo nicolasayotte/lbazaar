@@ -58,7 +58,11 @@ const ForgotPassword = ({errors, messages}) => {
                                         errors={errors}
                                     />
                                 </Box>
+                                <Box sx={{ textAlign: 'center', mt: 3 }}>
+                                    <Link href="/">Back to login page</Link>
+                                </Box>
                                 <Button
+                                    sx={{ my: 2 }}
                                     variant="contained"
                                     fullWidth
                                     type="submit"
@@ -68,9 +72,6 @@ const ForgotPassword = ({errors, messages}) => {
                             </form>
                         </CardContent>
                     </Card>
-                    <Box sx={{ textAlign: 'center', mt: 3 }}>
-                        <Link href="/">Back to Top Page</Link>
-                    </Box>
                 </Grid>
             </Grid>
         </Container>

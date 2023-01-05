@@ -47,7 +47,7 @@ const RegisterStudent  = ({ countries, errors }) => {
     }
 
     return (
-        <Box sx={{ minHeight: '80.75vh' }}>
+        <Box>
             <Container>
                 <Grid container>
                     <Grid item xs={12} md={8} mx="auto" py={5}>
@@ -86,6 +86,7 @@ const RegisterStudent  = ({ countries, errors }) => {
                                             onChange={handleOnChange}
                                             errors={errors}
                                           >
+                                            <option value=""></option>
                                             {displaySelectOptions(countries)}
                                           </Input>
                                         </Grid>

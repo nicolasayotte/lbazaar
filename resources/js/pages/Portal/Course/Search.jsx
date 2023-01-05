@@ -62,14 +62,14 @@ const SearchCourse = ({courses, course_types, course_categories, teachers, langu
     const displayCourses = (courses, showDescription = true) => {
         if (courses.data.length > 0) {
             return (
-                <div>
+                <>
                     {courses.data.map(course => {
                         return <Course showDate={true} key={course.id} course={course} viewDetailId="id" showDescription={showDescription}/>
                     })}
                     <Grid display="flex" justifyContent="center" alignItems="center">
                         <Pagination sx={{mt: 2, justifyContent: 'center'}} onChange={handlePageChange} page={data.page} count={courses.last_page} color="primary" />
                     </Grid>
-                </div>
+                </>
             )
         } else {
             return (
@@ -97,6 +97,9 @@ const SearchCourse = ({courses, course_types, course_categories, teachers, langu
         <Box>
             <Grid container sx={{m: 4}}>
                 <Grid item xs={10} sm={3} md={3} lg={3}>
+                    <Typography variant="h5" sx={{ mb: 2 }}>
+                        Browse Classes
+                    </Typography>
                     <Card>
                         <CardContent>
                             <Typography variant="h6" sx={{ mb: 2 }}>
@@ -194,7 +197,7 @@ const SearchCourse = ({courses, course_types, course_categories, teachers, langu
                         </CardContent>
                     </Card>
                 </Grid>
-                <Grid item xs={6} sm={8} md={8} lg={8}>
+                <Grid item xs={10} sm={8} md={8} lg={8} sx={{mt:5}}>
                     {processing ? displayProcessing() : displayCourses(courses)}
                 </Grid>
             </Grid>

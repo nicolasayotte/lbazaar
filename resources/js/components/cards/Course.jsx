@@ -24,11 +24,14 @@ const Course = (props) => {
     }
 
     return (
-        <Card sx={{ minWidth: 250, m: 2, position: 'relative' }}>
+        <Card className="course-card" sx={{ minWidth: 250, m: 1, position: 'relative' }}>
             { displayScheduledDateTime() }
-            <CardContent>
+            <CardContent sx={{mb:4}}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} sm={12} md={10} lg={10}>
+                        <Typography variant="subtitle1" gutterBottom>
+                            {props.course.course_type.name}
+                        </Typography>
                         <Typography variant="h6" gutterBottom>
                             {props.course.title}
                         </Typography>
@@ -39,13 +42,12 @@ const Course = (props) => {
                     </Grid>
                 </Grid>
             </CardContent>
-            <CardActions sx={{justifyContent: 'flex-end'}}>
-                <Link href={getRoute('course.details', {id : props.course[props.viewDetailId]})}
-                    sx={{
-                        float: 'right',
+            <CardActions sx={{justifyContent: 'flex-end',  right: '0px',
                         position: 'absolute',
-                        bottom: '0px'}}
-                        size="small">View More</Link>
+                        bottom: '0px'}}>
+                <Link href={getRoute('course.details', {id : props.course[props.viewDetailId]})}>
+                    <Button>View More</Button>
+                </Link>
             </CardActions>
         </Card>
     );
