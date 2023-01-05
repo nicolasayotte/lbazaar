@@ -15,7 +15,7 @@ const InquiryTable = ({ data }) => {
             <TableCell align="center">
                 <Link href={getRoute('admin.inquiries.view', { id: row.id })}>
                     <IconButton title="View" variant="text" size="small">
-                        <Search />
+                        <Search fontSize="inherit" />
                     </IconButton>
                 </Link>
             </TableCell>
