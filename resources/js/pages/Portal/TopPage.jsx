@@ -1,6 +1,8 @@
 import { Box, Divider, Card, TextField, Button, Grid, Typography, Container } from "@mui/material";
 import Course from "../../components/cards/Course";
 import User from "../../components/cards/User";
+import { Link } from "@inertiajs/inertia-react";
+import routes from "../../helpers/routes.helper"
 
 const TopPage = (props) => {
 
@@ -60,9 +62,11 @@ const TopPage = (props) => {
                                 </Typography>
                                 { displayCourses(props.courses) }
                                 <Grid display="flex" justifyContent="center" alignItems="center">
-                                    <Button sx={{mt: 2, mb: 2}} variant="contained" disableElevation>
-                                        Browse Classes
-                                    </Button>
+                                    <Link href={routes["course.index"]}>
+                                        <Button sx={{mt: 2, mb: 2}} variant="contained" disableElevation>
+                                            Browse Classes
+                                        </Button>
+                                    </Link>
                                 </Grid>
                             </Grid>
                             <Grid item xs={12} sm={12} md={4} lg={4}>
