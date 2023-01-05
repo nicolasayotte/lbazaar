@@ -29,7 +29,7 @@
     "verification.verify": "\/email\/verify\/{id}\/{hash}",
     "resend.emailverification.send": "\/email\/resend",
     "forgot.password.index": "\/forgot-password",
-    "forgot\/password.store": "\/forgot-password",
+    "forgot.password.store": "\/forgot-password",
     "password.reset": "\/reset-password\/{token}",
     "password.reset.update": "\/reset-password\/{token}"
 }

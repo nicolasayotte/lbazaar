@@ -6,6 +6,7 @@ import Input from "../../components/forms/Input"
 import routes from "../../helpers/routes.helper"
 import { displaySelectOptions } from "../../helpers/form.helper"
 import React,{useState} from "react"
+import { Link } from "@inertiajs/inertia-react"
 
 const RegisterStudent  = ({ countries, errors }) => {
 
@@ -86,6 +87,7 @@ const RegisterStudent  = ({ countries, errors }) => {
                                             onChange={handleOnChange}
                                             errors={errors}
                                           >
+                                            <option value=""></option>
                                             {displaySelectOptions(countries)}
                                           </Input>
                                         </Grid>
@@ -135,6 +137,9 @@ const RegisterStudent  = ({ countries, errors }) => {
                                 </form>
                             </CardContent>
                         </Card>
+                        <Box sx={{ textAlign: 'center', mt: 3 }}>
+                            <Link href={routes["portal.login"]}><Button>Back to login</Button></Link>
+                        </Box>
                     </Grid>
                 </Grid>
             </Container>
