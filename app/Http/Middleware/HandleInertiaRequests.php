@@ -39,19 +39,7 @@ class HandleInertiaRequests extends Middleware
         return array_merge(parent::share($request), [
             'isLoggedIn' => fn () => @$request->user() ? true : false,
             'auth.user'  => fn () => @$request->user() ?? null,
-            'messages'   => [
-                'user'    => [
-                    'logout' => 'User signed out successfully'
-                ],
-                'error'   => 'There was an error encountered',
-                'success' => [
-                    'forgotPassword'    => 'Reset password link already sent to you email.',
-                    'profile'           => 'Profile successfully updated',
-                    'auth'              => 'User successfully authenticated',
-                    'password'          => 'Password successfully updated',
-                    'inquiry'           => 'Inquiry successfully submitted'
-                ]
-            ]
+            'messages'   => trans('messages')
         ]);
     }
 }
