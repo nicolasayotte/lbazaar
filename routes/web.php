@@ -63,6 +63,7 @@ Route::prefix('admin')->name('admin.')->group(function() {
         Route::prefix('users')->name('users.')->group(function() {
             Route::get('/', [UserController::class, 'index'])->name('index');
             Route::get('/{id}', [UserController::class, 'view'])->name('view');
+            Route::post('/{id}/status/{status}', [UserController::class, 'updateStatus'])->name('status.update');
         });
     });
 });

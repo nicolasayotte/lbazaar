@@ -5,10 +5,25 @@ import { displaySelectOptions } from "../../../helpers/form.helper"
 import UserTable from "./components/UserTable"
 import routes from "../../../helpers/routes.helper"
 import TableLoader from "../../../components/common/TableLoader"
+import ConfirmationDialog from "../../../components/common/ConfirmationDialog"
+import { useState } from "react"
+import { getRoute } from "../../../helpers/routes.helper"
+import { Inertia } from "@inertiajs/inertia"
+import { useDispatch } from "react-redux"
+import { actions } from "../../../store/slices/ToasterSlice"
 
 const Index = () => {
 
-    const { users, roleOptions, statusOptions, status, keyword, role, sort } = usePage().props
+    const dispatch = useDispatch()
+
+    const { users, roleOptions, statusOptions, status, keyword, role, sort, messages } = usePage().props
+
+    const [dialog, setDialog] = useState({
+        open: false,
+        title: '',
+        text: '',
+        url: ''
+    })
 
     const { data: filters, setData: setFilters, get, transform, processing } = useForm({
         keyword: keyword,
@@ -58,6 +73,52 @@ const Index = () => {
         }))
 
         handleFilterSubmit(e)
+    }
+
+    // Enable button click handler
+    const handleOnEnable = (id) => {
+        setDialog(dialog => ({
+            ...dialog,
+            open: true,
+            title: 'Enable User',
+            text: 'Are you sure you want to enable this user?',
+            url: getRoute('admin.users.status.update', {
+                id: id,
+                status: 'active'
+            })
+        }))
+    }
+
+    // Disable button click handler
+    const handleOnDisable = (id) => {
+        setDialog(dialog => ({
+            ...dialog,
+            open: true,
+            title: 'Disable User',
+            text: 'Are you sure you want to disable this user?',
+            url: getRoute('admin.users.status.update', {
+                id: id,
+                status: 'disabled'
+            })
+        }))
+    }
+
+    // Dialog close handler
+    const handleOnDialogClose = () => {
+        setDialog({ open: false })
+    }
+
+    // Dialog confirm handler
+    const handleOnDialogConfirm = () => {
+        Inertia.post(dialog.url, dialog, {
+            onSuccess: () => {
+                setDialog({ open: false })
+
+                dispatch(actions.success({
+                    message: messages.success.user.status.update
+                }))
+            }
+        })
     }
 
     return (
@@ -136,7 +197,7 @@ const Index = () => {
             {
                 processing
                 ? <TableLoader />
-                : <UserTable data={users.data} />
+                : <UserTable data={users.data} handleOnEnable={handleOnEnable} handleOnDisable={handleOnDisable} />
             }
             <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
                 <Pagination
@@ -146,6 +207,11 @@ const Index = () => {
                     color="primary"
                 />
             </Box>
+            <ConfirmationDialog
+                {...dialog}
+                handleClose={handleOnDialogClose}
+                handleConfirm={handleOnDialogConfirm}
+            />
         </Box>
     )
 }
