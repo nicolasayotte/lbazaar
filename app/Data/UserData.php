@@ -112,7 +112,7 @@ class UserData
         $userData->setEmail($user->email);
         $userData->setStatus($user->is_enabled ? ucfirst(User::ACTIVE) : ucfirst(User::DISABLED));
         $userData->setDateJoined(Carbon::parse($user->created_at)->format('Y-m-d'));
-        $userData->setIsActive($user->is_enabled);
+        $userData->setIsActive($user->is_enabled ? true : false);
         $userData->setCountry($user->country->name);
 
         $userRoles = $user->roles()->pluck('name');
