@@ -6,6 +6,7 @@ import Input from "../../components/forms/Input"
 import routes from "../../helpers/routes.helper"
 import { displaySelectOptions } from "../../helpers/form.helper"
 import React,{useState} from "react"
+import { Link } from "@inertiajs/inertia-react"
 
 const RegisterStudent  = ({ countries, errors }) => {
 
@@ -47,7 +48,7 @@ const RegisterStudent  = ({ countries, errors }) => {
     }
 
     return (
-        <Box>
+        <Box sx={{ minHeight: '80.75vh' }}>
             <Container>
                 <Grid container>
                     <Grid item xs={12} md={8} mx="auto" py={5}>
@@ -136,6 +137,9 @@ const RegisterStudent  = ({ countries, errors }) => {
                                 </form>
                             </CardContent>
                         </Card>
+                        <Box sx={{ textAlign: 'center', mt: 3 }}>
+                            <Link href={routes["portal.login"]}><Button>Back to login</Button></Link>
+                        </Box>
                     </Grid>
                 </Grid>
             </Container>

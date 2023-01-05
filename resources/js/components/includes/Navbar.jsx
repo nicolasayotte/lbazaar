@@ -28,10 +28,10 @@ const Navbar = (props) => {
     const signInButton = (
         <Box sx={{ flexGrow: 0, display: { xs: "none", sm: "flex" } }}>
             <ListItemButton>
-                <Link as="span" href={routes["register.index"]}>Sign Up</Link>
+                <Link href={routes["register.index"]}>Sign Up</Link>
             </ListItemButton>
             <ListItemButton>
-                <Link as="span" href={routes["portal.login"]}>Login</Link>
+                <Link href={routes["portal.login"]}>Login</Link>
             </ListItemButton>
         </Box>
     )
@@ -39,10 +39,10 @@ const Navbar = (props) => {
     const signOutButton = (
         <Box sx={{ flexGrow: 0, display: { xs: "none", sm: "flex" } }}>
             <ListItemButton>
-                <Link as="span" href="#">Profile </Link>
+                <Link href="#">Profile </Link>
             </ListItemButton>
             <ListItemButton>
-                <Link as="span" method="POST" href={routes["portal.logout"]}>Sign Out</Link>
+                <Link method="POST" href={routes["portal.logout"]}>Sign Out</Link>
             </ListItemButton>
         </Box>
     )

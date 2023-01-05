@@ -1,9 +1,9 @@
 import { Link, useForm } from "@inertiajs/inertia-react"
 import { Box, Button, Card, CardContent, Container, Grid, Typography } from "@mui/material"
 import { useDispatch } from "react-redux"
-import ErrorText from "../../components/common/ErrorText"
 import Input from "../../components/forms/Input"
 import { actions } from "../../store/slices/ToasterSlice"
+import routes from "../../helpers/routes.helper"
 
 const ForgotPassword = ({errors, messages}) => {
 
@@ -58,9 +58,6 @@ const ForgotPassword = ({errors, messages}) => {
                                         errors={errors}
                                     />
                                 </Box>
-                                <Box sx={{ textAlign: 'center', mt: 3 }}>
-                                    <Link href="/">Back to login page</Link>
-                                </Box>
                                 <Button
                                     sx={{ my: 2 }}
                                     variant="contained"
@@ -72,6 +69,9 @@ const ForgotPassword = ({errors, messages}) => {
                             </form>
                         </CardContent>
                     </Card>
+                    <Box sx={{ textAlign: 'center', mt: 3 }}>
+                        <Link href={routes["portal.login"]}><Button>Back to login</Button></Link>
+                    </Box>
                 </Grid>
             </Grid>
         </Container>
