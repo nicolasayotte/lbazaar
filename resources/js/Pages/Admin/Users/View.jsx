@@ -2,7 +2,7 @@ import { Link, usePage } from "@inertiajs/inertia-react"
 import { Box, Breadcrumbs, Paper, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from "@mui/material"
 import routes from "../../../helpers/routes.helper"
 
-const UserView = () => {
+const View = () => {
 
     const { user } = usePage().props
 
@@ -53,4 +53,4 @@ const UserView = () => {
     )
 }
 
-export default UserView
+export default View
