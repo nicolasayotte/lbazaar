@@ -117,7 +117,10 @@ const Index = () => {
                 dispatch(actions.success({
                     message: messages.success.user.status.update
                 }))
-            }
+            },
+            onError: () => dispatch(actions.error({
+                message: messages.error
+            }))
         })
     }
 
