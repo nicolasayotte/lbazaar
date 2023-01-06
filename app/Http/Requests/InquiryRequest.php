@@ -24,10 +24,10 @@ class InquiryRequest extends FormRequest
     public function rules()
     {
         return [
-            'name'    => 'required|alpha',
+            'name'    => 'required|alpha_spaces',
             'email'   => 'required|email',
-            'subject' => 'required|alpha_num',
-            'message' => 'required|alpha_num|max:200'
+            'subject' => 'required|alpha_spaces',
+            'message' => 'required|max:200'
         ];
     }
 }
