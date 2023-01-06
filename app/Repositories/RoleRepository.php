@@ -11,7 +11,7 @@ class RoleRepository extends BaseRepository
         parent::__construct(new Role());
     }
 
-    public function getFilterData()
+    public function getDropdownData()
     {
         $roles = $this->model->get();
 
