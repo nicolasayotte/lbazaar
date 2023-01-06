@@ -38,7 +38,9 @@ class UserController extends Controller
 
     public function create()
     {
-        return Inertia::render('Admin/Users/Create');
+        return Inertia::render('Admin/Users/Create')->withViewData([
+            'title' => 'Create User | Admin'
+        ]);
     }
 
     public function view($id)
