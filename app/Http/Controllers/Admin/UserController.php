@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Repositories\ClassificationRepository;
+use App\Repositories\CountryRepository;
 use App\Repositories\RoleRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
@@ -15,17 +17,23 @@ class UserController extends Controller
 
     private $roleRepository;
 
+    private $countryRepository;
+
+    private $classificationRepository;
+
     public function __construct()
     {
-        $this->userRepository = new UserRepository();
-        $this->roleRepository = new RoleRepository();
+        $this->userRepository           = new UserRepository();
+        $this->roleRepository           = new RoleRepository();
+        $this->countryRepository        = new CountryRepository();
+        $this->classificationRepository = new ClassificationRepository();
     }
 
     public function index(Request $request)
     {
         return Inertia::render('Admin/Users/Index', [
             'users'         => $this->userRepository->get($request->all()),
-            'roleOptions'   => $this->roleRepository->getFilterData(),
+            'roleOptions'   => $this->roleRepository->getDropdownData(),
             'statusOptions' => $this->userRepository->getStatusFilterData(),
             'keyword'       => @$request['keyword'] ?? '',
             'role'          => @$request['role'] ?? '',
@@ -38,7 +46,11 @@ class UserController extends Controller
 
     public function create()
     {
-        return Inertia::render('Admin/Users/Create')->withViewData([
+        return Inertia::render('Admin/Users/Create', [
+            'roleOptions'           => $this->roleRepository->getDropdownData(),
+            'countryOptions'        => $this->countryRepository->getDropdownData(),
+            'classificationOptions' => $this->classificationRepository->getDropdownData()
+        ])->withViewData([
             'title' => 'Create User | Admin'
         ]);
     }
