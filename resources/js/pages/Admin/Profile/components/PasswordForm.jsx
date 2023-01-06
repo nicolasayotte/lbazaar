@@ -31,7 +31,7 @@ const PasswordForm = ({ errors, messages, routes }) => {
                 setTimeout(() => {
                     post(routes['admin.logout'], {
                         onSuccess: () => dispatch(actions.success({
-                            message: messages.user.logout
+                            message: messages.success.user.logout
                         }))
                     })
                 }, 2000)

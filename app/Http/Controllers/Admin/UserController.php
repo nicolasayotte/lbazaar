@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Repositories\RoleRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
@@ -43,5 +44,14 @@ class UserController extends Controller
         ->withViewData([
             'title' => 'User Details | Admin'
         ]);
+    }
+
+    public function updateStatus($id, $status)
+    {
+        $user = $this->userRepository->findOrFail($id);
+
+        $user->update(['is_enabled' => $status == User::ACTIVE ? 1 : 0]);
+
+        return redirect()->back();
     }
 }
