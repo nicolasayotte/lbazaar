@@ -10,13 +10,13 @@ const View = () => {
         <Box>
             <Typography
                 variant="h4"
-                children="User"
+                children="User Details"
                 gutterBottom
             />
             <Box sx={{ mb: 2 }}>
                 <Breadcrumbs>
                     <Link href={routes["admin.users.index"]} children="Manage Users" />
-                    <Typography color={'text.primary'} children="User" />
+                    <Typography color={'text.primary'} children="User Details" />
                 </Breadcrumbs>
             </Box>
             <TableContainer component={Paper}>

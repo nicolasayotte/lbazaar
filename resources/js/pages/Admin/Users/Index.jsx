@@ -127,11 +127,11 @@ const Index = () => {
 
     return (
         <Box>
-            <Grid container alignItems="center" justifyContent="space-between" sx={{ mb: 3 }}>
+            <Grid container alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
                 <Grid item xs={12} md={6}>
                     <Typography
                         variant="h4"
-                        children="Users"
+                        children="Manage Users"
                     />
                 </Grid>
                 <Grid item xs={12} md={6} textAlign="right">
