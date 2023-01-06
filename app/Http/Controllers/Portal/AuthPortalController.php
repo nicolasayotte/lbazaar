@@ -31,7 +31,7 @@ class AuthPortalController extends Controller
             'is_enabled' => 1,
             fn ($query) => $query->whereRoleIs(Role::STUDENT)->where('email_verified_at', '!=', NULL)
         ])) {
-            return redirect()->intended('/inquiries');
+            return redirect()->intended('/');
         }
         return redirect()->back()->withErrors(['email' => 'Invalid credentials']);
     }
