@@ -36,6 +36,11 @@ class UserController extends Controller
         ]);
     }
 
+    public function create()
+    {
+        return Inertia::render('Admin/Users/Create');
+    }
+
     public function view($id)
     {
         return Inertia::render('Admin/Users/UserView', [
