@@ -5,7 +5,7 @@ import UserForm from "./components/UserForm"
 
 const Create = () => {
 
-    const { roleOptions, countryOptions, classificationOptions } = usePage().props
+    const { roleOptions, countryOptions, classificationOptions, messages, errors } = usePage().props
 
     return (
         <Box>
@@ -21,6 +21,8 @@ const Create = () => {
                 </Breadcrumbs>
             </Box>
             <UserForm
+                errors={errors}
+                messages={messages}
                 countryOptions={countryOptions}
                 roleOptions={roleOptions}
                 classificationOptions={classificationOptions}

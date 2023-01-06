@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CreateUserRequest;
 use App\Models\User;
 use App\Repositories\ClassificationRepository;
 use App\Repositories\CountryRepository;
@@ -44,6 +45,16 @@ class UserController extends Controller
         ]);
     }
 
+    public function view($id)
+    {
+        return Inertia::render('Admin/Users/View', [
+            'user' => $this->userRepository->findOne($id)
+        ])
+        ->withViewData([
+            'title' => 'User Details | Admin'
+        ]);
+    }
+
     public function create()
     {
         return Inertia::render('Admin/Users/Create', [
@@ -55,14 +66,9 @@ class UserController extends Controller
         ]);
     }
 
-    public function view($id)
+    public function store(CreateUserRequest $request)
     {
-        return Inertia::render('Admin/Users/View', [
-            'user' => $this->userRepository->findOne($id)
-        ])
-        ->withViewData([
-            'title' => 'User Details | Admin'
-        ]);
+        dd('validation passed');
     }
 
     public function updateStatus($id, $status)
