@@ -1,9 +1,5 @@
 
 import routes from "../../../helpers/routes.helper"
-import { Typography, Container, Box, Grid, Card, CardContent, List, Divider, IconButton, Drawer, Toolbar, ListItem, ListItemButton} from "@mui/material"
-import { useState } from "react"
-import { Menu } from "@mui/icons-material"
-import { Link } from "@inertiajs/inertia-react"
 import ProfileForm from "./components/ProfileForm"
 import MyPage from "../../../layouts/MyPage"
 import PasswordForm from "../../../components/common/forms/PasswordForm"
