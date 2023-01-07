@@ -25,13 +25,29 @@ class ProfileController extends Controller
     public function index()
     {
         $countries = Country::all();
-        $user = User::find(1);
-        Auth::login($user);
-
+        
         return Inertia::render('Portal/Profile/Index', [
             'countries' => $countries
         ])->withViewData([
             'title' => 'Profile | My page'
         ]);
+    }
+
+    public function update(ProfileRequest $request)
+    {
+        $user = $this->userRepository->findOrFail(auth()->user()->id);
+
+        $user->update($request->all());
+
+        return redirect()->route('profile.index');
+    }
+
+    public function updatePassword(UpdatePasswordRequest $request)
+    {
+        $user = $this->userRepository->findOrFail(auth()->user()->id);
+
+        $user->update(['password' => bcrypt($request['new_password'])]);
+
+        return redirect()->back();
     }
 }

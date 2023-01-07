@@ -1,7 +1,7 @@
 
 import routes from "../../../helpers/routes.helper"
 import ProfileForm from "./components/ProfileForm"
-import PasswordForm from "./components/PasswordForm"
+import PasswordForm from "../../../components/common/forms/PasswordForm"
 import { Typography } from "@mui/material"
 
 const Index = ({ auth, countries, errors, messages }) => {
@@ -23,6 +23,7 @@ const Index = ({ auth, countries, errors, messages }) => {
                 errors={errors.passwords}
                 messages={messages}
                 routes={routes}
+                logoutUrl='admin.logout'
             />
         </>
     )

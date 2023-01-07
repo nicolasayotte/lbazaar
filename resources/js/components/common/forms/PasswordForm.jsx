@@ -1,10 +1,10 @@
 import { useForm } from "@inertiajs/inertia-react"
 import { Box, Button, Card, CardContent, Grid, Typography } from "@mui/material"
 import { useDispatch } from "react-redux"
-import Input from "../../../../components/forms/Input"
-import { actions } from "../../../../store/slices/ToasterSlice"
+import Input from "../../forms/Input"
+import { actions } from "../../../store/slices/ToasterSlice"
 
-const PasswordForm = ({ errors, messages, routes }) => {
+const PasswordForm = ({ errors, messages, routes, logoutUrl }) => {
 
     const dispatch = useDispatch()
 
@@ -21,15 +21,15 @@ const PasswordForm = ({ errors, messages, routes }) => {
     const handleSubmit = e => {
         e.preventDefault()
 
-        patch(routes['admin.password.update'], {
+        patch(routes['profile.password.update'], {
             errorBag: 'passwords',
             onSuccess: () => {
                 dispatch(actions.success({
                     message: messages.success.password
                 }))
-
                 setTimeout(() => {
-                    post(routes['admin.logout'], {
+                    dispatch(actions.hide())
+                    post(routes[logoutUrl], {
                         onSuccess: () => dispatch(actions.success({
                             message: messages.success.user.logout
                         }))

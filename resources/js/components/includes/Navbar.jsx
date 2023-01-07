@@ -39,7 +39,7 @@ const Navbar = (props) => {
     const signOutButton = (
         <Box sx={{ flexGrow: 0, display: { xs: "none", sm: "flex" } }}>
             <ListItemButton>
-                <Link href="#">Profile </Link>
+                <Link href={routes["profile.index"]}>Profile</Link>
             </ListItemButton>
             <ListItemButton>
                 <Link as="span" method="POST" href={routes["portal.logout"]}>Sign Out</Link>

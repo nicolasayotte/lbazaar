@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\InquiriesController as AdminInquiriesController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Portal\ProfileController as PortalProfileController;
 use App\Http\Controllers\Portal\AuthPortalController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Portal\CourseController;
@@ -50,8 +51,6 @@ Route::prefix('admin')->name('admin.')->group(function() {
             Route::get('/', [ProfileController::class, 'index'])->name('index');
             Route::patch('/', [ProfileController::class, 'update'])->name('update');
         });
-
-        Route::patch('/password/update', [ProfileController::class, 'update_password'])->name('password.update');
 
         # Inquiries
         Route::prefix('inquiries')->name('inquiries.')->group(function() {
@@ -106,6 +105,8 @@ Route::get('/reset-password/{token}', [ForgotPasswordController::class, 'passwor
 Route::patch('/reset-password/{token}', [ForgotPasswordController::class, 'updatePassword'])->middleware('guest')->name('password.reset.update');
 
 # Profile
-Route::prefix('profile')->name('profile.')->group(function() {
+Route::prefix('profile')->middleware(['auth'])->name('profile.')->group(function() {
     Route::get('/', [PortalProfileController::class, 'index'])->name('index');
+    Route::patch('/', [PortalProfileController::class, 'update'])->name('update');
+    Route::patch('/password/update', [PortalProfileController::class, 'updatePassword'])->name('password.update');
 });

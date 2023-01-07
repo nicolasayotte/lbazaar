@@ -40,12 +40,4 @@ class ProfileController extends Controller
         return redirect()->route('admin.profile.index');
     }
 
-    public function update_password(UpdatePasswordRequest $request)
-    {
-        $user = $this->userRepository->findOrFail(auth()->user()->id);
-
-        $user->update(['password' => bcrypt($request['new_password'])]);
-
-        return redirect()->route('admin.profile.index');
-    }
 }

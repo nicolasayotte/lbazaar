@@ -1,10 +1,11 @@
 
 import routes from "../../../helpers/routes.helper"
-import { Typography, Box, Grid, Card, CardContent, List, Divider, IconButton, Drawer, Toolbar, ListItem, ListItemButton} from "@mui/material"
+import { Typography, Container, Box, Grid, Card, CardContent, List, Divider, IconButton, Drawer, Toolbar, ListItem, ListItemButton} from "@mui/material"
 import { useState } from "react"
 import { Menu } from "@mui/icons-material"
 import { Link } from "@inertiajs/inertia-react"
 import ProfileForm from "./components/ProfileForm"
+import PasswordForm from "../../../components/common/forms/PasswordForm"
 
 const Index = ({ auth, countries, errors, messages, window }) => {
 
@@ -21,30 +22,47 @@ const Index = ({ auth, countries, errors, messages, window }) => {
     const navItems = [
         {
             name: 'Profile',
-            link: ''
+            link: routes["profile.index"],
+            roles: ['student', 'teacher']
+        },
+        {
+            name: 'Class Application',
+            link: '',
+            roles: ['teacher']
+        },
+        {
+            name: 'Manage Classes',
+            link: '',
+            roles: ['teacher']
         },
         {
             name: 'Class Histories',
-            link: ''
+            roles: ['student', 'teacher']
         }
     ]
 
     const menu = (
         <>
-            {navItems.map(item => (
-                <ListItem key={item.name}>
-                    <ListItemButton>
-                        <Link
-                            as="span"
-                            href={item.link}
-                            children={item.name}
-                            style={{
-                                width: '100%'
-                            }}
-                        />
-                    </ListItemButton>
-                </ListItem>
-            ))}
+            {navItems.map(item => {
+                let isAccessible = auth.user.roles.some(role => {
+                    return item.roles.includes(role.name);
+                  });
+                return isAccessible ?
+                        <ListItem key={item.name}>
+                            <ListItemButton>
+                                <Link
+                                    as="span"
+                                    href={item.link}
+                                    children={item.name}
+                                    style={{
+                                        width: '100%'
+                                    }}
+                                />
+                            </ListItemButton>
+                        </ListItem>
+                    :
+                       null
+            })}
         </>
     )
 
@@ -61,10 +79,6 @@ const Index = ({ auth, countries, errors, messages, window }) => {
 
     const sidebarLink = (
         <>
-            <Toolbar>
-                <Typography variant="h6" textAlign="center">My Page</Typography>
-            </Toolbar>
-            <Divider />
             <List>
                 {menu}
                 <Divider />
@@ -94,40 +108,52 @@ const Index = ({ auth, countries, errors, messages, window }) => {
     )
 
     return (
-        <Box>
-            <Grid container sx={{m: 4}}>
-                <Grid item xs={10} sm={3} md={3} lg={3}>
-                    <Card sx={{ display: { xs: 'none', sm: 'none', md: 'inline-block' } }}>
-                        <CardContent sx={{ p: '30px'}}>
-                            {sidebarLink}
-                        </CardContent>
-                    </Card>
-                </Grid>
-                <Grid item xs={10} sm={9} md={9} lg={9}>
-                    <Grid container>  
-                        <IconButton
-                                color="white"
-                                sx={{ display: { xs: 'inline-block', sm: 'inline-block', md: 'none' } }}
-                                onClick={toggleMobileDrawer}
-                            >
-                                <Menu color="inherit" />
-                            </IconButton>
-                            <Typography
-                                variant="h4"
-                                children="Profile"
-                                gutterBottom
-                            />
+        <Box sx={{ minHeight: '80.75vh' }}>
+            <Container>
+                <Grid container sx={{mt: 4}}>
+                    <Grid item xs={10} sm={3} md={3} lg={3}>
+                        <Typography variant="h5" sx={{mb: 2, display: { xs: 'none', sm: 'none', md: 'inline-block' } }}>
+                        My Page | Profile
+                        </Typography>
+                        <Card sx={{ p:2, display: { xs: 'none', sm: 'none', md: 'inline-block' } }}>
+                            <CardContent>
+                                {sidebarLink}
+                            </CardContent>
+                        </Card>
                     </Grid>
-                    <ProfileForm
-                        auth={auth}
-                        countries={countries}
-                        errors={errors.profile}
-                        messages={messages}
-                        routes={routes}
-                    />
+                    <Grid className="myprofile-card" item xs={12} sm={12} md={9} lg={9} sx={{mt:6}}>
+                        <Grid container>  
+                            <IconButton
+                                    color="white"
+                                    sx={{ display: { xs: 'inline-block', sm: 'inline-block', md: 'none' } }}
+                                    onClick={toggleMobileDrawer}
+                                >
+                                    <Menu color="inherit" />
+                                </IconButton>
+                                <Typography
+                                    variant="h5"
+                                    children="My Page | Profile"
+                                    gutterBottom
+                                    sx={{ display: { xs: 'inline-block', sm: 'inline-block', md: 'none' } }}
+                                />
+                        </Grid>
+                        <ProfileForm
+                            auth={auth}
+                            countries={countries}
+                            errors={errors.profile}
+                            messages={messages}
+                            routes={routes}
+                        />
+                        <PasswordForm
+                            errors={errors.passwords}
+                            messages={messages}
+                            routes={routes}
+                            logoutUrl='portal.logout'
+                        />
+                    </Grid>
                 </Grid>
-            </Grid>
-            {mobileDrawer}
+                {mobileDrawer}
+            </Container>
         </Box>
     )
 }
