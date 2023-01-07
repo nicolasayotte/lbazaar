@@ -7,7 +7,6 @@ import { actions } from "../../../../store/slices/ToasterSlice"
 
 const ProfileForm = ({ errors, auth, countries, messages, routes }) => {
 
-    console.log(errors)
     const dispatch = useDispatch()
 
     const { data, setData, patch, processing } = useForm('ProfileForm', {
