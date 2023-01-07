@@ -7,6 +7,7 @@ import { actions } from "../../../../store/slices/ToasterSlice"
 
 const ProfileForm = ({ errors, auth, countries, messages, routes }) => {
 
+    console.log(errors)
     const dispatch = useDispatch()
 
     const { data, setData, patch, processing } = useForm('ProfileForm', {
@@ -19,7 +20,7 @@ const ProfileForm = ({ errors, auth, countries, messages, routes }) => {
     const handleSubmit = e => {
         e.preventDefault()
 
-        patch(routes["admin.profile.update"], {
+        patch(routes["profile.update"], {
             preserveScroll: true,
             errorBag: 'profile',
             onSuccess: () => dispatch(actions.success({
@@ -35,7 +36,7 @@ const ProfileForm = ({ errors, auth, countries, messages, routes }) => {
         <Card key="Profile Form Card">
             <form onSubmit={handleSubmit}>
                 <CardContent sx={{ p: 4 }}>
-                    <Typography fontFamily="inherit" variant="h5" component="div" sx={{ mb: 4 }}>Edit Profile</Typography>
+                    <Typography fontFamily="inherit" variant="h5" component="div" sx={{ mb: 4 }}>Edit test Profile</Typography>
                     <Grid container spacing={3}>
                         <Grid item xs={12} md={6}>
                             <Input
