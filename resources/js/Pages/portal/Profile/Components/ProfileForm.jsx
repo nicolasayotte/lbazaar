@@ -39,7 +39,7 @@ const ProfileForm = ({ errors, auth, countries, messages, routes }) => {
         <Card key="Profile Form Card">
             <form onSubmit={handleSubmit}>
                 <CardContent sx={{ p: 4 }}>
-                    <Typography fontFamily="inherit" variant="h5" component="div" sx={{ mb: 4 }}>Edit test Profile</Typography>
+                    <Typography fontFamily="inherit" variant="h5" component="div" sx={{ mb: 4 }}>Edit Profile</Typography>
                     <Grid container spacing={3}>
                         <Grid item xs={12} md={6}>
                             <Input
