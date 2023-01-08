@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Portal\ProfileController as PortalProfileController;
 use App\Http\Controllers\Portal\AuthPortalController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Portal\ClassHistoryController;
 use App\Http\Controllers\Portal\CourseController;
 use App\Http\Controllers\Portal\ForgotPasswordController;
 use App\Http\Controllers\Portal\InquiriesController;
