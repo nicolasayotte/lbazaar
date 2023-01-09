@@ -28,8 +28,8 @@ class CreateUserRequest extends FormRequest
             'first_name'        => 'required|alpha_spaces',
             'last_name'         => 'required|alpha_spaces',
             'email'             => 'required|email|unique:users,email',
-            'role_id'           => 'required',
-            'classification_id' => 'required_if:role_id,==,'.Role::TEACHER,
+            'role'              => 'required',
+            'classification_id' => 'required_if:role,==,'.Role::TEACHER,
             'country_id'        => 'required'
         ];
     }
@@ -42,7 +42,6 @@ class CreateUserRequest extends FormRequest
     public function messages()
     {
         return [
-            'role_id'                       => trans('validation.required', ['attribute' => 'role']),
             'country_id.required'           => trans('validation.required', ['attribute' => 'country']),
             'classification_id.required_if' => trans('validation.required_if', [
                 'attribute' => 'classification',
