@@ -17,7 +17,7 @@ const UserForm = ({ messages, errors, roleOptions, countryOptions, classificatio
         first_name: '',
         last_name: '',
         email: '',
-        role_id: '',
+        role: '',
         classification_id: '',
         country_id: ''
     })
@@ -53,6 +53,9 @@ const UserForm = ({ messages, errors, roleOptions, countryOptions, classificatio
         e.preventDefault()
 
         post(routes["admin.users.store"], {
+            onSuccess: () => dispatch(actions.success({
+                message: messages.success.user.create
+            })),
             onError: () => dispatch(actions.error({
                 message: messages.error
             }))
@@ -74,7 +77,7 @@ const UserForm = ({ messages, errors, roleOptions, countryOptions, classificatio
                     <TableBody>
                         <TableRow>
                             <TableCell
-                                width="20%"
+                                width="15%"
                                 variant="borderless"
                                 children="First Name"
                             />
@@ -89,7 +92,7 @@ const UserForm = ({ messages, errors, roleOptions, countryOptions, classificatio
                         </TableRow>
                         <TableRow>
                             <TableCell
-                                width="20%"
+                                width="15%"
                                 variant="borderless"
                                 children="Last Name"
                             />
@@ -104,7 +107,7 @@ const UserForm = ({ messages, errors, roleOptions, countryOptions, classificatio
                         </TableRow>
                         <TableRow>
                             <TableCell
-                                width="20%"
+                                width="15%"
                                 variant="borderless"
                                 children="Email"
                             />
@@ -120,16 +123,16 @@ const UserForm = ({ messages, errors, roleOptions, countryOptions, classificatio
                         </TableRow>
                         <TableRow>
                             <TableCell
-                                width="20%"
+                                width="15%"
                                 variant="borderless"
                                 children="Role"
                             />
                             <TableCell variant="borderless">
                                 <Input
                                     select
-                                    id="role_id"
-                                    name="role_id"
-                                    value={data.role_id}
+                                    id="role"
+                                    name="role"
+                                    value={data.role}
                                     onChange={handleOnRoleChange}
                                     errors={errors}
                                 >
@@ -142,7 +145,7 @@ const UserForm = ({ messages, errors, roleOptions, countryOptions, classificatio
                             (isTeacher) &&
                             <TableRow>
                                 <TableCell
-                                    width="20%"
+                                    width="15%"
                                     variant="borderless"
                                     children="Classification"
                                 />
@@ -161,7 +164,7 @@ const UserForm = ({ messages, errors, roleOptions, countryOptions, classificatio
                             </TableRow>
                         }
                         <TableRow>
-                            <TableCell width="20%" variant="borderless">Country</TableCell>
+                            <TableCell width="15%" variant="borderless">Country</TableCell>
                             <TableCell variant="borderless">
                                 <Input
                                     select

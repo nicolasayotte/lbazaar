@@ -4,12 +4,19 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateUserRequest;
+use App\Mail\AdminCreateUserNotification;
+use App\Models\Role;
 use App\Models\User;
 use App\Repositories\ClassificationRepository;
 use App\Repositories\CountryRepository;
 use App\Repositories\RoleRepository;
 use App\Repositories\UserRepository;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class UserController extends Controller
@@ -68,7 +75,19 @@ class UserController extends Controller
 
     public function store(CreateUserRequest $request)
     {
-        dd('validation passed');
+        $inputs = $request->all();
+
+        $randomPasswordString = Str::random(User::RANDOM_PASSWORD_STRING_LENGTH);
+
+        $inputs['password'] = Hash::make($randomPasswordString);
+
+        $user = User::create($inputs);
+
+        $user->attachRole($request['role']);
+
+        $this->sendEmailNotification($user, $randomPasswordString);
+
+        return redirect()->route('admin.users.index');
     }
 
     public function updateStatus($id, $status)
@@ -78,5 +97,18 @@ class UserController extends Controller
         $user->update(['is_enabled' => $status == User::ACTIVE ? 1 : 0]);
 
         return redirect()->back();
+    }
+
+    private function sendEmailNotification($user, $password)
+    {
+        $loginUrl = $user->hasRole(Role::ADMIN) ? route('admin.login') : route('portal.login');
+
+        try {
+            Mail::send(new AdminCreateUserNotification($user, $password, $loginUrl));
+        } catch (Exception $e) {
+            Log::error($e);
+        }
+
+        return true;
     }
 }
