@@ -82,7 +82,7 @@ class UserController extends Controller
         $randomPasswordString = Str::random(User::RANDOM_PASSWORD_STRING_LENGTH);
 
         // Set password as hashed $randomPasswordString
-        $inputs['password']   = Hash::make($randomPasswordString);
+        $inputs['password'] = Hash::make($randomPasswordString);
 
         $user = User::create($inputs);
 
