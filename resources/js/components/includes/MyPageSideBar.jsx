@@ -111,7 +111,7 @@ const MyPage = ({ app }) => {
             <Container>
                 <Grid container sx={{mt: 4}}>
                     <Grid item xs={10} sm={3} md={3} lg={3}>
-                        <Typography variant="h5" sx={{mb: 2, display: { xs: 'none', sm: 'none', md: 'inline-block' } }}>
+                        <Typography variant="h6" sx={{mb: 2, display: { xs: 'none', sm: 'none', md: 'inline-block' } }}>
                             {myPageTitle}
                         </Typography>
                         <Card sx={{ minWidth: '250px', display: { xs: 'none', sm: 'none', md: 'inline-block' } }}>
@@ -128,8 +128,8 @@ const MyPage = ({ app }) => {
                                     <Menu color="inherit" />
                                 </IconButton>
                                 <Typography
-                                    variant="h5"
-                                    children="My Page | Profile"
+                                    variant="h6"
+                                    children={myPageTitle}
                                     gutterBottom
                                     sx={{ display: { xs: 'inline-block', sm: 'inline-block', md: 'none' } }}
                                 />
