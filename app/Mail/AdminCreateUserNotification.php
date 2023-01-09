@@ -3,9 +3,11 @@
 namespace App\Mail;
 
 use App\Models\User;
+use App\Repositories\SettingRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
@@ -48,8 +50,11 @@ class AdminCreateUserNotification extends Mailable
      */
     public function envelope()
     {
+        $settingsRepository = new SettingRepository();
+
         return new Envelope(
             subject: 'Account successfully created',
+            from: new Address($settingsRepository->getSetting('no-reply-email')),
             to: [$this->user->email]
         );
     }
