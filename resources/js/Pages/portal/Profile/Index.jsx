@@ -27,11 +27,9 @@ const Index = ({ auth, countries, errors, messages, window }) => {
     return (
         <MyPage 
             auth={auth} 
-            countries={countries} 
-            errors={errors} 
-            messages={messages} 
             window={window} 
-            content={content}>
+            content={content}
+            title="My Page | Profile">
         </MyPage>
     )
 }

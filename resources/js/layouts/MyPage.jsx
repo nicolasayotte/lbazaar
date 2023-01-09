@@ -5,7 +5,7 @@ import { useState } from "react"
 import { Menu } from "@mui/icons-material"
 import { Link } from "@inertiajs/inertia-react"
 
-const MyPage = ({ auth, countries, errors, messages, window, content }) => {
+const MyPage = ({ auth, window, title, content }) => {
 
     const container = window !== undefined ? () => window().document.body : undefined;
 
@@ -111,7 +111,7 @@ const MyPage = ({ auth, countries, errors, messages, window, content }) => {
                 <Grid container sx={{mt: 4}}>
                     <Grid item xs={10} sm={3} md={3} lg={3}>
                         <Typography variant="h5" sx={{mb: 2, display: { xs: 'none', sm: 'none', md: 'inline-block' } }}>
-                        My Page | Profile
+                            {title}
                         </Typography>
                         <Card sx={{ p:2, display: { xs: 'none', sm: 'none', md: 'inline-block' } }}>
                             <CardContent>
