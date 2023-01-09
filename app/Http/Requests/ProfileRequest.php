@@ -24,8 +24,8 @@ class ProfileRequest extends FormRequest
     public function rules()
     {
         return [
-            'first_name' => 'required|alpha',
-            'last_name'  => 'required|alpha',
+            'first_name' => 'required|alpha_spaces',
+            'last_name'  => 'required|alpha_spaces',
             'country_id' => 'required'
         ];
     }

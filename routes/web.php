@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\InquiriesController as AdminInquiriesController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Portal\ProfileController as PortalProfileController;
 use App\Http\Controllers\Portal\AuthPortalController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Portal\CourseController;
@@ -50,8 +51,6 @@ Route::prefix('admin')->name('admin.')->group(function() {
             Route::get('/', [ProfileController::class, 'index'])->name('index');
             Route::patch('/', [ProfileController::class, 'update'])->name('update');
         });
-
-        Route::patch('/password/update', [ProfileController::class, 'update_password'])->name('password.update');
 
         # Inquiries
         Route::prefix('inquiries')->name('inquiries.')->group(function() {
@@ -104,3 +103,14 @@ Route::get('/forgot-password', [ForgotPasswordController::class, 'index'])->name
 Route::post('/forgot-password', [ForgotPasswordController::class, 'validateEmail'])->name('forgot.password.store');
 Route::get('/reset-password/{token}', [ForgotPasswordController::class, 'passwordReset'])->middleware('guest')->name('password.reset');
 Route::patch('/reset-password/{token}', [ForgotPasswordController::class, 'updatePassword'])->middleware('guest')->name('password.reset.update');
+
+# Profile
+Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function() {
+    Route::get('/', function(Request $request) {
+        return redirect()->route(@$request->user() ? 'mypage.profile.index' : 'portal.login');
+    });
+
+    Route::get('/profile', [PortalProfileController::class, 'index'])->name('profile.index');
+    Route::patch('/profile', [PortalProfileController::class, 'update'])->name('profile.update');
+    Route::patch('/password/update', [PortalProfileController::class, 'updatePassword'])->name('profile.password.update');
+});
