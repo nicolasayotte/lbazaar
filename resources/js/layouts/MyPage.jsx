@@ -4,13 +4,13 @@ import Navbar from "../components/includes/Navbar";
 import Toaster from "../components/includes/Toaster";
 import MyPageSideBar from "../components/includes/MyPageSideBar"
 
-const Layout = ({ auth, children }) => {
+const Layout = ({ children }) => {
 
     return (
         <>
             <Navbar />
             <Container>
-                <MyPageSideBar app={children} />
+                <MyPageSideBar page={children} />
             </Container>
             <Toaster />
             <Footer />

@@ -5,11 +5,11 @@ import { useState } from "react"
 import { Menu } from "@mui/icons-material"
 import { Link } from "@inertiajs/inertia-react"
 
-const MyPage = ({ app }) => {
+const MyPage = ({ page }) => {
 
-    const container = app.props.window !== undefined ? () => window().document.body : undefined;
+    const container = page.props.window !== undefined ? () => window().document.body : undefined;
     
-    const myPageTitle = app.props.title !== undefined ? app.props.title  : 'My Page';
+    const myPageTitle = page.props.title !== undefined ? page.props.title  : 'My Page';
 
     const [openMobileDrawer, setopenMobileDrawer] = useState(false)
 
@@ -44,7 +44,7 @@ const MyPage = ({ app }) => {
     const menu = (
         <>
             {navItems.map(item => {
-                let isAccessible = app.props.auth.user.roles.some(role => {
+                let isAccessible = page.props.auth.user.roles.some(role => {
                     return item.roles.includes(role.name);
                   });
                 return isAccessible ?
@@ -133,7 +133,7 @@ const MyPage = ({ app }) => {
                                     gutterBottom
                                     sx={{ display: { xs: 'inline-block', sm: 'inline-block', md: 'none' } }}
                                 />
-                            {app}
+                            {page}
                         </Grid>
                     </Grid>
                 </Grid>

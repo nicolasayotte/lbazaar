@@ -1,6 +1,6 @@
 
 import routes from "../../../../helpers/routes.helper"
-import ProfileForm from "../Components/ProfileForm"
+import ProfileForm from "../components/ProfileForm"
 import PasswordForm from "../../../../components/common/forms/PasswordForm"
 
 const Index = ({ auth, countries, errors, messages }) => {
