@@ -12,7 +12,6 @@
     "admin.logout": "\/admin\/logout",
     "admin.profile.index": "\/admin\/profile",
     "admin.profile.update": "\/admin\/profile",
-    "admin.password.update": "\/admin\/password\/update",
     "admin.inquiries.index": "\/admin\/inquiries",
     "admin.inquiries.view": "\/admin\/inquiries\/{id}",
     "admin.users.index": "\/admin\/users",
@@ -34,5 +33,8 @@
     "forgot.password.index": "\/forgot-password",
     "forgot.password.store": "\/forgot-password",
     "password.reset": "\/reset-password\/{token}",
-    "password.reset.update": "\/reset-password\/{token}"
+    "password.reset.update": "\/reset-password\/{token}",
+    "mypage.profile.index": "\/mypage\/profile",
+    "mypage.profile.update": "\/mypage\/profile",
+    "mypage.profile.password.update": "\/mypage\/password\/update"
 }

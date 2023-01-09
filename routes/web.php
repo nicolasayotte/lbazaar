@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\InquiriesController as AdminInquiriesController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Portal\ProfileController as PortalProfileController;
 use App\Http\Controllers\Portal\AuthPortalController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Portal\CourseController;
@@ -13,8 +14,6 @@ use App\Http\Controllers\Portal\TopPageController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Symfony\Component\HttpKernel\Profiler\Profile;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Mail\Markdown;
 
 /*
@@ -52,8 +51,6 @@ Route::prefix('admin')->name('admin.')->group(function() {
             Route::get('/', [ProfileController::class, 'index'])->name('index');
             Route::patch('/', [ProfileController::class, 'update'])->name('update');
         });
-
-        Route::patch('/password/update', [ProfileController::class, 'update_password'])->name('password.update');
 
         # Inquiries
         Route::prefix('inquiries')->name('inquiries.')->group(function() {
@@ -119,4 +116,15 @@ Route::get('/mail', function() {
         'temp_password' => 'test1234',
         'login_url' => config('app.url')
     ]);
+});
+
+# Profile
+Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function() {
+    Route::get('/', function(Request $request) {
+        return redirect()->route(@$request->user() ? 'mypage.profile.index' : 'portal.login');
+    });
+
+    Route::get('/profile', [PortalProfileController::class, 'index'])->name('profile.index');
+    Route::patch('/profile', [PortalProfileController::class, 'update'])->name('profile.update');
+    Route::patch('/password/update', [PortalProfileController::class, 'updatePassword'])->name('profile.password.update');
 });

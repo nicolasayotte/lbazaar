@@ -29,6 +29,7 @@ class CourseSeeder extends Seeder
                         'title'                 => $application->title,
                         'description'           => $application->description,
                         'professor_id'          => $application->professor_id,
+                        'course_type_id'        => $application->course_type_id,
                         'course_category_id'    => $application->course_category_id,
                         'course_application_id' => $application->id,
                         'price'                 => $application->price,

@@ -13,3 +13,9 @@ a {
     text-decoration: none;
     color: inherit;
 }
+
+@media only screen and (max-width: 600px) {
+  .myprofile-card {
+    margin-top: 0px !important;
+  }
+}
