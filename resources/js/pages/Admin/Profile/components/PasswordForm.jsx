@@ -45,7 +45,7 @@ const PasswordForm = ({ errors, messages, routes }) => {
     return (
         <Card key="Password Form Card" sx={{ mt: 2 }}>
             <form onSubmit={handleSubmit}>
-                <CardContent>
+                <CardContent sx={{ p: 4 }}>
                     <Box sx={{ mb: 3 }}>
                         <Typography fontFamily="inherit" variant="h5" component="div">Update Password</Typography>
                         <Typography variant="p" fontSize="small" color={"GrayText"}>You will be signed out when your password is updated</Typography>
