@@ -22,7 +22,8 @@ return [
             'logout' => 'User successfully signed out',
             'status' => [
                 'update' => 'User status successfully updated'
-            ]
+            ],
+            'create' => 'User successfully created'
         ]
     ]
 ];

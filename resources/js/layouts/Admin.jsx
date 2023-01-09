@@ -1,9 +1,10 @@
 import { usePage } from "@inertiajs/inertia-react"
-import { Container, Toolbar } from "@mui/material"
+import { Container, ThemeProvider, Toolbar } from "@mui/material"
 import { Box } from "@mui/system"
 import { useState } from "react"
 import AdminNavbar from "../components/includes/AdminNavbar"
 import Toaster from "../components/includes/Toaster"
+import AdminTheme from "../themes/admin.theme"
 
 const Admin = ({children}) => {
 
@@ -15,7 +16,7 @@ const Admin = ({children}) => {
 
         if (isLoggedIn) {
             return (
-                <>
+                <ThemeProvider theme={AdminTheme}>
                     <AdminNavbar
                         drawerWidth={drawerWidth}
                         setDrawerWidth={setDrawerWidth}
@@ -31,7 +32,7 @@ const Admin = ({children}) => {
                         </Container>
                     </Box>
                     <Toaster />
-                </>
+                </ThemeProvider>
             )
         }
 

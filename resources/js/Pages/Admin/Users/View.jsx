@@ -2,7 +2,7 @@ import { Link, usePage } from "@inertiajs/inertia-react"
 import { Box, Breadcrumbs, Paper, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from "@mui/material"
 import routes from "../../../helpers/routes.helper"
 
-const UserView = () => {
+const View = () => {
 
     const { user } = usePage().props
 
@@ -10,13 +10,13 @@ const UserView = () => {
         <Box>
             <Typography
                 variant="h4"
-                children="User"
+                children="User Details"
                 gutterBottom
             />
             <Box sx={{ mb: 2 }}>
                 <Breadcrumbs>
                     <Link href={routes["admin.users.index"]} children="Manage Users" />
-                    <Typography color={'text.primary'} children="User" />
+                    <Typography color={'text.primary'} children="User Details" />
                 </Breadcrumbs>
             </Box>
             <TableContainer component={Paper}>
@@ -53,4 +53,4 @@ const UserView = () => {
     )
 }
 
-export default UserView
+export default View

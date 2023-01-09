@@ -11,10 +11,10 @@ use App\Http\Controllers\Portal\ForgotPasswordController;
 use App\Http\Controllers\Portal\InquiriesController;
 use App\Http\Controllers\Portal\RegisterStudentController;
 use App\Http\Controllers\Portal\TopPageController;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Symfony\Component\HttpKernel\Profiler\Profile;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Mail\Markdown;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,6 +61,8 @@ Route::prefix('admin')->name('admin.')->group(function() {
         # Users
         Route::prefix('users')->name('users.')->group(function() {
             Route::get('/', [UserController::class, 'index'])->name('index');
+            Route::get('/create', [UserController::class, 'create'])->name('create');
+            Route::post('/', [UserController::class, 'store'])->name('store');
             Route::get('/{id}', [UserController::class, 'view'])->name('view');
             Route::post('/{id}/status/{status}', [UserController::class, 'updateStatus'])->name('status.update');
         });
@@ -103,6 +105,18 @@ Route::get('/forgot-password', [ForgotPasswordController::class, 'index'])->name
 Route::post('/forgot-password', [ForgotPasswordController::class, 'validateEmail'])->name('forgot.password.store');
 Route::get('/reset-password/{token}', [ForgotPasswordController::class, 'passwordReset'])->middleware('guest')->name('password.reset');
 Route::patch('/reset-password/{token}', [ForgotPasswordController::class, 'updatePassword'])->middleware('guest')->name('password.reset.update');
+
+# Mail layout viewer
+# FOR TESTING ONLY
+Route::get('/mail', function() {
+    $markdown = new Markdown(view(), config('mail.markdown'));
+
+    return $markdown->render('emails.create_user', [
+        'user' => User::first(),
+        'temp_password' => 'test1234',
+        'login_url' => config('app.url')
+    ]);
+});
 
 # Profile
 Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function() {

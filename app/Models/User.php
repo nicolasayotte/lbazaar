@@ -23,6 +23,8 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public const DISABLED = 'disabled';
 
+    public const RANDOM_PASSWORD_STRING_LENGTH = 8;
+
     protected $appends = ['fullname'];
 
     /**
@@ -36,7 +38,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'country_id',
         'password',
-        'is_enabled'
+        'is_enabled',
+        'classification_id'
     ];
 
     /**
