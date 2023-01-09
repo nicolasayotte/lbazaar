@@ -62,7 +62,7 @@ const UserForm = ({ messages, errors, roleOptions, countryOptions, classificatio
         })
     }
 
-    const roleInput = document.getElementById('role_id')
+    const roleInput = document.getElementById('role')
 
     useEffect(() => {
         if (roleInput && roleInput.selectedIndex === 2) {
