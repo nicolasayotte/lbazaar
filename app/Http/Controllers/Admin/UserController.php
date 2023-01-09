@@ -11,6 +11,7 @@ use App\Repositories\ClassificationRepository;
 use App\Repositories\CountryRepository;
 use App\Repositories\RoleRepository;
 use App\Repositories\UserRepository;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -77,13 +78,23 @@ class UserController extends Controller
     {
         $inputs = $request->all();
 
+        // Generate temporary password
         $randomPasswordString = Str::random(User::RANDOM_PASSWORD_STRING_LENGTH);
 
-        $inputs['password'] = Hash::make($randomPasswordString);
+        // Set password as hashed $randomPasswordString
+        $inputs['password']   = Hash::make($randomPasswordString);
 
         $user = User::create($inputs);
 
-        $user->attachRole($request['role']);
+        // Attach role for created user
+        $user->attachRole($inputs['role']);
+
+        // Set defaults for admin created user
+        $user->update([
+            'is_temp_password'  => true,
+            'is_enabled'        => true,
+            'email_verified_at' => Carbon::now()
+        ]);
 
         $this->sendEmailNotification($user, $randomPasswordString);
 
@@ -108,7 +119,5 @@ class UserController extends Controller
         } catch (Exception $e) {
             Log::error($e);
         }
-
-        return true;
     }
 }
