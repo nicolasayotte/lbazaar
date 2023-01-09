@@ -14,7 +14,7 @@ class AuthController extends Controller
 {
     public function login()
     {
-        if (auth()->check() && auth()->user()->hasRole(Role::ADMIN)) {
+        if ((auth()->check() && auth()->user()->hasRole(Role::ADMIN)) || (auth()->check() && !auth()->user()->hasRole(Role::ADMIN))) {
             return redirect()->back();
         }
 
