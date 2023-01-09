@@ -26,10 +26,11 @@ class ProfileController extends Controller
     {
         $countries = Country::all();
         
-        return Inertia::render('Portal/Profile/Index', [
-            'countries' => $countries
+        return Inertia::render('Portal/MyPage/Profile/Index', [
+            'countries' => $countries,
+            'title' => 'My Page | Profile'
         ])->withViewData([
-            'title' => 'Profile | My page'
+            'title' => 'My Page | Profile'
         ]);
     }
 
@@ -39,7 +40,7 @@ class ProfileController extends Controller
 
         $user->update($request->all());
 
-        return redirect()->route('profile.index');
+        return redirect()->route('mypage.profile.index');
     }
 
     public function updatePassword(UpdatePasswordRequest $request)

@@ -32,7 +32,7 @@
     "forgot.password.store": "\/forgot-password",
     "password.reset": "\/reset-password\/{token}",
     "password.reset.update": "\/reset-password\/{token}",
-    "profile.index": "\/profile",
-    "profile.update": "\/profile",
-    "profile.password.update": "\/profile\/password\/update"
+    "mypage.profile.index": "\/mypage\/profile",
+    "mypage.profile.update": "\/mypage\/profile",
+    "mypage.profile.password.update": "\/mypage\/password\/update"
 }

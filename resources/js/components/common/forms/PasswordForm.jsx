@@ -21,7 +21,7 @@ const PasswordForm = ({ errors, messages, routes, logoutUrl }) => {
     const handleSubmit = e => {
         e.preventDefault()
 
-        patch(routes['profile.password.update'], {
+        patch(routes['mypage.profile.password.update'], {
             errorBag: 'passwords',
             onSuccess: () => {
                 dispatch(actions.success({

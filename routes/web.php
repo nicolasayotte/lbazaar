@@ -105,8 +105,8 @@ Route::get('/reset-password/{token}', [ForgotPasswordController::class, 'passwor
 Route::patch('/reset-password/{token}', [ForgotPasswordController::class, 'updatePassword'])->middleware('guest')->name('password.reset.update');
 
 # Profile
-Route::prefix('profile')->middleware(['auth'])->name('profile.')->group(function() {
-    Route::get('/', [PortalProfileController::class, 'index'])->name('index');
-    Route::patch('/', [PortalProfileController::class, 'update'])->name('update');
-    Route::patch('/password/update', [PortalProfileController::class, 'updatePassword'])->name('password.update');
+Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function() {
+    Route::get('/profile', [PortalProfileController::class, 'index'])->name('profile.index');
+    Route::patch('/profile', [PortalProfileController::class, 'update'])->name('profile.update');
+    Route::patch('/password/update', [PortalProfileController::class, 'updatePassword'])->name('profile.password.update');
 });
