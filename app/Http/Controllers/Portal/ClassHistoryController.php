@@ -46,9 +46,10 @@ class ClassHistoryController extends Controller
             'course_categories'     => $categories,
             'languages'             => $languages,
             'teachers'              => $teachers,
-            'countries'             => $countries
+            'countries'             => $countries,
+            'title'                 => 'My Page | Class Histories'
         ])->withViewData([
-            'title' => 'Class Histories | My page'
+            'title'                 => 'My Page | Class Histories'
         ]);
     }
 }

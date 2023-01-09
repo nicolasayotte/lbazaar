@@ -146,4 +146,5 @@ Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function()
     Route::get('/profile', [PortalProfileController::class, 'index'])->name('profile.index');
     Route::patch('/profile', [PortalProfileController::class, 'update'])->name('profile.update');
     Route::patch('/password/update', [PortalProfileController::class, 'updatePassword'])->name('profile.password.update');
+    Route::get('/class-history', [ClassHistoryController::class, 'index'])->name('class.history.index');
 });

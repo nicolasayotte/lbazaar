@@ -1,7 +1,6 @@
 
 import routes from "../../../../helpers/routes.helper"
 import { useForm, usePage } from "@inertiajs/inertia-react"
-import MyPage from "../../../../layouts/MyPage"
 import { displaySelectOptions } from "../../../../helpers/form.helper"
 import { Box, Button, Card, CardContent, Grid, Pagination, Typography } from "@mui/material"
 import Input from "../../../../components/forms/Input"
@@ -61,90 +60,77 @@ const Index = ({ auth, course_types, course_categories, teachers, countries, err
         setData(e.target.name, e.target.value)
     }
 
-    const content = (
-        <>
-            <Card sx={{ mb: 2, width: '100%' }}>
-                <CardContent>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12} md={12}>
-                            <Input
-                                label="Keyword"
-                                placeholder="Search for name, email or subject"
-                                size="small"
-                                name="keyword"
-                                autoFocus
-                                value={filters.keyword}
-                                onChange={handleKeywordChange}
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={2}>
-                            <Input
-                                label="Type"
-                                select
-                                name="type_id"
-                                value={filters.type_id}
-                                onChange={handleOnChange}
-                                errors={errors}
-                            >
-                                <option value=""></option>
-                                {displaySelectOptions(course_types)}
-                            </Input>
-                        </Grid>
-                        <Grid item xs={12} md={2}>
-                            <Input
-                                label="Category"
-                                select
-                                name="category_id"
-                                value={filters.category_id}
-                                onChange={handleOnChange}
-                                errors={errors}
-                            >
-                                <option value=""></option>
-                                {displaySelectOptions(course_categories)}
-                            </Input>
-                        </Grid>
-                        <Grid item xs={12} sm={2}>
-                            <Input
-                                type="month"
-                                name="month"
-                                value={filters.month}
-                                onChange={handleOnChange}
-                                errors={errors}
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={2}>
-                            <Input
-                                label="Sort By"
-                                select
-                                name="sort"
-                                children={displaySelectOptions(sortItems, 'value', 'name')}
-                                value={filters.sort}
-                                onChange={handleOnSortChange}
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={2}>
-                            <Button
-                                variant="contained"
-                                children="Filter"
-                                fullWidth
-                                type="submit"
-                            />
-                        </Grid>
-                    </Grid>
-                </CardContent>
-            </Card>
-        </>
-    )
-
     return (
-        <MyPage 
-            auth={auth} 
-            countries={countries} 
-            errors={errors} 
-            messages={messages} 
-            window={window} 
-            content={content}>
-        </MyPage>
+        <Card sx={{ mb: 2, width: '100%' }}>
+            <CardContent>
+                <Grid container spacing={2}>
+                    <Grid item xs={12} md={12}>
+                        <Input
+                            label="Keyword"
+                            placeholder="Search for name, email or subject"
+                            size="small"
+                            name="keyword"
+                            autoFocus
+                            value={filters.keyword}
+                            onChange={handleKeywordChange}
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={2}>
+                        <Input
+                            label="Type"
+                            select
+                            name="type_id"
+                            value={filters.type_id}
+                            onChange={handleOnChange}
+                            errors={errors}
+                        >
+                            <option value=""></option>
+                            {displaySelectOptions(course_types)}
+                        </Input>
+                    </Grid>
+                    <Grid item xs={12} md={2}>
+                        <Input
+                            label="Category"
+                            select
+                            name="category_id"
+                            value={filters.category_id}
+                            onChange={handleOnChange}
+                            errors={errors}
+                        >
+                            <option value=""></option>
+                            {displaySelectOptions(course_categories)}
+                        </Input>
+                    </Grid>
+                    <Grid item xs={12} sm={2}>
+                        <Input
+                            type="month"
+                            name="month"
+                            value={filters.month}
+                            onChange={handleOnChange}
+                            errors={errors}
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={2}>
+                        <Input
+                            label="Sort By"
+                            select
+                            name="sort"
+                            children={displaySelectOptions(sortItems, 'value', 'name')}
+                            value={filters.sort}
+                            onChange={handleOnSortChange}
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={2}>
+                        <Button
+                            variant="contained"
+                            children="Filter"
+                            fullWidth
+                            type="submit"
+                        />
+                    </Grid>
+                </Grid>
+            </CardContent>
+        </Card>
     )
 }
 
