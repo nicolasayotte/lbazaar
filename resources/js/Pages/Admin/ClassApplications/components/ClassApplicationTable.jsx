@@ -25,9 +25,6 @@ const ClassApplicationTable = ({ data }) => {
 
         return (
             <TableRow key={index}>
-                <TableCell>
-                    <Checkbox />
-                </TableCell>
                 <TableCell children={row.title}/>
                 <TableCell children={row.professor}/>
                 <TableCell align="center" children={row.type}/>
@@ -54,9 +51,6 @@ const ClassApplicationTable = ({ data }) => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell width="1%">
-                                <Checkbox />
-                            </TableCell>
                             <TableCell children="Title"/>
                             <TableCell children="Teacher"/>
                             <TableCell align="center" children="Type"/>
