@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\ClassApplicationController;
 use App\Http\Controllers\Admin\InquiriesController as AdminInquiriesController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Portal\ProfileController as PortalProfileController;
@@ -66,6 +67,11 @@ Route::prefix('admin')->name('admin.')->group(function() {
             Route::get('/{id}', [UserController::class, 'view'])->name('view');
             Route::post('/{id}/status/{status}', [UserController::class, 'updateStatus'])->name('status.update');
         });
+
+        # Class Applications
+        Route::prefix('class-applications')->name('class.applications.')->group(function() {
+            Route::get('/', [ClassApplicationController::class, 'index'])->name('index');
+        });
     });
 });
 
@@ -111,6 +117,7 @@ Route::patch('/reset-password/{token}', [ForgotPasswordController::class, 'updat
 Route::get('/mail', function() {
     $markdown = new Markdown(view(), config('mail.markdown'));
 
+    // render() method expects 2 parameters - view and data
     return $markdown->render('emails.create_user', [
         'user' => User::first(),
         'temp_password' => 'test1234',

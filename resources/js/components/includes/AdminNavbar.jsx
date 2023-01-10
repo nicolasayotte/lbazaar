@@ -17,7 +17,7 @@ const AdminNavbar = ({ drawerWidth, window }) => {
     const navItems = [
         {
             name: 'Class Applications',
-            link: ''
+            link: routes["admin.class.applications.index"]
         },
         {
             name: 'Class List',
