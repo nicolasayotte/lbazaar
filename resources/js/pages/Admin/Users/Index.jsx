@@ -37,8 +37,8 @@ const Index = () => {
     const sortOptions = [
         { name: 'Name A-Z', value: 'first_name:asc' },
         { name: 'Name Z-A', value: 'first_name:desc' },
-        { name: 'Date ASC',  value: 'created_at:asc' },
-        { name: 'Date DESC', value: 'created_at:desc' }
+        { name: 'Date - Oldest',  value: 'created_at:asc' },
+        { name: 'Date - Newest', value: 'created_at:desc' }
     ]
 
     const handleKeywordChange = e => {

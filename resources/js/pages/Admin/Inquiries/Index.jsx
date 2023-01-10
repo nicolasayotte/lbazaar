@@ -13,8 +13,8 @@ const Index = () => {
     const sortItems = [
         { name: 'Name A-Z', value: 'name:asc' },
         { name: 'Name Z-A', value: 'name:desc' },
-        { name: 'Date ASC', value: 'created_at:asc' },
-        { name: 'Date DESC', value: 'created_at:desc' }
+        { name: 'Date - Oldest', value: 'created_at:asc' },
+        { name: 'Date - Newest', value: 'created_at:desc' }
     ]
 
     const { data: filters, setData: setFilters, get, processing, transform } = useForm({
