@@ -13,9 +13,7 @@ class ClassificationRepository extends BaseRepository
 
     public function getDropdownData()
     {
-        $classifications = $this->model->get();
-
-        return $classifications->map(function($class) {
+        return $this->model->all()->map(function($class) {
             return [
                 'name' => $class->name . ' (' . $class->commision_rate . '% Commision Rate)',
                 'id'   => $class->id
