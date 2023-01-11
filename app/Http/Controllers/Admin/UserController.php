@@ -47,7 +47,8 @@ class UserController extends Controller
             'keyword'       => @$request['keyword'] ?? '',
             'role'          => @$request['role'] ?? '',
             'status'        => @$request['status'] ?? '',
-            'sort'          => @$request['sort'] ?? 'created_at:desc'
+            'sort'          => @$request['sort'] ?? 'created_at:desc',
+            'page'          => @$request['page'] ?? 1
         ])->withViewData([
             'title' => 'Users | Admin'
         ]);
