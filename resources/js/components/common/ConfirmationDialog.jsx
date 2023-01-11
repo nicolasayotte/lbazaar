@@ -9,8 +9,10 @@ const ConfirmationDialog = ({ open, title, text, handleClose, handleConfirm, can
             maxWidth="xs"
         >
             <DialogTitle children={title} sx={{ p: 2 }} />
-            <DialogContent dividers sx={{ p: 2 }}>
-                <DialogContentText children={text} />
+            <DialogContent sx={{ p: 2 }}>
+                <DialogContentText>
+                    <span dangerouslySetInnerHTML={{ __html: text }} />
+                </DialogContentText>
             </DialogContent>
             <DialogActions sx={{ p: 2 }}>
                 <Button
