@@ -1,6 +1,6 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material"
 
-const ConfirmationDialog = ({ open, title, text, handleClose, handleConfirm, cancelButtonText = 'Cancel', confirmButtonText = 'Confirm' }) => {
+const ConfirmationDialog = ({ open, title, text, handleClose, handleConfirm, processing = false, cancelButtonText = 'Cancel', confirmButtonText = 'Confirm' }) => {
     return (
         <Dialog
             open={open}
@@ -21,6 +21,7 @@ const ConfirmationDialog = ({ open, title, text, handleClose, handleConfirm, can
                 />
                 <Button
                     variant="contained"
+                    disabled={processing}
                     children={confirmButtonText}
                     onClick={handleConfirm}
                 />
