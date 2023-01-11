@@ -42,7 +42,7 @@ class CourseApplication extends Model
     {
         if (is_null($this->approved_at) && is_null($this->denied_at)) return self::PENDING;
 
-        if (!is_null($this->created_at)) return self::APPROVED;
+        if (!is_null($this->approved_at)) return self::APPROVED;
 
         if (!is_null($this->denied_at)) return self::DENIED;
     }
