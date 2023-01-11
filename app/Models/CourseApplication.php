@@ -21,6 +21,8 @@ class CourseApplication extends Model
 
     public const PER_PAGE = 10;
 
+    protected $appends = ['status'];
+
     public function professor()
     {
         return $this->belongsTo(User::class);
@@ -34,5 +36,14 @@ class CourseApplication extends Model
     public function courseCategory()
     {
         return $this->belongsTo(CourseCategory::class);
+    }
+
+    public function getStatusAttribute()
+    {
+        if (is_null($this->approved_at) && is_null($this->denied_at)) return self::PENDING;
+
+        if (!is_null($this->created_at)) return self::APPROVED;
+
+        if (!is_null($this->denied_at)) return self::DENIED;
     }
 }
