@@ -1,25 +1,39 @@
-import { Search } from "@mui/icons-material"
-import { Checkbox, Chip, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
+import { Block, Check, Search } from "@mui/icons-material"
+import { Box, Chip, IconButton, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
 import EmptyCard from "../../../../components/common/EmptyCard"
 
-const ClassApplicationTable = ({ data }) => {
+const ClassApplicationTable = ({ data, handleOnApprove, handleOnDeny }) => {
 
     const displayTableData = rows => rows.map((row, index) => {
 
-        const statusComponent = (status) => {
+        const isPending = row.status === 'Pending'
 
-            let statusColor = 'default'
+        const statusColors = {
+            'Pending' : 'default',
+            'Approved': 'success',
+            'Denied'  : 'error'
+        }
 
-            if (status === 'Approved') {
-                statusColor = 'success'
-            }
-
-            if (status === 'Denied') {
-                statusColor = 'error'
-            }
-
+        const actionButtons = (id, disabled) => {
             return (
-                <Chip size="small" label={status} color={statusColor}/>
+                <>
+                    <IconButton
+                        size="small"
+                        title="Enable"
+                        disabled={disabled}
+                        onClick={() => handleOnApprove(id)}
+                    >
+                        <Check fontSize="inherit" color={disabled ? 'inherit' : 'success'}/>
+                    </IconButton>
+                    <IconButton
+                        size="small"
+                        title="Disabled"
+                        disabled={disabled}
+                        onClick={() => handleOnDeny(id)}
+                    >
+                        <Block fontSize="inherit" color={disabled ? 'inherit' : 'error'} />
+                    </IconButton>
+                </>
             )
         }
 
@@ -31,11 +45,16 @@ const ClassApplicationTable = ({ data }) => {
                 <TableCell align="center" children={row.category}/>
                 <TableCell align="center" children={row.price}/>
                 <TableCell align="center" children={row.created_at}/>
-                <TableCell align="center" children={statusComponent(row.status)}/>
                 <TableCell align="center">
-                    <IconButton size="small">
-                        <Search fontSize="inherit"/>
-                    </IconButton>
+                    <Chip size="small" label={row.status} color={statusColors[row.status]}/>
+                </TableCell>
+                <TableCell align="center">
+                    <Stack direction="row" spacing={1} justifyContent="center">
+                        <IconButton size="small">
+                            <Search fontSize="inherit"/>
+                        </IconButton>
+                        {actionButtons(row.id, !isPending)}
+                    </Stack>
                 </TableCell>
             </TableRow>
         )

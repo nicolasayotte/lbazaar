@@ -5,10 +5,27 @@ import { displaySelectOptions, handleOnChange, handleOnSelectChange } from "../.
 import ClassApplicationTable from "./components/ClassApplicationTable"
 import routes from "../../../helpers/routes.helper"
 import TableLoader from "../../../components/common/TableLoader"
+import { useState } from "react"
+import ConfirmationDialog from "../../../components/common/ConfirmationDialog"
+import { getRoute } from "../../../helpers/routes.helper"
+import { Inertia } from "@inertiajs/inertia"
+import { useDispatch } from "react-redux"
+import { actions } from "../../../store/slices/ToasterSlice"
 
 const Index = () => {
 
-    const { courseApplications, categoryOptions, typeOptions, keyword, course_type, category, status, sort, page } = usePage().props
+    const dispatch = useDispatch()
+
+    const { courseApplications, categoryOptions, typeOptions, keyword, course_type, category, status, sort, page, messages } = usePage().props
+
+    const [dialog, setDialog] = useState({
+        open: false,
+        title: 'Class Application',
+        text: '',
+        url: '',
+        confirmButtonText: 'Confirm',
+        processing: false
+    })
 
     const sortOptions = [
         { name: 'Title A-Z', value: 'title:asc' },
@@ -47,6 +64,59 @@ const Index = () => {
         }))
 
         handleFilterSubmit(e)
+    }
+
+    const handleOnApprove = (id) => {
+        setDialog(dialog => ({
+            ...dialog,
+            open: true,
+            text: messages.confirm.class.applications.approve,
+            url: getRoute('admin.class.applications.status.update', {
+                id,
+                status: 'approve'
+            })
+        }))
+    }
+
+    const handleOnDeny = (id) => {
+        setDialog(dialog => ({
+            ...dialog,
+            open: true,
+            text: messages.confirm.class.applications.deny,
+            url: getRoute('admin.class.applications.status.update', {
+                id,
+                status: 'deny'
+            })
+        }))
+    }
+
+    const handleOnDialogClose = () => {
+
+        if (dialog.processing) {
+            return
+        }
+
+        setDialog(dialog => ({
+            ...dialog,
+            open: false
+        }))
+    }
+
+    const handleOnDialogConfirm = () => {
+        setDialog(dialog => ({
+            ...dialog,
+            confirmButtonText: 'Processing',
+            processing: true
+        }))
+
+        Inertia.patch(dialog.url, dialog, {
+            onSuccess: () => dispatch(actions.success({
+                message: messages.success.class.applications.status.update
+            })),
+            onError: () => dispatch(actions.success({
+                message: messages.error
+            }))
+        })
     }
 
     return (
@@ -143,7 +213,7 @@ const Index = () => {
             {
                 processing
                 ? <TableLoader />
-                : <ClassApplicationTable data={courseApplications.data}/>
+                : <ClassApplicationTable data={courseApplications.data} handleOnApprove={handleOnApprove} handleOnDeny={handleOnDeny}/>
             }
             <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
                 <Pagination
@@ -153,6 +223,11 @@ const Index = () => {
                     color="primary"
                 />
             </Box>
+            <ConfirmationDialog
+                {...dialog}
+                handleConfirm={handleOnDialogConfirm}
+                handleClose={handleOnDialogClose}
+            />
         </Box>
     )
 }

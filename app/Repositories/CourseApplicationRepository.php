@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Data\CourseApplicationData;
 use App\Models\Course;
 use App\Models\CourseApplication;
+use Carbon\Carbon;
 
 class CourseApplicationRepository extends BaseRepository
 {
@@ -53,5 +54,25 @@ class CourseApplicationRepository extends BaseRepository
                 ->through(function($item) {
                     return CourseApplicationData::fromModel($item);
                 });
+    }
+
+    public function approve($id)
+    {
+        $this->model
+            ->where('id', $id)
+            ->update([
+                'approved_at' => Carbon::now(),
+                'denied_at'   => null
+            ]);
+    }
+
+    public function deny($id)
+    {
+        $this->model
+            ->where('id', $id)
+            ->update([
+                'denied_at'   => Carbon::now(),
+                'approved_at' => null
+            ]);
     }
 }
