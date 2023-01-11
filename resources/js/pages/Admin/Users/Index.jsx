@@ -21,7 +21,7 @@ const Index = () => {
 
     const [dialog, setDialog] = useState({
         open: false,
-        title: '',
+        title: 'Manage Users',
         text: '',
         url: ''
     })
@@ -63,8 +63,7 @@ const Index = () => {
         setDialog(dialog => ({
             ...dialog,
             open: true,
-            title: 'Enable User',
-            text: 'Are you sure you want to enable this user?',
+            text: messages.confirm.user.enable,
             url: getRoute('admin.users.status.update', {
                 id: id,
                 status: 'active'
@@ -77,8 +76,7 @@ const Index = () => {
         setDialog(dialog => ({
             ...dialog,
             open: true,
-            title: 'Disable User',
-            text: 'Are you sure you want to disable this user?',
+            text: messages.confirm.user.disable,
             url: getRoute('admin.users.status.update', {
                 id: id,
                 status: 'disabled'
@@ -88,7 +86,10 @@ const Index = () => {
 
     // Dialog close handler
     const handleOnDialogClose = () => {
-        setDialog({ open: false })
+        setDialog(dialog => ({
+            ...dialog,
+            open: false
+        }))
     }
 
     // Dialog confirm handler
