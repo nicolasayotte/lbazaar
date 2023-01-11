@@ -25,7 +25,7 @@ class CourseApplicationUpdate extends Mailable
      *
      * @return void
      */
-    public function __construct(CourseApplication $courseApplication, $status)
+    public function __construct(CourseApplication $courseApplication)
     {
         $this->settingsRepository = new SettingRepository();
         $this->courseApplication  = $courseApplication;
@@ -39,7 +39,7 @@ class CourseApplicationUpdate extends Mailable
     public function envelope()
     {
         return new Envelope(
-            subject: "Course Application Update",
+            subject: "Class Application Update",
             from: new Address($this->settingsRepository->getSetting('no-reply-email')),
             to: [$this->courseApplication->professor->email]
         );
