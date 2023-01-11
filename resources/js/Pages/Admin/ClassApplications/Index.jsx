@@ -1,7 +1,7 @@
 import { useForm, usePage } from "@inertiajs/inertia-react"
 import { Box, Button, Card, CardContent, Grid, Pagination, Typography } from "@mui/material"
 import Input from "../../../components/forms/Input"
-import { displaySelectOptions } from "../../../helpers/form.helper"
+import { displaySelectOptions, handleOnChange, handleOnSelectChange } from "../../../helpers/form.helper"
 import ClassApplicationTable from "./components/ClassApplicationTable"
 import routes from "../../../helpers/routes.helper"
 import TableLoader from "../../../components/common/TableLoader"
@@ -33,20 +33,6 @@ const Index = () => {
         sort,
         page
     })
-
-    const handleOnChange = (e) => {
-        setFilters(e.target.name, e.target.value)
-    }
-
-    const handleSelectChange = (e) => {
-        transform(filters => ({
-            ...filters,
-            page: 1,
-            [e.target.name]: e.target.value
-        }))
-
-        handleFilterSubmit(e)
-    }
 
     const handleFilterSubmit = (e) => {
         e.preventDefault()
@@ -80,7 +66,7 @@ const Index = () => {
                                     placeholder="Search for title or teacher"
                                     name="keyword"
                                     value={filters.keyword}
-                                    onChange={handleOnChange}
+                                    onChange={e => handleOnChange(e, setFilters)}
                                 />
                             </Grid>
                             <Grid item xs={12} md={2}>
@@ -92,7 +78,7 @@ const Index = () => {
                                     }}
                                     name="course_type"
                                     value={filters.course_type}
-                                    onChange={handleSelectChange}
+                                    onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
                                 >
                                     <option value="">All</option>
                                     {displaySelectOptions(typeOptions)}
@@ -107,7 +93,7 @@ const Index = () => {
                                     }}
                                     name="category"
                                     value={filters.category}
-                                    onChange={handleSelectChange}
+                                    onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
                                 >
                                     <option value="">All</option>
                                     {displaySelectOptions(categoryOptions)}
@@ -122,7 +108,7 @@ const Index = () => {
                                     }}
                                     name="status"
                                     value={filters.status}
-                                    onChange={handleSelectChange}
+                                    onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
                                 >
                                     <option value="">All</option>
                                     {displaySelectOptions(statusOptions, 'value')}
@@ -137,7 +123,7 @@ const Index = () => {
                                     }}
                                     name="sort"
                                     value={filters.sort}
-                                    onChange={handleSelectChange}
+                                    onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
                                 >
                                     {displaySelectOptions(sortOptions, 'value')}
                                 </Input>

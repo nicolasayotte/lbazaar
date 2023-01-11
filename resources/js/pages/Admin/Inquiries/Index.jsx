@@ -2,7 +2,7 @@ import { useForm, usePage } from "@inertiajs/inertia-react"
 import { Box, Button, Card, CardContent, Grid, Pagination, Typography } from "@mui/material"
 import TableLoader from "../../../components/common/TableLoader"
 import Input from "../../../components/forms/Input"
-import { displaySelectOptions } from "../../../helpers/form.helper"
+import { displaySelectOptions, handleOnChange, handleOnSelectChange } from "../../../helpers/form.helper"
 import routes from "../../../helpers/routes.helper"
 import InquiryTable from "./components/InquiryTable"
 
@@ -18,28 +18,10 @@ const Index = () => {
     ]
 
     const { data: filters, setData: setFilters, get, processing, transform } = useForm({
-        keyword: keyword,
-        sort: sort,
-        page: page
+        keyword,
+        sort,
+        page
     })
-
-    const handleKeywordChange = e => {
-        setFilters(filters => ({
-            ...filters,
-            page: 1,
-            [e.target.name]: e.target.value
-        }))
-    }
-
-    const handleOnSortChange = e => {
-        transform(data => ({
-            ...data,
-            page: 1,
-            [e.target.name]: e.target.value,
-        }))
-
-        handleFilterSubmit(e)
-    }
 
     const handleFilterSubmit = (e) => {
         e.preventDefault()
@@ -75,7 +57,7 @@ const Index = () => {
                                     name="keyword"
                                     autoFocus
                                     value={filters.keyword}
-                                    onChange={handleKeywordChange}
+                                    onChange={e => handleOnChange(e, setFilters)}
                                 />
                             </Grid>
                             <Grid item xs={12} md={2}>
@@ -85,7 +67,7 @@ const Index = () => {
                                     name="sort"
                                     children={displaySelectOptions(sortItems, 'value', 'name')}
                                     value={filters.sort}
-                                    onChange={handleOnSortChange}
+                                    onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
                                 />
                             </Grid>
                             <Grid item xs={12} md={2}>
