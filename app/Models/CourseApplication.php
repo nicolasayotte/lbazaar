@@ -15,6 +15,10 @@ class CourseApplication extends Model
 
     public const DENIED = 'denied';
 
+    public const APPROVE = 'approve';
+
+    public const DENY = 'deny';
+
     public const PER_PAGE = 10;
 
     public function professor()
