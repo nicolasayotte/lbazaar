@@ -20,6 +20,7 @@
     "admin.users.view": "\/admin\/users\/{id}",
     "admin.users.status.update": "\/admin\/users\/{id}\/status\/{status}",
     "admin.class.applications.index": "\/admin\/class-applications",
+    "admin.class.applications.status.update": "\/admin\/class-applications\/{id}\/status\/{status}",
     "course.index": "\/courses",
     "course.details": "\/courses\/details\/{id}",
     "register.index": "\/register\/student",
