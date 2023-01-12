@@ -1,6 +1,8 @@
+import { Link } from "@inertiajs/inertia-react"
 import { Block, Check, Search } from "@mui/icons-material"
-import { Box, Chip, IconButton, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
+import { Chip, IconButton, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
 import EmptyCard from "../../../../components/common/EmptyCard"
+import { getRoute } from "../../../../helpers/routes.helper"
 
 const ClassApplicationTable = ({ data, handleOnApprove, handleOnDeny }) => {
 
@@ -50,9 +52,11 @@ const ClassApplicationTable = ({ data, handleOnApprove, handleOnDeny }) => {
                 </TableCell>
                 <TableCell align="center">
                     <Stack direction="row" spacing={1} justifyContent="center">
-                        <IconButton size="small">
-                            <Search fontSize="inherit"/>
-                        </IconButton>
+                        <Link href={getRoute('admin.class.applications.view', { id: row.id })}>
+                            <IconButton size="small">
+                                <Search fontSize="inherit"/>
+                            </IconButton>
+                        </Link>
                         {actionButtons(row.id, !isPending)}
                     </Stack>
                 </TableCell>

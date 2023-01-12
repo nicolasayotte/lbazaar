@@ -77,6 +77,7 @@ Route::prefix('admin')->name('admin.')->group(function() {
         # Class Applications
         Route::prefix('class-applications')->name('class.applications.')->group(function() {
             Route::get('/', [CourseApplicationController::class, 'index'])->name('index');
+            Route::get('/{id}', [CourseApplicationController::class, 'view'])->name('view');
             Route::patch('/{id}/status/{status}', [CourseApplicationController::class, 'updateStatus'])->name('status.update');
         });
     });

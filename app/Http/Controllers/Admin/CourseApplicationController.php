@@ -45,6 +45,13 @@ class CourseApplicationController extends Controller
         ]);
     }
 
+    public function view($id)
+    {
+        return Inertia::render('Admin/ClassApplications/View')->withViewData([
+            'title' => 'Class Application Detail | Admin'
+        ]);
+    }
+
     public function updateStatus($id, $status)
     {
         $courseApplication = $this->courseApplicationRepository->findOrFail($id);
