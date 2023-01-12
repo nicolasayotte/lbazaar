@@ -103,6 +103,11 @@ class UserData
         return $this->country;
     }
 
+    public function getProperties()
+    {
+        return get_object_vars($this);
+    }
+
     public static function fromModel(User $user)
     {
         $userData = new UserData();
@@ -120,17 +125,6 @@ class UserData
             return ucfirst($role);
         }));
 
-        return $userData->convertToArray();
-    }
-
-    private function convertToArray()
-    {
-        $objectArray = [];
-
-        foreach ($this as $key => $value) {
-            $objectArray[$key] = $value;
-        }
-
-        return $objectArray;
+        return $userData->getProperties();
     }
 }
