@@ -15,10 +15,13 @@ const ConfirmationDialog = ({ open, title, text, handleClose, handleConfirm, pro
                 </DialogContentText>
             </DialogContent>
             <DialogActions sx={{ p: 2 }}>
-                <Button
-                    children={cancelButtonText}
-                    onClick={handleClose}
-                />
+                {
+                    !processing &&
+                    <Button
+                        children={cancelButtonText}
+                        onClick={handleClose}
+                    />
+                }
                 <Button
                     variant="contained"
                     disabled={processing}
