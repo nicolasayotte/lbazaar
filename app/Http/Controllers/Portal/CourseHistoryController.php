@@ -57,6 +57,7 @@ class CourseHistoryController extends Controller
             'keyword'               => @$request['keyword'] ?? '',
             'category_id'           => @$request['category_id'] ?? '',
             'type_id'               => @$request['type_id'] ?? '',
+            'status'                => @$request['status'] ?? '',
             'language'              => @$request['language'] ?? '',
             'sort'                  => @$request['sort'] ?? 'course_histories.created_at:desc',
             'title'                 => 'My Page | Class Histories'

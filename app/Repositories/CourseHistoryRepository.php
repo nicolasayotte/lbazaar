@@ -52,6 +52,9 @@ class CourseHistoryRepository extends BaseRepository
                     $endDate
                 ]);
             })
+            ->when($request->has('status') && !empty($request->get('status')), function ($q) use ($request)  {
+                return $q->{$request->get('status') == CourseHistory::COMPLETED ? 'whereNotNull' : 'whereNull'}('course_histories.completed_at');
+            })
             ->when($request->has('keyword') && !empty($request->get('keyword')), function ($q) use ($request)  {
                 return  $q->where(function($query) use ($request){
                     $query->where('courses.title', 'like', '%' . $request->get('keyword') . '%')

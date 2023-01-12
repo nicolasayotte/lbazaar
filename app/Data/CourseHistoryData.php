@@ -35,7 +35,7 @@ class CourseHistoryData
         $userData->setType($courseHistory->course->courseType->name);
         $userData->setCategory($courseHistory->course->courseCategory->name);
         $userData->setLanguage($courseHistory->course->language);
-        $userData->setStatus(Status::getStatusNameByID($courseHistory->course->status_id));
+        $userData->setStatus($courseHistory->completed_at != null ? CourseHistory::COMPLETED : CourseHistory::ONGOING);
         $userData->setBookedDate($courseHistory->created_at->format('Y-m-d H:i'));
        
         return $userData->convertToArray();

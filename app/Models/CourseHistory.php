@@ -9,6 +9,10 @@ class CourseHistory extends Model
 {
     use HasFactory;
 
+    const ONGOING   = "Ongoing";
+
+    const COMPLETED = "Completed";
+
     public function course()
     {
         return $this->belongsTo(Course::class);

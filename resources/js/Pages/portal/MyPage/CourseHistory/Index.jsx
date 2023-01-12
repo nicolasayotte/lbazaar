@@ -9,7 +9,7 @@ import CourseHistoryTable from "../components/CourseHistoryTable"
 
 const Index = ({ errors }) => {
 
-    const { course_histories, month, page, keyword, sort, type_id, category_id, course_categories, course_types } = usePage().props
+    const { course_histories, month, status, page, keyword, sort, type_id, category_id, course_categories, course_types } = usePage().props
 
     const sortItems = [
         { name: 'Course Title A-Z', value: 'courses.title:asc' },
@@ -20,10 +20,16 @@ const Index = ({ errors }) => {
         { name: 'Date DESC', value: 'course_histories.created_at:desc' }
     ]
 
+    const statusItems = [
+        { name: 'Ongoing', value: 'Ongoing' },
+        { name: 'Completed', value: 'Completed' }
+    ]
+
     const { data: filters, setData: setFilters, get, processing, transform } = useForm({
         keyword: keyword,
         type_id: type_id,
         category_id: category_id,
+        status: status,
         month: month,
         sort: sort,
         page: page
@@ -107,6 +113,19 @@ const Index = ({ errors }) => {
                                     {displaySelectOptions(course_categories)}
                                 </Input>
                             </Grid>
+                            <Grid item xs={12} md={2}>
+                                <Input
+                                    label="Status"
+                                    select
+                                    name="status"
+                                    value={filters.status}
+                                    onChange={handleOnChange}
+                                    errors={errors}
+                                >
+                                    <option value=""></option>
+                                    {displaySelectOptions(statusItems, 'value', 'name')}
+                                </Input>
+                            </Grid>
                             <Grid item xs={12} sm={3}>
                                 <Input
                                     type="month"
@@ -126,14 +145,15 @@ const Index = ({ errors }) => {
                                     onChange={handleOnSortChange}
                                 />
                             </Grid>
-                            <Grid item xs={12} md={2}>
-                                <Button
-                                    variant="contained"
-                                    children="Filter"
-                                    fullWidth
-                                    type="submit"
-                                    onClick={handleFilterSubmit}
-                                />
+                            <Grid item xs={12} md={12} textAlign="right">
+                                <Box>
+                                    <Button
+                                        variant="contained"
+                                        children="Filter"
+                                        type="submit"
+                                        onClick={handleFilterSubmit}
+                                    />
+                                </Box>
                             </Grid>
                         </Grid>
                     </form>
