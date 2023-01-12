@@ -3,9 +3,6 @@
 namespace App\Data;
 
 use App\Models\CourseHistory;
-use App\Models\Status;
-use App\Models\User;
-use Carbon\Carbon;
 
 class CourseHistoryData
 {
@@ -27,29 +24,23 @@ class CourseHistoryData
 
     public static function fromModel(CourseHistory $courseHistory)
     {
-        $userData = new CourseHistoryData();
+        $courseHistoryData = new CourseHistoryData();
 
-        $userData->setId($courseHistory->course->id);
-        $userData->setTeacher($courseHistory->course->professor->fullname);
-        $userData->setTitle($courseHistory->course->title);
-        $userData->setType($courseHistory->course->courseType->name);
-        $userData->setCategory($courseHistory->course->courseCategory->name);
-        $userData->setLanguage($courseHistory->course->language);
-        $userData->setStatus($courseHistory->completed_at != null ? CourseHistory::COMPLETED : CourseHistory::ONGOING);
-        $userData->setBookedDate($courseHistory->created_at->format('Y-m-d H:i'));
+        $courseHistoryData->setId($courseHistory->course->id);
+        $courseHistoryData->setTeacher($courseHistory->course->professor->fullname);
+        $courseHistoryData->setTitle($courseHistory->course->title);
+        $courseHistoryData->setType($courseHistory->course->courseType->name);
+        $courseHistoryData->setCategory($courseHistory->course->courseCategory->name);
+        $courseHistoryData->setLanguage($courseHistory->course->language);
+        $courseHistoryData->setStatus($courseHistory->completed_at != null ? CourseHistory::COMPLETED : CourseHistory::ONGOING);
+        $courseHistoryData->setBookedDate($courseHistory->created_at->format('Y-m-d H:i'));
        
-        return $userData->convertToArray();
+        return $courseHistoryData->getProperties();
     }
 
-    private function convertToArray()
+    public function getProperties()
     {
-        $objectArray = [];
-
-        foreach ($this as $key => $value) {
-            $objectArray[$key] = $value;
-        }
-
-        return $objectArray;
+        return get_object_vars($this);
     }
 
     public function getId()

@@ -1,7 +1,7 @@
 
 import routes from "../../../../helpers/routes.helper"
 import { useForm, usePage } from "@inertiajs/inertia-react"
-import { displaySelectOptions } from "../../../../helpers/form.helper"
+import { displaySelectOptions, handleOnChange, handleOnSelectChange } from "../../../../helpers/form.helper"
 import { Box, Button, Card, CardContent, Grid, Pagination, Typography } from "@mui/material"
 import Input from "../../../../components/forms/Input"
 import TableLoader from "../../../../components/common/TableLoader"
@@ -26,38 +26,14 @@ const Index = ({ errors }) => {
     ]
 
     const { data: filters, setData: setFilters, get, processing, transform } = useForm({
-        keyword: keyword,
-        type_id: type_id,
-        category_id: category_id,
-        status: status,
-        month: month,
-        sort: sort,
-        page: page
+        keyword,
+        type_id,
+        category_id,
+        status,
+        month,
+        sort,
+        page
     })
-
-    const handleKeywordChange = e => {
-        setFilters(filters => ({
-            ...filters,
-            page: 1,
-            [e.target.name]: e.target.value
-        }))
-    }
-
-    const handleOnChange = e => {
-        setFilters((filters) => ({
-            ...filters,
-            page: 1,
-            [e.target.name]: e.target.value
-        }))
-    }
-
-    const handleOnSortChange = e => {
-        setFilters((filters) => ({
-            ...filters,
-            page: 1,
-            [e.target.name]: e.target.value
-        }))
-    }
 
     const handleFilterSubmit = (e) => {
         e.preventDefault()
@@ -84,19 +60,22 @@ const Index = ({ errors }) => {
                                     name="keyword"
                                     autoFocus
                                     value={filters.keyword}
-                                    onChange={handleKeywordChange}
+                                    onChange={e => handleOnChange(e, setFilters)}
                                 />
                             </Grid>
                             <Grid item xs={12} md={2}>
                                 <Input
                                     label="Type"
+                                    InputLabelProps={{
+                                        shrink: true
+                                    }}
                                     select
                                     name="type_id"
                                     value={filters.type_id}
-                                    onChange={handleOnChange}
+                                    onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
                                     errors={errors}
                                 >
-                                    <option value=""></option>
+                                    <option value="">All</option>
                                     {displaySelectOptions(course_types)}
                                 </Input>
                             </Grid>
@@ -105,11 +84,14 @@ const Index = ({ errors }) => {
                                     label="Category"
                                     select
                                     name="category_id"
+                                    InputLabelProps={{
+                                        shrink: true
+                                    }}
                                     value={filters.category_id}
-                                    onChange={handleOnChange}
+                                    onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
                                     errors={errors}
                                 >
-                                    <option value=""></option>
+                                    <option value="">All</option>
                                     {displaySelectOptions(course_categories)}
                                 </Input>
                             </Grid>
@@ -118,11 +100,14 @@ const Index = ({ errors }) => {
                                     label="Status"
                                     select
                                     name="status"
+                                    InputLabelProps={{
+                                        shrink: true
+                                    }}
                                     value={filters.status}
-                                    onChange={handleOnChange}
+                                    onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
                                     errors={errors}
                                 >
-                                    <option value=""></option>
+                                    <option value="">All</option>
                                     {displaySelectOptions(statusItems, 'value', 'name')}
                                 </Input>
                             </Grid>
@@ -131,7 +116,7 @@ const Index = ({ errors }) => {
                                     type="month"
                                     name="month"
                                     value={filters.month}
-                                    onChange={handleOnChange}
+                                    onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
                                     errors={errors}
                                 />
                             </Grid>
@@ -139,11 +124,16 @@ const Index = ({ errors }) => {
                                 <Input
                                     label="Sort By"
                                     select
+                                    InputLabelProps={{
+                                        shrink: true
+                                    }}
                                     name="sort"
-                                    children={displaySelectOptions(sortItems, 'value', 'name')}
                                     value={filters.sort}
-                                    onChange={handleOnSortChange}
-                                />
+                                    onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
+                                >
+                                    <option value="">All</option>
+                                    {displaySelectOptions(sortItems, 'value', 'name')}
+                                </Input>
                             </Grid>
                             <Grid item xs={12} md={12} textAlign="right">
                                 <Box>

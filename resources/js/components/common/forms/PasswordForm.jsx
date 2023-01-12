@@ -3,6 +3,7 @@ import { Box, Button, Card, CardContent, Grid, Typography } from "@mui/material"
 import { useDispatch } from "react-redux"
 import Input from "../../forms/Input"
 import { actions } from "../../../store/slices/ToasterSlice"
+import { handleOnChange } from "../../../helpers/form.helper"
 
 const PasswordForm = ({ errors, messages, routes, logoutUrl }) => {
 
@@ -13,10 +14,6 @@ const PasswordForm = ({ errors, messages, routes, logoutUrl }) => {
         new_password: '',
         new_password_confirmation: ''
     })
-
-    const handleOnChange = e => {
-        setData(e.target.name, e.target.value)
-    }
 
     const handleSubmit = e => {
         e.preventDefault()
@@ -59,7 +56,7 @@ const PasswordForm = ({ errors, messages, routes, logoutUrl }) => {
                                 helperText="Enter your current password for verification"
                                 data={data.current_password}
                                 errors={errors}
-                                onChange={handleOnChange}
+                                onChange={e => handleOnChange(e, setData)}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -69,7 +66,7 @@ const PasswordForm = ({ errors, messages, routes, logoutUrl }) => {
                                 name="new_password"
                                 data={data.new_password}
                                 errors={errors}
-                                onChange={handleOnChange}
+                                onChange={e => handleOnChange(e, setData)}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -79,7 +76,7 @@ const PasswordForm = ({ errors, messages, routes, logoutUrl }) => {
                                 name="new_password_confirmation"
                                 data={data.new_password_confirmation}
                                 errors={errors}
-                                onChange={handleOnChange}
+                                onChange={e => handleOnChange(e, setData)}
                             />
                         </Grid>
                         <Grid item xs={12} textAlign="right">
