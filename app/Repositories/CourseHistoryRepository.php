@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 class CourseHistoryRepository extends BaseRepository
 {
-    const PER_PAGE = 5;
+    const PER_PAGE = 10;
 
     const SORT_TEACHER = 'first_name';
 
@@ -62,9 +62,7 @@ class CourseHistoryRepository extends BaseRepository
                         ->orWhere('users.first_name', 'like', '%' . $request->get('keyword') . '%')
                         ->orWhere('users.last_name', 'like', '%' . $request->get('keyword') . '%');
                 });
-
             })
-            
             ->join('courses', 'courses.id', '=', 'course_histories.course_id')
             ->join('users', 'users.id', '=', 'courses.professor_id')
             ->join('course_types', 'course_types.id', '=', 'courses.course_type_id')
