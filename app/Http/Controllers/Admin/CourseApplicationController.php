@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 
-class ClassApplicationController extends Controller
+class CourseApplicationController extends Controller
 {
     private $courseApplicationRepository;
 

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\ClassApplicationController;
+use App\Http\Controllers\Admin\CourseApplicationController;
 use App\Http\Controllers\Admin\InquiriesController as AdminInquiriesController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Portal\ProfileController as PortalProfileController;
@@ -74,8 +75,8 @@ Route::prefix('admin')->name('admin.')->group(function() {
 
         # Class Applications
         Route::prefix('class-applications')->name('class.applications.')->group(function() {
-            Route::get('/', [ClassApplicationController::class, 'index'])->name('index');
-            Route::patch('/{id}/status/{status}', [ClassApplicationController::class, 'updateStatus'])->name('status.update');
+            Route::get('/', [CourseApplicationController::class, 'index'])->name('index');
+            Route::patch('/{id}/status/{status}', [CourseApplicationController::class, 'updateStatus'])->name('status.update');
         });
     });
 });
