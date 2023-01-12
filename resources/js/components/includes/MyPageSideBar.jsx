@@ -37,7 +37,7 @@ const MyPage = ({ page }) => {
         },
         {
             name: 'Class Histories',
-            link: routes["mypage.class.history.index"],
+            link: routes["mypage.course.history.index"],
             roles: ['student', 'teacher']
         }
     ]
