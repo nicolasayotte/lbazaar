@@ -14,6 +14,7 @@ use App\Http\Controllers\Portal\InquiriesController;
 use App\Http\Controllers\Portal\RegisterStudentController;
 use App\Http\Controllers\Portal\TopPageController;
 use App\Models\CourseApplication;
+use App\Models\Inquiry;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -133,7 +134,7 @@ Route::get('/mail', function() {
     # The data that you need to pass to the view
     $data = [];
 
-    // render() method expects 2 parameters - view and data
+    # render() method expects 2 parameters - view and data
     return $markdown->render($view, $data);
 });
 
