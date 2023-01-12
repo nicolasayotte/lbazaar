@@ -20,7 +20,7 @@ class MakeRepository extends GeneratorCommand
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Generate repository class with a specified model';
 
     /**
      * Execute the console command.
@@ -29,14 +29,12 @@ class MakeRepository extends GeneratorCommand
      */
     public function handle()
     {
-        $stub = $this->getStub();
-
-        $this->replaceNamespace($stub, $this->argument('name'));
-        $this->replaceModel($stub, $this->option('model'));
-
         parent::handle();
     }
 
+    /**
+     * @Override
+     */
     protected function buildClass($name)
     {
         $stub = $this->files->get($this->getStub());
@@ -53,7 +51,7 @@ class MakeRepository extends GeneratorCommand
      */
     public function getStub()
     {
-        return base_path('/stubs/Repository.stub');
+        return base_path('/stubs/repository.stub');
     }
 
     /**

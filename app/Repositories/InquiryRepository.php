@@ -16,15 +16,10 @@ class InquiryRepository extends BaseRepository
 
     public function get($filters)
     {
-        if (@$filters['sort']) {
-            $sortFilterArr = explode(':', $filters['sort']);
+        $sortFilterArr = explode(':', @$filters['sort'] ?? 'created_at:desc');
 
-            $sortBy = $sortFilterArr[0];
-            $sortOrder = $sortFilterArr[1];
-        } else {
-            $sortBy = 'created_at';
-            $sortOrder = 'desc';
-        }
+        $sortBy    = $sortFilterArr[0];
+        $sortOrder = $sortFilterArr[1];
 
         return $this->model
                     ->where(function($q) use($filters) {

@@ -1,7 +1,7 @@
 import { Link, useForm, usePage } from "@inertiajs/inertia-react"
 import { Box, Button, Card, CardContent, Grid, Pagination, Typography } from "@mui/material"
 import Input from "../../../components/forms/Input"
-import { displaySelectOptions } from "../../../helpers/form.helper"
+import { displaySelectOptions, handleOnChange, handleOnSelectChange } from "../../../helpers/form.helper"
 import UserTable from "./components/UserTable"
 import routes from "../../../helpers/routes.helper"
 import TableLoader from "../../../components/common/TableLoader"
@@ -17,47 +17,29 @@ const Index = () => {
 
     const dispatch = useDispatch()
 
-    const { users, roleOptions, statusOptions, status, keyword, role, sort, messages } = usePage().props
+    const { users, roleOptions, statusOptions, status, keyword, role, sort, messages, page } = usePage().props
 
     const [dialog, setDialog] = useState({
         open: false,
-        title: '',
+        title: 'Manage Users',
         text: '',
         url: ''
     })
 
     const { data: filters, setData: setFilters, get, transform, processing } = useForm({
-        keyword: keyword,
-        status: status,
-        role: role,
-        sort: sort,
-        page: 1
+        keyword,
+        status,
+        role,
+        sort,
+        page
     })
 
     const sortOptions = [
         { name: 'Name A-Z', value: 'first_name:asc' },
         { name: 'Name Z-A', value: 'first_name:desc' },
-        { name: 'Date ASC',  value: 'created_at:asc' },
-        { name: 'Date DESC', value: 'created_at:desc' }
+        { name: 'Date - Oldest',  value: 'created_at:asc' },
+        { name: 'Date - Newest', value: 'created_at:desc' }
     ]
-
-    const handleKeywordChange = e => {
-        setFilters(filters => ({
-            ...filters,
-            page: 1,
-            [e.target.name]: e.target.value
-        }))
-    }
-
-    const handleSelectChange = e => {
-        transform(filters => ({
-            ...filters,
-            page: 1,
-            [e.target.name]: e.target.value
-        }))
-
-        handleFilterSubmit(e)
-    }
 
     const handleFilterSubmit = e => {
         e.preventDefault()
@@ -81,8 +63,7 @@ const Index = () => {
         setDialog(dialog => ({
             ...dialog,
             open: true,
-            title: 'Enable User',
-            text: 'Are you sure you want to enable this user?',
+            text: messages.confirm.user.enable,
             url: getRoute('admin.users.status.update', {
                 id: id,
                 status: 'active'
@@ -95,8 +76,7 @@ const Index = () => {
         setDialog(dialog => ({
             ...dialog,
             open: true,
-            title: 'Disable User',
-            text: 'Are you sure you want to disable this user?',
+            text: messages.confirm.user.disable,
             url: getRoute('admin.users.status.update', {
                 id: id,
                 status: 'disabled'
@@ -106,7 +86,10 @@ const Index = () => {
 
     // Dialog close handler
     const handleOnDialogClose = () => {
-        setDialog({ open: false })
+        setDialog(dialog => ({
+            ...dialog,
+            open: false
+        }))
     }
 
     // Dialog confirm handler
@@ -156,7 +139,7 @@ const Index = () => {
                                     placeholder="Search for name or email"
                                     name="keyword"
                                     value={filters.keyword}
-                                    onChange={handleKeywordChange}
+                                    onChange={e => handleOnChange(e, setFilters)}
                                 />
                             </Grid>
                             <Grid item xs={12} md={2}>
@@ -165,7 +148,7 @@ const Index = () => {
                                     select
                                     name="role"
                                     value={filters.role}
-                                    onChange={handleSelectChange}
+                                    onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
                                     InputLabelProps={{
                                         shrink: true
                                     }}
@@ -180,7 +163,7 @@ const Index = () => {
                                     select
                                     name="status"
                                     value={filters.status}
-                                    onChange={handleSelectChange}
+                                    onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
                                     InputLabelProps={{
                                         shrink: true
                                     }}
@@ -196,7 +179,7 @@ const Index = () => {
                                     name="sort"
                                     value={filters.sort}
                                     children={displaySelectOptions(sortOptions, 'value', 'name')}
-                                    onChange={handleSelectChange}
+                                    onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
                                 />
                             </Grid>
                             <Grid item xs={12} md={1}>

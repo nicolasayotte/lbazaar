@@ -11,4 +11,14 @@ class CourseTypeRepository extends BaseRepository
     {
         parent::__construct(new CourseType());
     }
+
+    public function getDropdownData()
+    {
+        return $this->model->all()->map(function($data) {
+            return [
+                'id'   => $data->id,
+                'name' => $data->name
+            ];
+        });
+    }
 }

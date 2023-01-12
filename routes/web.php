@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\ClassApplicationController;
 use App\Http\Controllers\Admin\InquiriesController as AdminInquiriesController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Portal\ProfileController as PortalProfileController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\Portal\ForgotPasswordController;
 use App\Http\Controllers\Portal\InquiriesController;
 use App\Http\Controllers\Portal\RegisterStudentController;
 use App\Http\Controllers\Portal\TopPageController;
+use App\Models\CourseApplication;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -26,8 +28,11 @@ use Illuminate\Mail\Markdown;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+# Top Page
 Route::get('/', [TopPageController::class, 'index'])->name('top');
 
+# Inquiries
 Route::get('/inquiries', [InquiriesController::class, 'index'])->name('inquiries.index');
 Route::post('/inquiries', [InquiriesController::class, 'store'])->name('inquiries.store');
 
@@ -66,14 +71,22 @@ Route::prefix('admin')->name('admin.')->group(function() {
             Route::get('/{id}', [UserController::class, 'view'])->name('view');
             Route::post('/{id}/status/{status}', [UserController::class, 'updateStatus'])->name('status.update');
         });
+
+        # Class Applications
+        Route::prefix('class-applications')->name('class.applications.')->group(function() {
+            Route::get('/', [ClassApplicationController::class, 'index'])->name('index');
+            Route::patch('/{id}/status/{status}', [ClassApplicationController::class, 'updateStatus'])->name('status.update');
+        });
     });
 });
 
+# Courses
 Route::prefix('courses')->name('course.')->group(function() {
     Route::get('/', [CourseController::class, 'index'])->name('index');
     Route::get('/details/{id}', [CourseController::class, 'details'])->name('details');
 });
 
+# User Registration
 Route::prefix('register')->name('register.')->group(function() {
     Route::get('/student', [RegisterStudentController::class, 'index'])->name('index');
     Route::post('/student', [RegisterStudentController::class, 'store'])->name('store');
@@ -96,11 +109,13 @@ Route::prefix('portal')->name('portal.')->group(function() {
     });
 
 });
+
 # Email verification
 Route::get('/email/verify', [RegisterStudentController::class, 'verifyEmail'])->name('verify.email');
 Route::get('/email/verify/{id}/{hash}', [RegisterStudentController::class, 'verificationHanlder'])->middleware(['auth', 'signed'])->name('verification.verify');
 Route::get('/email/resend', [RegisterStudentController::class, 'resendEmailVerification'])->name('resend.email')->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
+# Forgot Password
 Route::get('/forgot-password', [ForgotPasswordController::class, 'index'])->name('forgot.password.index');
 Route::post('/forgot-password', [ForgotPasswordController::class, 'validateEmail'])->name('forgot.password.store');
 Route::get('/reset-password/{token}', [ForgotPasswordController::class, 'passwordReset'])->middleware('guest')->name('password.reset');
@@ -111,11 +126,14 @@ Route::patch('/reset-password/{token}', [ForgotPasswordController::class, 'updat
 Route::get('/mail', function() {
     $markdown = new Markdown(view(), config('mail.markdown'));
 
-    return $markdown->render('emails.create_user', [
-        'user' => User::first(),
-        'temp_password' => 'test1234',
-        'login_url' => config('app.url')
-    ]);
+    # The view file that you wish to preview
+    $view = '';
+
+    # The data that you need to pass to the view
+    $data = [];
+
+    // render() method expects 2 parameters - view and data
+    return $markdown->render($view, $data);
 });
 
 # Profile

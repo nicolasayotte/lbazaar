@@ -13,9 +13,7 @@ class RoleRepository extends BaseRepository
 
     public function getDropdownData()
     {
-        $roles = $this->model->get();
-
-        return $roles->map(function($role) {
+        return $this->model->all()->map(function($role) {
             return [
                 'name' => ucfirst($role->name),
                 'value' => $role->name

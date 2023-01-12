@@ -2,7 +2,7 @@ import { useForm } from "@inertiajs/inertia-react"
 import { Button, Card, CardContent, Grid, Typography } from "@mui/material"
 import { useDispatch } from "react-redux"
 import Input from "../../../../components/forms/Input"
-import { displaySelectOptions } from "../../../../helpers/form.helper"
+import { handleOnChange, displaySelectOptions } from "../../../../helpers/form.helper"
 import { actions } from "../../../../store/slices/ToasterSlice"
 
 const ProfileForm = ({ errors, auth, countries, messages, routes }) => {
@@ -15,10 +15,6 @@ const ProfileForm = ({ errors, auth, countries, messages, routes }) => {
         email: auth.user.email,
         country_id: auth.user.country_id
     })
-
-    const handleOnChange = e => {
-        setData(e.target.name, e.target.value)
-    }
 
     const handleSubmit = e => {
         e.preventDefault()
@@ -46,7 +42,7 @@ const ProfileForm = ({ errors, auth, countries, messages, routes }) => {
                                 label="First Name"
                                 name="first_name"
                                 value={data.first_name}
-                                onChange={handleOnChange}
+                                onChange={e => handleOnChange(e, setData)}
                                 errors={errors}
                             />
                         </Grid>
@@ -55,7 +51,7 @@ const ProfileForm = ({ errors, auth, countries, messages, routes }) => {
                                 label="Last Name"
                                 name="last_name"
                                 value={data.last_name}
-                                onChange={handleOnChange}
+                                onChange={e => handleOnChange(e, setData)}
                                 errors={errors}
                             />
                         </Grid>
@@ -65,7 +61,7 @@ const ProfileForm = ({ errors, auth, countries, messages, routes }) => {
                                 disabled
                                 name="email"
                                 value={data.email}
-                                onChange={handleOnChange}
+                                onChange={e => handleOnChange(e, setData)}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -74,7 +70,7 @@ const ProfileForm = ({ errors, auth, countries, messages, routes }) => {
                                 select
                                 name="country_id"
                                 value={data.country_id}
-                                onChange={handleOnChange}
+                                onChange={e => handleOnChange(e, setData)}
                                 errors={errors}
                             >
                                 {displaySelectOptions(countries)}
