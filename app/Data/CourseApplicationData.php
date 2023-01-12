@@ -122,6 +122,11 @@ class CourseApplicationData
         return $this->status;
     }
 
+    public function getProperties()
+    {
+        return get_object_vars($this);
+    }
+
     public static function fromModel(CourseApplication $courseApplication)
     {
         $courseData = new CourseApplicationData();
@@ -150,17 +155,6 @@ class CourseApplicationData
 
         $courseData->setStatus(ucwords($courseStatus));
 
-        return $courseData->convertToArray();
-    }
-
-    private function convertToArray()
-    {
-        $objectArray = [];
-
-        foreach ($this as $key => $value) {
-            $objectArray[$key] = $value;
-        }
-
-        return $objectArray;
+        return $courseData->getProperties();
     }
 }
