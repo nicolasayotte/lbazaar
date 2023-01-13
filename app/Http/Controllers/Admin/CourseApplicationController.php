@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Data\CourseApplicationData;
 use App\Http\Controllers\Controller;
 use App\Mail\CourseApplicationUpdate;
 use App\Repositories\CourseApplicationRepository;
@@ -47,7 +48,9 @@ class CourseApplicationController extends Controller
 
     public function view($id)
     {
-        return Inertia::render('Admin/ClassApplications/View')->withViewData([
+        return Inertia::render('Admin/ClassApplications/View',[
+            'courseApplication' => CourseApplicationData::fromModel($this->courseApplicationRepository->with(['professor.classification'])->findOrFail($id))
+        ])->withViewData([
             'title' => 'Class Application Detail | Admin'
         ]);
     }
