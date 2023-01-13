@@ -60,7 +60,7 @@ class EmailNotification extends Mailable
     public function content()
     {
         return new Content(
-            view: 'emails.verification',
+            markdown: 'emails.verification',
             with: [
                 'user' => $this->user,
                 'url' => $this->url

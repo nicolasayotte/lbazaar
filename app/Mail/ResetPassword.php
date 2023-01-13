@@ -36,7 +36,7 @@ class ResetPassword extends Mailable
     public function envelope()
     {
         $settingRepository = new SettingRepository();
-        
+
         return new Envelope(
             subject: "Reset Password Link",
             from: $settingRepository->getSetting('no-reply-email'),
@@ -52,7 +52,7 @@ class ResetPassword extends Mailable
     public function content()
     {
         return new Content(
-            view: 'emails.resetpassword',
+            markdown: 'emails.resetpassword',
             with: [
                 'url' => $this->url
             ]
