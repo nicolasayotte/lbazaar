@@ -19,7 +19,7 @@ const ProfileForm = ({ errors, auth, countries, messages, routes }) => {
     const handleSubmit = e => {
         e.preventDefault()
 
-        patch(routes["mypage.profile.update"], {
+        patch(routes["admin.profile.update"], {
             preserveScroll: true,
             errorBag: 'profile',
             onSuccess: () => dispatch(actions.success({

@@ -171,7 +171,6 @@ const SearchCourse = () => {
                                         <Grid display="flex" justifyContent="center" alignItems="center">
                                             <Button sx={{ mt: 2}}
                                                variant="contained"
-                                               children="Filter"
                                                type="submit"
                                                onClick={handleFilterSubmit}>
                                                 Filter

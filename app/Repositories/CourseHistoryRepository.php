@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 class CourseHistoryRepository extends BaseRepository
 {
-    const PER_PAGE = 10;
+    const PER_PAGE = 5;
 
     const SORT_TEACHER = 'first_name';
 
@@ -20,15 +20,10 @@ class CourseHistoryRepository extends BaseRepository
     public function search($request, $user_id)
     {
 
-        if ($request->get('sort')) {
-            $sortFilterArr = explode(':', $request->get('sort'));
+        $sortFilterArr = explode(':', @$request->get('sort') ?? 'course_histories.created_at:desc');
 
-            $sortBy = $sortFilterArr[0];
-            $sortOrder = $sortFilterArr[1];
-        } else {
-            $sortBy = 'course_histories.created_at';
-            $sortOrder = 'desc';
-        }
+        $sortBy    = $sortFilterArr[0];
+        $sortOrder = $sortFilterArr[1];
 
         return $this->model
             ->where('user_id', $user_id)

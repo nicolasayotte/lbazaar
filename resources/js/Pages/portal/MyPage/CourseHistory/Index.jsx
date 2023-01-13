@@ -12,10 +12,10 @@ const Index = ({ errors }) => {
     const { course_histories, month, status, page, keyword, sort, type_id, category_id, course_categories, course_types } = usePage().props
 
     const sortItems = [
-        { name: 'Course Title A-Z', value: 'courses.title:asc' },
-        { name: 'Course Title Z-A', value: 'courses.title:desc' },
+        { name: 'Class Title A-Z', value: 'courses.title:asc' },
+        { name: 'Class Title Z-A', value: 'courses.title:desc' },
         { name: 'Teacher A-Z', value: 'users.first_name:asc' },
-        { name: 'Teacher Title Z-A', value: 'users.first_name:desc' },
+        { name: 'Teacher Z-A', value: 'users.first_name:desc' },
         { name: 'Date ASC', value: 'course_histories.created_at:asc' },
         { name: 'Date DESC', value: 'course_histories.created_at:desc' }
     ]
@@ -42,7 +42,11 @@ const Index = ({ errors }) => {
     }
 
     const handleOnPaginate = (e, page) => {
-        filters.page = page
+        transform(filters => ({
+            ...filters,
+            page
+        }))
+
         handleFilterSubmit(e)
     }
 
@@ -52,7 +56,7 @@ const Index = ({ errors }) => {
                 <CardContent>
                     <form onSubmit={handleFilterSubmit}>
                         <Grid container spacing={2}>
-                            <Grid item xs={12} md={12}>
+                            <Grid item xs={12} md={10}>
                                 <Input
                                     label="Keyword"
                                     placeholder="Search for Title, Description or Teacher Name"
@@ -79,7 +83,7 @@ const Index = ({ errors }) => {
                                     {displaySelectOptions(course_types)}
                                 </Input>
                             </Grid>
-                            <Grid item xs={12} md={2}>
+                            <Grid item xs={12} md={3}>
                                 <Input
                                     label="Category"
                                     select
@@ -95,7 +99,7 @@ const Index = ({ errors }) => {
                                     {displaySelectOptions(course_categories)}
                                 </Input>
                             </Grid>
-                            <Grid item xs={12} md={2}>
+                            <Grid item xs={12} md={3}>
                                 <Input
                                     label="Status"
                                     select
@@ -131,7 +135,6 @@ const Index = ({ errors }) => {
                                     value={filters.sort}
                                     onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
                                 >
-                                    <option value="">All</option>
                                     {displaySelectOptions(sortItems, 'value', 'name')}
                                 </Input>
                             </Grid>

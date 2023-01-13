@@ -15,9 +15,9 @@ const CourseHistoryTable = ({ data }) => {
 
         return (
             <TableRow key={index}>
+                <TableCell children={row.title} align="center"/>
                 <TableCell children={row.type} align="center"/>
                 <TableCell children={row.category} align="center"/>
-                <TableCell children={row.title} align="center"/>
                 <TableCell children={row.teacher} align="center"/>
                 <TableCell align="center">
                     <Chip size="small" label={row.status} color={statusColors[row.status]}/>
@@ -31,7 +31,7 @@ const CourseHistoryTable = ({ data }) => {
                             </IconButton>
                         </Link>
                         <IconButton title="Give Feedback" variant="text" size="small">
-                            <InsertComment fontSize="inherit" />
+                            <InsertComment fontSize="inherit" color="primary"/>
                         </IconButton>
                     </Stack>
                 </TableCell>
@@ -48,9 +48,9 @@ const CourseHistoryTable = ({ data }) => {
             <Table>
                 <TableHead>
                     <TableRow>
+                        <TableCell children="Class" align="center"/>
                         <TableCell children="Type" align="center"/>
                         <TableCell children="Category" align="center"/>
-                        <TableCell children="Course" align="center"/>
                         <TableCell children="Teacher" align="center"/>
                         <TableCell children="Status" align="center"/>
                         <TableCell children="Booked Date" align="center"/>
