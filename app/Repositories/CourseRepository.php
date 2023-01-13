@@ -8,19 +8,19 @@ use DateTime;
 
 class CourseRepository extends BaseRepository
 {
-    const PERPAGE = 5;
+    const PER_PAGE = 5;
 
     public function __construct()
     {
         parent::__construct(new Course());
     }
 
-    public function getFeaturedClass($take = self::PERPAGE)
+    public function getFeaturedClass($take = self::PER_PAGE)
     {
         return $this->model->take($take)->orderBy('id', 'desc')->with(['professor', 'courseType', 'courseCategory'])->get();
     }
 
-    public function getUpcomingClasses($take = self::PERPAGE)
+    public function getUpcomingClasses($take = self::PER_PAGE)
     {
         return $this->model->take($take)->orderBy('id', 'desc')->with(['professor', 'courseType', 'courseCategory'])->get();
     }
@@ -61,7 +61,7 @@ class CourseRepository extends BaseRepository
                 return ($q->where('title', 'like', '%' . $request->get('search_text') . '%')
                          ->orWhere('description', 'like', '%' . $request->get('search_text') . '%'));
             })
-            ->paginate(self::PERPAGE)->withQueryString();
+            ->paginate(self::PER_PAGE)->withQueryString();
     }
 
     public function findById($id)

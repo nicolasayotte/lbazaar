@@ -46,7 +46,15 @@ class CourseController extends Controller
                 'course_categories'     => $categories,
                 'languages'             => $languages,
                 'teachers'              => $teachers,
-                'courses'               => $courses
+                'courses'               => $courses,
+                'page'                  => @$request['page'] ?? 1,
+                'month'                 => @$request['month'] ?? date('Y-m'),
+                'search_text'           => @$request['search_text'] ?? '',
+                'category_id'           => @$request['category_id'] ?? '',
+                'type_id'               => @$request['type_id'] ?? '',
+                'status'                => @$request['status'] ?? '',
+                'language'              => @$request['language'] ?? '',
+                'professor_id'          => @$request['professor_id'] ?? ''
             ])->withViewData([
                 'title'       => 'Browse Courses',
                 'description' => 'Course Lists'

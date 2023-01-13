@@ -77,4 +77,9 @@ class User extends Authenticatable implements MustVerifyEmail
 
         Mail::send( New ResetPassword($this->email, $url));
     }
+
+    public function courseHistories()
+    {
+        return $this->hasMany(CourseHistory::class);
+    }
 }
