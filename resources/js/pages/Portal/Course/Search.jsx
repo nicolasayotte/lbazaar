@@ -1,62 +1,36 @@
 import { Box, TextField, Button, Pagination, Skeleton, Stack, InputLabel, Select, MenuItem, Grid, Typography, Container, Card, CardContent } from "@mui/material";
-import { useForm } from '@inertiajs/inertia-react'
+import { useForm, usePage } from '@inertiajs/inertia-react'
 import { actions } from '../../../store/slices/ToasterSlice'
 import { useDispatch } from "react-redux"
 import Course from "../../../components/cards/Course";
 import Input from "../../../components/forms/Input";
-import { displaySelectOptions } from "../../../helpers/form.helper";
+import { displaySelectOptions, handleOnChange, handleOnSelectChange } from "../../../helpers/form.helper";
 import routes from "../../../helpers/routes.helper"
 
-const SearchCourse = ({courses, course_types, course_categories, teachers, languages, messages }) => {
+const SearchCourse = () => {
 
-    const dispatch = useDispatch()
+    const { search_text, type_id, category_id, language, professor_id, month, page, courses, course_types, course_categories, teachers, languages, messages} = usePage().props
 
-    const FIRST_PAGE = 1
-
-    const getCurrentDate = () => {
-        const today = new Date()
-
-        let year  = today.getFullYear().toString(),
-            month = (today.getMonth() + 1).toString(),
-            day   = today.getDate().toString()
-
-            month = month.padStart(2, '0')
-            day = day.padStart(2, '0')
-
-        return [year, month, day].join('-')
-    }
-
-    const { data, setData, get, errors, processing, reset, clearErrors } = useForm({
-        search_text: '',
-        type_id: '',
-        category_id: '',
-        language: '',
-        professor_id: '',
-        month: getCurrentDate().slice(0, 7),
-        page: courses.current_page,
+    const { data: filters, setData: setFilters, get, errors, processing, transform } = useForm({
+        search_text,
+        type_id,
+        category_id,
+        language,
+        professor_id,
+        month,
+        page,
     })
 
-    const handleSubmit = () => {
-        get(routes['course.index'], {
-            preserveState: true,
-            onError: () => dispatch(actions.error({
-                message: messages.error
-            }))
-        });
+
+    const handleFilterSubmit = (e) => {
+        e.preventDefault()
+
+        get(routes['course.index']);
     }
 
-    const handleReset = () => {
-        reset()
-    }
-
-    const setPageToOne = () => {
-        data.page = FIRST_PAGE
-        handleSubmit()
-    }
-
-    const handlePageChange = (e, page) => {
-        data.page = page
-        handleSubmit()
+    const handleOnPaginate = (e, page) => {
+        filters.page = page
+        handleFilterSubmit(e)
     }
 
     const displayCourses = (courses, showDescription = true) => {
@@ -67,7 +41,11 @@ const SearchCourse = ({courses, course_types, course_categories, teachers, langu
                         return <Course showDate={true} key={course.id} course={course} viewDetailId="id" showDescription={showDescription}/>
                     })}
                     <Grid display="flex" justifyContent="center" alignItems="center">
-                        <Pagination sx={{mt: 2, justifyContent: 'center'}} onChange={handlePageChange} page={data.page} count={courses.last_page} color="primary" />
+                        <Pagination sx={{mt: 2, justifyContent: 'center'}} 
+                                    onChange={handleOnPaginate}
+                                    page={courses.current_page} 
+                                    count={courses.last_page} 
+                                    color="primary" />
                     </Grid>
                 </>
             )
@@ -89,10 +67,6 @@ const SearchCourse = ({courses, course_types, course_categories, teachers, langu
         )
     }
 
-    const handleOnChange = e => {
-        setData(e.target.name, e.target.value)
-    }
-
     return (
         <Box>
             <Grid container sx={{m: 4}}>
@@ -102,98 +76,105 @@ const SearchCourse = ({courses, course_types, course_categories, teachers, langu
                     </Typography>
                     <Card>
                         <CardContent>
-                            <Typography variant="h6" sx={{ mb: 2 }}>
-                                Filter
-                            </Typography>
-                            <Grid container spacing={2}>
-                                <Grid item xs={12} sm={12}>
-                                    <Input
-                                        placeholder="Search for classes"
-                                        name="search_text"
-                                        value={data.search_text}
-                                        onChange={handleOnChange}
-                                        errors={errors}
-                                    />
-                                </Grid>
-                                <Grid item  xs={12} sm={12}>
-                                    <Input
-                                        label="Type"
-                                        select
-                                        name="type_id"
-                                        value={data.type_id}
-                                        onChange={handleOnChange}
-                                        errors={errors}
-                                    >
-                                        <option value=""></option>
-                                        {displaySelectOptions(course_types)}
-                                    </Input>
-                                </Grid>
-                                <Grid item xs={12} sm={12}>
-                                    <Input
-                                        label="Category"
-                                        select
-                                        name="category_id"
-                                        value={data.category_id}
-                                        onChange={handleOnChange}
-                                        errors={errors}
-                                    >
-                                        <option value=""></option>
-                                        {displaySelectOptions(course_categories)}
-                                    </Input>
-                                </Grid>
-                                <Grid item xs={12} sm={12}>
-                                    <Input
-                                        label="Teachers"
-                                        select
-                                        name="professor_id"
-                                        value={data.professor_id}
-                                        onChange={handleOnChange}
-                                        errors={errors}
-                                    >
-                                        <option value=""></option>
-                                        {displaySelectOptions(teachers, 'id', 'fullname')}
-                                    </Input>
-                                </Grid>
-                                <Grid item xs={12} sm={12}>
-                                    <Input
-                                        label="Languages"
-                                        select
-                                        name="language"
-                                        value={data.language}
-                                        onChange={handleOnChange}
-                                        errors={errors}
-                                    >
-                                        <option value=""></option>
-                                        {displaySelectOptions(languages, 'language', 'language')}
-                                    </Input>
-                                </Grid>
-                                <Grid item xs={12} sm={12}>
-                                    <Input
-                                        type="month"
-                                        name="month"
-                                        value={data.month}
-                                        onChange={handleOnChange}
-                                        errors={errors}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={12}>
-                                    <Grid display="flex" justifyContent="center" alignItems="center">
-                                        <Button sx={{ mt: 2}}
-                                            onClick={setPageToOne}
-                                            variant="contained"
-                                            disabled={processing}
-                                            disableElevation>
-                                            Filter
-                                        </Button>
-                                        <Button sx={{ mt: 2, ml: 2}}
-                                            onClick={handleReset}
-                                            variant="outlined"
-                                            disableElevation>
-                                            Reset
-                                        </Button>
+                            <form onSubmit={handleFilterSubmit}>
+                                <Typography variant="h6" sx={{ mb: 2 }}>
+                                    Filter
+                                </Typography>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={12} sm={12}>
+                                        <Input
+                                            placeholder="Search for classes"
+                                            name="search_text"
+                                            value={filters.search_text}
+                                            onChange={e => handleOnChange(e, setFilters)}
+                                            errors={errors}
+                                        />
+                                    </Grid>
+                                    <Grid item  xs={12} sm={12}>
+                                        <Input
+                                            label="Type"
+                                            select
+                                            name="type_id"
+                                            value={filters.type_id}
+                                            onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
+                                            errors={errors}
+                                            InputLabelProps={{
+                                                shrink: true
+                                            }}
+                                        >
+                                            <option value="">All</option>
+                                            {displaySelectOptions(course_types)}
+                                        </Input>
+                                    </Grid>
+                                    <Grid item xs={12} sm={12}>
+                                        <Input
+                                            label="Category"
+                                            select
+                                            name="category_id"
+                                            value={filters.category_id}
+                                            onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
+                                            errors={errors}
+                                            InputLabelProps={{
+                                                shrink: true
+                                            }}
+                                        >
+                                            <option value="">All</option>
+                                            {displaySelectOptions(course_categories)}
+                                        </Input>
+                                    </Grid>
+                                    <Grid item xs={12} sm={12}>
+                                        <Input
+                                            label="Teachers"
+                                            select
+                                            name="professor_id"
+                                            value={filters.professor_id}
+                                            onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
+                                            errors={errors}
+                                            InputLabelProps={{
+                                                shrink: true
+                                            }}
+                                        >
+                                            <option value="">All</option>
+                                            {displaySelectOptions(teachers, 'id', 'fullname')}
+                                        </Input>
+                                    </Grid>
+                                    <Grid item xs={12} sm={12}>
+                                        <Input
+                                            label="Languages"
+                                            select
+                                            name="language"
+                                            value={filters.language}
+                                            onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
+                                            errors={errors}
+                                            InputLabelProps={{
+                                                shrink: true
+                                            }}
+                                        >
+                                            <option value="">All</option>
+                                            {displaySelectOptions(languages, 'language', 'language')}
+                                        </Input>
+                                    </Grid>
+                                    <Grid item xs={12} sm={12}>
+                                        <Input
+                                            type="month"
+                                            name="month"
+                                            value={filters.month}
+                                            onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
+                                            errors={errors}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} sm={12}>
+                                        <Grid display="flex" justifyContent="center" alignItems="center">
+                                            <Button sx={{ mt: 2}}
+                                               variant="contained"
+                                               type="submit"
+                                               onClick={handleFilterSubmit}>
+                                                Filter
+                                            </Button>
+                                        </Grid>
                                     </Grid>
                                 </Grid>
-                            </Grid>
+                            </form>
                         </CardContent>
                     </Card>
                 </Grid>

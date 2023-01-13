@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Portal\ProfileController as PortalProfileController;
 use App\Http\Controllers\Portal\AuthPortalController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Portal\CourseHistoryController;
 use App\Http\Controllers\Portal\CourseController;
 use App\Http\Controllers\Portal\ForgotPasswordController;
 use App\Http\Controllers\Portal\InquiriesController;
@@ -148,4 +149,5 @@ Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function()
     Route::get('/profile', [PortalProfileController::class, 'index'])->name('profile.index');
     Route::patch('/profile', [PortalProfileController::class, 'update'])->name('profile.update');
     Route::patch('/password/update', [PortalProfileController::class, 'updatePassword'])->name('profile.password.update');
+    Route::get('/class-history', [CourseHistoryController::class, 'index'])->name('course.history.index');
 });
