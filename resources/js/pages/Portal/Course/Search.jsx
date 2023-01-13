@@ -11,7 +11,7 @@ const SearchCourse = () => {
 
     const { search_text, type_id, category_id, language, professor_id, month, page, courses, course_types, course_categories, teachers, languages, messages} = usePage().props
 
-    const { data: filters, setData: setFilters, get, errors, processing, reset, transform } = useForm({
+    const { data: filters, setData: setFilters, get, errors, processing, transform } = useForm({
         search_text,
         type_id,
         category_id,
@@ -65,10 +65,6 @@ const SearchCourse = () => {
                     <Skeleton animation="wave" variant="rounded" width='100%' height={200}/>
                </Stack>
         )
-    }
-
-    const handleReset = () => {
-        reset()
     }
 
     return (
@@ -174,12 +170,6 @@ const SearchCourse = () => {
                                                type="submit"
                                                onClick={handleFilterSubmit}>
                                                 Filter
-                                            </Button>
-                                            <Button sx={{ mt: 2, ml: 2}}
-                                                onClick={handleReset}
-                                                variant="outlined"
-                                                disableElevation>
-                                                Reset
                                             </Button>
                                         </Grid>
                                     </Grid>
