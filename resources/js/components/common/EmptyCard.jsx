@@ -2,7 +2,7 @@ import { Card, CardContent, Typography } from "@mui/material"
 
 const EmptyCard = () => {
     return (
-        <Card sx={{width: '100%'}}>
+        <Card>
             <CardContent>
                 <Typography
                     variant="h6"
