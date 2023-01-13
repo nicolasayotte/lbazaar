@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 class CourseHistoryRepository extends BaseRepository
 {
-    const PER_PAGE = 5;
+    const PER_PAGE = 10;
 
     const SORT_TEACHER = 'first_name';
 
