@@ -42,7 +42,7 @@ const ClassApplicationTable = ({ data, handleOnApprove, handleOnDeny }) => {
         return (
             <TableRow key={index}>
                 <TableCell children={row.title}/>
-                <TableCell children={row.professor}/>
+                <TableCell children={row.professor_name}/>
                 <TableCell align="center" children={row.type}/>
                 <TableCell align="center" children={row.category}/>
                 <TableCell align="center" children={row.price}/>
