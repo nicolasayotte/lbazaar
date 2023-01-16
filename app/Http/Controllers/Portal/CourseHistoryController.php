@@ -24,7 +24,7 @@ class CourseHistoryController extends Controller
     public $courseHistoryRepository;
 
     public $courseContentRepository;
-    
+
     public $userRepository;
 
     public $courseRepository;
@@ -46,7 +46,7 @@ class CourseHistoryController extends Controller
         $categories = $this->courseCategoryRepository->getAll();
 
         $courseHistories = $this->courseHistoryRepository->search($request, Auth::user()->id);
-        
+
         return Inertia::render('Portal/MyPage/CourseHistory/Index', [
             'course_types'          => $types,
             'course_categories'     => $categories,

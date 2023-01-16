@@ -1,4 +1,5 @@
 import {Grid, Divider, Card, CardActions, CardContent, Button, Typography} from "@mui/material"
+import Parser from 'html-react-parser';
 import { useState } from "react"
 
 const Feedback = (props) => {
@@ -6,7 +7,7 @@ const Feedback = (props) => {
     return (
         <Card sx={{ minWidth: 275, m: 2, position: 'relative' }}>
             <CardContent>
-                <Grid container justifyContent="space-between">  
+                <Grid container justifyContent="space-between">
                     <Typography inline="true" align="left" variant="subtitle1">
                         {`${props.feedback.user.fullname}`}  <Typography inline="true" align="left" variant="caption">{ props.feedback.created_at}</Typography>
                     </Typography>
@@ -16,7 +17,7 @@ const Feedback = (props) => {
                 </Grid>
                 <Divider />
                 <Typography variant="caption" gutterBottom>
-                    {props.feedback.comments}
+                   {Parser(props.feedback.comments)}
                 </Typography>
             </CardContent>
         </Card>

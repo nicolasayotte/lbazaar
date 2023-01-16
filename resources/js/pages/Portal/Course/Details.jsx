@@ -1,10 +1,15 @@
-import { Box, Grid, Typography, Card, CardContent } from "@mui/material";
+import { Box, Grid, Link, Button, Typography, Card, CardContent } from "@mui/material";
 import Feedback from "../../../components/cards/Feedback";
+import { InsertComment } from "@mui/icons-material"
 import CourseContent from "../../../components/cards/CourseContent";
 import User from "../../../components/cards/User";
 import DividerSection from "../../../components/common/DividerSection"
+import { usePage } from "@inertiajs/inertia-react"
+import { getRoute } from "../../../helpers/routes.helper"
 
 const Details = (props) => {
+
+    const { auth } = usePage().props
 
     const displayCourses = (courses, showDescription = true) => {
         if (courses.length > 0) {
@@ -30,6 +35,24 @@ const Details = (props) => {
                 return <Feedback key={feedback.id} feedback={feedback}/>
             })
         )
+    }
+
+     const displayButtonFeedback = () => {
+        if (props.isBooked) {
+            return (
+                <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+                    <Link href={getRoute('course.feedback.index', {id : props.course.id}, {returnUrl : getRoute('course.details', {id : props.course.id})})}>
+                        <Button
+                            variant="contained"
+                            children={!props.hasFeedback ? "Give Feedback" : "Edit Feedback"}
+                            startIcon={
+                                <InsertComment />
+                            }
+                        />
+                    </Link>
+                </Box>
+            )
+        }
     }
 
     return (
@@ -58,6 +81,7 @@ const Details = (props) => {
                     {displayCourses(props.contents)}
                     <DividerSection title="Feedbacks"/>
                     {displayFeedbacks()}
+                    {displayButtonFeedback()}
                 </Grid>
             </Grid>
         </Box>

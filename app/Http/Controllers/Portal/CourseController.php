@@ -13,6 +13,7 @@ use App\Repositories\CourseRepository;
 use App\Repositories\CourseTypeRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class CourseController extends Controller
@@ -65,10 +66,12 @@ class CourseController extends Controller
     {
         $course = $this->courseRepository->findById($id);
         $contents = $this->courseContentRepository->findByCourseId($course->id);
-        
+
         return Inertia::render('Portal/Course/Details', [
-            'course'          => $course,
-            'contents'        => $contents,
+            'course'            => $course,
+            'contents'          => $contents,
+            'isBooked'          => Auth::user()->isCourseBooked($id),
+            'hasFeedback'       => Auth::user()->hasFeedback($id)
         ])->withViewData([
             'title'       => 'Course - ' . $course->title,
             'description' => 'Course Details'

@@ -3,6 +3,7 @@
 namespace App\Data;
 
 use App\Models\CourseHistory;
+use Illuminate\Support\Facades\Auth;
 
 class CourseHistoryData
 {
@@ -21,6 +22,8 @@ class CourseHistoryData
     private $booked_date;
 
     private $language;
+
+    private $hasFeedback;
 
     public function setId($id)
     {
@@ -64,6 +67,13 @@ class CourseHistoryData
         return $this;
     }
 
+    public function setHasFeedback($hasFeedback)
+    {
+        $this->hasFeedback = $hasFeedback;
+
+        return $this;
+    }
+
     public function setStatus($status)
     {
         $this->status = $status;
@@ -87,7 +97,7 @@ class CourseHistoryData
     {
         return $this->teacher;
     }
-   
+
     public function getStatus()
     {
         return $this->status;
@@ -118,10 +128,17 @@ class CourseHistoryData
         return $this->category;
     }
 
+    public function getHasFeedback()
+    {
+        return $this->hasFeedback;
+    }
+
     public function getProperties()
     {
         return get_object_vars($this);
     }
+
+
 
     public static function fromModel(CourseHistory $courseHistory)
     {
@@ -135,7 +152,8 @@ class CourseHistoryData
         $courseHistoryData->setLanguage($courseHistory->course->language);
         $courseHistoryData->setStatus($courseHistory->completed_at != null ? CourseHistory::COMPLETED : CourseHistory::ONGOING);
         $courseHistoryData->setBookedDate($courseHistory->created_at->format('Y-m-d H:i'));
-       
+        $courseHistoryData->setHasFeedback(Auth::user()->hasFeedback($courseHistory->course->id));
+
         return $courseHistoryData->getProperties();
     }
 }

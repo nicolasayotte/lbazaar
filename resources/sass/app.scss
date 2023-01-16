@@ -14,6 +14,17 @@ a {
     color: inherit;
 }
 
+.quill.ql-error {
+  .ql-toolbar {
+    border: 1px solid red;
+  }
+  .ql-container {
+    border-left: 1px solid red;
+    border-right: 1px solid red;
+    border-bottom: 1px solid red;
+  }
+}
+
 @media only screen and (max-width: 600px) {
   .myprofile-card {
     margin-top: 0px !important;

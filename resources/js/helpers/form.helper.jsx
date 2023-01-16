@@ -20,6 +20,18 @@ export const handleOnChange = (e, setData) => {
 }
 
 /**
+ * onChange method for handling useForm() state
+ *
+ * @param {value} value The value pass from editor
+ * @param {func} setData The setData method from inertiajs useForm()
+ * @param {properties} value The properties of the value
+ */
+export const handleEditorOnChange = (value, setData, properties) => {
+    setData(properties, value)
+}
+
+
+/**
  * onChange method for handling useForm() state specifically for select inputs
  *
  * @param {*} e The onChange event
