@@ -1,8 +1,13 @@
-@extends('emails.layout')
+<x-mail::message>
+# Email Verification
 
-@section('content')
-    <b>Hello, {{ @$user->first_name }}!</b><br><br>
-    <a>Please click the link below to verify your email address</a><br><br>
-    <b>Verification Link:</b>
-    <a href="{{ @$url }}">{{ @$url }}</a>
-@endsection
+<br>
+<p>Hello {{ @$user->first_name }}</p>
+
+<p>You have successfully created your {{ config('app.name') }} account. Now you just need to verify your email to start using your account.</p>
+
+<p>Please click the button below to verify your email address</p>
+
+<x-mail::button :url="@$url">Verify Email</x-mail::button>
+
+</x-mail::message>

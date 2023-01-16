@@ -57,7 +57,7 @@ class Inquiry extends Mailable
     public function content()
     {
         return new Content(
-            view: 'emails.inquiry',
+            markdown: 'emails.inquiry',
             with: [
                 'inquiry' => $this->inquiry
             ]

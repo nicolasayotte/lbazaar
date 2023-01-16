@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\ClassApplicationController;
+use App\Http\Controllers\Admin\CourseApplicationController;
 use App\Http\Controllers\Admin\InquiriesController as AdminInquiriesController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Portal\ProfileController as PortalProfileController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\Portal\InquiriesController;
 use App\Http\Controllers\Portal\RegisterStudentController;
 use App\Http\Controllers\Portal\TopPageController;
 use App\Models\CourseApplication;
+use App\Models\Inquiry;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -75,8 +77,9 @@ Route::prefix('admin')->name('admin.')->group(function() {
 
         # Class Applications
         Route::prefix('class-applications')->name('class.applications.')->group(function() {
-            Route::get('/', [ClassApplicationController::class, 'index'])->name('index');
-            Route::patch('/{id}/status/{status}', [ClassApplicationController::class, 'updateStatus'])->name('status.update');
+            Route::get('/', [CourseApplicationController::class, 'index'])->name('index');
+            Route::get('/{id}', [CourseApplicationController::class, 'view'])->name('view');
+            Route::patch('/{id}/status/{status}', [CourseApplicationController::class, 'updateStatus'])->name('status.update');
         });
     });
 });
@@ -133,7 +136,7 @@ Route::get('/mail', function() {
     # The data that you need to pass to the view
     $data = [];
 
-    // render() method expects 2 parameters - view and data
+    # render() method expects 2 parameters - view and data
     return $markdown->render($view, $data);
 });
 

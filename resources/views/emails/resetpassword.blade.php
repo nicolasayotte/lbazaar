@@ -1,9 +1,15 @@
-@extends('emails.layout')
+<x-mail::message>
+# Reset Password Request
 
-@section('content')
-<h4>Hello!</h4>
+<br>
+<p>Hello</p>
+
 <p>You are receiving this email because we received a password reset request for your account.</p>
 
-<p>Reset Password Link: <a href="{{ $url }}">{{ $url }}</a></p>
+<p>To proceed, please click the button below</p>
 
-@endsection
+<x-mail::button :url="@$url">Reset Password</x-mail::button>
+
+<p>If you did not make this request, kindly ignore this email.</p>
+
+</x-mail::message>
