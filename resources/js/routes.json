@@ -22,6 +22,7 @@
     "admin.class.applications.index": "\/admin\/class-applications",
     "admin.class.applications.view": "\/admin\/class-applications\/{id}",
     "admin.class.applications.status.update": "\/admin\/class-applications\/{id}\/status\/{status}",
+    "admin.settings.categories.index": "\/admin\/settings\/categories",
     "course.index": "\/courses",
     "course.details": "\/courses\/details\/{id}",
     "register.index": "\/register\/student",

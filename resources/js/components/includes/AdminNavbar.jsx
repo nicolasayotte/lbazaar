@@ -1,16 +1,18 @@
 import { Link, usePage } from "@inertiajs/inertia-react"
-import { Article, ExpandMore, FormatListBulleted, Inbox, LibraryBooks, LocalOffer, Mail, ManageAccounts, Menu, People, Settings } from "@mui/icons-material"
+import { Article, ExpandLess, ExpandMore, FormatListBulleted, Inbox, LibraryBooks, LocalOffer, Mail, ManageAccounts, Menu, People, Settings } from "@mui/icons-material"
 import { AppBar, Box, Collapse, Divider, Drawer, Grid, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar, Typography } from "@mui/material"
 import { useState } from "react"
 import routes from "../../helpers/routes.helper"
 
 const AdminNavbar = ({ drawerWidth, window }) => {
 
+    const { component } = usePage()
+
     const container = window !== undefined ? () => window().document.body : undefined;
 
     const [openMobileDrawer, setopenMobileDrawer] = useState(false)
 
-    const [openSettings, setOpenSettings] = useState(false)
+    const [openSettings, setOpenSettings] = useState(component.startsWith('Admin/Settings'))
 
     const toggleMobileDrawer = () => {
         setopenMobileDrawer(!openMobileDrawer)
@@ -20,22 +22,26 @@ const AdminNavbar = ({ drawerWidth, window }) => {
         {
             name: 'Class Applications',
             link: routes["admin.class.applications.index"],
-            icon: <Article />
+            icon: <Article />,
+            active: component.startsWith('Admin/ClassApplications')
         },
         {
             name: 'Class List',
             link: '',
-            icon: <FormatListBulleted />
+            icon: <FormatListBulleted />,
+            active: component.startsWith('Admin/Classes')
         },
         {
             name: 'Manage Users',
             link: routes["admin.users.index"],
-            icon: <People />
+            icon: <People />,
+            active: component.startsWith('Admin/Users')
         },
         {
             name: 'Inquiries',
             link: routes["admin.inquiries.index"],
-            icon: <Inbox />
+            icon: <Inbox />,
+            active: component.startsWith('Admin/Inquiries')
         }
     ]
 
@@ -52,8 +58,9 @@ const AdminNavbar = ({ drawerWidth, window }) => {
         },
         {
             name: 'Categories',
-            link: 'test',
-            icon: <LocalOffer />
+            link: routes["admin.settings.categories.index"],
+            icon: <LocalOffer />,
+            active: component.startsWith('Admin/Settings/CourseCategory')
         },
         {
             name: 'Class Types',
@@ -71,7 +78,7 @@ const AdminNavbar = ({ drawerWidth, window }) => {
         <>
             {list.map(item => (
                 <ListItem key={item.name}>
-                    <ListItemButton>
+                    <ListItemButton selected={item.active}>
                         {
                             item.icon &&
                             <ListItemIcon children={item.icon} />
@@ -95,7 +102,11 @@ const AdminNavbar = ({ drawerWidth, window }) => {
                 <ListItemButton onClick={() => { setOpenSettings(!openSettings) }}>
                     <ListItemIcon children={<Settings />} />
                     <ListItemText primary="Settings"/>
-                    <ExpandMore />
+                    {
+                        openSettings
+                        ? <ExpandLess />
+                        : <ExpandMore />
+                    }
                 </ListItemButton>
             </ListItem>
             <Collapse in={openSettings} timeout="auto" unmountOnExit>
