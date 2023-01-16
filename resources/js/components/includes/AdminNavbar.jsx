@@ -1,6 +1,6 @@
-import { Link } from "@inertiajs/inertia-react"
-import { Menu } from "@mui/icons-material"
-import { AppBar, Box, Divider, Drawer, Grid, IconButton, List, ListItem, ListItemButton, Toolbar, Typography } from "@mui/material"
+import { Link, usePage } from "@inertiajs/inertia-react"
+import { Article, ExpandMore, FormatListBulleted, Inbox, LibraryBooks, LocalOffer, Mail, ManageAccounts, Menu, People, Settings } from "@mui/icons-material"
+import { AppBar, Box, Collapse, Divider, Drawer, Grid, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar, Typography } from "@mui/material"
 import { useState } from "react"
 import routes from "../../helpers/routes.helper"
 
@@ -10,6 +10,8 @@ const AdminNavbar = ({ drawerWidth, window }) => {
 
     const [openMobileDrawer, setopenMobileDrawer] = useState(false)
 
+    const [openSettings, setOpenSettings] = useState(false)
+
     const toggleMobileDrawer = () => {
         setopenMobileDrawer(!openMobileDrawer)
     }
@@ -17,31 +19,63 @@ const AdminNavbar = ({ drawerWidth, window }) => {
     const navItems = [
         {
             name: 'Class Applications',
-            link: routes["admin.class.applications.index"]
+            link: routes["admin.class.applications.index"],
+            icon: <Article />
         },
         {
             name: 'Class List',
-            link: ''
+            link: '',
+            icon: <FormatListBulleted />
         },
         {
             name: 'Manage Users',
-            link: routes["admin.users.index"]
+            link: routes["admin.users.index"],
+            icon: <People />
         },
         {
             name: 'Inquiries',
-            link: routes["admin.inquiries.index"]
-        },
-        {
-            name: 'Settings',
-            link: ''
+            link: routes["admin.inquiries.index"],
+            icon: <Inbox />
         }
     ]
 
-    const menu = (
+    const settingsItems = [
+        {
+            name: 'General Settings',
+            link: '',
+            icon: <Settings />
+        },
+        {
+            name: 'Email Settings',
+            link: '',
+            icon: <Mail />
+        },
+        {
+            name: 'Categories',
+            link: 'test',
+            icon: <LocalOffer />
+        },
+        {
+            name: 'Class Types',
+            link: '',
+            icon: <LibraryBooks />
+        },
+        {
+            name: 'Classifications',
+            link: '',
+            icon: <ManageAccounts />
+        }
+    ]
+
+    const displayMenu = (list) => (
         <>
-            {navItems.map(item => (
+            {list.map(item => (
                 <ListItem key={item.name}>
                     <ListItemButton>
+                        {
+                            item.icon &&
+                            <ListItemIcon children={item.icon} />
+                        }
                         <Link
                             href={item.link}
                             children={item.name}
@@ -52,6 +86,24 @@ const AdminNavbar = ({ drawerWidth, window }) => {
                     </ListItemButton>
                 </ListItem>
             ))}
+        </>
+    )
+
+    const settingsMenu = (
+        <>
+            <ListItem>
+                <ListItemButton onClick={() => { setOpenSettings(!openSettings) }}>
+                    <ListItemIcon children={<Settings />} />
+                    <ListItemText primary="Settings"/>
+                    <ExpandMore />
+                </ListItemButton>
+            </ListItem>
+            <Collapse in={openSettings} timeout="auto" unmountOnExit>
+                <Divider />
+                <List component="div" disablePadding>
+                    {displayMenu(settingsItems)}
+                </List>
+            </Collapse>
         </>
     )
 
@@ -85,7 +137,8 @@ const AdminNavbar = ({ drawerWidth, window }) => {
             <Toolbar />
             <Divider />
             <List>
-                {menu}
+                {displayMenu(navItems)}
+                {settingsMenu}
             </List>
         </Drawer>
     )
@@ -108,7 +161,8 @@ const AdminNavbar = ({ drawerWidth, window }) => {
             <Toolbar />
             <Divider />
             <List>
-                {menu}
+                {displayMenu(navItems)}
+                {settingsMenu}
                 <Divider sx={{ my: 1 }} />
                 <ListItem key="profile">
                     {profileBtn}
