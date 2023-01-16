@@ -56,6 +56,6 @@ class CourseFeedbackController extends Controller
             ]);
         }
 
-        return redirect()->route('course.feedback.index', ['id' => $course_id]);
+        return redirect()->back();
     }
 }
