@@ -44,6 +44,11 @@ class CourseApplication extends Model
         return $this->hasOne(Course::class);
     }
 
+    public function course()
+    {
+        return $this->hasOne(Course::class);
+    }
+
     public function getStatusAttribute()
     {
         if (is_null($this->approved_at) && is_null($this->denied_at)) return self::PENDING;

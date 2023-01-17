@@ -8,12 +8,9 @@ use App\Http\Requests\CourseApplicationRequest;
 use App\Mail\CourseApplicationUpdate;
 use App\Repositories\CourseApplicationRepository;
 use App\Repositories\CourseCategoryRepository;
-use App\Repositories\CourseRepository;
 use App\Repositories\CourseTypeRepository;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
 
