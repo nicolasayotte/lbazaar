@@ -108,8 +108,6 @@ const CourseFeedback = () => {
                                         <Stack direction="row" spacing={1} justifyContent="end">
                                             <Link href={getQuery('returnUrl')}>
                                                 <Button
-                                                    color="success"
-                                                    variant="contained"
                                                     disabled={processing}
                                                 >Back</Button>
                                             </Link>
