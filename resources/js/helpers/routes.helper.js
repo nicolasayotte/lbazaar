@@ -2,12 +2,23 @@ import data from "../routes.json"
 
 const routes = data
 
-export const getRoute = (routename, params) => {
-    var routeValue = data[routename]
+export const getRoute = (routename, params, request = {}) => {
+    var routeValue = routes[routename]
+    var requestUrl = ''
     for (const key in params) {
         routeValue = routeValue.replace(`{${key}}`, params[key]);
     }
-    return routeValue;
+
+    if (request != {}) {
+
+        var index = 0;
+        for (const key in request) {
+            requestUrl = (index > 0 ? '&' : '?' ) + requestUrl + `${key}=${request[key]}`;
+            index++
+        }
+    }
+
+    return routeValue + requestUrl;
 }
 
 export default routes

@@ -10,6 +10,13 @@ class CourseFeedback extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'user_id',
+        'course_id',
+        'rating',
+        'comments'
+    ];
+
     protected $table = 'course_feedbacks';
 
     public function user()

@@ -6,21 +6,22 @@ use App\Http\Controllers\Admin\CourseApplicationController;
 use App\Http\Controllers\Admin\CourseCategoryController;
 use App\Http\Controllers\Admin\InquiriesController as AdminInquiriesController;
 use App\Http\Controllers\Admin\ProfileController;
-use App\Http\Controllers\Portal\ProfileController as PortalProfileController;
-use App\Http\Controllers\Portal\AuthPortalController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Portal\CourseHistoryController;
+use App\Http\Controllers\Portal\AuthPortalController;
 use App\Http\Controllers\Portal\CourseController;
+use App\Http\Controllers\Portal\CourseHistoryController;
+use App\Http\Controllers\Portal\CourseFeedbackController;
 use App\Http\Controllers\Portal\ForgotPasswordController;
 use App\Http\Controllers\Portal\InquiriesController;
+use App\Http\Controllers\Portal\ProfileController as PortalProfileController;
 use App\Http\Controllers\Portal\RegisterStudentController;
 use App\Http\Controllers\Portal\TopPageController;
 use App\Models\CourseApplication;
 use App\Models\Inquiry;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Mail\Markdown;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -101,6 +102,11 @@ Route::prefix('admin')->name('admin.')->group(function() {
 Route::prefix('courses')->name('course.')->group(function() {
     Route::get('/', [CourseController::class, 'index'])->name('index');
     Route::get('/details/{id}', [CourseController::class, 'details'])->name('details');
+    Route::middleware('auth')->group(function() {
+        Route::get('/feedback/{id}', [CourseFeedbackController::class, 'index'])->name('feedback.index');
+        Route::post('/feedback/{id}', [CourseFeedbackController::class, 'store'])->name('feedback.store');
+    });
+
 });
 
 # User Registration

@@ -1,10 +1,15 @@
 import { Box, Grid, Typography, Card, CardContent } from "@mui/material";
 import Feedback from "../../../components/cards/Feedback";
+import { InsertComment } from "@mui/icons-material"
 import CourseContent from "../../../components/cards/CourseContent";
 import User from "../../../components/cards/User";
 import DividerSection from "../../../components/common/DividerSection"
+import { usePage } from "@inertiajs/inertia-react"
+
 
 const Details = (props) => {
+
+    const { auth } = usePage().props
 
     const displayCourses = (courses, showDescription = true) => {
         if (courses.length > 0) {
@@ -27,7 +32,7 @@ const Details = (props) => {
     const displayFeedbacks = () => {
         return (
             props.course.feedbacks.map(feedback => {
-                return <Feedback key={feedback.id} feedback={feedback}/>
+                return <Feedback auth={auth} key={feedback.id} feedback={feedback}/>
             })
         )
     }

@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Mail\ResetPassword;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -86,5 +86,32 @@ class User extends Authenticatable implements MustVerifyEmail
     public function classification()
     {
         return $this->belongsTo(Classifications::class, 'classification_id');
+    }
+
+    public function feedbacks()
+    {
+        return $this->hasMany(CourseFeedback::class);
+    }
+
+    public function courses()
+    {
+        return $this->hasManyThrough(
+            Course::class,
+            CourseHistory::class,
+            'user_id',
+            'id',
+            'id',
+            'course_id'
+        );
+    }
+
+    public function isCourseBooked($class_id)
+    {
+        return $this->courses->where('id', $class_id)->count() > 0;
+    }
+
+    public function hasFeedback($class_id)
+    {
+        return $this->feedbacks->where('course_id', $class_id)->count() > 0;
     }
 }
