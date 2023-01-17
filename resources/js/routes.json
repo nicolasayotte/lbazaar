@@ -24,6 +24,8 @@
     "admin.class.applications.status.update": "\/admin\/class-applications\/{id}\/status\/{status}",
     "course.index": "\/courses",
     "course.details": "\/courses\/details\/{id}",
+    "course.feedback.index": "\/courses\/feedback\/{id}",
+    "course.feedback.store": "\/courses\/feedback\/{id}",
     "register.index": "\/register\/student",
     "register.store": "\/register\/student",
     "portal.": "\/portal",

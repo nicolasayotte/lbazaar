@@ -68,4 +68,9 @@ class CourseHistoryRepository extends BaseRepository
                 return CourseHistoryData::fromModel($histories);
             });
     }
+
+    public function isUserBookedCourse($user_id, $course_id)
+    {
+        return $this->model->where('course_id', $course_id)->where('user_id', $user_id)->exists();
+    }
 }

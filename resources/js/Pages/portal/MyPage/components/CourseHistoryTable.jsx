@@ -2,7 +2,7 @@ import { Link } from "@inertiajs/inertia-react"
 import { Search, InsertComment } from "@mui/icons-material"
 import { Box, IconButton, Chip, Stack, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
 import EmptyCard from "../../../../components/common/EmptyCard"
-import { getRoute } from "../../../../helpers/routes.helper"
+import route, { getRoute } from "../../../../helpers/routes.helper"
 
 const CourseHistoryTable = ({ data }) => {
 
@@ -19,10 +19,10 @@ const CourseHistoryTable = ({ data }) => {
                 <TableCell children={row.type} align="center"/>
                 <TableCell children={row.category} align="center"/>
                 <TableCell children={row.teacher} align="center"/>
+                <TableCell sx={{ whiteSpace: 'nowrap'}} children={row.booked_date} align="center"/>
                 <TableCell align="center">
                     <Chip size="small" label={row.status} color={statusColors[row.status]}/>
                 </TableCell>
-                <TableCell children={row.booked_date} align="center"/>
                 <TableCell sx={{ whiteSpace: 'nowrap'}} align="center">
                     <Stack direction="row" spacing={1} justifyContent="center">
                         <Link href={getRoute('course.details', {id : row.id})}>
@@ -30,9 +30,11 @@ const CourseHistoryTable = ({ data }) => {
                                 <Search fontSize="inherit" />
                             </IconButton>
                         </Link>
-                        <IconButton title="Give Feedback" variant="text" size="small">
-                            <InsertComment fontSize="inherit" color="primary"/>
-                        </IconButton>
+                        <Link href={getRoute('course.feedback.index', {id : row.id}, {returnUrl : route['mypage.course.history.index']})}>
+                            <IconButton title={!row.hasFeedback ? "Give Feedback" : "Edit Feedback"} variant="text" size="small">
+                                <InsertComment fontSize="inherit" color="primary"/>
+                            </IconButton>
+                        </Link>
                     </Stack>
                 </TableCell>
             </TableRow>
@@ -52,8 +54,8 @@ const CourseHistoryTable = ({ data }) => {
                         <TableCell children="Type" align="center"/>
                         <TableCell children="Category" align="center"/>
                         <TableCell children="Teacher" align="center"/>
-                        <TableCell children="Status" align="center"/>
                         <TableCell children="Booked Date" align="center"/>
+                        <TableCell children="Status" align="center"/>
                         <TableCell children="Actions" align="center"/>
                     </TableRow>
                 </TableHead>
