@@ -33,7 +33,8 @@ return [
             ]
         ],
         'category' => [
-            'update' => 'Category successfully updated'
+            'update' => 'Category successfully updated',
+            'delete' => 'Category successfully deleted'
         ]
     ],
     'confirm' => [
@@ -46,6 +47,9 @@ return [
         'user' => [
             'enable' => 'Are you sure you want to enable this user?',
             'disable' => 'Are you sure you want to disable this user?'
+        ],
+        'category' => [
+            'delete' => 'Are you sure you want to delete this category?'
         ]
     ]
 ];

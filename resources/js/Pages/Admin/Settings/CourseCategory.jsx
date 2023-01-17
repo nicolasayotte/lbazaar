@@ -12,6 +12,7 @@ import { useDispatch } from "react-redux"
 import { actions } from "../../../store/slices/ToasterSlice"
 import { Inertia } from "@inertiajs/inertia"
 import { getRoute } from "../../../helpers/routes.helper"
+import ConfirmationDialog from "../../../components/common/ConfirmationDialog"
 
 const CourseCategory = () => {
 
@@ -33,7 +34,8 @@ const CourseCategory = () => {
         value: '',
         submitUrl: '',
         method: null,
-        processing: false
+        processing: false,
+        type: ''
     })
 
     // Filter form values
@@ -72,11 +74,22 @@ const CourseCategory = () => {
             ...dialog,
             open: true,
             title: 'Edit Category',
-            submitUrl: getRoute('admin.settings.categories.update', {
-                id: id
-            }),
+            submitUrl: getRoute('admin.settings.categories.update', {id}),
             method: 'patch',
+            action: 'update',
             value: inputValue
+        }))
+    }
+
+    const handleOnDelete = id => {
+        setDialog(dialog => ({
+            ...dialog,
+            open: true,
+            title: 'Delete Category',
+            text: messages.confirm.category.delete,
+            submitUrl: getRoute('admin.settings.categories.delete', {id}),
+            method: 'delete',
+            action: 'delete'
         }))
     }
 
@@ -103,7 +116,7 @@ const CourseCategory = () => {
                 }))
             },
             onSuccess: () => dispatch(actions.success({
-                message: messages.success.category.update
+                message: messages.success.category[dialog.action]
             })),
             onError: () => {
                 setDialog({
@@ -115,6 +128,38 @@ const CourseCategory = () => {
                 }))
             }
         })
+    }
+
+    const displayDialogs = () => {
+
+        if (dialog.action === 'delete') {
+            return (
+                <ConfirmationDialog
+                    {...dialog}
+                    handleClose={handleOnDialogClose}
+                    handleConfirm={handleOnDialogSubmit}
+                />
+            )
+        }
+
+        return (
+            <FormDialog
+                {...dialog}
+                handleClose={handleOnDialogClose}
+                handleSubmit={handleOnDialogSubmit}
+                processing={dialog.processing}
+            >
+                <Input
+                    name="name"
+                    value={dialog.value}
+                    onChange={e => setDialog(dialog => ({
+                        ...dialog,
+                        value: e.target.value
+                    }))}
+                    errors={errors}
+                />
+            </FormDialog>
+        )
     }
 
     useEffect(() => {
@@ -179,7 +224,7 @@ const CourseCategory = () => {
             {
                 processingFilters
                 ? <TableLoader />
-                : <CourseCategoryTable data={categories.data} handleOnEdit={handleOnEdit}/>
+                : <CourseCategoryTable data={categories.data} handleOnEdit={handleOnEdit} handleOnDelete={handleOnDelete}/>
             }
             <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
                 <Pagination
@@ -189,22 +234,7 @@ const CourseCategory = () => {
                     color="primary"
                 />
             </Box>
-            <FormDialog
-                {...dialog}
-                handleClose={handleOnDialogClose}
-                handleSubmit={handleOnDialogSubmit}
-                processing={dialog.processing}
-            >
-                <Input
-                    name="name"
-                    value={dialog.value}
-                    onChange={e => setDialog(dialog => ({
-                        ...dialog,
-                        value: e.target.value
-                    }))}
-                    errors={errors}
-                />
-            </FormDialog>
+            {displayDialogs()}
         </Box>
     )
 }

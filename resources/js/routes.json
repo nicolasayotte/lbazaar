@@ -24,6 +24,7 @@
     "admin.class.applications.status.update": "\/admin\/class-applications\/{id}\/status\/{status}",
     "admin.settings.categories.index": "\/admin\/settings\/categories",
     "admin.settings.categories.update": "\/admin\/settings\/categories\/{id}",
+    "admin.settings.categories.delete": "\/admin\/settings\/categories\/{id}",
     "course.index": "\/courses",
     "course.details": "\/courses\/details\/{id}",
     "register.index": "\/register\/student",

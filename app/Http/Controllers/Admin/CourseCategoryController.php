@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CategoryFormRequest;
+use App\Models\CourseCategory;
 use App\Repositories\CourseCategoryRepository;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -36,6 +37,13 @@ class CourseCategoryController extends Controller
         $courseCategory = $this->courseCategoryRepository->findOrFail($id);
 
         $courseCategory->update(['name' => @$input['name']]);
+
+        return redirect()->back();
+    }
+
+    public function delete($id)
+    {
+        $this->courseCategoryRepository->delete($id);
 
         return redirect()->back();
     }

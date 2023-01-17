@@ -34,6 +34,11 @@ class CourseCategoryRepository extends BaseRepository
                     });
     }
 
+    public function delete($id)
+    {
+        return $this->model->where('id', $id)->delete();
+    }
+
     public function getDropdownData()
     {
         return $this->model->all()->map(function($data) {
