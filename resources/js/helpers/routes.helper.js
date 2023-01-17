@@ -1,5 +1,7 @@
 import data from "../routes.json"
 
+const routes = data
+
 export const getRoute = (routename, params) => {
     var routeValue = data[routename]
     for (const key in params) {
@@ -8,4 +10,4 @@ export const getRoute = (routename, params) => {
     return routeValue;
 }
 
-export default data
+export default routes
