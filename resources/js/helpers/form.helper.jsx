@@ -22,9 +22,9 @@ export const handleOnChange = (e, setData) => {
 /**
  * onChange method for handling useForm() state
  *
- * @param {value} value The value pass from editor
+ * @param {string} value The value pass from editor
  * @param {func} setData The setData method from inertiajs useForm()
- * @param {properties} value The properties of the value
+ * @param {string} value The properties of the value
  */
 export const handleEditorOnChange = (value, setData, properties) => {
     setData(properties, value)

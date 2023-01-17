@@ -41,11 +41,6 @@ class CourseFeedbackController extends Controller
 
     public function store($course_id, FeedbackRequest $request)
     {
-        if (!Auth::user()->isCourseBooked($course_id))
-        {
-            return redirect()->route('course.details', ['id' => $course_id]);
-        }
-
         try {
             $this->courseFeedbackRepository->updateOrCreate(Auth::user()->id, $course_id, $request->all());
         } catch (Exception $e) {

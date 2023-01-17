@@ -11,9 +11,7 @@ export const getRoute = (routename, params, request = {}) => {
 
         var index = 0;
         for (const key in request) {
-
             requestUrl = (index > 0 ? '&' : '?' ) + requestUrl + `${key}=${request[key]}`;
-            console.log(requestUrl)
             index++
         }
     }

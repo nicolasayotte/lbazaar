@@ -1,21 +1,12 @@
 import { Box, Typography } from "@mui/material"
 import ErrorText from "../common/ErrorText"
 import ReactQuill from 'react-quill';
+import modules from "../../helpers/editormodules.helper"
 
 const TextEditorInput = (props) => {
 
-    const modules = {
-        toolbar:  [
-            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-            ['bold', 'italic', 'underline', 'blockquote'],
-            [{'list': 'ordered'}, {'list': 'bullet'}],
-
-        ]
-    }
-
     if (props.modules != undefined) {
         modules.toolbar.push(...props.modules)
-        console.log( modules.toolbar)
     }
 
     return (

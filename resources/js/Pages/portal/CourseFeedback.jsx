@@ -73,7 +73,6 @@ const CourseFeedback = () => {
                                             step={5}
                                             marks={marks}
                                             valueLabelDisplay="auto"
-
                                             onChange={e => handleOnChange(e, setData)} />
 
                                     </Grid>

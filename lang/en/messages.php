@@ -16,7 +16,7 @@ return [
         'profile' => 'Profile successfully updated',
         'auth' => 'User successfully authenticated',
         'password' => 'Password successfully updated',
-        'feedback' => 'Your feedback successfully saved.',
+        'feedback' => 'Feedback successfully saved.',
         'inquiry' => 'Inquiry successfully submitted',
         'user' => [
             'login'  => 'User successfully authenticated',

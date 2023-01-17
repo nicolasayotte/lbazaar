@@ -2,7 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Models\CourseHistory;
+use App\Repositories\CourseHistoryRepository;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class FeedbackRequest extends FormRequest
 {
@@ -13,7 +16,10 @@ class FeedbackRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        $course_id = $this->route('id');
+
+        $courseHistoryRepository = new CourseHistoryRepository;
+        return  $courseHistoryRepository->isUserBookedCourse(Auth::id(), $course_id);
     }
 
     /**
@@ -24,7 +30,7 @@ class FeedbackRequest extends FormRequest
     public function rules()
     {
         return [
-            'rating'        => 'required|numeric|max:100',
+            'rating'        => 'required|numeric|min:0|max:100',
             'comments'      => 'required'
         ];
     }
