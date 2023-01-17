@@ -31,6 +31,9 @@ return [
                     'update' => 'Class application status successfully updated'
                 ]
             ]
+        ],
+        'category' => [
+            'update' => 'Category successfully updated'
         ]
     ],
     'confirm' => [

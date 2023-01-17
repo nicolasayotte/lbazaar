@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CategoryFormRequest;
 use App\Repositories\CourseCategoryRepository;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -26,5 +27,16 @@ class CourseCategoryController extends Controller
         ])->withViewData([
             'title' => 'Categories | Admin',
         ]);
+    }
+
+    public function update(CategoryFormRequest $request, $id)
+    {
+        $input = $request->all();
+
+        $courseCategory = $this->courseCategoryRepository->findOrFail($id);
+
+        $courseCategory->update(['name' => @$input['name']]);
+
+        return redirect()->back();
     }
 }

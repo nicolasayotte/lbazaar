@@ -2,7 +2,7 @@ import { Delete, Edit } from "@mui/icons-material"
 import { IconButton, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
 import EmptyCard from "../../../../components/common/EmptyCard"
 
-const CourseCategoryTable = ({ data }) => {
+const CourseCategoryTable = ({ data, handleOnEdit }) => {
 
     const displayTableData = (rows) => rows.map((row, index) => {
 
@@ -12,10 +12,17 @@ const CourseCategoryTable = ({ data }) => {
                 <TableCell align="center" children={row.created_at} />
                 <TableCell align="center">
                     <Stack spacing={1} direction="row" justifyContent="center">
-                        <IconButton size="small" title="Edit">
+                        <IconButton
+                            size="small"
+                            title="Edit"
+                            onClick={() => handleOnEdit(row.id, row.name)}
+                        >
                             <Edit fontSize="inherit" />
                         </IconButton>
-                        <IconButton size="small" title="Delete">
+                        <IconButton
+                            size="small"
+                            title="Delete"
+                        >
                             <Delete color="error" fontSize="inherit" />
                         </IconButton>
                     </Stack>

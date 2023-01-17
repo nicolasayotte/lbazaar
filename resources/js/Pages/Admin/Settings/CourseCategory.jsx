@@ -6,17 +6,16 @@ import { displaySelectOptions } from "../../../helpers/form.helper"
 import CourseCategoryTable from "./components/CourseCategoryTable"
 import TableLoader from "../../../components/common/TableLoader"
 import { handleOnChange, handleOnSelectChange } from "../../../helpers/form.helper"
-import routes from "../../../helpers/routes.helper"
+import { useEffect, useState } from "react"
+import FormDialog from "../../../components/common/FormDialog"
+import { useDispatch } from "react-redux"
+import { actions } from "../../../store/slices/ToasterSlice"
+import { Inertia } from "@inertiajs/inertia"
+import { getRoute } from "../../../helpers/routes.helper"
 
 const CourseCategory = () => {
 
-    const { categories, keyword, sort, page } = usePage().props
-
-    const { data: filters, setData: setFilters, get, transform, processing } = useForm({
-        keyword,
-        sort,
-        page
-    })
+    const dispatch = useDispatch()
 
     const sortOptions = [
         { name: 'Name A-Z', value: 'name:asc' },
@@ -25,20 +24,104 @@ const CourseCategory = () => {
         { name: 'Date - Newest', value: 'created_at:desc' }
     ]
 
+    const { categories, keyword, sort, page, errors, messages } = usePage().props
+
+    const [dialog, setDialog] = useState({
+        open: false,
+        title: '',
+        text: '',
+        value: '',
+        submitUrl: '',
+        method: null,
+        processing: false
+    })
+
+    // Filter form values
+    const { data: filters, setData: setFilters, get: requestFilters, transform: transformFilters, processing: processingFilters, clearErrors } = useForm('CategoriesFilterForm',{
+        keyword,
+        sort,
+        page
+    })
+
     const handleFilterSubmit = e => {
         e.preventDefault()
 
-        get(routes["admin.settings.categories.index"])
+        requestFilters(routes["admin.settings.categories.index"])
     }
 
     const handleOnPaginate = (e, page) => {
-        transform(data => ({
+        transformFilters(data => ({
             ...data,
             page
         }))
 
         handleFilterSubmit(e)
     }
+
+    const handleOnEdit = (id, value) => {
+
+        // Check if editing the same category that has an error, then set value as the one previously submitted
+        const inputValue = (errors.category_id !== undefined && errors.category_id == id) ? errors.category_value : value
+
+        // Check if the selected category was the one that has an error, otherwise delete errors.name
+        if (errors.category_id !== undefined && errors.category_id != id) {
+            delete errors.name
+        }
+
+        setDialog(dialog => ({
+            ...dialog,
+            open: true,
+            title: 'Edit Category',
+            submitUrl: getRoute('admin.settings.categories.update', {
+                id: id
+            }),
+            method: 'patch',
+            value: inputValue
+        }))
+    }
+
+    const handleOnDialogClose = () => {
+        setDialog(dialog => ({
+            ...dialog,
+            open: false
+        }))
+    }
+
+    const handleOnDialogSubmit = (e) => {
+        e.preventDefault()
+
+        Inertia.visit(dialog.submitUrl, {
+            method: dialog.method,
+            data: {
+                name: dialog.value
+            },
+            preserveState: true,
+            onBefore: () => {
+                setDialog(dialog => ({
+                    ...dialog,
+                    processing: true
+                }))
+            },
+            onSuccess: () => dispatch(actions.success({
+                message: messages.success.category.update
+            })),
+            onError: () => {
+                setDialog({
+                    ...dialog,
+                    open: true
+                })
+                dispatch(actions.error({
+                    message: messages.error
+                }))
+            }
+        })
+    }
+
+    useEffect(() => {
+        if (errors.name !== undefined && errors.category_id !== undefined) {
+            handleOnEdit(errors.category_id, errors.category_value)
+        }
+    }, [])
 
     return (
         <Box>
@@ -77,7 +160,7 @@ const CourseCategory = () => {
                                     InputLabelProps={{
                                         shrink: true
                                     }}
-                                    onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
+                                    onChange={e => handleOnSelectChange(e, filters, transformFilters, handleFilterSubmit)}
                                 >
                                     {displaySelectOptions(sortOptions, 'value')}
                                 </Input>
@@ -94,9 +177,9 @@ const CourseCategory = () => {
                 </CardContent>
             </Card>
             {
-                processing
+                processingFilters
                 ? <TableLoader />
-                : <CourseCategoryTable data={categories.data} />
+                : <CourseCategoryTable data={categories.data} handleOnEdit={handleOnEdit}/>
             }
             <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
                 <Pagination
@@ -106,6 +189,22 @@ const CourseCategory = () => {
                     color="primary"
                 />
             </Box>
+            <FormDialog
+                {...dialog}
+                handleClose={handleOnDialogClose}
+                handleSubmit={handleOnDialogSubmit}
+                processing={dialog.processing}
+            >
+                <Input
+                    name="name"
+                    value={dialog.value}
+                    onChange={e => setDialog(dialog => ({
+                        ...dialog,
+                        value: e.target.value
+                    }))}
+                    errors={errors}
+                />
+            </FormDialog>
         </Box>
     )
 }

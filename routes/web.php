@@ -85,7 +85,12 @@ Route::prefix('admin')->name('admin.')->group(function() {
 
         # Settings
         Route::prefix('settings')->name('settings.')->group(function() {
-            Route::get('/categories', [CourseCategoryController::class, 'index'])->name('categories.index');
+
+            # Categories
+            Route::prefix('categories')->name('categories.')->group(function() {
+                Route::get('/', [CourseCategoryController::class, 'index'])->name('index');
+                Route::patch('/{id}', [CourseCategoryController::class, 'update'])->name('update');
+            });
         });
     });
 });
