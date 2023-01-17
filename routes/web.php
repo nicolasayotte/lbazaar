@@ -89,6 +89,7 @@ Route::prefix('admin')->name('admin.')->group(function() {
             # Categories
             Route::prefix('categories')->name('categories.')->group(function() {
                 Route::get('/', [CourseCategoryController::class, 'index'])->name('index');
+                Route::post('/', [CourseCategoryController::class, 'store'])->name('store');
                 Route::patch('/{id}', [CourseCategoryController::class, 'update'])->name('update');
                 Route::delete('/{id}', [CourseCategoryController::class, 'delete'])->name('delete');
             });

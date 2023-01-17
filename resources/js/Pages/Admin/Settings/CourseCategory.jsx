@@ -11,7 +11,7 @@ import FormDialog from "../../../components/common/FormDialog"
 import { useDispatch } from "react-redux"
 import { actions } from "../../../store/slices/ToasterSlice"
 import { Inertia } from "@inertiajs/inertia"
-import { getRoute } from "../../../helpers/routes.helper"
+import routes, { getRoute } from "../../../helpers/routes.helper"
 import ConfirmationDialog from "../../../components/common/ConfirmationDialog"
 
 const CourseCategory = () => {
@@ -60,13 +60,34 @@ const CourseCategory = () => {
         handleFilterSubmit(e)
     }
 
+    const handleOnCreate = (value) => {
+
+        // If the error message is from edit category, then delete
+        if (errors.category_value !== undefined && errors.category_id !== undefined) {
+            delete errors.name
+        }
+
+        setDialog(dialog => ({
+            ...dialog,
+            value: value ?? '',
+            open: true,
+            title: 'Create Category',
+            submitUrl: routes["admin.settings.categories.store"],
+            method: 'post',
+            action: 'create'
+        }))
+    }
+
     const handleOnEdit = (id, value) => {
 
         // Check if editing the same category that has an error, then set value as the one previously submitted
         const inputValue = (errors.category_id !== undefined && errors.category_id == id) ? errors.category_value : value
 
         // Check if the selected category was the one that has an error, otherwise delete errors.name
-        if (errors.category_id !== undefined && errors.category_id != id) {
+        if (
+            errors.category_id !== undefined && errors.category_id != id ||
+            errors.category_value !== undefined && errors.category_id === undefined
+        ) {
             delete errors.name
         }
 
@@ -152,6 +173,7 @@ const CourseCategory = () => {
                 <Input
                     name="name"
                     value={dialog.value}
+                    placeholder="e.g. Blockchain"
                     onChange={e => setDialog(dialog => ({
                         ...dialog,
                         value: e.target.value
@@ -163,10 +185,18 @@ const CourseCategory = () => {
     }
 
     useEffect(() => {
+        // If errors on edit submit
         if (errors.name !== undefined && errors.category_id !== undefined) {
             handleOnEdit(errors.category_id, errors.category_value)
+            return
         }
-    }, [])
+
+        // If errors on create submit
+        if (errors.name !== undefined && errors.category_value !== undefined) {
+            handleOnCreate(errors.category_value)
+            return
+        }
+    }, [errors])
 
     return (
         <Box>
@@ -181,6 +211,7 @@ const CourseCategory = () => {
                     startIcon={
                         <Add/>
                     }
+                    onClick={e => handleOnCreate('')}
                 />
             </Stack>
             <Card sx={{ mb: 2 }}>

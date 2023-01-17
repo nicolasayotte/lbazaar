@@ -30,6 +30,13 @@ class CourseCategoryController extends Controller
         ]);
     }
 
+    public function store(CategoryFormRequest $request)
+    {
+        $this->courseCategoryRepository->create($request->all());
+
+        return redirect()->back();
+    }
+
     public function update(CategoryFormRequest $request, $id)
     {
         $input = $request->all();

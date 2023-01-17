@@ -34,7 +34,8 @@ return [
         ],
         'category' => [
             'update' => 'Category successfully updated',
-            'delete' => 'Category successfully deleted'
+            'delete' => 'Category successfully deleted',
+            'create' => 'Category successfully created'
         ]
     ],
     'confirm' => [
