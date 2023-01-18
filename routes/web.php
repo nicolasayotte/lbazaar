@@ -99,6 +99,7 @@ Route::prefix('admin')->name('admin.')->group(function() {
             # Course Types
             Route::prefix('class-types')->name('course_types.')->group(function() {
                 Route::get('/', [CourseTypeController::class, 'index'])->name('index');
+                Route::patch('/update', [CourseTypeController::class, 'update'])->name('update');
             });
         });
     });

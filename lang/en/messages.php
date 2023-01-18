@@ -31,6 +31,9 @@ return [
                 'status' => [
                     'update' => 'Class application status successfully updated'
                 ]
+            ],
+            'types' => [
+                'update' => 'Class types successfully updated'
             ]
         ],
         'category' => [
@@ -44,6 +47,9 @@ return [
             'applications' => [
                 'approve' => 'Are you sure you want to approve this class application?',
                 'deny' => 'Are you sure you want to deny this class application?'
+            ],
+            'types' => [
+                'update' => 'Are you sure you want to update these class types?'
             ]
         ],
         'user' => [
@@ -52,6 +58,6 @@ return [
         ],
         'category' => [
             'delete' => 'Are you sure you want to delete this category?'
-        ]
+        ],
     ]
 ];
