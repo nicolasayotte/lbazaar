@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\ClassApplicationController;
 use App\Http\Controllers\Admin\CourseApplicationController;
 use App\Http\Controllers\Admin\CourseCategoryController;
+use App\Http\Controllers\Admin\CourseTypeController;
 use App\Http\Controllers\Admin\InquiriesController as AdminInquiriesController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\UserController;
@@ -93,6 +94,11 @@ Route::prefix('admin')->name('admin.')->group(function() {
                 Route::post('/', [CourseCategoryController::class, 'store'])->name('store');
                 Route::patch('/{id}', [CourseCategoryController::class, 'update'])->name('update');
                 Route::delete('/{id}', [CourseCategoryController::class, 'delete'])->name('delete');
+            });
+
+            # Course Types
+            Route::prefix('class-types')->name('course_types.')->group(function() {
+                Route::get('/', [CourseTypeController::class, 'index'])->name('index');
             });
         });
     });

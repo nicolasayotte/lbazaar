@@ -64,8 +64,9 @@ const AdminNavbar = ({ drawerWidth, window }) => {
         },
         {
             name: 'Class Types',
-            link: '',
-            icon: <LibraryBooks />
+            link: routes["admin.settings.course_types.index"],
+            icon: <LibraryBooks />,
+            active: component.startsWith('Admin/Settings/CourseTypes')
         },
         {
             name: 'Classifications',
