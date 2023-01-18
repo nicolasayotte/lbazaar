@@ -20,7 +20,7 @@ class CourseCategoryController extends Controller
 
     public function index(Request $request)
     {
-        return Inertia::render('Admin/Settings/CourseCategory', [
+        return Inertia::render('Admin/Settings/CourseCategories/Index', [
             'categories' => $this->courseCategoryRepository->get($request->all()),
             'keyword'    => @$request['keyword'] ?? '',
             'sort'       => @$request['sort'] ?? 'created_at:desc',

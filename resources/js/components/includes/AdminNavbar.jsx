@@ -60,7 +60,7 @@ const AdminNavbar = ({ drawerWidth, window }) => {
             name: 'Categories',
             link: routes["admin.settings.categories.index"],
             icon: <LocalOffer />,
-            active: component.startsWith('Admin/Settings/CourseCategory')
+            active: component.startsWith('Admin/Settings/CourseCategories')
         },
         {
             name: 'Class Types',

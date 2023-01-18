@@ -1,20 +1,20 @@
 import { useForm, usePage } from "@inertiajs/inertia-react"
 import { Add } from "@mui/icons-material"
 import { Box, Button, Card, CardContent, Grid, Pagination, Stack, Typography } from "@mui/material"
-import Input from "../../../components/forms/Input"
-import { displaySelectOptions } from "../../../helpers/form.helper"
+import Input from "../../../../components/forms/Input"
+import { displaySelectOptions } from "../../../../helpers/form.helper"
 import CourseCategoryTable from "./components/CourseCategoryTable"
-import TableLoader from "../../../components/common/TableLoader"
-import { handleOnChange, handleOnSelectChange } from "../../../helpers/form.helper"
+import TableLoader from "../../../../components/common/TableLoader"
+import { handleOnChange, handleOnSelectChange } from "../../../../helpers/form.helper"
 import { useEffect, useState } from "react"
-import FormDialog from "../../../components/common/FormDialog"
+import FormDialog from "../../../../components/common/FormDialog"
 import { useDispatch } from "react-redux"
-import { actions } from "../../../store/slices/ToasterSlice"
+import { actions } from "../../../../store/slices/ToasterSlice"
 import { Inertia } from "@inertiajs/inertia"
-import routes, { getRoute } from "../../../helpers/routes.helper"
-import ConfirmationDialog from "../../../components/common/ConfirmationDialog"
+import routes, { getRoute } from "../../../../helpers/routes.helper"
+import ConfirmationDialog from "../../../../components/common/ConfirmationDialog"
 
-const CourseCategory = () => {
+const Index = () => {
 
     const dispatch = useDispatch()
 
@@ -264,4 +264,4 @@ const CourseCategory = () => {
     )
 }
 
-export default CourseCategory
+export default Index
