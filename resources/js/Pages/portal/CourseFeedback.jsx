@@ -5,7 +5,6 @@ import { useDispatch } from "react-redux"
 import { getRoute } from "../../helpers/routes.helper"
 import Input from "../../components/forms/Input"
 import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
 import { handleOnChange, handleEditorOnChange } from "../../helpers/form.helper";
 import TextEditorInput from "../../components/forms/TextEditorInput"
 
@@ -96,7 +95,6 @@ const CourseFeedback = () => {
                                     <Grid item xs={12} sm={12}>
                                         <Typography variant="h6">Comments</Typography>
                                         <TextEditorInput
-                                            theme="snow"
                                             name="comments"
                                             value={data.comments}
                                             onChange={(value) => handleEditorOnChange(value, setData, 'comments')}

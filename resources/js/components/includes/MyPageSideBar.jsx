@@ -8,7 +8,7 @@ import { Link } from "@inertiajs/inertia-react"
 const MyPage = ({ page }) => {
 
     const container = page.props.window !== undefined ? () => window().document.body : undefined;
-    
+
     const myPageTitle = page.props.title !== undefined ? page.props.title  : 'My Page';
 
     const [openMobileDrawer, setopenMobileDrawer] = useState(false)
@@ -27,7 +27,7 @@ const MyPage = ({ page }) => {
         },
         {
             name: 'Class Application',
-            link: '',
+            link: routes["mypage.course.applications.index"],
             roles: ['teacher']
         },
         {
@@ -38,7 +38,7 @@ const MyPage = ({ page }) => {
         {
             name: 'Class Histories',
             link: routes["mypage.course.history.index"],
-            roles: ['student', 'teacher']
+            roles: ['student']
         }
     ]
 
@@ -119,8 +119,8 @@ const MyPage = ({ page }) => {
                             {sidebarLink}
                         </Card>
                     </Grid>
-                    <Grid className="myprofile-card" item xs={12} sm={12} md={9} lg={9} sx={{mt:6}}>
-                        <Grid container>  
+                    <Grid className="myprofile-card" item xs={12} sm={12} md={9} lg={9}>
+                        <Grid container>
                             <IconButton
                                     color="white"
                                     sx={{ display: { xs: 'inline-block', sm: 'inline-block', md: 'none' } }}

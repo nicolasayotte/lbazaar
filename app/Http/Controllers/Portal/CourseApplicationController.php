@@ -4,14 +4,17 @@ namespace App\Http\Controllers\Portal;
 
 use App\Data\CourseApplicationData;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CourseApplicationRequest;
 use App\Mail\CourseApplicationUpdate;
 use App\Repositories\CourseApplicationRepository;
 use App\Repositories\CourseCategoryRepository;
+use App\Repositories\CourseRepository;
 use App\Repositories\CourseTypeRepository;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
 
 class CourseApplicationController extends Controller
@@ -27,6 +30,7 @@ class CourseApplicationController extends Controller
         $this->courseApplicationRepository = new CourseApplicationRepository();
         $this->courseCategoryRepository    = new CourseCategoryRepository();
         $this->courseTypeRepository        = new CourseTypeRepository();
+
     }
 
     public function index(Request $request)
@@ -45,6 +49,24 @@ class CourseApplicationController extends Controller
         ])->withViewData([
             'title'              => 'My Page | Class Application'
         ]);
+    }
+
+    public function create()
+    {
+        return Inertia::render('Portal/MyPage/ClassApplications/Form', [
+            'categoryOptions'    => $this->courseCategoryRepository->getDropdownData(),
+            'typeOptions'        => $this->courseTypeRepository->getDropdownData(),
+            'title'              => 'My Page | Class Application',
+            'command'            => Session::get('command')
+        ])->withViewData([
+            'title'              => Session::has('command') ? Session::get("command") : ''
+        ]);
+    }
+
+    public function generate(CourseApplicationRequest $request)
+    {
+        session()->flash('command', 'commandsamplehere');
+        return redirect()->back();
     }
 
 }

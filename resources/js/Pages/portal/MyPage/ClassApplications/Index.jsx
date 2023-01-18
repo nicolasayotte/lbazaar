@@ -1,11 +1,11 @@
-import { useForm, usePage } from "@inertiajs/inertia-react"
+import { useForm, usePage, Link } from "@inertiajs/inertia-react"
 import { Box, Button, Card, CardContent, Grid, Pagination, Typography } from "@mui/material"
 import Input from "../../../../components/forms/Input"
 import { displaySelectOptions, handleOnChange, handleOnSelectChange } from "../../../../helpers/form.helper"
 import ClassApplicationTable from "../components/ClassApplicationTable"
-import routes from "../../../../helpers/routes.helper"
+import routes, {getRoute} from "../../../../helpers/routes.helper"
 import TableLoader from "../../../../components/common/TableLoader"
-
+import { NoteAdd } from '@mui/icons-material';
 
 const Index = () => {
 
@@ -48,9 +48,21 @@ const Index = () => {
         handleFilterSubmit(e)
     }
 
-
     return (
-        <Box>
+        <>
+            <Grid container spacing={2} justifyContent="end" alignItems="right" mb={2}>
+                <Grid item xs={11} md={4}>
+                    <Link href={getRoute('mypage.course.applications.create', {}, {returnUrl : routes['mypage.course.applications.index']})}>
+                        <Button
+                            variant="contained"
+                            children="Create class application"
+                            startIcon={
+                                <NoteAdd />
+                            }
+                        />
+                    </Link>
+                </Grid>
+            </Grid>
             <Card sx={{ mb: 2 }}>
                 <CardContent>
                     <form onSubmit={handleFilterSubmit}>
@@ -140,15 +152,17 @@ const Index = () => {
                 ? <TableLoader />
                 : <ClassApplicationTable data={courseApplications.data}/>
             }
-            <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
-                <Pagination
-                    onChange={handleOnPaginate}
-                    count={courseApplications.last_page}
-                    page={courseApplications.current_page}
-                    color="primary"
-                />
-            </Box>
-        </Box>
+             <Grid item xs={12} md={12}>
+                <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+                    <Pagination
+                        onChange={handleOnPaginate}
+                        count={courseApplications.last_page}
+                        page={courseApplications.current_page}
+                        color="primary"
+                    />
+                </Box>
+            </Grid>
+        </>
     )
 }
 

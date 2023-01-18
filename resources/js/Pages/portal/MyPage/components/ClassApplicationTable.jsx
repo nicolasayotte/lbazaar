@@ -14,14 +14,22 @@ const ClassApplicationTable = ({ data }) => {
             'Denied'  : 'error'
         }
 
+        const title = {
+            'Pending' : 'Currently for approval',
+            'Approved' : 'Create Class',
+            'Denied'  : 'Application denied'
+        }
+
         const displayCreateClass = (status, isCourseCreated) => {
-                return (
-                    <Tooltip title={isCourseCreated ? 'Class already created' : 'Create class'}>
+            return (
+                <Tooltip title={isCourseCreated ? 'Class already created' : title[status]}>
+                    <span>
                         <IconButton size="small" color="success" disabled={(status != 'Approved' || isCourseCreated)}>
                             <NoteAdd fontSize="inherit"/>
                         </IconButton>
-                    </Tooltip>
-                )
+                    </span>
+                </Tooltip>
+            )
         }
 
         return (

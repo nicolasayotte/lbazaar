@@ -28,8 +28,7 @@ class AuthPortalController extends Controller
         if (Auth::attempt([
             'email'      => $request['email'],
             'password'   => $request['password'],
-            'is_enabled' => 1,
-            fn ($query) => $query->whereRoleIs(Role::STUDENT)->where('email_verified_at', '!=', NULL)
+            'is_enabled' => 1
         ])) {
             return redirect()->intended('/');
         }
