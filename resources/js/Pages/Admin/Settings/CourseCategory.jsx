@@ -139,15 +139,9 @@ const CourseCategory = () => {
             onSuccess: () => dispatch(actions.success({
                 message: messages.success.category[dialog.action]
             })),
-            onError: () => {
-                setDialog({
-                    ...dialog,
-                    open: true
-                })
-                dispatch(actions.error({
-                    message: messages.error
-                }))
-            }
+            onError: () => dispatch(actions.error({
+                message: messages.error
+            }))
         })
     }
 
