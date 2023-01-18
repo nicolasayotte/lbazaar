@@ -8,10 +8,14 @@ use Inertia\Inertia;
 
 class CourseTypeController extends Controller
 {
+    private $title = 'Class Types';
+
     public function index()
     {
-        return Inertia::render('Admin/Settings/CourseTypes/Index')->withViewData([
-            'title' => 'Class Types | Admin'
+        return Inertia::render('Admin/Settings/CourseTypes/Index', [
+            'title' => $this->title
+        ])->withViewData([
+            'title' => $this->title
         ]);
     }
 }

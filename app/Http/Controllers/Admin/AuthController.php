@@ -12,14 +12,18 @@ use Inertia\Inertia;
 
 class AuthController extends Controller
 {
+    private $title = 'Login';
+
     public function login()
     {
         if ((auth()->check() && auth()->user()->hasRole(Role::ADMIN)) || (auth()->check() && !auth()->user()->hasRole(Role::ADMIN))) {
             return redirect()->back();
         }
 
-        return Inertia::render('Admin/Login', [])->withViewData([
-            'title' => 'Admin Login'
+        return Inertia::render('Admin/Login', [
+            'title' => $this->title
+        ])->withViewData([
+            'title' => $this->title
         ]);
     }
 

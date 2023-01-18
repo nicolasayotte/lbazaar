@@ -13,6 +13,8 @@ class CourseCategoryController extends Controller
 {
     private $courseCategoryRepository;
 
+    private $title = 'Categories';
+
     public function __construct()
     {
         $this->courseCategoryRepository = new CourseCategoryRepository();
@@ -24,9 +26,10 @@ class CourseCategoryController extends Controller
             'categories' => $this->courseCategoryRepository->get($request->all()),
             'keyword'    => @$request['keyword'] ?? '',
             'sort'       => @$request['sort'] ?? 'created_at:desc',
-            'page'       => @$request['page'] ?? 1
+            'page'       => @$request['page'] ?? 1,
+            'title'      => $this->title
         ])->withViewData([
-            'title' => 'Categories | Admin',
+            'title' => $this->title,
         ]);
     }
 

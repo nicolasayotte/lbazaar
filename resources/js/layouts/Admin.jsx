@@ -1,4 +1,4 @@
-import { usePage } from "@inertiajs/inertia-react"
+import { Head, usePage } from "@inertiajs/inertia-react"
 import { Container, ThemeProvider, Toolbar } from "@mui/material"
 import { Box } from "@mui/system"
 import { useState } from "react"
@@ -10,34 +10,38 @@ const Admin = ({children}) => {
 
     const [drawerWidth, setDrawerWidth] = useState(280)
 
-    const { isLoggedIn } = usePage().props
+    const { isLoggedIn, title } = usePage().props
 
     const Layout = ({ children }) => {
 
         if (isLoggedIn) {
             return (
-                <ThemeProvider theme={AdminTheme}>
-                    <AdminNavbar
-                        drawerWidth={drawerWidth}
-                        setDrawerWidth={setDrawerWidth}
-                    />
-                    <Box
-                        sx={{
-                            paddingLeft: { xs: 0, md: `${ drawerWidth }px` },
-                            paddingY: 2
-                        }}
-                    >
-                        <Container maxWidth={false}>
-                            {children}
-                        </Container>
-                    </Box>
-                    <Toaster />
-                </ThemeProvider>
+                <>
+                    <Head title={title + ' | Admin'} />
+                    <ThemeProvider theme={AdminTheme}>
+                        <AdminNavbar
+                            drawerWidth={drawerWidth}
+                            setDrawerWidth={setDrawerWidth}
+                        />
+                        <Box
+                            sx={{
+                                paddingLeft: { xs: 0, md: `${ drawerWidth }px` },
+                                paddingY: 2
+                            }}
+                        >
+                            <Container maxWidth={false}>
+                                {children}
+                            </Container>
+                        </Box>
+                        <Toaster />
+                    </ThemeProvider>
+                </>
             )
         }
 
         return (
             <>
+                <Head title={title + ' | Admin'} />
                 {children}
                 <Toaster />
             </>
