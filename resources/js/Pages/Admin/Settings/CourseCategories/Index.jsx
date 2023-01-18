@@ -7,12 +7,11 @@ import CourseCategoryTable from "./components/CourseCategoryTable"
 import TableLoader from "../../../../components/common/TableLoader"
 import { handleOnChange, handleOnSelectChange } from "../../../../helpers/form.helper"
 import { useEffect, useState } from "react"
-import FormDialog from "../../../../components/common/FormDialog"
 import { useDispatch } from "react-redux"
 import { actions } from "../../../../store/slices/ToasterSlice"
 import { Inertia } from "@inertiajs/inertia"
 import routes, { getRoute } from "../../../../helpers/routes.helper"
-import ConfirmationDialog from "../../../../components/common/ConfirmationDialog"
+import Dialogs from "./components/Dialogs"
 
 const Index = () => {
 
@@ -145,38 +144,18 @@ const Index = () => {
         })
     }
 
-    const displayDialogs = () => {
-
-        if (dialog.action === 'delete') {
-            return (
-                <ConfirmationDialog
-                    {...dialog}
-                    handleClose={handleOnDialogClose}
-                    handleConfirm={handleOnDialogSubmit}
-                />
-            )
-        }
-
-        return (
-            <FormDialog
-                {...dialog}
-                handleClose={handleOnDialogClose}
-                handleSubmit={handleOnDialogSubmit}
-                processing={dialog.processing}
-            >
-                <Input
-                    name="name"
-                    value={dialog.value}
-                    placeholder="e.g. Blockchain"
-                    onChange={e => setDialog(dialog => ({
-                        ...dialog,
-                        value: e.target.value
-                    }))}
-                    errors={errors}
-                />
-            </FormDialog>
-        )
-    }
+    const dialogFormInputs = (
+        <Input
+            name="name"
+            value={dialog.value}
+            placeholder="e.g. Blockchain"
+            onChange={e => setDialog(dialog => ({
+                ...dialog,
+                value: e.target.value
+            }))}
+            errors={errors}
+        />
+    )
 
     useEffect(() => {
         // If errors on edit submit
@@ -205,7 +184,7 @@ const Index = () => {
                     startIcon={
                         <Add/>
                     }
-                    onClick={e => handleOnCreate('')}
+                    onClick={() => handleOnCreate('')}
                 />
             </Stack>
             <Card sx={{ mb: 2 }}>
@@ -259,7 +238,12 @@ const Index = () => {
                     color="primary"
                 />
             </Box>
-            {displayDialogs()}
+            <Dialogs
+                dialog={dialog}
+                handleOnDialogClose={handleOnDialogClose}
+                handleOnDialogSubmit={handleOnDialogSubmit}
+                inputs={dialogFormInputs}
+            />
         </Box>
     )
 }
