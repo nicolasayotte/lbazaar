@@ -1,5 +1,5 @@
 import { Link, usePage } from "@inertiajs/inertia-react"
-import { Article, ExpandLess, ExpandMore, FormatListBulleted, Inbox, LibraryBooks, LocalOffer, Mail, ManageAccounts, Menu, People, Settings } from "@mui/icons-material"
+import { Article, ExpandLess, ExpandMore, Inbox, LibraryBooks, LocalOffer, Mail, ManageAccounts, Menu, People, Settings } from "@mui/icons-material"
 import { AppBar, Box, Collapse, Divider, Drawer, Grid, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar, Typography } from "@mui/material"
 import { useState } from "react"
 import routes from "../../helpers/routes.helper"
@@ -24,12 +24,6 @@ const AdminNavbar = ({ drawerWidth, window }) => {
             link: routes["admin.class.applications.index"],
             icon: <Article />,
             active: component.startsWith('Admin/ClassApplications')
-        },
-        {
-            name: 'Class List',
-            link: '',
-            icon: <FormatListBulleted />,
-            active: component.startsWith('Admin/Classes')
         },
         {
             name: 'Manage Users',
