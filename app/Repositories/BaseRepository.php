@@ -49,4 +49,9 @@ abstract class BaseRepository
     {
         return $this->model->create($data);
     }
+
+    public function destroy($id)
+    {
+        return $this->model->destroy($id);
+    }
 }

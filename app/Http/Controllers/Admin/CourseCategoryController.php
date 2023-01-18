@@ -50,7 +50,7 @@ class CourseCategoryController extends Controller
 
     public function delete($id)
     {
-        $this->courseCategoryRepository->delete($id);
+        $this->courseCategoryRepository->destroy($id);
 
         return redirect()->back();
     }
