@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\ClassApplicationController;
 use App\Http\Controllers\Admin\CourseApplicationController;
+use App\Http\Controllers\Admin\CourseCategoryController;
 use App\Http\Controllers\Admin\InquiriesController as AdminInquiriesController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\UserController;
@@ -81,6 +82,18 @@ Route::prefix('admin')->name('admin.')->group(function() {
             Route::get('/', [CourseApplicationController::class, 'index'])->name('index');
             Route::get('/{id}', [CourseApplicationController::class, 'view'])->name('view');
             Route::patch('/{id}/status/{status}', [CourseApplicationController::class, 'updateStatus'])->name('status.update');
+        });
+
+        # Settings
+        Route::prefix('settings')->name('settings.')->group(function() {
+
+            # Categories
+            Route::prefix('categories')->name('categories.')->group(function() {
+                Route::get('/', [CourseCategoryController::class, 'index'])->name('index');
+                Route::post('/', [CourseCategoryController::class, 'store'])->name('store');
+                Route::patch('/{id}', [CourseCategoryController::class, 'update'])->name('update');
+                Route::delete('/{id}', [CourseCategoryController::class, 'delete'])->name('delete');
+            });
         });
     });
 });

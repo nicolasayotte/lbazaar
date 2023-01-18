@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 
 abstract class BaseRepository
 {
@@ -44,4 +45,13 @@ abstract class BaseRepository
         return $this->model->with($relations);
     }
 
+    public function create($data)
+    {
+        return $this->model->create($data);
+    }
+
+    public function destroy($id)
+    {
+        return $this->model->destroy($id);
+    }
 }

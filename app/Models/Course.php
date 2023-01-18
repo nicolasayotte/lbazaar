@@ -23,7 +23,7 @@ class Course extends Model
 
     public function courseCategory()
     {
-        return $this->belongsTo(CourseCategory::class);
+        return $this->belongsTo(CourseCategory::class)->withTrashed();
     }
 
     public function contents()

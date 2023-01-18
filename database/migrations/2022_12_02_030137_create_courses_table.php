@@ -29,11 +29,11 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            $table->foreign('professor_id')->references('id')->on('users');
-            $table->foreign('course_type_id')->references('id')->on('course_types');
-            $table->foreign('course_category_id')->references('id')->on('course_categories');
-            $table->foreign('course_application_id')->references('id')->on('course_applications');
-            $table->foreign('status_id')->references('id')->on('statuses');
+            $table->foreign('professor_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('course_type_id')->references('id')->on('course_types')->onDelete('cascade');
+            $table->foreign('course_category_id')->references('id')->on('course_categories')->onDelete('cascade');
+            $table->foreign('course_application_id')->references('id')->on('course_applications')->onDelete('cascade');
+            $table->foreign('status_id')->references('id')->on('statuses')->onDelete('cascade');
         });
     }
 

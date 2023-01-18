@@ -27,9 +27,9 @@ return new class extends Migration
             $table->dateTime('denied_at')->nullable();
             $table->timestamps();
 
-            $table->foreign('professor_id')->references('id')->on('users');
-            $table->foreign('course_type_id')->references('id')->on('course_types');
-            $table->foreign('course_category_id')->references('id')->on('course_categories');
+            $table->foreign('professor_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('course_type_id')->references('id')->on('course_types')->onDelete('cascade');
+            $table->foreign('course_category_id')->references('id')->on('course_categories')->onDelete('cascade');
         });
     }
 
