@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CourseApplication extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     public const PENDING = 'pending';
 
@@ -36,6 +37,11 @@ class CourseApplication extends Model
     public function courseCategory()
     {
         return $this->belongsTo(CourseCategory::class)->withTrashed();
+    }
+
+    public function course()
+    {
+        return $this->hasOne(Course::class);
     }
 
     public function getStatusAttribute()

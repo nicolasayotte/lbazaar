@@ -1,36 +1,34 @@
-
-import routes from "../../../../helpers/routes.helper"
-import { useForm, usePage } from "@inertiajs/inertia-react"
-import { displaySelectOptions, handleOnChange, handleOnSelectChange } from "../../../../helpers/form.helper"
+import { useForm, usePage, Link } from "@inertiajs/inertia-react"
 import { Box, Button, Card, CardContent, Grid, Pagination, Typography } from "@mui/material"
 import Input from "../../../../components/forms/Input"
+import { displaySelectOptions, handleOnChange, handleOnSelectChange } from "../../../../helpers/form.helper"
+import ClassApplicationTable from "../components/ClassApplicationTable"
+import routes, {getRoute} from "../../../../helpers/routes.helper"
 import TableLoader from "../../../../components/common/TableLoader"
-import CourseHistoryTable from "../components/CourseHistoryTable"
+import { NoteAdd } from '@mui/icons-material';
 
-const Index = ({ errors }) => {
+const Index = () => {
 
-    const { course_histories, month, status, page, keyword, sort, type_id, category_id, course_categories, course_types } = usePage().props
+    const { courseApplications, categoryOptions, typeOptions, keyword, course_type, category, status, sort, page, messages } = usePage().props
 
-    const sortItems = [
-        { name: 'Class Title A-Z', value: 'courses.title:asc' },
-        { name: 'Class Title Z-A', value: 'courses.title:desc' },
-        { name: 'Teacher A-Z', value: 'users.first_name:asc' },
-        { name: 'Teacher Z-A', value: 'users.first_name:desc' },
-        { name: 'Date ASC', value: 'course_histories.created_at:asc' },
-        { name: 'Date DESC', value: 'course_histories.created_at:desc' }
+    const sortOptions = [
+        { name: 'Title A-Z', value: 'title:asc' },
+        { name: 'Title Z-A', value: 'title:desc' },
+        { name: 'Date - Oldest', value: 'created_at:asc' },
+        { name: 'Date - Newest', value: 'created_at:desc' }
     ]
 
-    const statusItems = [
-        { name: 'Ongoing', value: 'Ongoing' },
-        { name: 'Completed', value: 'Completed' }
+    const statusOptions = [
+        { name: 'Pending', value: 'pending' },
+        { name: 'Denied', value: 'denied' },
+        { name: 'Approved', value: 'approved' }
     ]
 
-    const { data: filters, setData: setFilters, get, processing, transform } = useForm({
+    const { data: filters, setData: setFilters, get, transform, processing } = useForm({
         keyword,
-        type_id,
-        category_id,
+        course_type,
+        category,
         status,
-        month,
         sort,
         page
     })
@@ -38,7 +36,7 @@ const Index = ({ errors }) => {
     const handleFilterSubmit = (e) => {
         e.preventDefault()
 
-        get(routes["mypage.course.history.index"])
+        get(routes["mypage.course.applications.index"])
     }
 
     const handleOnPaginate = (e, page) => {
@@ -52,82 +50,81 @@ const Index = ({ errors }) => {
 
     return (
         <>
-            <Card sx={{ mb: 2, width: '100%', mt: 6 }}>
+            <Grid container mb={2} justifyContent="end">
+                <Grid item xs={11} md={4} textAlign="right">
+                    <Link href={getRoute('mypage.course.applications.create', {}, {returnUrl : routes['mypage.course.applications.index']})}>
+                        <Button
+                            variant="contained"
+                            children="Create class application"
+                            startIcon={
+                                <NoteAdd />
+                            }
+                        />
+                    </Link>
+                </Grid>
+            </Grid>
+            <Card sx={{ mb: 2 }}>
                 <CardContent>
                     <form onSubmit={handleFilterSubmit}>
                         <Grid container spacing={2}>
-                            <Grid item xs={12} md={10}>
+                            <Grid item xs={12} md={12}>
                                 <Input
                                     label="Keyword"
-                                    placeholder="Search for Title, Description or Teacher Name"
-                                    size="small"
+                                    placeholder="Search for title or teacher"
                                     name="keyword"
-                                    autoFocus
                                     value={filters.keyword}
                                     onChange={e => handleOnChange(e, setFilters)}
                                 />
                             </Grid>
                             <Grid item xs={12} md={2}>
                                 <Input
+                                    select
                                     label="Type"
                                     InputLabelProps={{
                                         shrink: true
                                     }}
-                                    select
-                                    name="type_id"
-                                    value={filters.type_id}
+                                    name="course_type"
+                                    value={filters.course_type}
                                     onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
-                                    errors={errors}
                                 >
                                     <option value="">All</option>
-                                    {displaySelectOptions(course_types)}
+                                    {displaySelectOptions(typeOptions)}
                                 </Input>
                             </Grid>
-                            <Grid item xs={12} md={3}>
+                            <Grid item xs={12} md={2}>
                                 <Input
+                                    select
                                     label="Category"
-                                    select
-                                    name="category_id"
                                     InputLabelProps={{
                                         shrink: true
                                     }}
-                                    value={filters.category_id}
+                                    name="category"
+                                    value={filters.category}
                                     onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
-                                    errors={errors}
                                 >
                                     <option value="">All</option>
-                                    {displaySelectOptions(course_categories)}
+                                    {displaySelectOptions(categoryOptions)}
                                 </Input>
                             </Grid>
-                            <Grid item xs={12} md={3}>
+                            <Grid item xs={12} md={2}>
                                 <Input
-                                    label="Status"
                                     select
-                                    name="status"
+                                    label="Status"
                                     InputLabelProps={{
                                         shrink: true
                                     }}
+                                    name="status"
                                     value={filters.status}
                                     onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
-                                    errors={errors}
                                 >
                                     <option value="">All</option>
-                                    {displaySelectOptions(statusItems, 'value', 'name')}
+                                    {displaySelectOptions(statusOptions, 'value')}
                                 </Input>
                             </Grid>
-                            <Grid item xs={12} sm={3}>
+                            <Grid item xs={12} md={4}>
                                 <Input
-                                    type="month"
-                                    name="month"
-                                    value={filters.month}
-                                    onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
-                                    errors={errors}
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={3}>
-                                <Input
-                                    label="Sort By"
                                     select
+                                    label="Sort"
                                     InputLabelProps={{
                                         shrink: true
                                     }}
@@ -135,18 +132,16 @@ const Index = ({ errors }) => {
                                     value={filters.sort}
                                     onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
                                 >
-                                    {displaySelectOptions(sortItems, 'value', 'name')}
+                                    {displaySelectOptions(sortOptions, 'value')}
                                 </Input>
                             </Grid>
-                            <Grid item xs={12} md={12} textAlign="right">
-                                <Box>
-                                    <Button
-                                        variant="contained"
-                                        children="Filter"
-                                        type="submit"
-                                        onClick={handleFilterSubmit}
-                                    />
-                                </Box>
+                            <Grid item xs={12} md={2} textAlign="right">
+                                <Button
+                                    children="Filter"
+                                    variant="contained"
+                                    fullWidth
+                                    onClick={handleFilterSubmit}
+                                />
                             </Grid>
                         </Grid>
                     </form>
@@ -155,14 +150,14 @@ const Index = ({ errors }) => {
             {
                 processing
                 ? <TableLoader />
-                : <CourseHistoryTable data={course_histories.data}/>
+                : <ClassApplicationTable data={courseApplications.data}/>
             }
-            <Grid item xs={12} md={12}>
+             <Grid item xs={12} md={12}>
                 <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
                     <Pagination
                         onChange={handleOnPaginate}
-                        count={course_histories.last_page}
-                        page={course_histories.current_page}
+                        count={courseApplications.last_page}
+                        page={courseApplications.current_page}
                         color="primary"
                     />
                 </Box>
