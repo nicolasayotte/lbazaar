@@ -22,7 +22,7 @@ class CourseApplicationController extends Controller
 
     private $courseTypeRepository;
 
-    private $title = 'Class Applications';
+    private $title = 'Class Applications | Admin';
 
     public function __construct()
     {

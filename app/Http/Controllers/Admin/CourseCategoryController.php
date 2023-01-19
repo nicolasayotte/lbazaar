@@ -13,7 +13,7 @@ class CourseCategoryController extends Controller
 {
     private $courseCategoryRepository;
 
-    private $title = 'Categories';
+    private $title = 'Categories | Admin';
 
     public function __construct()
     {

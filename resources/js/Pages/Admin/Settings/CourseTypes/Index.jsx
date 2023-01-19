@@ -91,7 +91,7 @@ const Index = () => {
             <Stack direction="row" justifyContent="space-between" mb={2}>
                 <Typography
                     variant="h4"
-                    children={title}
+                    children="Class Types"
                 />
                 {
                     isUpdated &&

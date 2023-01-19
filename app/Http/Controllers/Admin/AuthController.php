@@ -12,7 +12,7 @@ use Inertia\Inertia;
 
 class AuthController extends Controller
 {
-    private $title = 'Login';
+    private $title = 'Login | Admin';
 
     public function login()
     {

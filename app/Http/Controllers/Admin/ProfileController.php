@@ -15,7 +15,7 @@ class ProfileController extends Controller
 {
     private $userRepository;
 
-    private $title = 'Profile';
+    private $title = 'Profile | Admin';
 
     public function __construct()
     {

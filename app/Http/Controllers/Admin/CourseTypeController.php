@@ -10,7 +10,7 @@ use Inertia\Inertia;
 
 class CourseTypeController extends Controller
 {
-    private $title = 'Class Types';
+    private $title = 'Class Types | Admin';
 
     private $courseTypeRepository;
 

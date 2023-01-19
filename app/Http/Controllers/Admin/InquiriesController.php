@@ -12,7 +12,7 @@ class InquiriesController extends Controller
 {
     private $inquiryRepository;
 
-    private $title = 'Inquiries';
+    private $title = 'Inquiries | Admin';
 
     public function __construct()
     {

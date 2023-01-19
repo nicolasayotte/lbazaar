@@ -30,7 +30,7 @@ class UserController extends Controller
 
     private $classificationRepository;
 
-    private $title = 'Users';
+    private $title = 'Users | Admin';
 
     public function __construct()
     {

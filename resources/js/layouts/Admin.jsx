@@ -17,7 +17,7 @@ const Admin = ({children}) => {
         if (isLoggedIn) {
             return (
                 <>
-                    <Head title={title + ' | Admin'} />
+                    <Head title={title} />
                     <ThemeProvider theme={AdminTheme}>
                         <AdminNavbar
                             drawerWidth={drawerWidth}
