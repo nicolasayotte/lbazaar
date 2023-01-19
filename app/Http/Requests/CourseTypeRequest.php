@@ -38,7 +38,9 @@ class CourseTypeRequest extends FormRequest
     public function messages()
     {
         return [
-            'types.*.required' => trans('validation.required', ['attribute' => 'type'])
+            'types.*.required'     => trans('validation.required', ['attribute' => 'type']),
+            'types.*.distinct'     => trans('validation.distinct', ['attribute' => 'type']),
+            'types.*.alpha_spaces' => trans('validation.alpha_spaces', ['attribute' => 'type'])
         ];
     }
 }
