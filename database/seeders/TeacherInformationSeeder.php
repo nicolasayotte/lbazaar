@@ -6,6 +6,7 @@ use App\Models\Role;
 use App\Models\User;
 use App\Models\UserCertification;
 use App\Models\UserEducation;
+use App\Models\UserWorkHistory;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Database\Seeder;
@@ -22,7 +23,7 @@ class TeacherInformationSeeder extends Seeder
         $teacherUsers = User::whereRoleIs(Role::TEACHER)->get();
 
         foreach ($teacherUsers as $user) {
-            // User Education
+            // User education
             UserEducation::factory()
                         ->count(fake()->numberBetween(1, 3))
                         ->state(new Sequence([
@@ -30,8 +31,16 @@ class TeacherInformationSeeder extends Seeder
                         ]))
                         ->create();
 
-            // User Certifications
+            // User certifications
             UserCertification::factory()
+                        ->count(fake()->numberBetween(1, 3))
+                        ->state(new Sequence([
+                            'user_id' => $user->id
+                        ]))
+                        ->create();
+
+            // User work history
+            UserWorkHistory::factory()
                         ->count(fake()->numberBetween(1, 3))
                         ->state(new Sequence([
                             'user_id' => $user->id
