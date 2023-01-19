@@ -30,7 +30,6 @@ class CourseApplicationController extends Controller
         $this->courseApplicationRepository = new CourseApplicationRepository();
         $this->courseCategoryRepository    = new CourseCategoryRepository();
         $this->courseTypeRepository        = new CourseTypeRepository();
-
     }
 
     public function index(Request $request)

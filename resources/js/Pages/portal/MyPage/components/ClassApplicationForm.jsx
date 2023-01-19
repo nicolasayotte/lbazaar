@@ -1,19 +1,29 @@
 import { useForm, Link } from "@inertiajs/inertia-react"
-import { Button, Card, CardContent, Stack, Grid, Typography, Alert, AlertTitle } from "@mui/material"
+import { IconButton, Button, Card, CardContent, Stack, Grid, Typography, Alert, AlertTitle, Box } from "@mui/material"
 import { useDispatch } from "react-redux"
 import Input from "../../../../components/forms/Input"
 import { displaySelectOptions, handleOnChange, handleEditorOnChange } from "../../../../helpers/form.helper"
 import { actions } from "../../../../store/slices/ToasterSlice"
 import TextEditorInput from "../../../../components/forms/TextEditorInput"
+import { useEffect, useState } from "react"
+import { ContentCopy } from '@mui/icons-material';
+
 
 const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions, typeOptions, command }) => {
 
     const dispatch = useDispatch()
 
+    const [isEarned, setIsEarned] = useState(false);
+
+    const [isPaidClass, setIsPaidClass] = useState(false);
+
+    const [displayForm, setDisplayForm] = useState(true);
+
     const { data, setData, post, processing, reset } = useForm({
         course_category_id: '',
         course_type_id: '',
         price: '',
+        price_earned: '',
         title: '',
         description: '',
         language: '',
@@ -37,6 +47,7 @@ const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions,
         post(routes["mypage.course.applications.generate"], {
             preserveScroll: true,
             onSuccess: (response) => {
+                setDisplayForm(false)
                 dispatch(actions.success({
                     message: messages.success.class_generated
                 }))
@@ -54,19 +65,73 @@ const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions,
     const displayCommand = () => {
         if (command != null) {
             return (
-                <Alert severity="success">
+                <Alert severity="success" sx={{position: 'relative'}}>
                     <AlertTitle>Copy the generated command</AlertTitle>
                     <strong>{command}</strong>
+                    <IconButton onClick={handleCopyCommand} color="white" sx={{ position: 'absolute', right: '0'}}>
+                            <ContentCopy fontSize="small" color="inherit" />
+                    </IconButton>
                 </Alert>
             )
         }
     }
 
-    return (
-        <Card>
-            <form onSubmit={handleSubmit}>
-                {displayCommand()}
-                <CardContent sx={{ p: 4 }}>
+    const handleOnTypeChange = (e) => {
+
+        const input = e.target
+
+        const isEarned = input.selectedIndex === 3
+
+        const isPaidClass = input.selectedIndex === 1 || input.selectedIndex === 4
+
+        if (isEarned) {
+            setIsEarned(true)
+            setIsPaidClass(true)
+        } else if (isPaidClass) {
+            setIsPaidClass(true)
+            setIsEarned(false)
+        } else {
+            setIsEarned(false)
+            setIsPaidClass(false)
+
+            setData(data => ({
+                ...data,
+                price_earned: 0,
+                price: 0
+            }))
+        }
+
+        setData(data => ({
+            ...data,
+            [e.target.name]: e.target.value
+        }))
+    }
+
+    const typeInput = document.getElementById('course_type')
+
+    const handleCopyCommand = () => {
+        navigator.clipboard.writeText(command)
+
+        dispatch(actions.success({
+            message: messages.success.copy
+        }))
+    }
+
+    useEffect(() => {
+        if (typeInput && typeInput.selectedIndex === 3) {
+            setIsEarned(true)
+            setIsPaidClass(true)
+        }
+
+        if (typeInput && (typeInput.selectedIndex === 1 || typeInput.selectedIndex === 4)) {
+            setIsPaidClass(true)
+            setIsEarned(false)
+        }
+    }, [typeInput])
+
+    const displayFormLayout = () => {
+            return (
+                <Box>
                     <Typography fontFamily="inherit" variant="h5" component="div" sx={{ mb: 4 }}>Create Class Application</Typography>
                     <Grid container spacing={3}>
                         <Grid item xs={12} md={12}>
@@ -76,6 +141,7 @@ const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions,
                                 value={data.title}
                                 onChange={e => handleOnChange(e, setData)}
                                 errors={errors}
+                                disabled={!displayForm}
                             />
                         </Grid>
                         <Grid item xs={12} md={6}>
@@ -85,10 +151,12 @@ const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions,
                                 InputLabelProps={{
                                     shrink: true
                                 }}
+                                id="course_type"
                                 name="course_type_id"
                                 value={data.course_type_id}
-                                onChange={e => handleOnChange(e, setData)}
+                                onChange={e => handleOnTypeChange(e)}
                                 errors={errors}
+                                disabled={!displayForm}
                             >
                                 <option value=""></option>
                                 {displaySelectOptions(typeOptions)}
@@ -105,6 +173,7 @@ const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions,
                                 value={data.course_category_id}
                                 onChange={e => handleOnChange(e, setData)}
                                 errors={errors}
+                                disabled={!displayForm}
                             >
                                 <option value=""></option>
                                 {displaySelectOptions(categoryOptions)}
@@ -121,6 +190,7 @@ const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions,
                                 value={data.language}
                                 onChange={e => handleOnChange(e, setData)}
                                 errors={errors}
+                                disabled={!displayForm}
                             >
                                 <option value=""></option>
                                 {displaySelectOptions(languageOption)}
@@ -137,6 +207,7 @@ const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions,
                                 value={data.lecture_type}
                                 onChange={e => handleOnChange(e, setData)}
                                 errors={errors}
+                                disabled={!displayForm}
                             >
                                 <option value=""></option>
                                 {displaySelectOptions(lectureTypeOption)}
@@ -152,42 +223,89 @@ const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions,
                                 value={data.seats}
                                 onChange={e => handleOnChange(e, setData)}
                                 errors={errors}
+                                disabled={!displayForm}
                             />
                         </Grid>
-                        <Grid item xs={12} md={6}>
-                            <Input
-                                label="Price"
-                                name="price"
-                                value={data.price}
-                                onChange={e => handleOnChange(e, setData)}
-                                errors={errors}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={12}>
+                        {
+                            (isPaidClass) &&
+                            <Grid item xs={12} md={6}>
+                                <Input
+                                    label="Price"
+                                    name="price"
+                                    InputLabelProps={{
+                                        shrink: true
+                                    }}
+                                    value={data.price}
+                                    onChange={e => handleOnChange(e, setData)}
+                                    errors={errors}
+                                    disabled={!displayForm}
+                                />
+                            </Grid>
+                        }
+                        {
+                            (isEarned) &&
+                            <Grid item xs={12} md={6}>
+                                <Input
+                                    label="Price earned"
+                                    name="price_earned"
+                                    InputLabelProps={{
+                                        shrink: true
+                                    }}
+                                    value={data.price_earned}
+                                    onChange={e => handleOnChange(e, setData)}
+                                    errors={errors}
+                                    disabled={!displayForm}
+                                />
+                            </Grid>
+                        }
+                        <Grid item xs={12} sm={12} sx={{mb:2}}>
                             <Typography variant="h6">Description</Typography>
                             <TextEditorInput
                                 name="description"
                                 value={data.description}
                                 onChange={(value) => handleEditorOnChange(value, setData, 'description')}
-                                style={{height: '200px'}}
+                                style={{height: '180px'}}
                                 errors={errors}
+                                readOnly={!displayForm}
                                 />
                         </Grid>
-                        <Grid item xs={12} textAlign="right">
-                            <Stack direction="row" spacing={1} justifyContent="end">
-                                <Link href={getQuery('returnUrl')}>
-                                    <Button
-                                        disabled={processing}
-                                    >Back</Button>
-                                </Link>
+                    </Grid>
+                </Box>
+            )
+    }
+
+    return (
+        <Card>
+            <form onSubmit={handleSubmit}>
+                {displayCommand()}
+                <CardContent sx={{ p: 4 }}>
+                    {displayFormLayout()}
+                    <Grid item xs={12} md={12} textAlign="right">
+                        <Stack direction="row" spacing={1} justifyContent="end">
+                            <Link href={getQuery('returnUrl')}>
+                                <Button
+                                    disabled={processing}
+                                >Back</Button>
+                            </Link>
+                            {
+                                (!displayForm) &&
+                                <Button
+                                    type="submit"
+                                    variant="contained"
+                                    onClick={() => setDisplayForm(true)}
+                                    disabled={processing}
+                                >Edit Form</Button>
+                            }
+                            {
+                                (displayForm) &&
                                 <Button
                                     type="submit"
                                     variant="contained"
                                     onClick={handleSubmit}
                                     disabled={processing}
-                                >Update</Button>
-                            </Stack>
-                        </Grid>
+                                >Generate</Button>
+                            }
+                        </Stack>
                     </Grid>
                 </CardContent>
             </form>

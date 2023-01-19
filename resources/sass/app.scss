@@ -25,6 +25,12 @@ a {
   }
 }
 
+.ql-container.ql-disabled {
+  color: #9e9e9e;
+}
+
+
+
 @media only screen and (max-width: 600px) {
   .myprofile-card {
     margin-top: 0px !important;

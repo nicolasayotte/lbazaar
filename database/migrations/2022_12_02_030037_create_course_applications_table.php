@@ -26,6 +26,7 @@ return new class extends Migration
             $table->dateTime('approved_at')->nullable();
             $table->dateTime('denied_at')->nullable();
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('professor_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('course_type_id')->references('id')->on('course_types')->onDelete('cascade');

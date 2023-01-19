@@ -171,7 +171,9 @@ Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function()
     Route::patch('/password/update', [PortalProfileController::class, 'updatePassword'])->name('profile.password.update');
     Route::get('/class-history', [CourseHistoryController::class, 'index'])->name('course.history.index');
 
-    Route::get('/class-application', [PortalClassApplicationController::class, 'index'])->name('course.applications.index');
-    Route::get('/class-application/create', [PortalClassApplicationController::class, 'create'])->name('course.applications.create');
-    Route::post('/class-application/generate', [PortalClassApplicationController::class, 'generate'])->name('course.applications.generate');
+    Route::prefix('/class-application')->name('course.applications.')->group(function() {
+        Route::get('/', [PortalClassApplicationController::class, 'index'])->name('index');
+        Route::get('/create', [PortalClassApplicationController::class, 'create'])->name('create');
+        Route::post('/generate', [PortalClassApplicationController::class, 'generate'])->name('generate');
+    });
 });

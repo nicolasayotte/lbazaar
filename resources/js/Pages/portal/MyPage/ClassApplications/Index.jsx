@@ -50,8 +50,8 @@ const Index = () => {
 
     return (
         <>
-            <Grid container spacing={2} justifyContent="end" alignItems="right" mb={2}>
-                <Grid item xs={11} md={4}>
+            <Grid container mb={2} justifyContent="end">
+                <Grid item xs={11} md={4} textAlign="right">
                     <Link href={getRoute('mypage.course.applications.create', {}, {returnUrl : routes['mypage.course.applications.index']})}>
                         <Button
                             variant="contained"
