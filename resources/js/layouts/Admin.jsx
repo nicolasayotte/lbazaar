@@ -41,7 +41,7 @@ const Admin = ({children}) => {
 
         return (
             <>
-                <Head title={title + ' | Admin'} />
+                <Head title={title} />
                 {children}
                 <Toaster />
             </>
