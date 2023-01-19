@@ -17,7 +17,7 @@ const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions,
 
     const [isPaidClass, setIsPaidClass] = useState(false);
 
-    const [displayForm, setDisplayForm] = useState(true);
+    const [disabledForm, setDisabledForm] = useState(false);
 
     const { data, setData, post, processing, reset } = useForm({
         course_category_id: '',
@@ -47,7 +47,7 @@ const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions,
         post(routes["mypage.course.applications.generate"], {
             preserveScroll: true,
             onSuccess: (response) => {
-                setDisplayForm(false)
+                setDisabledForm(true)
                 dispatch(actions.success({
                     message: messages.success.class_generated
                 }))
@@ -141,7 +141,7 @@ const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions,
                                 value={data.title}
                                 onChange={e => handleOnChange(e, setData)}
                                 errors={errors}
-                                disabled={!displayForm}
+                                disabled={disabledForm}
                             />
                         </Grid>
                         <Grid item xs={12} md={6}>
@@ -156,7 +156,7 @@ const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions,
                                 value={data.course_type_id}
                                 onChange={e => handleOnTypeChange(e)}
                                 errors={errors}
-                                disabled={!displayForm}
+                                disabled={disabledForm}
                             >
                                 <option value=""></option>
                                 {displaySelectOptions(typeOptions)}
@@ -173,7 +173,7 @@ const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions,
                                 value={data.course_category_id}
                                 onChange={e => handleOnChange(e, setData)}
                                 errors={errors}
-                                disabled={!displayForm}
+                                disabled={disabledForm}
                             >
                                 <option value=""></option>
                                 {displaySelectOptions(categoryOptions)}
@@ -190,7 +190,7 @@ const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions,
                                 value={data.language}
                                 onChange={e => handleOnChange(e, setData)}
                                 errors={errors}
-                                disabled={!displayForm}
+                                disabled={disabledForm}
                             >
                                 <option value=""></option>
                                 {displaySelectOptions(languageOption)}
@@ -207,7 +207,7 @@ const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions,
                                 value={data.lecture_type}
                                 onChange={e => handleOnChange(e, setData)}
                                 errors={errors}
-                                disabled={!displayForm}
+                                disabled={disabledForm}
                             >
                                 <option value=""></option>
                                 {displaySelectOptions(lectureTypeOption)}
@@ -223,7 +223,7 @@ const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions,
                                 value={data.seats}
                                 onChange={e => handleOnChange(e, setData)}
                                 errors={errors}
-                                disabled={!displayForm}
+                                disabled={disabledForm}
                             />
                         </Grid>
                         {
@@ -238,7 +238,7 @@ const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions,
                                     value={data.price}
                                     onChange={e => handleOnChange(e, setData)}
                                     errors={errors}
-                                    disabled={!displayForm}
+                                    disabled={disabledForm}
                                 />
                             </Grid>
                         }
@@ -254,7 +254,7 @@ const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions,
                                     value={data.price_earned}
                                     onChange={e => handleOnChange(e, setData)}
                                     errors={errors}
-                                    disabled={!displayForm}
+                                    disabled={disabledForm}
                                 />
                             </Grid>
                         }
@@ -266,7 +266,7 @@ const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions,
                                 onChange={(value) => handleEditorOnChange(value, setData, 'description')}
                                 style={{height: '180px'}}
                                 errors={errors}
-                                readOnly={!displayForm}
+                                readOnly={disabledForm}
                                 />
                         </Grid>
                     </Grid>
@@ -288,16 +288,16 @@ const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions,
                                 >Back</Button>
                             </Link>
                             {
-                                (!displayForm) &&
+                                (disabledForm) &&
                                 <Button
                                     type="submit"
                                     variant="contained"
-                                    onClick={() => setDisplayForm(true)}
+                                    onClick={() => setDisabledForm(false)}
                                     disabled={processing}
                                 >Edit Form</Button>
                             }
                             {
-                                (displayForm) &&
+                                (!disabledForm) &&
                                 <Button
                                     type="submit"
                                     variant="contained"
