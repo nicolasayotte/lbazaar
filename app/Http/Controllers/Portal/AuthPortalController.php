@@ -29,7 +29,7 @@ class AuthPortalController extends Controller
             'email'      => $request['email'],
             'password'   => $request['password'],
             'is_enabled' => 1,
-            fn ($query) => $query->whereRoleIs(Role::STUDENT)->where('email_verified_at', '!=', NULL)
+            fn ($query) => $query->whereRoleIs([Role::STUDENT, Role::TEACHER])->where('email_verified_at', '!=', NULL)
         ])) {
             return redirect()->intended('/');
         }

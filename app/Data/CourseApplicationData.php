@@ -39,6 +39,8 @@ class CourseApplicationData
 
 	private $language;
 
+	private $isCourseCreated;
+
     // Setters
     public function setId($id)
 	{
@@ -136,6 +138,13 @@ class CourseApplicationData
 		return $this;
 	}
 
+	public function setIsCourseCreated($isCourseCreated): self
+	{
+		$this->isCourseCreated = $isCourseCreated;
+
+		return $this;
+	}
+
     // Getters
     public function getId()
 	{
@@ -217,6 +226,11 @@ class CourseApplicationData
 		return $this->language;
 	}
 
+	public function getIsCourseCreated()
+	{
+		return $this->isCourseCreated;
+	}
+
     public function getProperties()
     {
         return get_object_vars($this);
@@ -244,6 +258,8 @@ class CourseApplicationData
         $courseData->setCreatedAt(Carbon::parse($courseApplication->created_at)->format('Y-m-d'));
         $courseData->setDeniedAt(@$courseApplication->denied_at ? Carbon::parse($courseApplication->denied_at)->format('Y-m-d') : NULL);
         $courseData->setApprovedAt(@$courseApplication->approved_at ? Carbon::parse($courseApplication->approved_at)->format('Y-m-d') : NULL);
+
+        $courseData->setIsCourseCreated(!empty($courseApplication->course) ? true : false);
 
         $courseStatus = CourseApplication::PENDING;
 

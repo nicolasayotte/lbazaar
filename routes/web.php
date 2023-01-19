@@ -9,9 +9,10 @@ use App\Http\Controllers\Admin\InquiriesController as AdminInquiriesController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Portal\AuthPortalController;
+use App\Http\Controllers\Portal\CourseApplicationController as PortalClassApplicationController;
 use App\Http\Controllers\Portal\CourseController;
-use App\Http\Controllers\Portal\CourseHistoryController;
 use App\Http\Controllers\Portal\CourseFeedbackController;
+use App\Http\Controllers\Portal\CourseHistoryController;
 use App\Http\Controllers\Portal\ForgotPasswordController;
 use App\Http\Controllers\Portal\InquiriesController;
 use App\Http\Controllers\Portal\ProfileController as PortalProfileController;
@@ -176,4 +177,10 @@ Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function()
     Route::patch('/profile', [PortalProfileController::class, 'update'])->name('profile.update');
     Route::patch('/password/update', [PortalProfileController::class, 'updatePassword'])->name('profile.password.update');
     Route::get('/class-history', [CourseHistoryController::class, 'index'])->name('course.history.index');
+
+    Route::prefix('/class-application')->name('course.applications.')->group(function() {
+        Route::get('/', [PortalClassApplicationController::class, 'index'])->name('index');
+        Route::get('/create', [PortalClassApplicationController::class, 'create'])->name('create');
+        Route::post('/generate', [PortalClassApplicationController::class, 'generate'])->name('generate');
+    });
 });

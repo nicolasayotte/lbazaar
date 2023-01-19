@@ -49,5 +49,8 @@
     "mypage.profile.index": "\/mypage\/profile",
     "mypage.profile.update": "\/mypage\/profile",
     "mypage.profile.password.update": "\/mypage\/password\/update",
-    "mypage.course.history.index": "\/mypage\/class-history"
+    "mypage.course.history.index": "\/mypage\/class-history",
+    "mypage.course.applications.index": "\/mypage\/class-application",
+    "mypage.course.applications.create": "\/mypage\/class-application\/create",
+    "mypage.course.applications.generate": "\/mypage\/class-application\/generate"
 }

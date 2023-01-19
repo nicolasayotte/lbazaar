@@ -18,6 +18,8 @@ return [
         'password' => 'Password successfully updated',
         'feedback' => 'Feedback successfully saved.',
         'inquiry' => 'Inquiry successfully submitted',
+        'class_generated' => 'Command Generated.',
+        'copy' => 'Copied!',
         'user' => [
             'login'  => 'User successfully authenticated',
             'logout' => 'User successfully signed out',

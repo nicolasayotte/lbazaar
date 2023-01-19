@@ -2,6 +2,7 @@ import { Box, Typography } from "@mui/material"
 import ErrorText from "../common/ErrorText"
 import ReactQuill from 'react-quill';
 import modules from "../../helpers/editormodules.helper"
+import 'react-quill/dist/quill.snow.css';
 
 const TextEditorInput = (props) => {
 
@@ -12,6 +13,7 @@ const TextEditorInput = (props) => {
     return (
         <Box>
             <ReactQuill
+                    theme="snow"
                     {...props}
                     modules={modules}
                     className={props.errors && props.errors[props.name] ? "ql-error" : null}
