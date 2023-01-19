@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
             CourseFeedbackSeeder::class,
             EmailSettingsSeeder::class,
             InquirySeeder::class,
-            UserEducationSeeder::class
+            TeacherInformationSeeder::class
         ]);
     }
 }
