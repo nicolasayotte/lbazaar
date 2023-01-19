@@ -47,17 +47,17 @@ class CourseApplicationRequest extends FormRequest
     public function messages()
     {
         return [
-            'course_category_id.required'           => trans('validation.required', ['attribute' => 'category']),
-            'price_earned.required'           => trans('validation.required', ['attribute' => 'price earn']),
+            'course_category_id.required'       => trans('validation.required', ['attribute' => 'category']),
+            'price_earned.required'             => trans('validation.required', ['attribute' => 'price earn']),
             'course_type_id.required'           => trans('validation.required', ['attribute' => 'type']),
-            'lecture_type.required'           => trans('validation.required', ['attribute' => 'lecture type']),
-            'price.required_if' => trans('validation.required_if', [
-                'attribute' => 'price' ,
-                'other'     => 'course'
+            'lecture_type.required'             => trans('validation.required', ['attribute' => 'lecture type']),
+            'price.required_if'                 => trans('validation.required_if', [
+                'attribute'                     => 'price' ,
+                'other'                         => 'course'
             ]),
             'price_earned.required_if' => trans('validation.required_if', [
-                'attribute' => 'price earned' ,
-                'other'     => 'course'
+                'attribute'                     => 'price earned' ,
+                'other'                         => 'course'
             ]),
         ];
     }
