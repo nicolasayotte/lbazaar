@@ -15,6 +15,8 @@ class ProfileController extends Controller
 {
     private $userRepository;
 
+    private $title = 'Profile | Admin';
+
     public function __construct()
     {
         $this->userRepository = new UserRepository();
@@ -25,9 +27,10 @@ class ProfileController extends Controller
         $countries = Country::all();
 
         return Inertia::render('Admin/Profile/Index', [
-            'countries' => $countries
+            'countries' => $countries,
+            'title'     => $this->title
         ])->withViewData([
-            'title' => 'Profile | Admin'
+            'title' => $this->title
         ]);
     }
 

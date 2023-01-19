@@ -12,6 +12,8 @@ class InquiriesController extends Controller
 {
     private $inquiryRepository;
 
+    private $title = 'Inquiries | Admin';
+
     public function __construct()
     {
         $this->inquiryRepository = new InquiryRepository();
@@ -23,9 +25,10 @@ class InquiriesController extends Controller
             'inquiries' => $this->inquiryRepository->get($request->all()),
             'page'      => @$request['page'] ?? 1,
             'keyword'   => @$request['keyword'] ?? '',
-            'sort'      => @$request['sort'] ?? 'created_at:desc'
+            'sort'      => @$request['sort'] ?? 'created_at:desc',
+            'title'     => $this->title
         ])->withViewData([
-            'title' => 'Inquiries | Admin'
+            'title' => $this->title
         ]);
     }
 

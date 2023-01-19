@@ -30,6 +30,8 @@ class UserController extends Controller
 
     private $classificationRepository;
 
+    private $title = 'Users | Admin';
+
     public function __construct()
     {
         $this->userRepository           = new UserRepository();
@@ -48,19 +50,21 @@ class UserController extends Controller
             'role'          => @$request['role'] ?? '',
             'status'        => @$request['status'] ?? '',
             'sort'          => @$request['sort'] ?? 'created_at:desc',
-            'page'          => @$request['page'] ?? 1
+            'page'          => @$request['page'] ?? 1,
+            'title'         => $this->title
         ])->withViewData([
-            'title' => 'Users | Admin'
+            'title' => $this->title
         ]);
     }
 
     public function view($id)
     {
         return Inertia::render('Admin/Users/View', [
-            'user' => $this->userRepository->findOne($id)
+            'user' => $this->userRepository->findOne($id),
+            'title' => $this->title
         ])
         ->withViewData([
-            'title' => 'User Details | Admin'
+            'title' => $this->title
         ]);
     }
 
@@ -69,9 +73,10 @@ class UserController extends Controller
         return Inertia::render('Admin/Users/Create', [
             'roleOptions'           => $this->roleRepository->getDropdownData(),
             'countryOptions'        => $this->countryRepository->getDropdownData(),
-            'classificationOptions' => $this->classificationRepository->getDropdownData()
+            'classificationOptions' => $this->classificationRepository->getDropdownData(),
+            'title'                 => $this->title
         ])->withViewData([
-            'title' => 'Create User | Admin'
+            'title' => $this->title
         ]);
     }
 

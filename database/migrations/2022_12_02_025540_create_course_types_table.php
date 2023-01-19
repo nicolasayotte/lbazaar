@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('course_types', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('type');
             $table->timestamps();
         });
     }

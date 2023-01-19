@@ -1,6 +1,6 @@
 import { Delete, Edit } from "@mui/icons-material"
 import { IconButton, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
-import EmptyCard from "../../../../components/common/EmptyCard"
+import EmptyCard from "../../../../../components/common/EmptyCard"
 
 const CourseCategoryTable = ({ data, handleOnEdit, handleOnDelete }) => {
 

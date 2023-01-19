@@ -1,20 +1,19 @@
 import { useForm, usePage } from "@inertiajs/inertia-react"
 import { Add } from "@mui/icons-material"
 import { Box, Button, Card, CardContent, Grid, Pagination, Stack, Typography } from "@mui/material"
-import Input from "../../../components/forms/Input"
-import { displaySelectOptions } from "../../../helpers/form.helper"
+import Input from "../../../../components/forms/Input"
+import { displaySelectOptions } from "../../../../helpers/form.helper"
 import CourseCategoryTable from "./components/CourseCategoryTable"
-import TableLoader from "../../../components/common/TableLoader"
-import { handleOnChange, handleOnSelectChange } from "../../../helpers/form.helper"
+import TableLoader from "../../../../components/common/TableLoader"
+import { handleOnChange, handleOnSelectChange } from "../../../../helpers/form.helper"
 import { useEffect, useState } from "react"
-import FormDialog from "../../../components/common/FormDialog"
 import { useDispatch } from "react-redux"
-import { actions } from "../../../store/slices/ToasterSlice"
+import { actions } from "../../../../store/slices/ToasterSlice"
 import { Inertia } from "@inertiajs/inertia"
-import routes, { getRoute } from "../../../helpers/routes.helper"
-import ConfirmationDialog from "../../../components/common/ConfirmationDialog"
+import routes, { getRoute } from "../../../../helpers/routes.helper"
+import Dialogs from "./components/Dialogs"
 
-const CourseCategory = () => {
+const Index = () => {
 
     const dispatch = useDispatch()
 
@@ -145,38 +144,18 @@ const CourseCategory = () => {
         })
     }
 
-    const displayDialogs = () => {
-
-        if (dialog.action === 'delete') {
-            return (
-                <ConfirmationDialog
-                    {...dialog}
-                    handleClose={handleOnDialogClose}
-                    handleConfirm={handleOnDialogSubmit}
-                />
-            )
-        }
-
-        return (
-            <FormDialog
-                {...dialog}
-                handleClose={handleOnDialogClose}
-                handleSubmit={handleOnDialogSubmit}
-                processing={dialog.processing}
-            >
-                <Input
-                    name="name"
-                    value={dialog.value}
-                    placeholder="e.g. Blockchain"
-                    onChange={e => setDialog(dialog => ({
-                        ...dialog,
-                        value: e.target.value
-                    }))}
-                    errors={errors}
-                />
-            </FormDialog>
-        )
-    }
+    const dialogFormInputs = (
+        <Input
+            name="name"
+            value={dialog.value}
+            placeholder="e.g. Blockchain"
+            onChange={e => setDialog(dialog => ({
+                ...dialog,
+                value: e.target.value
+            }))}
+            errors={errors}
+        />
+    )
 
     useEffect(() => {
         // If errors on edit submit
@@ -205,7 +184,7 @@ const CourseCategory = () => {
                     startIcon={
                         <Add/>
                     }
-                    onClick={e => handleOnCreate('')}
+                    onClick={() => handleOnCreate('')}
                 />
             </Stack>
             <Card sx={{ mb: 2 }}>
@@ -259,9 +238,14 @@ const CourseCategory = () => {
                     color="primary"
                 />
             </Box>
-            {displayDialogs()}
+            <Dialogs
+                dialog={dialog}
+                handleOnDialogClose={handleOnDialogClose}
+                handleOnDialogSubmit={handleOnDialogSubmit}
+                inputs={dialogFormInputs}
+            />
         </Box>
     )
 }
 
-export default CourseCategory
+export default Index

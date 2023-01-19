@@ -22,6 +22,8 @@ class CourseApplicationController extends Controller
 
     private $courseTypeRepository;
 
+    private $title = 'Class Applications | Admin';
+
     public function __construct()
     {
         $this->courseApplicationRepository = new CourseApplicationRepository();
@@ -40,18 +42,20 @@ class CourseApplicationController extends Controller
             'category'           => @$request['category'] ?? '',
             'status'             => @$request['status'] ?? '',
             'sort'               => @$request['sort'] ?? 'created_at:desc',
-            'page'               => @$request['page'] ?? 1
+            'page'               => @$request['page'] ?? 1,
+            'title'              => $this->title
         ])->withViewData([
-            'title' => 'Class Applications | Admin'
+            'title' => $this->title
         ]);
     }
 
     public function view($id)
     {
         return Inertia::render('Admin/ClassApplications/View',[
-            'courseApplication' => CourseApplicationData::fromModel($this->courseApplicationRepository->with(['professor.classification'])->findOrFail($id))
+            'courseApplication' => CourseApplicationData::fromModel($this->courseApplicationRepository->with(['professor.classification'])->findOrFail($id)),
+            'title' => $this->title
         ])->withViewData([
-            'title' => 'Class Application Detail | Admin'
+            'title' => $this->title
         ]);
     }
 

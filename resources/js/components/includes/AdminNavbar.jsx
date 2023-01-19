@@ -1,5 +1,5 @@
 import { Link, usePage } from "@inertiajs/inertia-react"
-import { Article, ExpandLess, ExpandMore, FormatListBulleted, Inbox, LibraryBooks, LocalOffer, Mail, ManageAccounts, Menu, People, Settings } from "@mui/icons-material"
+import { Article, ExpandLess, ExpandMore, Inbox, LibraryBooks, LocalOffer, Mail, ManageAccounts, Menu, People, Settings } from "@mui/icons-material"
 import { AppBar, Box, Collapse, Divider, Drawer, Grid, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar, Typography } from "@mui/material"
 import { useState } from "react"
 import routes from "../../helpers/routes.helper"
@@ -24,12 +24,6 @@ const AdminNavbar = ({ drawerWidth, window }) => {
             link: routes["admin.class.applications.index"],
             icon: <Article />,
             active: component.startsWith('Admin/ClassApplications')
-        },
-        {
-            name: 'Class List',
-            link: '',
-            icon: <FormatListBulleted />,
-            active: component.startsWith('Admin/Classes')
         },
         {
             name: 'Manage Users',
@@ -60,12 +54,13 @@ const AdminNavbar = ({ drawerWidth, window }) => {
             name: 'Categories',
             link: routes["admin.settings.categories.index"],
             icon: <LocalOffer />,
-            active: component.startsWith('Admin/Settings/CourseCategory')
+            active: component.startsWith('Admin/Settings/CourseCategories')
         },
         {
             name: 'Class Types',
-            link: '',
-            icon: <LibraryBooks />
+            link: routes["admin.settings.course_types.index"],
+            icon: <LibraryBooks />,
+            active: component.startsWith('Admin/Settings/CourseTypes')
         },
         {
             name: 'Classifications',

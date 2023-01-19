@@ -23,7 +23,10 @@ class CourseTypeSeeder extends Seeder
         ];
 
         foreach ($types as $type) {
-            CourseType::create(['name' => $type]);
+            CourseType::create([
+                'name' => $type,
+                'type' => $type
+            ]);
         }
     }
 }
