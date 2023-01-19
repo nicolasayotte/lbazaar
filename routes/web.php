@@ -15,6 +15,7 @@ use App\Http\Controllers\Portal\CourseFeedbackController;
 use App\Http\Controllers\Portal\CourseHistoryController;
 use App\Http\Controllers\Portal\ForgotPasswordController;
 use App\Http\Controllers\Portal\InquiriesController;
+use App\Http\Controllers\Portal\ManageCourseController;
 use App\Http\Controllers\Portal\ProfileController as PortalProfileController;
 use App\Http\Controllers\Portal\RegisterStudentController;
 use App\Http\Controllers\Portal\TopPageController;
@@ -182,5 +183,9 @@ Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function()
         Route::get('/', [PortalClassApplicationController::class, 'index'])->name('index');
         Route::get('/create', [PortalClassApplicationController::class, 'create'])->name('create');
         Route::post('/generate', [PortalClassApplicationController::class, 'generate'])->name('generate');
+    });
+
+    Route::prefix('/manage-class')->name('manage.class.')->group(function() {
+        Route::get('/', [ManageCourseController::class, 'index'])->name('index');
     });
 });
