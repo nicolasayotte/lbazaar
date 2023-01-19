@@ -14,6 +14,11 @@ a {
     color: inherit;
 }
 
+#nprogress .bar {
+    z-index: 9999 !important;
+    height: 3px !important;
+}
+
 .quill.ql-error {
   .ql-toolbar {
     border: 1px solid red;
@@ -28,8 +33,6 @@ a {
 .ql-container.ql-disabled {
   color: #9e9e9e;
 }
-
-
 
 @media only screen and (max-width: 600px) {
   .myprofile-card {

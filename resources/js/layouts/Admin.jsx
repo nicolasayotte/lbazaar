@@ -1,5 +1,5 @@
 import { Head, usePage } from "@inertiajs/inertia-react"
-import { Container, ThemeProvider, Toolbar } from "@mui/material"
+import { Container, ThemeProvider } from "@mui/material"
 import { Box } from "@mui/system"
 import { useState } from "react"
 import AdminNavbar from "../components/includes/AdminNavbar"
