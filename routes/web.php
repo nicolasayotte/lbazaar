@@ -182,6 +182,7 @@ Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function()
     Route::prefix('/class-application')->name('course.applications.')->group(function() {
         Route::get('/', [PortalClassApplicationController::class, 'index'])->name('index');
         Route::get('/create', [PortalClassApplicationController::class, 'create'])->name('create');
+        Route::get('/details/{id}', [PortalClassApplicationController::class, 'view'])->name('view');
         Route::post('/generate', [PortalClassApplicationController::class, 'generate'])->name('generate');
     });
 

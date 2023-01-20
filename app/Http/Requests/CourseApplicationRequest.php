@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Models\Course;
 use App\Models\CourseType;
 use App\Models\Role;
+use App\Repositories\CourseTypeRepository;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CourseApplicationRequest extends FormRequest
@@ -46,6 +47,11 @@ class CourseApplicationRequest extends FormRequest
      */
     public function messages()
     {
+        if (!empty($this->validationData()["course_type_id"])) {
+            $courseTypeRepository = new CourseTypeRepository();
+            $courseType =  $courseTypeRepository->getNameById($this->validationData()["course_type_id"]);
+        }
+
         return [
             'course_category_id.required'       => trans('validation.required', ['attribute' => 'category']),
             'price_earned.required'             => trans('validation.required', ['attribute' => 'price earn']),
@@ -53,11 +59,13 @@ class CourseApplicationRequest extends FormRequest
             'lecture_type.required'             => trans('validation.required', ['attribute' => 'lecture type']),
             'price.required_if'                 => trans('validation.required_if', [
                 'attribute'                     => 'price' ,
-                'other'                         => 'course'
+                'other'                         => 'course type',
+                'value'                         => $courseType,
             ]),
             'price_earned.required_if' => trans('validation.required_if', [
                 'attribute'                     => 'price earned' ,
-                'other'                         => 'course'
+                'other'                         => 'course type',
+                'value'                         => $courseType,
             ]),
         ];
     }

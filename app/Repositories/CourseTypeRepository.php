@@ -33,4 +33,9 @@ class CourseTypeRepository extends BaseRepository
             ];
         });
     }
+
+    public function getNameById($id)
+    {
+        return $this->model->find($id)->name;
+    }
 }

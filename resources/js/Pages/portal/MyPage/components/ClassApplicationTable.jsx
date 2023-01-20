@@ -2,7 +2,7 @@ import { Link } from "@inertiajs/inertia-react"
 import { Block, NoteAdd, Search } from "@mui/icons-material"
 import { Chip, IconButton, Paper, Tooltip, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
 import EmptyCard from "../../../../components/common/EmptyCard"
-import { getRoute } from "../../../../helpers/routes.helper"
+import routes, { getRoute } from "../../../../helpers/routes.helper"
 
 const ClassApplicationTable = ({ data }) => {
 
@@ -43,7 +43,7 @@ const ClassApplicationTable = ({ data }) => {
                 </TableCell>
                 <TableCell  sx={{ whiteSpace: 'nowrap'}} align="center">
                     <Stack direction="row" spacing={1} justifyContent="center">
-                        <Link href={getRoute('admin.class.applications.view', { id: row.id })}>
+                        <Link href={getRoute('mypage.course.applications.view', { id: row.id }, {returnUrl : routes["mypage.course.applications.index"]})}>
                             <IconButton size="small">
                                 <Search fontSize="inherit"/>
                             </IconButton>
