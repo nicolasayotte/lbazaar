@@ -2,7 +2,6 @@
 
 namespace App\Repositories;
 
-use App\Data\CourseManageData;
 use App\Models\Course;
 use Carbon\Carbon;
 use DateTime;
