@@ -6,14 +6,12 @@ use App\Data\CourseApplicationData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CourseApplicationRequest;
 use App\Mail\CourseApplicationUpdate;
+use App\Models\CourseApplication;
 use App\Repositories\CourseApplicationRepository;
 use App\Repositories\CourseCategoryRepository;
-use App\Repositories\CourseRepository;
 use App\Repositories\CourseTypeRepository;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
 
@@ -66,6 +64,16 @@ class CourseApplicationController extends Controller
     {
         session()->flash('command', 'commandsamplehere');
         return redirect()->back();
+    }
+
+    public function view($id)
+    {
+        return Inertia::render('Portal/MyPage/ClassApplications/View',[
+            'courseApplication'     => CourseApplicationData::fromModel($this->courseApplicationRepository->with(['professor.classification'])->findOrFail($id)),
+            'title'                 => 'My Page | Class Application'
+        ])->withViewData([
+            'title'                 => 'My Page | Class Application'
+        ]);
     }
 
 }

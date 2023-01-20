@@ -7,6 +7,7 @@ import Input from "../../components/forms/Input"
 import ReactQuill from 'react-quill';
 import { handleOnChange, handleEditorOnChange } from "../../helpers/form.helper";
 import TextEditorInput from "../../components/forms/TextEditorInput"
+import BackButton from "../../components/common/BackButton"
 
 const CourseFeedback = () => {
 
@@ -45,10 +46,6 @@ const CourseFeedback = () => {
             label: '100',
         }
     ];
-
-    const getQuery = (q) => {
-        return (window.location.search.match(new RegExp('[?&]' + q + '=([^&]+)')) || [, null])[1];
-    }
 
     return (
         <Box sx={{ minHeight: '80.75vh' }}>
@@ -104,11 +101,7 @@ const CourseFeedback = () => {
                                     </Grid>
                                     <Grid item xs={12}>
                                         <Stack direction="row" spacing={1} justifyContent="end">
-                                            <Link href={getQuery('returnUrl')}>
-                                                <Button
-                                                    disabled={processing}
-                                                >Back</Button>
-                                            </Link>
+                                            <BackButton processing={processing}/>
                                             <Button
                                                 onClick={handleSubmit}
                                                 variant="contained"

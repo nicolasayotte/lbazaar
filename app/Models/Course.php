@@ -11,6 +11,8 @@ class Course extends Model
 
     const FEATURED_CLASS_COUNT_DISPLAY = 3;
 
+    const PER_PAGE = 10;
+
     public function professor()
     {
         return $this->belongsTo(User::class, 'professor_id');
@@ -24,6 +26,11 @@ class Course extends Model
     public function courseCategory()
     {
         return $this->belongsTo(CourseCategory::class)->withTrashed();
+    }
+
+    public function status()
+    {
+        return $this->belongsTo(Status::class);
     }
 
     public function contents()

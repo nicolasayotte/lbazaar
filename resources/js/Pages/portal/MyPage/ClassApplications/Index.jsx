@@ -50,20 +50,7 @@ const Index = () => {
 
     return (
         <>
-            <Grid container mb={2} justifyContent="end">
-                <Grid item xs={11} md={4} textAlign="right">
-                    <Link href={getRoute('mypage.course.applications.create', {}, {returnUrl : routes['mypage.course.applications.index']})}>
-                        <Button
-                            variant="contained"
-                            children="Create class application"
-                            startIcon={
-                                <NoteAdd />
-                            }
-                        />
-                    </Link>
-                </Grid>
-            </Grid>
-            <Card sx={{ mb: 2 }}>
+            <Card sx={{ mb: 2, mt: 4 }}>
                 <CardContent>
                     <form onSubmit={handleFilterSubmit}>
                         <Grid container spacing={2}>

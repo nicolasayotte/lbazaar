@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\Course;
 use Carbon\Carbon;
 use DateTime;
+use Illuminate\Support\Facades\Auth;
 
 class CourseRepository extends BaseRepository
 {
@@ -68,5 +69,4 @@ class CourseRepository extends BaseRepository
     {
         return $this->model->with(['professor', 'courseCategory', 'feedbacks', 'feedbacks.user'])->findOrFail($id);
     }
-
 }

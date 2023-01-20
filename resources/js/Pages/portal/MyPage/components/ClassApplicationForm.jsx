@@ -7,6 +7,7 @@ import { actions } from "../../../../store/slices/ToasterSlice"
 import TextEditorInput from "../../../../components/forms/TextEditorInput"
 import { useEffect, useState } from "react"
 import { ContentCopy } from '@mui/icons-material';
+import BackButton from "../../../../components/common/BackButton"
 
 
 const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions, typeOptions, command }) => {
@@ -58,10 +59,6 @@ const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions,
         })
     }
 
-    const getQuery = (q) => {
-        return (window.location.search.match(new RegExp('[?&]' + q + '=([^&]+)')) || [, null])[1];
-    }
-
     const displayCommand = () => {
         if (command != null) {
             return (
@@ -86,7 +83,7 @@ const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions,
 
         if (isEarned) {
             setIsEarned(true)
-            setIsPaidClass(true)
+            setIsPaidClass(false)
         } else if (isPaidClass) {
             setIsPaidClass(true)
             setIsEarned(false)
@@ -282,11 +279,7 @@ const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions,
                     {displayFormLayout()}
                     <Grid item xs={12} md={12} textAlign="right">
                         <Stack direction="row" spacing={1} justifyContent="end">
-                            <Link href={getQuery('returnUrl')}>
-                                <Button
-                                    disabled={processing}
-                                >Back</Button>
-                            </Link>
+                            <BackButton processing={processing}/>
                             {
                                 (disabledForm) &&
                                 <Button
