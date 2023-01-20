@@ -66,34 +66,8 @@ class CourseRepository extends BaseRepository
             ->paginate(self::PER_PAGE)->withQueryString();
     }
 
-    public function getMyCourses($filters)
-    {
-        $sortFilterArr = explode(':', @$filters['sort'] ?? 'created_at:desc');
-
-        $sortBy    = $sortFilterArr[0];
-        $sortOrder = $sortFilterArr[1];
-
-        return $this->model->with(['status'])
-                ->where(function($q) use($filters) {
-                    return $q->where('title', 'LIKE', '%'. @$filters['keyword'] .'%');
-                })
-                ->when(@$filters['course_type'], function($q) use($filters) {
-                    return $q->where('course_type_id', @$filters['course_type']);
-                })
-                ->when(@$filters['category'], function($q) use($filters) {
-                    return $q->where('course_category_id', @$filters['category']);
-                })
-                ->where('professor_id', Auth::user()->id)
-                ->orderBy($sortBy, $sortOrder)
-                ->paginate(Course::PER_PAGE)
-                ->through(function($item) {
-                    return CourseManageData::fromModel($item);
-                });
-    }
-
     public function findById($id)
     {
         return $this->model->with(['professor', 'courseCategory', 'feedbacks', 'feedbacks.user'])->findOrFail($id);
     }
-
 }

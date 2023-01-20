@@ -77,22 +77,4 @@ class CourseController extends Controller
             'description' => 'Course Details'
         ]);
     }
-
-    public function indexManage(Request $request)
-    {
-        return Inertia::render('Portal/MyPage/ManageClass/Index', [
-            'courses'            => $this->courseRepository->getMyCourses($request->all()),
-            'categoryOptions'    => $this->courseCategoryRepository->getDropdownData(),
-            'typeOptions'        => $this->courseTypeRepository->getDropdownData(),
-            'keyword'            => @$request['keyword'] ?? '',
-            'course_type'        => @$request['course_type'] ?? '',
-            'category'           => @$request['category'] ?? '',
-            'status'             => @$request['status'] ?? '',
-            'sort'               => @$request['sort'] ?? 'created_at:desc',
-            'page'               => @$request['page'] ?? 1,
-            'title'              => 'My Page | Class Application'
-        ])->withViewData([
-            'title'       => 'My Page | Manage Class',
-        ]);
-    }
 }
