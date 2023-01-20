@@ -1,4 +1,4 @@
-import { Link, useForm, usePage } from "@inertiajs/inertia-react"
+import { useForm, usePage } from "@inertiajs/inertia-react"
 import { Box, Button, Card, CardContent, Grid, Pagination, Typography } from "@mui/material"
 import Input from "../../../components/forms/Input"
 import { displaySelectOptions, handleOnChange, handleOnSelectChange } from "../../../helpers/form.helper"
@@ -11,7 +11,6 @@ import { getRoute } from "../../../helpers/routes.helper"
 import { Inertia } from "@inertiajs/inertia"
 import { useDispatch } from "react-redux"
 import { actions } from "../../../store/slices/ToasterSlice"
-import { PersonAdd } from "@mui/icons-material"
 
 const Index = () => {
 
@@ -116,17 +115,6 @@ const Index = () => {
                         variant="h4"
                         children="Manage Users"
                     />
-                </Grid>
-                <Grid item xs={12} md={6} textAlign="right">
-                    <Link href={routes["admin.users.create"]}>
-                        <Button
-                            variant="contained"
-                            children="Create User"
-                            startIcon={
-                                <PersonAdd />
-                            }
-                        />
-                    </Link>
                 </Grid>
             </Grid>
             <Card sx={{ mb: 2 }}>
