@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\ClassApplicationController;
+use App\Http\Controllers\Admin\ClassificationController;
 use App\Http\Controllers\Admin\CourseApplicationController;
 use App\Http\Controllers\Admin\CourseCategoryController;
 use App\Http\Controllers\Admin\CourseTypeController;
@@ -101,6 +102,10 @@ Route::prefix('admin')->name('admin.')->group(function() {
             Route::prefix('class-types')->name('course_types.')->group(function() {
                 Route::get('/', [CourseTypeController::class, 'index'])->name('index');
                 Route::patch('/update', [CourseTypeController::class, 'update'])->name('update');
+            });
+
+            Route::prefix('classifications')->name('classifications.')->group(function() {
+                Route::get('/', [ClassificationController::class, 'index'])->name('index');
             });
         });
     });
