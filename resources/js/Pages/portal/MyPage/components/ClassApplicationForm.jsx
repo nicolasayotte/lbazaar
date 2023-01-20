@@ -83,7 +83,7 @@ const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions,
 
         if (isEarned) {
             setIsEarned(true)
-            setIsPaidClass(true)
+            setIsPaidClass(false)
         } else if (isPaidClass) {
             setIsPaidClass(true)
             setIsEarned(false)
