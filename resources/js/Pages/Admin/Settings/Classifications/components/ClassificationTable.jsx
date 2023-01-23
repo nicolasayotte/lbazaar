@@ -23,7 +23,7 @@ const ClassificationTable = ({ data, handleOnDeleteRow }) => {
                 <TableHead>
                     <TableRow>
                         <TableCell width="70%" children="Classification" />
-                        <TableCell children="Commission Rate (%)" />
+                        <TableCell align="center" children="Commission Rate (%)" />
                         <TableCell align="center" children="Actions" />
                     </TableRow>
                 </TableHead>

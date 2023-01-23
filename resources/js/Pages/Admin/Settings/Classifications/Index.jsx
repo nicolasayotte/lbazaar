@@ -8,6 +8,7 @@ import { getRoute } from "../../../../helpers/routes.helper"
 import { useDispatch } from "react-redux"
 import { actions } from "../../../../store/slices/ToasterSlice"
 import TableLoader from "../../../../components/common/TableLoader"
+import { Inertia } from "@inertiajs/inertia"
 
 const Index = () => {
 
@@ -27,6 +28,12 @@ const Index = () => {
         classifications
     })
 
+    const classificationBlueprint = {
+        id: '',
+        name: '',
+        commision_rate: ''
+    }
+
     const handleOnDeleteRow = (id, index) => {
         let submitUrl = id === '' ? '' : getRoute('admin.settings.classifications.delete', { id })
 
@@ -42,37 +49,17 @@ const Index = () => {
         }))
     }
 
-    const handleOnDialogConfirm = e => {
-        e.preventDefault()
+    const handleOnDialogConfirm = () => {
 
-        const successHandler = () => {
-            // Remove classification from list by index
-            setData('classifications', data.classifications.filter((value, index) => index !== dialog.deleteIndex))
-
-            if (dialog.deleteIndex !== '') {
-                setDialog(dialog => ({
-                    ...dialog,
-                    open: false
-                }))
-            }
-
-            dispatch(actions.success({
+        Inertia.delete(dialog.submitUrl, {
+            preserveState: true,
+            onSuccess: () => dispatch(actions.success({
                 message: messages.success.classification.delete
+            })),
+            onError: () => dispatch(actions.error({
+                message: messages.error
             }))
-
-            return
-        }
-
-        if (dialog.submitUrl !== '') {
-            deleteRequest(dialog.submitUrl, {
-                onSuccess: successHandler,
-                onError: () => dispatch(actions.error({
-                    message: messages.error
-                }))
-            })
-
-            return
-        }
+        })
     }
 
     const handleOnDialogClose = () => {
@@ -90,21 +77,15 @@ const Index = () => {
                     children="Classifications"
                 />
                 <Button
-                    children="Save Changes"
+                    children="Create Classification"
                     variant="contained"
+                    startIcon={<Add />}
                 />
             </Stack>
             <ClassificationTable
                 data={classifications}
                 handleOnDeleteRow={handleOnDeleteRow}
             />
-            <Box textAlign="center" sx={{ mt: 2 }}>
-                <Button
-                    children="Add row"
-                    variant="outlined"
-                    startIcon={<Add />}
-                />
-            </Box>
             <ConfirmationDialog
                 {...dialog}
                 handleClose={handleOnDialogClose}
