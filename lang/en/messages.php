@@ -42,6 +42,9 @@ return [
             'update' => 'Category successfully updated',
             'delete' => 'Category successfully deleted',
             'create' => 'Category successfully created'
+        ],
+        'classification' => [
+            'delete' => 'Classification successfully deleted'
         ]
     ],
     'confirm' => [
@@ -61,5 +64,8 @@ return [
         'category' => [
             'delete' => 'Are you sure you want to delete this category?'
         ],
+        'classification' => [
+            'delete' => 'Are you sure you want to delete this classification?'
+        ]
     ]
 ];

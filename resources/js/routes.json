@@ -29,6 +29,7 @@
     "admin.settings.course_types.index": "\/admin\/settings\/class-types",
     "admin.settings.course_types.update": "\/admin\/settings\/class-types\/update",
     "admin.settings.classifications.index": "\/admin\/settings\/classifications",
+    "admin.settings.classifications.delete": "\/admin\/settings\/classifications\/{id}\/delete",
     "course.index": "\/courses",
     "course.details": "\/courses\/details\/{id}",
     "course.feedback.index": "\/courses\/feedback\/{id}",

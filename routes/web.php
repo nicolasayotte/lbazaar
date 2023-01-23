@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Admin\AuthController;
-use App\Http\Controllers\Admin\ClassApplicationController;
 use App\Http\Controllers\Admin\ClassificationController;
 use App\Http\Controllers\Admin\CourseApplicationController;
 use App\Http\Controllers\Admin\CourseCategoryController;
@@ -19,9 +18,6 @@ use App\Http\Controllers\Portal\InquiriesController;
 use App\Http\Controllers\Portal\ProfileController as PortalProfileController;
 use App\Http\Controllers\Portal\RegisterStudentController;
 use App\Http\Controllers\Portal\TopPageController;
-use App\Models\CourseApplication;
-use App\Models\Inquiry;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Mail\Markdown;
 use Illuminate\Support\Facades\Route;
@@ -106,6 +102,7 @@ Route::prefix('admin')->name('admin.')->group(function() {
 
             Route::prefix('classifications')->name('classifications.')->group(function() {
                 Route::get('/', [ClassificationController::class, 'index'])->name('index');
+                Route::delete('/{id}/delete', [ClassificationController::class, 'delete'])->name('delete');
             });
         });
     });
