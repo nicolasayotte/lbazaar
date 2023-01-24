@@ -20,6 +20,7 @@ class StatusSeeder extends Seeder
             Status::PENDING,
             Status::APPROVED,
             Status::DENIED,
+            Status::DRAFT,
             Status::PUBLISHED,
             Status::COMPLETED
         ];

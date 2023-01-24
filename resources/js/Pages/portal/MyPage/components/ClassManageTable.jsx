@@ -9,10 +9,11 @@ const ClassManageTable = ({ data }) => {
     const displayTableData = rows => rows.map((row, index) => {
 
         const statusColors = {
-            'Pending' : 'default',
-            'Approved': 'success',
-            'Denied'  : 'error'
+            'Draft' : 'default',
+            'Published': 'primary',
+            'Completed'  : 'success'
         }
+
 
         return (
             <TableRow key={index}>
@@ -20,7 +21,9 @@ const ClassManageTable = ({ data }) => {
                 <TableCell children={row.type}/>
                 <TableCell children={row.category}/>
                 <TableCell sx={{ whiteSpace: 'nowrap'}} align="center" children={row.publishedDate}/>
-                <TableCell children={row.status}/>
+                <TableCell  align="center">
+                    <Chip size="small" label={row.status} color={statusColors[row.status]}/>
+                </TableCell>
                 <TableCell sx={{ whiteSpace: 'nowrap'}} align="center">
                     <Stack direction="row" spacing={1} justifyContent="center">
                         <Link title="Manage class" href={getRoute('admin.class.applications.view', { id: row.id })}>

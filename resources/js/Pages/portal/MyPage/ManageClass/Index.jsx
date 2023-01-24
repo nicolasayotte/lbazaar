@@ -19,9 +19,7 @@ const Index = () => {
     ]
 
     const statusOptions = [
-        { name: 'Pending', value: 'pending' },
-        { name: 'Denied', value: 'denied' },
-        { name: 'Approved', value: 'approved' },
+        { name: 'Draft', value: 'draft' },
         { name: 'Published', value: 'published' },
         { name: 'Completed', value: 'completed' },
     ]

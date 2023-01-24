@@ -23,7 +23,7 @@ class CourseSeeder extends Seeder
                                         ->limit(10)
                                         ->get();
 
-        $statuses  = Status::whereIn('name', ['published', 'completed'])->get()->toArray();
+        $statuses  = Status::whereIn('name', ['draft', 'published', 'completed'])->get()->toArray();
 
         foreach ($applications as $application) {
             Course::factory()
