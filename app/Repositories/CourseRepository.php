@@ -2,10 +2,12 @@
 
 namespace App\Repositories;
 
+use App\Data\CourseManageData;
 use App\Models\Course;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CourseRepository extends BaseRepository
 {
@@ -63,6 +65,39 @@ class CourseRepository extends BaseRepository
                          ->orWhere('description', 'like', '%' . $request->get('search_text') . '%'));
             })
             ->paginate(self::PER_PAGE)->withQueryString();
+    }
+
+    public function getMyCourses($filters)
+    {
+        $sortFilterArr = explode(':', @$filters['sort'] ?? 'course_contents.schedule_datetime:desc');
+
+        $sortBy    = $sortFilterArr[0];
+        $sortOrder = $sortFilterArr[1];
+
+
+        return $this->model->select('statuses.*', 'courses.*', 'course_contents.schedule_datetime' )
+            ->where('professor_id', Auth::user()->id)
+            ->where(function($q) use($filters) {
+                return $q->where('courses.title', 'LIKE', '%'. @$filters['keyword'] .'%');
+            })
+            ->when(@$filters['course_type'], function($q) use($filters) {
+                return $q->where('course_type_id', @$filters['course_type']);
+            })
+            ->when(@$filters['category'], function($q) use($filters) {
+                return $q->where('course_category_id', @$filters['category']);
+            })
+            ->when(@$filters['status'], function($q) use($filters) {
+                return $q->where('statuses.name', $filters['status']);
+            })
+            ->join('statuses', 'statuses.id', '=', 'courses.status_id')
+            ->join('course_contents', function ($join) {
+                $join->on('course_contents.id', '=', DB::raw('(SELECT id FROM course_contents WHERE course_contents.course_id = courses.id LIMIT 1)'));
+            })
+            ->orderBy($sortBy, $sortOrder)
+            ->paginate(self::PER_PAGE)->withQueryString()
+            ->through(function($histories) {
+                return CourseManageData::fromModel($histories);
+            });
     }
 
     public function findById($id)

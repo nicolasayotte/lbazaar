@@ -19,7 +19,9 @@ class StatusSeeder extends Seeder
         $statuses = [
             Status::PENDING,
             Status::APPROVED,
-            Status::DENIED
+            Status::DENIED,
+            Status::PUBLISHED,
+            Status::COMPLETED
         ];
 
         foreach ($statuses as $status) {

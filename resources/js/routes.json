@@ -53,5 +53,6 @@
     "mypage.course.applications.index": "\/mypage\/class-application",
     "mypage.course.applications.create": "\/mypage\/class-application\/create",
     "mypage.course.applications.view": "\/mypage\/class-application\/details\/{id}",
-    "mypage.course.applications.generate": "\/mypage\/class-application\/generate"
+    "mypage.course.applications.generate": "\/mypage\/class-application\/generate",
+    "mypage.course.manage_class.index": "\/mypage\/manage-class"
 }

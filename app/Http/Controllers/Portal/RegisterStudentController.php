@@ -5,17 +5,17 @@ namespace App\Http\Controllers\Portal;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterStudentRequest;
 use App\Mail\EmailNotification;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
 use App\Models\Country;
-use App\Models\User;
 use App\Models\Role;
-use Inertia\Inertia;
-use Illuminate\Support\Facades\Hash;
+use App\Models\User;
+use Exception;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
-use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Inertia\Inertia;
 
 class RegisterStudentController extends Controller
 {
@@ -24,15 +24,17 @@ class RegisterStudentController extends Controller
         $countries = Country::all();
 
         return Inertia::render('Portal/RegisterStudent', [
-            'countries' => $countries
+            'countries' => $countries,
+            'title'     => 'Sign Up'
         ])->withViewData([
-            'title' => 'Sign Up'
+            'title'     => 'Sign Up'
         ]);
     }
 
     public function verifyEmail()
     {
         return Inertia::render('Portal/Registration/VerifyEmail', [
+            'title' => 'Email Verification'
         ])->withViewData([
             'title' => 'Email Verification'
         ]);

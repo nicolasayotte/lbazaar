@@ -12,4 +12,6 @@ class Status extends Model
     public const PENDING  = 'pending';
     public const APPROVED = 'approved';
     public const DENIED   = 'denied';
+    public const PUBLISHED   = 'published';
+    public const COMPLETED   = 'completed';
 }

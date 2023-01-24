@@ -33,7 +33,8 @@ class CourseFeedbackController extends Controller
 
         return Inertia::render('Portal/CourseFeedback', [
             'course'    => $this->courseRepository->findOrFail($course_id)->load('professor'),
-            'feedback'  => $this->courseFeedbackRepository->findByUserAndCourseID(Auth::user()->id, $course_id)
+            'feedback'  => $this->courseFeedbackRepository->findByUserAndCourseID(Auth::user()->id, $course_id),
+            'title'     => 'Class Feedback'
         ])->withViewData([
             'title'     => 'Class Feedback'
         ]);
