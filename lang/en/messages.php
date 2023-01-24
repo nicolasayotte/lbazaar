@@ -44,6 +44,7 @@ return [
             'create' => 'Category successfully created'
         ],
         'classification' => [
+            'update' => 'Classification successfully updated',
             'delete' => 'Classification successfully deleted',
             'create' => 'Classification successfully created'
         ]

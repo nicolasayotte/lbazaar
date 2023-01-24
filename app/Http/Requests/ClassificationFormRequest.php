@@ -27,12 +27,18 @@ class ClassificationFormRequest extends FormRequest
      */
     public function rules()
     {
+        $uniqueRule = Rule::unique('classifications', 'name')->where(function ($query) {
+            return $query->where('deleted_at', NULL);
+        });
+
+        if (@$this->id) {
+            $uniqueRule->ignore($this->id);
+        }
+
         return [
             'name' => [
                 'required',
-                Rule::unique('classifications', 'name')->where(function ($query) {
-                    return $query->where('deleted_at', NULL);
-                })
+                $uniqueRule
             ],
             'commision_rate' => 'required|numeric|min:1|max:100'
         ];
@@ -61,14 +67,16 @@ class ClassificationFormRequest extends FormRequest
      */
     protected function failedValidation(Validator $validator)
     {
-        if (@$this->id) {
-            $this->validator->errors()->add('id', $this->id);
-        }
-
-        $this->validator->errors()->add($this->action, [
+        $errorValues = [
             'name' => $this->name,
             'commision_rate' => $this->commision_rate
-        ]);
+        ];
+
+        if (@$this->id) {
+            $errorValues['id'] = $this->id;
+        }
+
+        $this->validator->errors()->add('values', $errorValues);
 
         throw (new ValidationException($validator))
                     ->errorBag($this->errorBag)

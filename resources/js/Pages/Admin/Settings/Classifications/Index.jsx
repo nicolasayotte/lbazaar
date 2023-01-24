@@ -17,6 +17,8 @@ const Index = () => {
 
     const { classifications, messages, errors } = usePage().props
 
+    const [hideErrorMessages, setHideErrorMessages] = useState(false)
+
     const [dialog, setDialog] = useState({
         open: false,
         method: '',
@@ -31,13 +33,9 @@ const Index = () => {
         commision_rate: ''
     })
 
-    const handleOnCreate = (name = '', commision_rate = '') => {
+    const handleOnCreate = (name, commision_rate) => {
 
-        setData(data => ({
-            ...data,
-            name,
-            commision_rate
-        }))
+        setDialogFormValues(name, commision_rate, 'create')
 
         setDialog(dialog => ({
             ...dialog,
@@ -46,6 +44,45 @@ const Index = () => {
             method: 'post',
             action: 'create',
             submitUrl: routes["admin.settings.classifications.store"]
+        }))
+    }
+
+    const handleOnEditRow = (id, name, commision_rate) => {
+
+        // Check if editing same id, then hide error message
+        setHideErrorMessages(errors.update && errors.update.values && errors.update.values.id && errors.update.values.id != id)
+
+        setDialogFormValues(name, commision_rate, 'update', id)
+
+        setDialog(dialog => ({
+            ...dialog,
+            title: 'Edit Classification',
+            open: true,
+            method: 'patch',
+            action: 'update',
+            submitUrl: getRoute('admin.settings.classifications.update', { id })
+        }))
+    }
+
+    const setDialogFormValues = (name, commision_rate, action, id = null) => {
+        // Check if has error values then set
+        if (errors[action] && errors[action].values && Object.keys(errors[action].values).length > 0) {
+
+            const { name: name_value, commision_rate: commision_rate_value } = errors[action].values
+
+            if (
+                id !== null && errors[action].values.id == id ||
+                id === null
+            ) {
+                name = name_value || name
+                commision_rate = commision_rate_value || commision_rate
+            }
+        }
+
+        setData(data => ({
+            ...data,
+            name,
+            commision_rate
         }))
     }
 
@@ -82,6 +119,7 @@ const Index = () => {
                 ...data,
                 action: dialog.action
             },
+            errorBag: dialog.action,
             onSuccess: () => dispatch(actions.success({
                 message: messages.success.classification[dialog.action]
             })),
@@ -99,7 +137,7 @@ const Index = () => {
                     name="name"
                     value={data.name}
                     onChange={e => handleOnChange(e, setData)}
-                    errors={errors}
+                    errors={hideErrorMessages ? {} : errors[dialog.action]}
                 />
             </Box>
             <Input
@@ -108,7 +146,7 @@ const Index = () => {
                 name="commision_rate"
                 value={data.commision_rate}
                 onChange={e => handleOnChange(e, setData)}
-                errors={errors}
+                errors={hideErrorMessages ? {} : errors[dialog.action]}
                 inputProps={{
                     inputMode: 'numeric',
                     pattern: '[0-9]*',
@@ -121,10 +159,19 @@ const Index = () => {
 
     useEffect(() => {
         // If errors on create submit
-        if (errors.create && Object.keys(errors.create).length > 0) {
-            const { name, commision_rate } = errors.create
+        if (errors.create && errors.create.values && Object.keys(errors.create.values).length > 0) {
+            const { name, commision_rate } = errors.create.values
 
             handleOnCreate(name || '', commision_rate || '')
+
+            return
+        }
+
+        // If errors on update submit
+        if (errors.update && errors.update.values && Object.keys(errors.update.values).length > 0) {
+            const { id, name, commision_rate } = errors.update.values
+
+            handleOnEditRow(id || '', name || '', commision_rate || '')
 
             return
         }
@@ -147,6 +194,7 @@ const Index = () => {
             <ClassificationTable
                 data={classifications}
                 handleOnDeleteRow={handleOnDeleteRow}
+                handleOnEditRow={handleOnEditRow}
             />
             <Dialogs
                 dialog={dialog}

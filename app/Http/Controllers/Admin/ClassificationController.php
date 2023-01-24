@@ -36,6 +36,15 @@ class ClassificationController extends Controller
         return redirect()->back();
     }
 
+    public function update($id, ClassificationFormRequest $request)
+    {
+        $classification = $this->classificationRepository->findOrFail($id);
+
+        $classification->update($request->all());
+
+        return redirect()->back();
+    }
+
     public function delete($id)
     {
         $this->classificationRepository->destroy(@$id);

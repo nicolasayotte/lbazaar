@@ -2,7 +2,7 @@ import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow
 import EmptyCard from "../../../../../components/common/EmptyCard"
 import ClassificationTableRow from "./ClassificationTableRow"
 
-const ClassificationTable = ({ data, handleOnDeleteRow }) => {
+const ClassificationTable = ({ data, handleOnDeleteRow, handleOnEditRow }) => {
 
     const displayTableData = data => data.map((row, index) => (
         <ClassificationTableRow
@@ -10,6 +10,7 @@ const ClassificationTable = ({ data, handleOnDeleteRow }) => {
             index={index}
             key={index}
             handleOnDeleteRow={handleOnDeleteRow}
+            handleOnEditRow={handleOnEditRow}
         />
     ))
 
