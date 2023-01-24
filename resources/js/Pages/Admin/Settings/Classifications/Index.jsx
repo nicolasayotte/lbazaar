@@ -1,37 +1,52 @@
 import { useForm, usePage } from "@inertiajs/inertia-react"
 import { Add } from "@mui/icons-material"
 import { Box, Button, Stack, Typography } from "@mui/material"
-import { useState } from "react"
-import ConfirmationDialog from "../../../../components/common/ConfirmationDialog"
+import { useEffect, useState } from "react"
 import ClassificationTable from "./components/ClassificationTable"
-import { getRoute } from "../../../../helpers/routes.helper"
+import routes, { getRoute } from "../../../../helpers/routes.helper"
 import { useDispatch } from "react-redux"
 import { actions } from "../../../../store/slices/ToasterSlice"
-import TableLoader from "../../../../components/common/TableLoader"
 import { Inertia } from "@inertiajs/inertia"
+import Dialogs from "./components/Dialogs"
+import Input from "../../../../components/forms/Input"
+import { handleOnChange } from "../../../../helpers/form.helper"
 
 const Index = () => {
 
     const dispatch = useDispatch()
 
-    const { classifications, messages } = usePage().props
+    const { classifications, messages, errors } = usePage().props
 
     const [dialog, setDialog] = useState({
         open: false,
+        method: '',
         title: '',
         text: '',
         submitUrl: '',
         deleteIndex: null
     })
 
-    const { data, setData, transform, delete: deleteRequest } = useForm('ClassificationForm', {
-        classifications
-    })
-
-    const classificationBlueprint = {
-        id: '',
+    const { data, setData } = useForm('ClassificationForm', {
         name: '',
         commision_rate: ''
+    })
+
+    const handleOnCreate = (name = '', commision_rate = '') => {
+
+        setData(data => ({
+            ...data,
+            name,
+            commision_rate
+        }))
+
+        setDialog(dialog => ({
+            ...dialog,
+            title: 'Create Classification',
+            open: true,
+            method: 'post',
+            action: 'create',
+            submitUrl: routes["admin.settings.classifications.store"]
+        }))
     }
 
     const handleOnDeleteRow = (id, index) => {
@@ -41,25 +56,14 @@ const Index = () => {
 
         setDialog(dialog => ({
             ...dialog,
-            open: true,
             title: 'Delete Classification',
+            method: 'delete',
+            action: 'delete',
+            open: true,
             text: messages.confirm.classification.delete,
             deleteIndex,
             submitUrl
         }))
-    }
-
-    const handleOnDialogConfirm = () => {
-
-        Inertia.delete(dialog.submitUrl, {
-            preserveState: true,
-            onSuccess: () => dispatch(actions.success({
-                message: messages.success.classification.delete
-            })),
-            onError: () => dispatch(actions.error({
-                message: messages.error
-            }))
-        })
     }
 
     const handleOnDialogClose = () => {
@@ -68,6 +72,63 @@ const Index = () => {
             open: false
         }))
     }
+
+    const handleOnDialogSubmit = e => {
+        e.preventDefault()
+
+        Inertia.visit(dialog.submitUrl, {
+            method: dialog.method,
+            data: {
+                ...data,
+                action: dialog.action
+            },
+            onSuccess: () => dispatch(actions.success({
+                message: messages.success.classification[dialog.action]
+            })),
+            onError: () => dispatch(actions.error({
+                message: messages.error
+            }))
+        })
+    }
+
+    const dialogFormInputs = (
+        <>
+            <Box mb={2}>
+                <Input
+                    placeholder="Classification name"
+                    name="name"
+                    value={data.name}
+                    onChange={e => handleOnChange(e, setData)}
+                    errors={errors}
+                />
+            </Box>
+            <Input
+                type="number"
+                placeholder="Commission rate (%)"
+                name="commision_rate"
+                value={data.commision_rate}
+                onChange={e => handleOnChange(e, setData)}
+                errors={errors}
+                inputProps={{
+                    inputMode: 'numeric',
+                    pattern: '[0-9]*',
+                    min: 1,
+                    max: 100
+                }}
+            />
+        </>
+    )
+
+    useEffect(() => {
+        // If errors on create submit
+        if (errors.create && Object.keys(errors.create).length > 0) {
+            const { name, commision_rate } = errors.create
+
+            handleOnCreate(name || '', commision_rate || '')
+
+            return
+        }
+    }, [errors])
 
     return (
         <Box>
@@ -80,16 +141,18 @@ const Index = () => {
                     children="Create Classification"
                     variant="contained"
                     startIcon={<Add />}
+                    onClick={() => handleOnCreate('', '')}
                 />
             </Stack>
             <ClassificationTable
                 data={classifications}
                 handleOnDeleteRow={handleOnDeleteRow}
             />
-            <ConfirmationDialog
-                {...dialog}
+            <Dialogs
+                dialog={dialog}
                 handleClose={handleOnDialogClose}
-                handleConfirm={handleOnDialogConfirm}
+                handleSubmit={handleOnDialogSubmit}
+                inputs={dialogFormInputs}
             />
         </Box>
     )

@@ -102,6 +102,7 @@ Route::prefix('admin')->name('admin.')->group(function() {
 
             Route::prefix('classifications')->name('classifications.')->group(function() {
                 Route::get('/', [ClassificationController::class, 'index'])->name('index');
+                Route::post('/', [ClassificationController::class, 'store'])->name('store');
                 Route::delete('/{id}/delete', [ClassificationController::class, 'delete'])->name('delete');
             });
         });

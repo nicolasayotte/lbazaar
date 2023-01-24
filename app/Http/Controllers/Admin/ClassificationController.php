@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ClassificationFormRequest;
 use App\Repositories\ClassificationRepository;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -26,6 +27,13 @@ class ClassificationController extends Controller
         ])->withViewData([
             'title' => $this->title
         ]);
+    }
+
+    public function store(ClassificationFormRequest $request)
+    {
+        $this->classificationRepository->create($request->all());
+
+        return redirect()->back();
     }
 
     public function delete($id)
