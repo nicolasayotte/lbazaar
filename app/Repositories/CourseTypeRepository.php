@@ -12,7 +12,7 @@ class CourseTypeRepository extends BaseRepository
         parent::__construct(new CourseType());
     }
 
-    public function getKeyValuePairs()
+    public function pluckById()
     {
         return $this->model->all()->pluck('name', 'id');
     }
