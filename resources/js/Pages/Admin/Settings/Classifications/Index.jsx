@@ -24,8 +24,7 @@ const Index = () => {
         method: '',
         title: '',
         text: '',
-        submitUrl: '',
-        deleteIndex: null
+        submitUrl: ''
     })
 
     const { data, setData } = useForm('ClassificationForm', {
@@ -86,10 +85,7 @@ const Index = () => {
         }))
     }
 
-    const handleOnDeleteRow = (id, index) => {
-        let submitUrl = id === '' ? '' : getRoute('admin.settings.classifications.delete', { id })
-
-        let deleteIndex = id === '' ? index : ''
+    const handleOnDeleteRow = (id) => {
 
         setDialog(dialog => ({
             ...dialog,
@@ -98,8 +94,7 @@ const Index = () => {
             action: 'delete',
             open: true,
             text: messages.confirm.classification.delete,
-            deleteIndex,
-            submitUrl
+            submitUrl: getRoute('admin.settings.classifications.delete', { id })
         }))
     }
 

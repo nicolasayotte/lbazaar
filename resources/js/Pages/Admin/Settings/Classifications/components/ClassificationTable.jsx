@@ -7,7 +7,6 @@ const ClassificationTable = ({ data, handleOnDeleteRow, handleOnEditRow }) => {
     const displayTableData = data => data.map((row, index) => (
         <ClassificationTableRow
             data={row}
-            index={index}
             key={index}
             handleOnDeleteRow={handleOnDeleteRow}
             handleOnEditRow={handleOnEditRow}

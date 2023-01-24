@@ -1,7 +1,7 @@
 import { Delete, Edit } from "@mui/icons-material"
 import { IconButton, Stack, TableCell, TableRow } from "@mui/material"
 
-const ClassificationTableRow = ({ data, index, handleOnDeleteRow, handleOnEditRow }) => {
+const ClassificationTableRow = ({ data, handleOnDeleteRow, handleOnEditRow }) => {
     return (
         <TableRow>
             <TableCell children={data.name} />
@@ -18,7 +18,7 @@ const ClassificationTableRow = ({ data, index, handleOnDeleteRow, handleOnEditRo
                     <IconButton
                         title="Delete"
                         size="small"
-                        onClick={() => handleOnDeleteRow(data.id, index)}
+                        onClick={() => handleOnDeleteRow(data.id)}
                     >
                         <Delete color="error" fontSize="inherit" />
                     </IconButton>
