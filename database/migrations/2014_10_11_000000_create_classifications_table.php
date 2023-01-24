@@ -17,6 +17,8 @@ return new class extends Migration
             $table->id();
             $table->string('name', 100);
             $table->double('commision_rate');
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 

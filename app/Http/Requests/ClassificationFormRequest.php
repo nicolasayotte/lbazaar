@@ -2,13 +2,13 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Role;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
-use Inertia\Inertia;
 
-class CategoryFormRequest extends FormRequest
+class ClassificationFormRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -17,7 +17,7 @@ class CategoryFormRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return auth()->user() && auth()->user()->hasRole(Role::ADMIN);
     }
 
     /**
@@ -27,16 +27,32 @@ class CategoryFormRequest extends FormRequest
      */
     public function rules()
     {
-        $uniqueRule = Rule::unique('course_categories', 'name');
+        $uniqueRule = Rule::unique('classifications', 'name')->where(function ($query) {
+            return $query->where('deleted_at', NULL);
+        });
 
-        if (@$this->id) $uniqueRule->ignore($this->id);
+        if (@$this->id) {
+            $uniqueRule->ignore($this->id);
+        }
 
         return [
             'name' => [
                 'required',
-                'alpha_spaces',
                 $uniqueRule
-            ]
+            ],
+            'commision_rate' => 'required|numeric|min:1|max:100'
+        ];
+    }
+
+    /**
+     * Set custom attributes for messages
+     *
+     * @return array
+    */
+    public function attributes()
+    {
+        return [
+            'commision_rate' => 'commission rate'
         ];
     }
 
@@ -52,11 +68,12 @@ class CategoryFormRequest extends FormRequest
     protected function failedValidation(Validator $validator)
     {
         $errorValues = [
-            'name' => $this->name
+            'name' => $this->name,
+            'commision_rate' => $this->commision_rate
         ];
 
         if (@$this->id) {
-            $errorValues['id'] = @$this->id;
+            $errorValues['id'] = $this->id;
         }
 
         $this->validator->errors()->add('values', $errorValues);

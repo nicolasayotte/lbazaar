@@ -85,7 +85,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function classification()
     {
-        return $this->belongsTo(Classifications::class, 'classification_id');
+        return $this->belongsTo(Classifications::class, 'classification_id')->withTrashed();
     }
 
     public function feedbacks()

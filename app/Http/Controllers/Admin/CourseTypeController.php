@@ -23,7 +23,7 @@ class CourseTypeController extends Controller
     {
         return Inertia::render('Admin/Settings/CourseTypes/Index', [
             'title' => $this->title,
-            'types' => $this->courseTypeRepository->getKeyValuePairs()
+            'types' => $this->courseTypeRepository->pluckById()
         ])->withViewData([
             'title' => $this->title
         ]);

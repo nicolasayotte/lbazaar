@@ -64,8 +64,9 @@ const AdminNavbar = ({ drawerWidth, window }) => {
         },
         {
             name: 'Classifications',
-            link: '',
-            icon: <ManageAccounts />
+            link: routes["admin.settings.classifications.index"],
+            icon: <ManageAccounts />,
+            active: component.startsWith('Admin/Settings/Classifications')
         }
     ]
 
