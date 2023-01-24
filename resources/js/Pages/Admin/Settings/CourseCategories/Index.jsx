@@ -26,6 +26,8 @@ const Index = () => {
 
     const { categories, keyword, sort, page, errors, messages } = usePage().props
 
+    const [hideErrorMessages, setHideErrorMessages] = useState(false)
+
     const [dialog, setDialog] = useState({
         open: false,
         title: '',
@@ -61,14 +63,11 @@ const Index = () => {
 
     const handleOnCreate = (value) => {
 
-        // If the error message is from edit category, then delete
-        if (errors.category_value !== undefined && errors.category_id !== undefined) {
-            delete errors.name
-        }
+        const inputValue = (errors.create && errors.create.values && errors.create.values.name) ? errors.create.values.name : value
 
         setDialog(dialog => ({
             ...dialog,
-            value: value ?? '',
+            value: inputValue,
             open: true,
             title: 'Create Category',
             submitUrl: routes["admin.settings.categories.store"],
@@ -80,15 +79,10 @@ const Index = () => {
     const handleOnEdit = (id, value) => {
 
         // Check if editing the same category that has an error, then set value as the one previously submitted
-        const inputValue = (errors.category_id !== undefined && errors.category_id == id) ? errors.category_value : value
+        const inputValue = (errors.update && errors.update.values && errors.update.values.name) ? errors.update.values.name : value
 
         // Check if the selected category was the one that has an error, otherwise delete errors.name
-        if (
-            errors.category_id !== undefined && errors.category_id != id ||
-            errors.category_value !== undefined && errors.category_id === undefined
-        ) {
-            delete errors.name
-        }
+        setHideErrorMessages(errors.update && errors.update.values && errors.update.values.id && errors.update.values.id != id)
 
         setDialog(dialog => ({
             ...dialog,
@@ -128,7 +122,7 @@ const Index = () => {
             data: {
                 name: dialog.value
             },
-            preserveState: true,
+            errorBag: dialog.action,
             onBefore: () => {
                 setDialog(dialog => ({
                     ...dialog,
@@ -153,20 +147,26 @@ const Index = () => {
                 ...dialog,
                 value: e.target.value
             }))}
-            errors={errors}
+            errors={hideErrorMessages ? {} : errors[dialog.action]}
         />
     )
 
     useEffect(() => {
         // If errors on edit submit
-        if (errors.name !== undefined && errors.category_id !== undefined) {
-            handleOnEdit(errors.category_id, errors.category_value)
+        if (errors.update && errors.update.values && Object.keys(errors.update.values).length > 0) {
+            const { name, id } = errors.update.values
+
+            handleOnEdit(id, name || '')
+
             return
         }
 
         // If errors on create submit
-        if (errors.name !== undefined && errors.category_value !== undefined) {
-            handleOnCreate(errors.category_value)
+        if (errors.create && errors.create.values && Object.keys(errors.create.values).length > 0) {
+            const { name } = errors.create.values
+
+            handleOnCreate(name || '')
+
             return
         }
     }, [errors])

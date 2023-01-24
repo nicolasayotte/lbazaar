@@ -51,11 +51,15 @@ class CategoryFormRequest extends FormRequest
      */
     protected function failedValidation(Validator $validator)
     {
+        $errorValues = [
+            'name' => $this->name
+        ];
+
         if (@$this->id) {
-            $this->validator->errors()->add('category_id', $this->id);
+            $errorValues['id'] = @$this->id;
         }
 
-        $this->validator->errors()->add('category_value', $this->name);
+        $this->validator->errors()->add('values', $errorValues);
 
         throw (new ValidationException($validator))
                     ->errorBag($this->errorBag)

@@ -115,10 +115,7 @@ const Index = () => {
 
         Inertia.visit(dialog.submitUrl, {
             method: dialog.method,
-            data: {
-                ...data,
-                action: dialog.action
-            },
+            data,
             errorBag: dialog.action,
             onSuccess: () => dispatch(actions.success({
                 message: messages.success.classification[dialog.action]
