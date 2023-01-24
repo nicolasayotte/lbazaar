@@ -17,7 +17,7 @@ class CourseFactory extends Factory
     public function definition()
     {
         return [
-            'image_thumbnail' => fake()->imageUrl(null, 640, 480)
+            'image_thumbnail' => 'https://picsum.photos/id/'.(fake()->numberBetween(100, 140)).'/1000/650'
         ];
     }
 }
