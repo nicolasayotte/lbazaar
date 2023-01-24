@@ -27,9 +27,10 @@ class TopPageController extends Controller
         return Inertia::render('Portal/TopPage', [
                 'courses'           => $featuredClasses,
                 'upcomingCourses'   => $featuredCourseContent,
-                'teachers'          => $featuredTeachers
+                'teachers'          => $featuredTeachers,
+                'title'             => 'Welcome to LE BAZAAR',
             ])->withViewData([
-                'title'       => 'Laravel',
+                'title'       => 'Welcome to LE BAZAAR',
                 'description' => 'Top page Screen'
             ]);
     }

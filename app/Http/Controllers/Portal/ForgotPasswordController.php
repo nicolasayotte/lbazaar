@@ -19,10 +19,12 @@ class ForgotPasswordController extends Controller
     {
         $this->userRepository = new UserRepository();
     }
-    
+
     public function index()
     {
-        return Inertia::render('Portal/ForgotPassword')->withViewData([
+        return Inertia::render('Portal/ForgotPassword', [
+                'title'       => 'Forgot Password'
+            ])->withViewData([
                 'title'       => 'Forgot Password',
                 'description' => 'forgot password'
             ]);
@@ -33,14 +35,17 @@ class ForgotPasswordController extends Controller
         $status = Password::sendResetLink(
             $request->only('email')
         );
-    
+
         return $status === Password::RESET_LINK_SENT
                     ? back()->with(['status' => __($status)])
                     : back()->withErrors(['email' => __($status)]);
     }
 
     public function passwordReset($token) {
-        return Inertia::render('Portal/ResetPassword', ['token' => $token])->withViewData([
+        return Inertia::render('Portal/ResetPassword', [
+            'token'       => $token,
+            'title'       => 'Reset Password',
+        ])->withViewData([
             'title'       => 'Reset Password',
             'description' => 'resetting the password',
         ]);
@@ -57,7 +62,7 @@ class ForgotPasswordController extends Controller
                 $user->save();
             }
         );
-     
+
         return $status === Password::PASSWORD_RESET
                     ? redirect()->route('portal.login')->with('status', __($status))
                     : back()->withErrors(['email' => [__($status)]]);

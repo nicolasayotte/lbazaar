@@ -15,7 +15,9 @@ class InquiriesController extends Controller
 {
     public function index()
     {
-        return Inertia::render('Portal/Inquiries', [])->withViewData([
+        return Inertia::render('Portal/Inquiries', [
+            'title' => 'Inquiries'
+        ])->withViewData([
             'title' => 'Inquiries'
         ]);
     }

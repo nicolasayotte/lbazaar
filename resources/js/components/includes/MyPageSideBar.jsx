@@ -1,11 +1,13 @@
 
 import routes from "../../helpers/routes.helper"
-import { Typography, Container, Box, Grid, Card, CardContent, List, Divider, IconButton, Drawer, Toolbar, ListItem, ListItemButton} from "@mui/material"
+import { Typography, Container, Box, Grid, Card, List, IconButton, Drawer, ListItem, ListItemButton, ListItemIcon} from "@mui/material"
+import { Article, Logout, History, MenuBook, ManageAccounts, Menu } from "@mui/icons-material"
 import { useState } from "react"
-import { Menu } from "@mui/icons-material"
-import { Link } from "@inertiajs/inertia-react"
+import { Link, usePage } from "@inertiajs/inertia-react"
 
 const MyPage = ({ page }) => {
+
+    const { component } = usePage()
 
     const container = page.props.window !== undefined ? () => window().document.body : undefined;
 
@@ -23,22 +25,30 @@ const MyPage = ({ page }) => {
         {
             name: 'Profile',
             link: routes["mypage.profile.index"],
-            roles: ['student', 'teacher']
+            roles: ['student', 'teacher'],
+            active: component.startsWith('Portal/MyPage/Profile'),
+            icon: <ManageAccounts />
         },
         {
             name: 'Class Application',
             link: routes["mypage.course.applications.index"],
-            roles: ['teacher']
+            roles: ['teacher'],
+            active: component.startsWith('Portal/MyPage/ClassApplication'),
+            icon: <Article />,
         },
         {
             name: 'Manage Classes',
-            link: '',
-            roles: ['teacher']
+            link: routes["mypage.course.manage_class.index"],
+            roles: ['teacher'],
+            active: component.startsWith('Portal/MyPage/ManageClass'),
+            icon: <MenuBook />,
         },
         {
             name: 'Class Histories',
             link: routes["mypage.course.history.index"],
-            roles: ['student', 'teacher']
+            roles: ['student', 'teacher'],
+            active: component.startsWith('Portal/MyPage/CourseHistory'),
+            icon: <History />,
         }
     ]
 
@@ -50,7 +60,11 @@ const MyPage = ({ page }) => {
                   });
                 return isAccessible ?
                         <ListItem key={item.name}>
-                            <ListItemButton>
+                            <ListItemButton selected={item.active}>
+                                {
+                                    item.icon &&
+                                    <ListItemIcon children={item.icon} />
+                                }
                                 <Link
                                     as="span"
                                     href={item.link}
@@ -69,6 +83,7 @@ const MyPage = ({ page }) => {
 
     const logoutBtn = (
         <ListItemButton>
+            <ListItemIcon children={<Logout />} />
             <Link
                 as="span"
                 method="post"

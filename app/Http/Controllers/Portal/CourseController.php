@@ -55,7 +55,8 @@ class CourseController extends Controller
                 'type_id'               => @$request['type_id'] ?? '',
                 'status'                => @$request['status'] ?? '',
                 'language'              => @$request['language'] ?? '',
-                'professor_id'          => @$request['professor_id'] ?? ''
+                'professor_id'          => @$request['professor_id'] ?? '',
+                'title'                 => 'Browse Courses'
             ])->withViewData([
                 'title'       => 'Browse Courses',
                 'description' => 'Course Lists'
@@ -71,7 +72,8 @@ class CourseController extends Controller
             'course'            => $course,
             'contents'          => $contents,
             'isBooked'          => Auth::user()->isCourseBooked($id),
-            'hasFeedback'       => Auth::user()->hasFeedback($id)
+            'hasFeedback'       => Auth::user()->hasFeedback($id),
+            'title'             => 'Course - ' . $course->title,
         ])->withViewData([
             'title'       => 'Course - ' . $course->title,
             'description' => 'Course Details'
