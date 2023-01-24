@@ -20,6 +20,7 @@ return new class extends Migration
             $table->longtext('description');
             $table->string('video_path')->nullable();
             $table->string('zoom_link')->nullable();
+            $table->text('image_thumbnail')->nullable();
             $table->integer('sort');
             $table->boolean('is_live');
             $table->integer('max_participant');
