@@ -1,7 +1,7 @@
 
 import routes from "../../helpers/routes.helper"
-import { Typography, Container, Box, Grid, Card, CardContent, List, Divider, IconButton, Drawer, Toolbar, ListItem, ListItemButton, ListItemIcon} from "@mui/material"
-import { Article, Logout, History, MenuBook, ExpandMore, Inbox, LibraryBooks, LocalOffer, Mail, ManageAccounts, Menu, People, Settings } from "@mui/icons-material"
+import { Typography, Container, Box, Grid, Card, List, IconButton, Drawer, ListItem, ListItemButton, ListItemIcon} from "@mui/material"
+import { Article, Logout, History, MenuBook, ManageAccounts, Menu } from "@mui/icons-material"
 import { useState } from "react"
 import { Link, usePage } from "@inertiajs/inertia-react"
 
