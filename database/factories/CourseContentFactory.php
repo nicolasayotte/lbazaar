@@ -19,7 +19,7 @@ class CourseContentFactory extends Factory
     {
         return [
             'title'           => fake()->sentence(),
-            'description'     => fake()->paragraph(4),
+            'description'     => fake()->sentences(2, true),
             'zoom_link'       => fake()->url(),
             'image_thumbnail' => 'https://picsum.photos/id/'.(fake()->numberBetween(100, 140)).'/1000/650',
             'is_live'         => true,
