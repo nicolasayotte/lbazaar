@@ -1,4 +1,4 @@
-import { Box, Grid, Typography, Card, CardContent, Container, Divider, Chip, Paper } from "@mui/material";
+import { Box, Grid, Typography, Card, CardContent, Container, Divider, Chip, Paper, Button } from "@mui/material";
 import Feedback from "../../../components/cards/Feedback";
 import CourseContent from "../../../components/cards/CourseContent";
 import { usePage } from "@inertiajs/inertia-react"
@@ -43,6 +43,16 @@ const Details = () => {
         </Box>
     )
 
+    const bookButton = (
+        <Button
+            fullWidth
+            variant="contained"
+            children={`Book for ${ (course.course_type.name == 'General') ? course.price : 'Free' }`}
+            size="large"
+            sx={{ mb: 2 }}
+        />
+    )
+
     const courseTypeColors = {
         'General': 'default',
         'Earn': 'primary',
@@ -54,8 +64,14 @@ const Details = () => {
         <Box>
             {courseImage}
             <Container>
+                <Box display={{
+                    xs: 'block',
+                    md: 'none'
+                }}>
+                    {bookButton}
+                </Box>
                 <Grid container spacing={2}>
-                    <Grid item xs={12} md={ course && course.feedbacks && course.feedbacks.length > 0 ? 8 : 12 }>
+                    <Grid item xs={12} md={8}>
                         <Card sx={{ mb: 2 }}>
                             <CardContent>
                                 <Box>
@@ -77,6 +93,13 @@ const Details = () => {
                         {displayCourseContents(contents)}
                     </Grid>
                     <Grid item xs={12} md={4}>
+                        <Box display={{
+                            xs: 'none',
+                            md: 'block'
+                        }}>
+                            {bookButton}
+                        </Box>
+                        <Typography variant="h6" children="Class Feedbacks" gutterBottom />
                         {displayFeedbacks(course.feedbacks)}
                     </Grid>
                 </Grid>

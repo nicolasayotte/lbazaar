@@ -1,5 +1,5 @@
 import { Link } from "@inertiajs/inertia-react";
-import { Grid, Card, CardActions, CardContent, Button, Typography, CardMedia, Divider, Box, Chip} from "@mui/material"
+import { Grid, Card, CardContent, Button, Typography, CardMedia, Box, Chip} from "@mui/material"
 import { getRoute } from "../../helpers/routes.helper"
 
 const Course = ({ course, showDescription = true, showDate = true, viewDetailId = "id", imagePosition = "left" }) => {
@@ -25,6 +25,12 @@ const Course = ({ course, showDescription = true, showDate = true, viewDetailId 
         'Free': 'success',
         'Special': 'warning'
     }
+
+    const price = (
+        course.course_type && course.course_type.name == 'General' && course.price
+        ? <Typography children={course.price} variant="h6" />
+        : <span />
+    )
 
     return (
         <Card
@@ -62,7 +68,8 @@ const Course = ({ course, showDescription = true, showDate = true, viewDetailId 
                         { description }
                     </Grid>
                     <Grid item xs={12}>
-                        <Box textAlign="right">
+                        <Box display="flex" justifyContent="space-between" alignItems="center">
+                            { price }
                             <Link href={getRoute('course.details', {id : course[viewDetailId]})}>
                                 <Button
                                     size="small"
