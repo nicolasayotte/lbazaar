@@ -38,6 +38,18 @@ class Course extends Model
         return $this->hasMany(CourseContent::class);
     }
 
+    public function students()
+    {
+        return $this->hasManyThrough(
+            User::class,
+            CourseHistory::class,
+            'course_id',
+            'id',
+            'id',
+            'user_id'
+        );
+    }
+
     public function feedbacks()
     {
         return $this->hasMany(CourseFeedback::class)->orderBy('created_at', 'desc');

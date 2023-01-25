@@ -58,5 +58,8 @@
     "mypage.course.applications.create": "\/mypage\/class-application\/create",
     "mypage.course.applications.view": "\/mypage\/class-application\/details\/{id}",
     "mypage.course.applications.generate": "\/mypage\/class-application\/generate",
-    "mypage.course.manage_class.index": "\/mypage\/manage-class"
+    "mypage.course.manage_class.index": "\/mypage\/manage-class",
+    "mypage.course.manage_class.details": "\/mypage\/manage-class\/{id}\/details",
+    "mypage.course.manage_class.students": "\/mypage\/manage-class\/{id}\/students",
+    "mypage.course.manage_class.feedbacks": "\/mypage\/manage-class\/{id}\/feedbacks"
 }

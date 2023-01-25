@@ -26,7 +26,7 @@ const ClassManageTable = ({ data }) => {
                 </TableCell>
                 <TableCell sx={{ whiteSpace: 'nowrap'}} align="center">
                     <Stack direction="row" spacing={1} justifyContent="center">
-                        <Link title="Manage class" href={getRoute('admin.class.applications.view', { id: row.id })}>
+                        <Link title="Manage class" href={getRoute('mypage.course.manage_class.details', { id: row.id })}>
                             <IconButton size="small" color="success">
                                 <RoomPreferences fontSize="inherit"/>
                             </IconButton>

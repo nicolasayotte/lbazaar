@@ -192,6 +192,10 @@ Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function()
 
     Route::prefix('/manage-class')->name('course.manage_class.')->group(function() {
         Route::get('/', [ManageCourseController::class, 'index'])->name('index');
+        Route::prefix('/{id}')->group(function() {
+            Route::get('/details', [ManageCourseController::class, 'details'])->name('details');
+            Route::get('/students', [ManageCourseController::class, 'students'])->name('students');
+            Route::get('/feedbacks', [ManageCourseController::class, 'feedbacks'])->name('feedbacks');
+        });
     });
-
 });

@@ -50,4 +50,40 @@ class ManageCourseController extends Controller
             'title'       => 'My Page | Manage Class',
         ]);
     }
+
+    public function details($id, Request $request)
+    {
+        $course = $this->courseRepository->findByIdManageClassStudents($id);
+        return Inertia::render('Portal/MyPage/ManageClass/Details', [
+            'course'            => $course,
+            'tabValue'          => 'details',
+            'title'             => 'My Page | Manage Class '
+        ])->withViewData([
+            'title'       => 'My Page | Manage Class - ' . $course->title,
+        ]);
+    }
+
+    public function students($id, Request $request)
+    {
+        $course = $this->courseRepository->findByIdManageClassStudents($id);
+        return Inertia::render('Portal/MyPage/ManageClass/Students', [
+            'course'            => $course,
+            'tabValue'          => 'students',
+            'title'             => 'My Page | Manage Class '
+        ])->withViewData([
+            'title'       => 'My Page | Manage Class - ' . $course->title,
+        ]);
+    }
+
+    public function feedbacks($id, Request $request)
+    {
+        $course = $this->courseRepository->findByIdManageClassStudents($id);
+        return Inertia::render('Portal/MyPage/ManageClass/Feedbacks', [
+            'course'            => $course,
+            'tabValue'          => 'feedbacks',
+            'title'             => 'My Page | Manage Class '
+        ])->withViewData([
+            'title'       => 'My Page | Manage Class - ' . $course->title,
+        ]);
+    }
 }
