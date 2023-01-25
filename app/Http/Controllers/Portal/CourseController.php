@@ -44,7 +44,7 @@ class CourseController extends Controller
                 'teachers'              => $teachers,
                 'courses'               => $courses,
                 'page'                  => @$request['page'] ?? 1,
-                'month'                 => @$request['month'] ?? date('Y-m'),
+                'month'                 => @$request['month'] ?? '',
                 'search_text'           => @$request['search_text'] ?? '',
                 'category_id'           => @$request['category_id'] ?? '',
                 'type_id'               => @$request['type_id'] ?? '',
