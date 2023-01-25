@@ -5,6 +5,8 @@ import Input from "../../../components/forms/Input";
 import { displaySelectOptions, handleOnChange, handleOnSelectChange } from "../../../helpers/form.helper";
 import routes from "../../../helpers/routes.helper"
 import Header from "../../../components/common/Header";
+import CardLoader from "../../../components/common/CardLoader";
+import EmptyCard from "../../../components/common/EmptyCard"
 
 const SearchCourse = () => {
 
@@ -37,29 +39,25 @@ const SearchCourse = () => {
     }
 
     const displayCourses = (courses, showDescription = true) => {
-        if (courses.data.length > 0) {
+
+        if (courses && courses.data && courses.data.length <= 0) {
             return (
-                <>
-                    {courses.data.map(course => {
-                        return <Course showDate={true} key={course.id} course={course} viewDetailId="id" showDescription={showDescription}/>
-                    })}
-                </>
-            )
-        } else {
-            return (
-                <Typography variant="subtitle1" sx={{mt: 3}} align="center">
-                    No record found.
-                </Typography>
+                <Typography variant="h4" children="No records found" textAlign="center" sx={{ p: 4 }} />
             )
         }
+
+        return courses.data.map(course => (
+            <Course showDate={true} key={course.id} course={course} viewDetailId="id" showDescription={showDescription}/>
+        ))
     }
 
     const displayProcessing = () => {
         return (
-               <Stack spacing={1} sx={{p:2}}>
-                    <Skeleton animation="wave" variant="rounded" width='100%' height={200}/>
-                    <Skeleton animation="wave" variant="rounded" width='100%' height={200}/>
-               </Stack>
+            <>
+                <CardLoader />
+                <CardLoader />
+                <CardLoader />
+            </>
         )
     }
 
@@ -179,15 +177,18 @@ const SearchCourse = () => {
                     </Grid>
                     <Grid item xs={12} sm={8}>
                         {processing ? displayProcessing() : displayCourses(courses)}
-                        <Box display="flex" justifyContent="center">
-                            <Pagination
-                                sx={{mt: 2, justifyContent: 'center'}}
-                                onChange={handleOnPaginate}
-                                page={courses.current_page}
-                                count={courses.last_page}
-                                color="primary"
-                            />
-                        </Box>
+                        {
+                            courses && courses.data && courses.data.length > 0 &&
+                            <Box display="flex" justifyContent="center">
+                                <Pagination
+                                    sx={{mt: 2, justifyContent: 'center'}}
+                                    onChange={handleOnPaginate}
+                                    page={courses.current_page}
+                                    count={courses.last_page}
+                                    color="primary"
+                                />
+                            </Box>
+                        }
                     </Grid>
                 </Grid>
             </Container>
