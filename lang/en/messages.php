@@ -63,6 +63,10 @@ return [
             'enable' => 'Are you sure you want to enable this user?',
             'disable' => 'Are you sure you want to disable this user?'
         ],
+        'classComplete' => [
+            'complete' => 'Are you sure you want to mark as complete this user?',
+            'ongoing' => 'Are you sure you want to mark as ongoing this user? (completed date will be removed)'
+        ],
         'category' => [
             'delete' => 'Are you sure you want to delete this category?'
         ],

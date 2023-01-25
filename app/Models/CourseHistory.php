@@ -13,6 +13,8 @@ class CourseHistory extends Model
 
     const COMPLETED = "Completed";
 
+    protected $fillable = ['completed_at'];
+
     public function course()
     {
         return $this->belongsTo(Course::class);

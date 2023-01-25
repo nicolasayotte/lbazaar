@@ -6,12 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SearchClassRequest;
 use App\Models\Course;
 use App\Models\CourseContent;
+use App\Models\CourseHistory;
 use App\Models\User;
 use App\Repositories\CourseCategoryRepository;
 use App\Repositories\CourseContentRepository;
+use App\Repositories\CourseHistoryRepository;
 use App\Repositories\CourseRepository;
 use App\Repositories\CourseTypeRepository;
 use App\Repositories\UserRepository;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -21,6 +24,7 @@ class ManageCourseController extends Controller
     public $courseTypeRepository;
     public $courseCategoryRepository;
     public $courseRepository;
+    public $courseHistoryRepository;
     public $courseContentRepository;
     public $userRepository;
 
@@ -29,6 +33,7 @@ class ManageCourseController extends Controller
         $this->courseTypeRepository = new CourseTypeRepository();
         $this->courseCategoryRepository = new CourseCategoryRepository();
         $this->courseRepository = new CourseRepository();
+        $this->courseHistoryRepository = new CourseHistoryRepository();
         $this->courseContentRepository = new CourseContentRepository();
         $this->userRepository = new UserRepository();
     }
@@ -65,13 +70,17 @@ class ManageCourseController extends Controller
 
     public function students($id, Request $request)
     {
-        $course = $this->courseRepository->findByIdManageClassStudents($id);
+        $students = $this->courseHistoryRepository->searchEnrolledStudents($request, $id);
         return Inertia::render('Portal/MyPage/ManageClass/Students', [
-            'course'            => $course,
+            'students'          => $students,
             'tabValue'          => 'students',
+            'keyword'           => @$request['keyword'] ?? '',
+            'sort'              => @$request['sort'] ?? 'course_histories.created_at:desc',
+            'page'              => @$request['page'] ?? 1,
+            'courseId'          => $id,
             'title'             => 'My Page | Manage Class '
         ])->withViewData([
-            'title'       => 'My Page | Manage Class - ' . $course->title,
+            'title'       => 'My Page | Manage Class - Students Lists',
         ]);
     }
 
@@ -81,9 +90,19 @@ class ManageCourseController extends Controller
         return Inertia::render('Portal/MyPage/ManageClass/Feedbacks', [
             'course'            => $course,
             'tabValue'          => 'feedbacks',
+            'courseId'          => $id,
             'title'             => 'My Page | Manage Class '
         ])->withViewData([
             'title'       => 'My Page | Manage Class - ' . $course->title,
         ]);
+    }
+
+    public function updateCompleted($id, $status)
+    {
+        $courseHistory = $this->courseHistoryRepository->findOrFail($id);
+
+        $courseHistory->update(['completed_at' => $status == CourseHistory::COMPLETED ? new \DateTime() : null]);
+
+        return redirect()->back();
     }
 }
