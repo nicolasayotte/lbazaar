@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Mail\ResetPassword;
+use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -113,5 +114,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function hasFeedback($class_id)
     {
         return $this->feedbacks->where('course_id', $class_id)->count() > 0;
+    }
+
+    public function getCreatedAtAttribute($value)
+    {
+        return Carbon::parse($value)->format('M j, Y');
     }
 }
