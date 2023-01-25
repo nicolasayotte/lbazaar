@@ -9,7 +9,7 @@ class Course extends Model
 {
     use HasFactory;
 
-    const FEATURED_CLASS_COUNT_DISPLAY = 3;
+    const FEATURED_CLASS_COUNT_DISPLAY = 8;
 
     const PER_PAGE = 10;
 

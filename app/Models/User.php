@@ -18,7 +18,7 @@ class User extends Authenticatable implements MustVerifyEmail
     use LaratrustUserTrait;
     use  HasApiTokens, HasFactory, Notifiable;
 
-    const FEATURED_TEACHERS_COUNT_DISPLAY = 3;
+    const FEATURED_TEACHERS_COUNT_DISPLAY = 5;
 
     public const ACTIVE = 'active';
 
