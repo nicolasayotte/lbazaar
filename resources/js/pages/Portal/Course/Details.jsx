@@ -8,8 +8,6 @@ const Details = () => {
 
     const { auth, course, contents } = usePage().props
 
-    console.log(course)
-
     const displayCourseContents = courseContents => courseContents && courseContents.length > 0 && courseContents.map(course => (
         <CourseContent
             showDate={true}
@@ -45,6 +43,13 @@ const Details = () => {
         </Box>
     )
 
+    const courseTypeColors = {
+        'General': 'default',
+        'Earn': 'primary',
+        'Free': 'success',
+        'Special': 'warning'
+    }
+
     return (
         <Box>
             {courseImage}
@@ -55,6 +60,13 @@ const Details = () => {
                             <CardContent>
                                 <Box>
                                     <Chip size="small" label={course.course_category.name} />
+                                    <Chip
+                                        color={courseTypeColors[course.course_type.name]}
+                                        variant="outlined"
+                                        size="small"
+                                        label={course.course_type.name}
+                                        sx={{ ml: 1 }}
+                                    />
                                 </Box>
                                 <Typography variant="h4" children={course.title} sx={{ my: 1 }} />
                                 <Typography variant="subtitle2" children={`By ${course.professor.fullname}`} />

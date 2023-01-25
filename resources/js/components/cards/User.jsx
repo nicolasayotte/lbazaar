@@ -1,28 +1,22 @@
 
-import {Grid, Card, CardActions, CardContent, Button, Typography} from "@mui/material"
-import { useState } from "react"
+import {Card, CardContent, Button, Typography, Box} from "@mui/material"
 
-const Course = (props) => {
+const Course = ({ user }) => {
     return (
-        <Card sx={{ minWidth: 275, m: 2, position: 'relative' }}>
+        <Card sx={{ minWidth: 275, mb: 2, position: 'relative' }}>
             <CardContent>
-                <Grid container justifyContent="space-between">  
-                    <Typography inline="true" align="left" variant="h6">
-                        {`${props.user.fullname}`}
-                    </Typography>
-                    <Typography inline="true" align="right" variant="subtitle1">
-                        {props.user.country}
-                    </Typography>
-                </Grid>
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Box>
+                        <Typography variant="h6" children={user.fullname} />
+                        <Typography variant="caption" color="GrayText" children={`Member since ${user.created_at}`} />
+                    </Box>
+                    <Button
+                        size="small"
+                        variant="contained"
+                        children="View Profile"
+                    />
+                </Box>
             </CardContent>
-            <CardActions sx={{justifyContent: 'flex-end'}}>
-                <Button sx={{
-                      float: 'right',
-                      position: 'absolute',
-                      bottom: '0px'
-                    }}
-                    size="small">View Profile</Button>
-            </CardActions>
         </Card>
     );
 }
