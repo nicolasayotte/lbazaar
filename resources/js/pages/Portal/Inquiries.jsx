@@ -4,6 +4,7 @@ import { actions } from '../../store/slices/ToasterSlice'
 import { useDispatch } from "react-redux"
 import routes from "../../helpers/routes.helper"
 import Input from "../../components/forms/Input"
+import Header from "../../components/common/Header"
 
 const Inquiries = ({ messages }) => {
 
@@ -39,14 +40,17 @@ const Inquiries = ({ messages }) => {
     }
 
     return (
-        <Box sx={{ minHeight: '80.75vh' }}>
+        <Box>
+            <Header>
+                <Container sx={{ position: 'relative', zIndex: 500 }}>
+                    <Typography variant="h4" children="Inquiry" textAlign="center" />
+                </Container>
+            </Header>
             <Container>
                 <Grid container>
                     <Grid item xs={12} md={8} mx="auto" py={5}>
                         <Card>
                             <CardContent sx={{ p: 3 }}>
-                                <Typography variant="h5">Inquiry</Typography>
-                                <Divider sx={{ my: 2 }} />
                                 <Grid container spacing={2}>
                                     <Grid item xs={12} sm={6}>
                                         <Input

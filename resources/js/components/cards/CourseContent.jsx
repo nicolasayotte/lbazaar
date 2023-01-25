@@ -1,44 +1,45 @@
-import { Link } from "@inertiajs/inertia-react";
-import {Box, Grid, Card, ImageList, ImageListItem, CardActions, CardContent, Button, Typography} from "@mui/material"
-import { useState } from "react"
+import { Card, CardContent, Typography, CardMedia, Divider, Box} from "@mui/material"
 
-const CourseContent = (props) => {
+const CourseContent = ({ course, showDescription = true, showDate = true }) => {
 
-    const showDescription = props.showDescription !== undefined ? props.showDescription : true;
+    const description = (
+        showDescription && <Typography variant="subtitle1" gutterBottom children={course.description} />
+    )
 
-    const displayDescription = () => {
-        return showDescription &&
-            (
-                <Typography variant="subtitle1" gutterBottom sx={{ p: 1}}>
-                    { props.course.description }
-                </Typography>
-            )
-    }
-
-    const displayScheduledDateTime = () => {
-        return (props.showDate !== undefined && props.showDate) && (
-            <Typography variant="subtitle1"  sx={{
-                float: 'right',
-                position: 'absolute',
-                top: '0px',
-                right: '10px'}}>
-                { props.course.schedule_datetime }
-            </Typography>
-        )
-    }
+    const schedule = (
+        showDate && <Typography variant="caption" color="GrayText" children={`Schedule: ${course.schedule_datetime}`} />
+    )
 
     return (
-        <Card sx={{ minWidth: 250, m: 2, position: 'relative' }}>
-            <CardContent>
-                <Grid container spacing={2}>
-                    <Grid item xs={12} sm={12} md={10} lg={10}>
-                        { displayScheduledDateTime() }
-                        <Typography variant="h6" gutterBottom>
-                            {props.course.title}
-                        </Typography>
-                        { displayDescription() }
-                    </Grid>
-                </Grid>
+        <Card
+            sx={{
+                display: 'flex',
+                minHeight: 200,
+                flexDirection: {
+                    xs: 'column',
+                    md: 'row'
+                }
+            }}
+        >
+            <CardMedia
+                component="img"
+                image={course.image_thumbnail}
+                sx={{
+                    width: {
+                        xs: '100%',
+                        md: '250px'
+                    },
+                    objectFit: 'cover',
+                    objectPosition: 'center'
+                }}
+            />
+            <CardContent sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <Typography variant="h6" gutterBottom children={course.title} />
+                { description }
+                <Box>
+                    { showDate && <Divider sx={{ my: 2 }} />}
+                    { schedule }
+                </Box>
             </CardContent>
         </Card>
     );

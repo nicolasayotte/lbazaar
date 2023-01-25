@@ -1,54 +1,86 @@
 import { Link } from "@inertiajs/inertia-react";
-import {Box, Grid, Card, ImageList, ImageListItem, CardActions, CardContent, Button, Typography} from "@mui/material"
-import { Fragment, useState } from "react"
+import { Grid, Card, CardContent, Button, Typography, CardMedia, Box, Chip} from "@mui/material"
 import { getRoute } from "../../helpers/routes.helper"
-const Course = (props) => {
 
-    const showDescription = props.showDescription !== undefined ? props.showDescription : true;
+const Course = ({ course, showDescription = true, showDate = true, viewDetailId = "id", imagePosition = "left" }) => {
 
-    const displayDescription = () => {
-        return showDescription &&
-            (
-                <Typography variant="subtitle1" gutterBottom sx={{ p: 1}}>
-                    { props.course.description }
-                </Typography>
-            )
+    const description = (
+        showDescription &&
+        <Typography
+            variant="subtitle1"
+            gutterBottom
+            children={course.description}
+            sx={{
+                display: "-webkit-box",
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: "vertical",
+                overflow: 'hidden'
+            }}
+        />
+    )
+
+    const courseTypeColors = {
+        'General': 'default',
+        'Earn': 'primary',
+        'Free': 'success',
+        'Special': 'warning'
     }
 
-    const displayScheduledDateTime = () => {
-        return (props.showDate !== undefined && props.showDate) && (
-            <Typography variant="subtitle1" align="right" sx={{mr: 2}}>
-                { props.course.schedule_datetime }
-            </Typography>
-        )
-    }
+    const price = (
+        course.course_type && course.course_type.name == 'General' && course.price
+        ? <Typography children={course.price} variant="h6" />
+        : <span />
+    )
 
     return (
-        <Card sx={{ minWidth: 250, m: 1, mb: 2, position: 'relative' }}>
-            { displayScheduledDateTime() }
-            <CardContent sx={{mb:4}}>
+        <Card
+            sx={{
+                mb: 2,
+                display: 'flex',
+                flexDirection: {
+                    xs: 'column',
+                    md: (imagePosition == 'left' || imagePosition == 'right') ? 'row' : 'column'
+                }
+            }}
+        >
+            <CardMedia
+                component="img"
+                image={course.image_thumbnail}
+                sx={{
+                    width: {
+                        xs: '100%',
+                        md: (imagePosition == 'left' || imagePosition == 'right') ? '250px' : '100%'
+                    },
+                    objectFit: 'cover',
+                    objectPosition: 'center',
+                    maxHeight: (imagePosition == 'left' || imagePosition == 'right') ? 'unset' : '150px'
+                }}
+            />
+            <CardContent>
                 <Grid container spacing={2}>
-                    <Grid item xs={12} sm={12} md={10} lg={10}>
-                        <Typography variant="subtitle1" gutterBottom>
-                            {props.course.course_type.name}
-                        </Typography>
-                        <Typography variant="h6" gutterBottom>
-                            {props.course.title}
-                        </Typography>
-                        <Typography variant="subtitle2" gutterBottom>
-                            {`By ${props.course.professor.first_name} ${props.course.professor.last_name}`}
-                        </Typography>
-                        { displayDescription() }
+                    <Grid item xs={12}>
+                        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+                            <Chip label={course.course_category.name} size="small" />
+                            <Chip color={courseTypeColors[course.course_type.name]} label={course.course_type.name} size="small" variant="outlined" />
+                        </Box>
+                        <Typography variant="h6" children={course.title} />
+                        <Typography variant="subtitle2" color="GrayText" gutterBottom children={`By ${course.professor.fullname}`} />
+                        { description }
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Box display="flex" justifyContent="space-between" alignItems="center">
+                            { price }
+                            <Link href={getRoute('course.details', {id : course[viewDetailId]})}>
+                                <Button
+                                    size="small"
+                                    variant="contained"
+                                    children="View More"
+                                />
+                            </Link>
+                        </Box>
                     </Grid>
                 </Grid>
             </CardContent>
-            <CardActions sx={{justifyContent: 'flex-end',  right: '0px',
-                        position: 'absolute',
-                        bottom: '0px'}}>
-                <Link href={getRoute('course.details', {id : props.course[props.viewDetailId]})}>
-                    <Button>View More</Button>
-                </Link>
-            </CardActions>
         </Card>
     );
 }

@@ -26,7 +26,7 @@ class CourseApplicationFactory extends Factory
 
         return [
             'title'              => fake()->sentence(),
-            'description'        => fake()->paragraph(),
+            'description'        => fake()->paragraphs(4, true),
             'price'              => fake()->numberBetween(10, 100),
             'language'           => fake()->randomElement(['English', 'Japanese']),
             'points_earned'      => null,

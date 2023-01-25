@@ -9,7 +9,7 @@ class Course extends Model
 {
     use HasFactory;
 
-    const FEATURED_CLASS_COUNT_DISPLAY = 3;
+    const FEATURED_CLASS_COUNT_DISPLAY = 8;
 
     const PER_PAGE = 10;
 
@@ -41,5 +41,11 @@ class Course extends Model
     public function feedbacks()
     {
         return $this->hasMany(CourseFeedback::class)->orderBy('created_at', 'desc');
+    }
+
+    public function getPriceAttribute($value) {
+        if (@$value) {
+            return number_format($value, 2);
+        }
     }
 }

@@ -4,16 +4,11 @@ namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SearchClassRequest;
-use App\Models\Course;
-use App\Models\CourseContent;
-use App\Models\User;
 use App\Repositories\CourseCategoryRepository;
 use App\Repositories\CourseContentRepository;
 use App\Repositories\CourseRepository;
 use App\Repositories\CourseTypeRepository;
 use App\Repositories\UserRepository;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class CourseController extends Controller
@@ -49,7 +44,7 @@ class CourseController extends Controller
                 'teachers'              => $teachers,
                 'courses'               => $courses,
                 'page'                  => @$request['page'] ?? 1,
-                'month'                 => @$request['month'] ?? date('Y-m'),
+                'month'                 => @$request['month'] ?? '',
                 'search_text'           => @$request['search_text'] ?? '',
                 'category_id'           => @$request['category_id'] ?? '',
                 'type_id'               => @$request['type_id'] ?? '',
@@ -71,8 +66,8 @@ class CourseController extends Controller
         return Inertia::render('Portal/Course/Details', [
             'course'            => $course,
             'contents'          => $contents,
-            'isBooked'          => Auth::user()->isCourseBooked($id),
-            'hasFeedback'       => Auth::user()->hasFeedback($id),
+            'isBooked'          => auth()->user() && auth()->user()->isCourseBooked($id),
+            'hasFeedback'       => auth()->user() && auth()->user()->hasFeedback($id),
             'title'             => 'Course - ' . $course->title,
         ])->withViewData([
             'title'       => 'Course - ' . $course->title,

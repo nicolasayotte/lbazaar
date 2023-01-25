@@ -1,7 +1,9 @@
 import { Box, Container, Typography } from "@mui/material";
 
-
 const Footer = () => {
+
+    const year = (new Date()).getFullYear()
+
     return (
         <Box
             sx={{
@@ -15,7 +17,7 @@ const Footer = () => {
         >
             <Container>
                 <Typography color="white">
-                    &copy; All rights reserved
+                    &copy; All rights reserved {year}
                 </Typography>
             </Container>
         </Box>
