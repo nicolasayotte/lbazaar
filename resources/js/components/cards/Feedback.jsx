@@ -1,39 +1,38 @@
-import {Grid, Divider, Card, IconButton, CardContent, Typography} from "@mui/material"
-import HtmlParser from "../common/HtmlParser";
+import { Card, IconButton, CardContent, Typography, Box } from "@mui/material"
 import EditIcon from '@mui/icons-material/Edit';
 import { getRoute } from "../../helpers/routes.helper"
 import { Link } from "@inertiajs/inertia-react"
 
-const Feedback = (props) => {
+const Feedback = ({ auth, feedback }) => {
 
-    const displayButtonFeedback = () => {
-        if (props.auth != null && props.auth.user.id == props.feedback.user.id) {
-            return (
-                <Link title="Edit Feedback" href={getRoute('course.feedback.index', {id : props.feedback.course_id}, {returnUrl : getRoute('course.details', {id : props.feedback.course_id})})}>
-                    <IconButton color="white">
-                        <EditIcon fontSize="small" color="inherit" />
-                    </IconButton>
-                </Link>
-            )
-        }
-    }
+    const editButton = (
+        auth.user && auth.user.id && auth.user.id == feedback.user.id && (
+            <Link title="Edit Feedback" href={getRoute('course.feedback.index', {id : feedback.course_id}, {returnUrl : getRoute('course.details', {id : feedback.course_id})})}>
+                <IconButton size="small" color="white">
+                    <EditIcon fontSize="inherit" color="inherit" />
+                </IconButton>
+            </Link>
+        )
+    )
 
     return (
-        <Card sx={{ minWidth: 275, m: 2, position: 'relative' }}>
+        <Card sx={{ minWidth: 275, mb: 2, position: 'relative' }}>
             <CardContent>
-                <Grid container justifyContent="space-between">
-                    <Typography inline="true" align="left" variant="subtitle1">
-                        {`${props.feedback.user.fullname}`}   <Typography inline="true" align="left" variant="caption">{ props.feedback.created_at}  {displayButtonFeedback()}</Typography>
+                <Box display="flex" justifyContent="space-between">
+                    <Box>
+                        <Typography inline="true" align="left" variant="subtitle1" children={feedback.user.fullname} />
+                        <Box display="flex" alignItems="center">
+                            <Typography color="primary" variant="caption" children={`${feedback.rating}/100`} sx={{ mr: 1 }} />
+                            <Typography variant="caption" color="GrayText" children={`Posted on ${feedback.created_at}`} />
+                        </Box>
+                    </Box>
+                    { editButton }
+                </Box>
+                <Box sx={{ mt: 2 }}>
+                    <Typography variant="body2">
+                        <span dangerouslySetInnerHTML={{ __html: feedback.comments }} />
                     </Typography>
-
-                    <Typography inline="true" align="right" variant="subtitle1">
-                        {`rating : ${props.feedback.rating} / 100`}
-                    </Typography>
-                </Grid>
-                <Divider />
-                <Typography variant="caption" gutterBottom>
-                    <HtmlParser html={props.feedback.comments} />
-                </Typography>
+                </Box>
             </CardContent>
         </Card>
     );
