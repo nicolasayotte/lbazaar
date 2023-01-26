@@ -10,6 +10,7 @@ use App\Models\CourseHistory;
 use App\Models\User;
 use App\Repositories\CourseCategoryRepository;
 use App\Repositories\CourseContentRepository;
+use App\Repositories\CourseFeedbackRepository;
 use App\Repositories\CourseHistoryRepository;
 use App\Repositories\CourseRepository;
 use App\Repositories\CourseTypeRepository;
@@ -25,8 +26,7 @@ class ManageCourseController extends Controller
     public $courseCategoryRepository;
     public $courseRepository;
     public $courseHistoryRepository;
-    public $courseContentRepository;
-    public $userRepository;
+    public $courseFeedbackRepository;
 
     public function __construct()
     {
@@ -34,8 +34,7 @@ class ManageCourseController extends Controller
         $this->courseCategoryRepository = new CourseCategoryRepository();
         $this->courseRepository = new CourseRepository();
         $this->courseHistoryRepository = new CourseHistoryRepository();
-        $this->courseContentRepository = new CourseContentRepository();
-        $this->userRepository = new UserRepository();
+        $this->courseFeedbackRepository = new CourseFeedbackRepository();
     }
 
     public function index(Request $request)
@@ -86,14 +85,18 @@ class ManageCourseController extends Controller
 
     public function feedbacks($id, Request $request)
     {
-        $course = $this->courseRepository->findByIdManageClassStudents($id);
+        $feedbacks = $this->courseFeedbackRepository->findByCourseIdAndSearch($id, $request->all());
+
         return Inertia::render('Portal/MyPage/ManageClass/Feedbacks', [
-            'course'            => $course,
+            'feedbacks'         => $feedbacks,
             'tabValue'          => 'feedbacks',
+            'keyword'           => @$request['keyword'] ?? '',
+            'sort'              => @$request['sort'] ?? 'created_at:desc',
+            'page'              => @$request['page'] ?? 1,
             'courseId'          => $id,
             'title'             => 'My Page | Manage Class '
         ])->withViewData([
-            'title'       => 'My Page | Manage Class - ' . $course->title,
+            'title'       => 'My Page | Manage Class - Feedbacks',
         ]);
     }
 
