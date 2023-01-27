@@ -31,4 +31,36 @@ class TranslationRepository extends BaseRepository
                 ->update(['ja' => $value]);
         }
     }
+
+
+    /**
+     * Imitates the output of the trans('messages') function.
+     * The only difference is the data is from the database
+     */
+    public function getTranslations()
+    {
+        $translations = $this->getAll();
+
+        if (@$translations && @$translations->count() <= 0) {
+            return trans('messages');
+        }
+
+        $returnData = [];
+
+        foreach ($translations as $translation) {
+            $translationKeys = explode('.', $translation['key']);
+
+            $row = [];
+
+            for ($index = count($translationKeys) - 1; $index >= 0; $index--) {
+                $row = [
+                    "{$translationKeys[$index]}" => count($translationKeys) - 1 == $index ? $translation[app()->getLocale()] : $row
+                ];
+            }
+
+            $returnData = array_merge_recursive($returnData, $row);
+        }
+
+        return $returnData;
+    }
 }
