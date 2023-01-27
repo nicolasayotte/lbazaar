@@ -34,4 +34,12 @@ class TopPageController extends Controller
                 'description' => 'Top page Screen'
             ]);
     }
+
+    public function setLanguage($locale)
+    {
+        session()->put('locale', $locale);
+        app()->setLocale($locale);
+
+        return redirect()->back();
+    }
 }

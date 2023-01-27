@@ -4,6 +4,7 @@
     "ignition.executeSolution": "\/_ignition\/execute-solution",
     "ignition.updateConfig": "\/_ignition\/update-config",
     "top": "\/\/",
+    "language.set": "\/lang\/{locale}",
     "inquiries.index": "\/inquiries",
     "inquiries.store": "\/inquiries",
     "admin.": "\/admin",

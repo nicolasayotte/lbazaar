@@ -3,16 +3,21 @@ import { Article, ExpandLess, ExpandMore, GTranslate, Inbox, LibraryBooks, Local
 import { AppBar, Box, Collapse, Divider, Drawer, Grid, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar, Typography } from "@mui/material"
 import { useState } from "react"
 import routes from "../../helpers/routes.helper"
+import LanguageNavbar from "./LanguageNavbar"
 
 const AdminNavbar = ({ drawerWidth, window }) => {
 
     const { component } = usePage()
+
+    const { locale } = usePage().props
 
     const container = window !== undefined ? () => window().document.body : undefined;
 
     const [openMobileDrawer, setopenMobileDrawer] = useState(false)
 
     const [openSettings, setOpenSettings] = useState(component.startsWith('Admin/Settings'))
+
+    const navbarHeight = '104px !important'
 
     const toggleMobileDrawer = () => {
         setopenMobileDrawer(!openMobileDrawer)
@@ -147,8 +152,7 @@ const AdminNavbar = ({ drawerWidth, window }) => {
                 '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth }
             }}
         >
-            <Toolbar />
-            <Divider />
+            <Toolbar sx={{ minHeight: navbarHeight }} />
             <List>
                 {displayMenu(navItems)}
                 {settingsMenu}
@@ -171,8 +175,7 @@ const AdminNavbar = ({ drawerWidth, window }) => {
                 '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
             }}
         >
-            <Toolbar />
-            <Divider />
+            <Toolbar sx={{ minHeight: navbarHeight }}/>
             <List>
                 {displayMenu(navItems)}
                 {settingsMenu}
@@ -193,7 +196,9 @@ const AdminNavbar = ({ drawerWidth, window }) => {
                 position="sticky"
                 color="primary"
                 sx={{ zIndex: theme => theme.zIndex.drawer + 1 }}
+                id="admin-navbar"
             >
+                <LanguageNavbar locale={locale} />
                 <Toolbar>
                     <Typography
                         variant="h6"

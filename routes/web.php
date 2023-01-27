@@ -35,8 +35,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
 # Top Page
 Route::get('/', [TopPageController::class, 'index'])->name('top');
+
+# Set Locale
+Route::get('lang/{locale}', [TopPageController::class, 'setLanguage'])->name('language.set');
 
 # Inquiries
 Route::get('/inquiries', [InquiriesController::class, 'index'])->name('inquiries.index');
