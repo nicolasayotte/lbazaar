@@ -1,7 +1,71 @@
-import { Box, Button, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
-import Input from "../../../../components/forms/Input"
+import { useForm, usePage } from "@inertiajs/inertia-react"
+import { Box, Button, Stack, Typography } from "@mui/material"
+import { useDispatch } from "react-redux"
+import routes from "../../../../helpers/routes.helper"
+import { actions } from "../../../../store/slices/ToasterSlice"
+import TranslationTable from "./components/TranslationTable"
+import ConfirmationDialog from "../../../../components/common/ConfirmationDialog"
+import { useState } from "react"
 
 const Index = () => {
+
+    const dispatch = useDispatch()
+
+    const { translations, messages } = usePage().props
+
+    const [dialog, setDialog] = useState({
+        open: false,
+        title: 'Update Translations',
+        text: messages.confirm.translations.update,
+    })
+
+    const setInitialFormValues = () => {
+        let values = new Array()
+
+        translations.map(translation => {
+            values[`${translation.key}`] = translation.ja
+        })
+
+        return values
+    }
+
+    const { data, setData, patch } = useForm({
+        translations: setInitialFormValues()
+    })
+
+    const handleOnChange = (e, key) => {
+        setData(data => ({
+            translations: {
+                ...data.translations,
+                [key]: e.target.value
+            }
+        }))
+    }
+
+    const handleOnSaveChanges = e => {
+        setDialog(dialog => ({
+            ...dialog,
+            open: true
+        }))
+    }
+
+    const handleOnDialogClose = () => {
+        setDialog(dialog => ({
+            ...dialog,
+            open: false
+        }))
+    }
+
+    const handleOnDialogConfirm = e => {
+        e.preventDefault()
+
+        patch(routes["admin.settings.translations.update"], {
+            onSuccess: () => dispatch(actions.success({
+                message: messages.success.translations.update
+            }))
+        })
+    }
+
     return (
         <Box>
             <Stack direction="row" justifyContent="space-between" mb={2}>
@@ -9,31 +73,25 @@ const Index = () => {
                     variant="h4"
                     children="Translations"
                 />
-                <Button
-                    children="Save Changes"
-                    variant="contained"
-                />
+                {
+                    translations && translations.length > 0 &&
+                    <Button
+                        children="Save Changes"
+                        variant="contained"
+                        onClick={handleOnSaveChanges}
+                    />
+                }
             </Stack>
-            <TableContainer component={Paper}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell children="EN (English)" />
-                            <TableCell children="JA (Japanese)" />
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        <TableRow>
-                            <TableCell children="English word" />
-                            <TableCell>
-                                <Input
-                                    placeholder="Enter japanese translation"
-                                />
-                            </TableCell>
-                        </TableRow>
-                    </TableBody>
-                </Table>
-            </TableContainer>
+            <TranslationTable
+                data={translations}
+                formData={data.translations}
+                handleOnChange={handleOnChange}
+            />
+            <ConfirmationDialog
+                {...dialog}
+                handleClose={handleOnDialogClose}
+                handleConfirm={handleOnDialogConfirm}
+            />
         </Box>
     )
 }

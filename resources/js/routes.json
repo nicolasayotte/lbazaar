@@ -33,6 +33,7 @@
     "admin.settings.classifications.update": "\/admin\/settings\/classifications\/{id}\/update",
     "admin.settings.classifications.delete": "\/admin\/settings\/classifications\/{id}\/delete",
     "admin.settings.translations.index": "\/admin\/settings\/translations",
+    "admin.settings.translations.update": "\/admin\/settings\/translations",
     "course.index": "\/courses",
     "course.details": "\/courses\/details\/{id}",
     "course.feedback.index": "\/courses\/feedback\/{id}",

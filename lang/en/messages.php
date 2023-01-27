@@ -47,6 +47,9 @@ return [
             'update' => 'Classification successfully updated',
             'delete' => 'Classification successfully deleted',
             'create' => 'Classification successfully created'
+        ],
+        'translations' => [
+            'update' => 'Translations successfully updated'
         ]
     ],
     'confirm' => [
@@ -68,6 +71,9 @@ return [
         ],
         'classification' => [
             'delete' => 'Are you sure you want to delete this classification?'
+        ],
+        'translations' => [
+            'update' => 'Are you sure you want to update these translations?'
         ]
     ]
 ];

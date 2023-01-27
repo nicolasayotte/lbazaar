@@ -113,6 +113,7 @@ Route::prefix('admin')->name('admin.')->group(function() {
             # Translations
             Route::prefix('translations')->name('translations.')->group(function() {
                 Route::get('/', [TranslationController::class, 'index'])->name('index');
+                Route::patch('/', [TranslationController::class, 'update'])->name('update');
             });
         });
     });
