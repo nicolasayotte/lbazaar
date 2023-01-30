@@ -22,7 +22,7 @@ class TranslationSeeder extends Seeder
         foreach ($locales as $locale) {
             app()->setLocale($locale);
 
-            $messagesArr = trans('messages');
+            $messagesArr = trans('translatables');
 
             $flatMessagesArr = $this->flatten($messagesArr, '');
 

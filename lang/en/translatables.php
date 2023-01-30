@@ -4,10 +4,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Messages Language Lines
+    | Translatable Language Lines
     |--------------------------------------------------------------------------
     |
-    | The following are custom messages mainly used for success and error messages
+    | The following are texts that can be translated in the admin dashboard
     |
     */
     'error'   => 'There was an error encountered',
