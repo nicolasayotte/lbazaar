@@ -2,16 +2,21 @@
 
 namespace App\Repositories;
 
+use App\Data\CourseData;
 use App\Data\CourseManageData;
+use App\Http\Requests\CourseUpdateRequest;
 use App\Models\Course;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CourseRepository extends BaseRepository
 {
     const PER_PAGE = 5;
+
+    const STORAGE_THUMBNAIL_PATH = "thumbnail/";
 
     public function __construct()
     {
@@ -107,16 +112,43 @@ class CourseRepository extends BaseRepository
 
     public function findByIdManageClass($id)
     {
-        return $this->model->with(['courseType', 'contents', 'courseCategory'])->findOrFail($id);
-    }
-
-    public function findByIdManageClassStudents($id)
-    {
-        return $this->model->with(['students'])->findOrFail($id);
+        return CourseData::fromModel($this->model->with(['courseType', 'contents', 'courseCategory'])->findOrFail($id));
     }
 
     public function findByIdManageClassFeedbacks($id)
     {
         return $this->model->with(['feedbacks', 'feedbacks.user'])->findOrFail($id);
     }
+
+    public function isMyCourseById($course_id)
+    {
+        return $this->model->whereId($course_id)->whereProfessorId(Auth::user()->id)->exists();
+    }
+
+    public function courseUpdate(CourseUpdateRequest $request)
+    {
+        $course = $this->findOrFail($request->get('id'));
+
+        $course->title = $request->get('title');
+        $course->description = $request->get('description');
+        $course->course_category_id = $request->get('course_category_id');
+        $course->language = $request->get('language');
+        $thumbnail = $request->file('imageThumbnail')[0];
+        try {
+            $path = $course->id . '/';
+            $filename = $thumbnail->getClientOriginalName();
+            $thumbnail->storeAs($path, $filename , 'thumbnail');
+            $course->image_thumbnail = $path . $filename;
+            $course->update();
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            return redirect()->back()->withErrors([
+                'error' => $e->getMessage()
+            ]);
+        }
+
+        return redirect()->route('inquiries.index');
+    }
+
 }

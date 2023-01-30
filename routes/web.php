@@ -196,7 +196,9 @@ Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function()
             Route::get('/details', [ManageCourseController::class, 'details'])->name('details');
             Route::get('/students', [ManageCourseController::class, 'students'])->name('students');
             Route::get('/feedbacks', [ManageCourseController::class, 'feedbacks'])->name('feedbacks');
+
         });
         Route::post('/update-student-complete/{id}/{status}', [ManageCourseController::class, 'updateCompleted'])->name('students.update.complete.status');
+        Route::post('/course/update', [ManageCourseController::class, 'updateCourse'])->name('course.update');
     });
 });

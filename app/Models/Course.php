@@ -13,6 +13,14 @@ class Course extends Model
 
     const PER_PAGE = 10;
 
+    protected $fillable = [
+        "title",
+        "description",
+        "language",
+        "image_thumbnail",
+        "course_category_id"
+    ];
+
     public function professor()
     {
         return $this->belongsTo(User::class, 'professor_id');

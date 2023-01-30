@@ -22,6 +22,16 @@ export const handleOnChange = (e, setData) => {
 /**
  * onChange method for handling useForm() state
  *
+ * @param {*} e The onChange event
+ * @param {func} setData The setData method from inertiajs useForm()
+ */
+export const handleOnFileChange = (e, property, setData) => {
+    setData(property, e.target.files[0])
+}
+
+/**
+ * onChange method for handling useForm() state
+ *
  * @param {string} value The value pass from editor
  * @param {func} setData The setData method from inertiajs useForm()
  * @param {string} value The properties of the value

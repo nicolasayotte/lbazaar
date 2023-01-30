@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CourseUpdateRequest;
 use App\Http\Requests\SearchClassRequest;
 use App\Models\Course;
 use App\Models\CourseContent;
@@ -57,13 +58,15 @@ class ManageCourseController extends Controller
 
     public function details($id, Request $request)
     {
-        $course = $this->courseRepository->findByIdManageClassStudents($id);
+        $course = $this->courseRepository->findByIdManageClass($id);
         return Inertia::render('Portal/MyPage/ManageClass/Details', [
             'course'            => $course,
+            'categoryOptions'   => $this->courseCategoryRepository->getDropdownData(),
+            'typeOptions'       => $this->courseTypeRepository->getDropdownData(),
             'tabValue'          => 'details',
             'title'             => 'My Page | Manage Class '
         ])->withViewData([
-            'title'       => 'My Page | Manage Class - ' . $course->title,
+            'title'       => 'My Page | Manage Class - ' . $course["title"],
         ]);
     }
 
@@ -107,5 +110,10 @@ class ManageCourseController extends Controller
         $courseHistory->update(['completed_at' => $status == CourseHistory::COMPLETED ? new \DateTime() : null]);
 
         return redirect()->back();
+    }
+
+    public function updateCourse(CourseUpdateRequest $request)
+    {
+       return $this->courseRepository->courseUpdate($request);
     }
 }

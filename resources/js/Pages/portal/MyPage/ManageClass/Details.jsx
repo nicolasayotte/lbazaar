@@ -7,10 +7,37 @@ import routes, {getRoute} from "../../../../helpers/routes.helper"
 import TableLoader from "../../../../components/common/TableLoader"
 import { NoteAdd } from '@mui/icons-material';
 import ManageClassTabs from "../components/ManageClassTabs"
+import ClassInformationView from "../components/ClassInformationView"
+import ClassInformationForm from "../components/ClassInformationForm"
+import { useState } from "react"
 
 const Details = () => {
 
-    const { course, tabValue } = usePage().props
+    const { course, tabValue, categoryOptions, typeOptions, errors } = usePage().props
+
+    const [isEditCourse, setIsEditCourse] = useState(false)
+
+    const viewEditCourse = () => {
+        setIsEditCourse(!isEditCourse)
+    }
+
+    const hideEditCourse = () => {
+        setIsEditCourse(false)
+    }
+
+    const displayCourse = () => {
+        return isEditCourse ?
+            <ClassInformationForm
+                routes={routes}
+                course={course}
+                categoryOptions={categoryOptions}
+                typeOptions={typeOptions}
+                cancelEdit={hideEditCourse}
+                errors={errors.course}/>
+            :
+            <ClassInformationView course={course} viewEditCourse={viewEditCourse}/>
+    }
+
 
     return (
         <>
@@ -18,11 +45,7 @@ const Details = () => {
                 <ManageClassTabs tabValue={tabValue} id={course.id}/>
             </Grid>
             <Grid item md={12} xs={12}>
-                <Card>
-                    <CardContent>
-                            Details
-                    </CardContent>
-                </Card>
+                {displayCourse()}
             </Grid>
         </>
     )
