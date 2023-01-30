@@ -63,4 +63,12 @@ class TranslationRepository extends BaseRepository
 
         return $returnData;
     }
+
+    /**
+     * Get translation text by keyword
+     */
+    public static function getTranslation($key = '')
+    {
+        return Translation::where('key', $key)->first()->{app()->getLocale()};
+    }
 }
