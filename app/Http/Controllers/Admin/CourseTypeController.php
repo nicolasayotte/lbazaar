@@ -5,13 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CourseTypeRequest;
 use App\Repositories\CourseTypeRepository;
+use App\Repositories\TranslationRepository;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class CourseTypeController extends Controller
 {
-    private $title = 'Class Types | Admin';
-
     private $courseTypeRepository;
 
     public function __construct()
@@ -21,11 +20,13 @@ class CourseTypeController extends Controller
 
     public function index()
     {
+        $title = TranslationRepository::getTranslation('title.class.types');
+
         return Inertia::render('Admin/Settings/CourseTypes/Index', [
-            'title' => $this->title,
+            'title' => $title,
             'types' => $this->courseTypeRepository->pluckById()
         ])->withViewData([
-            'title' => $this->title
+            'title' => $title
         ]);
     }
 

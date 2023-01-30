@@ -17,7 +17,7 @@ const Index = () => {
 
     const [dialog, setDialog] = useState({
         open: false,
-        title: 'Class Types',
+        title: title,
         text: messages.confirm.class.types.update
     })
 
@@ -71,7 +71,7 @@ const Index = () => {
                 <Input
                     id={index}
                     name={`types.${index}`}
-                    placeholder="Type"
+                    placeholder={messages.texts.type}
                     value={data.types[index]}
                     onChange={handleOnChange}
                     errors={errors}
@@ -91,12 +91,12 @@ const Index = () => {
             <Stack direction="row" justifyContent="space-between" mb={2}>
                 <Typography
                     variant="h4"
-                    children="Class Types"
+                    children={title}
                 />
                 {
                     isUpdated &&
                     <Button
-                        children="Save Changes"
+                        children={messages.texts.save_changes}
                         variant="contained"
                         onClick={handleOnSaveChanges}
                     />
@@ -106,7 +106,7 @@ const Index = () => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell children="Class Type" />
+                            <TableCell children={messages.texts.class_type} />
                         </TableRow>
                     </TableHead>
                     <TableBody>
