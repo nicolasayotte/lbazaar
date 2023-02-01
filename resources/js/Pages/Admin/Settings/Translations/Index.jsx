@@ -11,12 +11,12 @@ const Index = () => {
 
     const dispatch = useDispatch()
 
-    const { translations, messages } = usePage().props
+    const { translations, translatables } = usePage().props
 
     const [dialog, setDialog] = useState({
         open: false,
-        title: 'Update Translations',
-        text: messages.confirm.translations.update,
+        title: translatables.title.translations,
+        text: translatables.confirm.translations.update,
     })
 
     const setInitialFormValues = () => {
@@ -61,7 +61,7 @@ const Index = () => {
 
         patch(routes["admin.settings.translations.update"], {
             onSuccess: () => dispatch(actions.success({
-                message: messages.success.translations.update
+                message: translatables.success.translations.update
             }))
         })
     }
@@ -71,12 +71,12 @@ const Index = () => {
             <Stack direction="row" justifyContent="space-between" mb={2}>
                 <Typography
                     variant="h4"
-                    children="Translations"
+                    children={translatables.title.translations}
                 />
                 {
                     translations && translations.length > 0 &&
                     <Button
-                        children="Save Changes"
+                        children={translatables.texts.save_changes}
                         variant="contained"
                         onClick={handleOnSaveChanges}
                     />
