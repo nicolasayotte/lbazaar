@@ -40,10 +40,10 @@ class HandleInertiaRequests extends Middleware
         $translationRepository = new TranslationRepository();
 
         return array_merge(parent::share($request), [
-            'isLoggedIn' => fn () => @$request->user() ? true : false,
-            'auth.user'  => fn () => @$request->user() ? @$request->user()->load('roles') : null,
-            'messages'   => $translationRepository->getTranslations(),
-            'locale'     => app()->getLocale()
+            'isLoggedIn'    => fn () => @$request->user() ? true : false,
+            'auth.user'     => fn () => @$request->user() ? @$request->user()->load('roles') : null,
+            'translatables' => $translationRepository->getTranslations(),
+            'locale'        => app()->getLocale()
         ]);
     }
 }

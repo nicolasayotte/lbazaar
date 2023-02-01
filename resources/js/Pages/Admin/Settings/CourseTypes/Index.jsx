@@ -11,14 +11,14 @@ const Index = () => {
 
     const dispatch = useDispatch()
 
-    const { title, types, errors, messages } = usePage().props
+    const { title, types, errors, translatables } = usePage().props
 
     const [isUpdated, setIsUpdated] = useState(Object.keys(errors).length <= 0 ? false : true)
 
     const [dialog, setDialog] = useState({
         open: false,
         title: title,
-        text: messages.confirm.class.types.update
+        text: translatables.confirm.class.types.update
     })
 
     const { data, setData, patch, processing } = useForm('CourseTypeForm', { types })
@@ -43,10 +43,10 @@ const Index = () => {
 
         patch(routes["admin.settings.course_types.update"], {
             onSuccess: () => dispatch(actions.success({
-                message: messages.success.class.types.update
+                message: translatables.success.class.types.update
             })),
             onError: () => dispatch(actions.error({
-                message: messages.error
+                message: translatables.error
             }))
         })
     }
@@ -71,7 +71,7 @@ const Index = () => {
                 <Input
                     id={index}
                     name={`types.${index}`}
-                    placeholder={messages.texts.type}
+                    placeholder={translatables.texts.type}
                     value={data.types[index]}
                     onChange={handleOnChange}
                     errors={errors}
@@ -96,7 +96,7 @@ const Index = () => {
                 {
                     isUpdated &&
                     <Button
-                        children={messages.texts.save_changes}
+                        children={translatables.texts.save_changes}
                         variant="contained"
                         onClick={handleOnSaveChanges}
                     />
@@ -106,7 +106,7 @@ const Index = () => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell children={messages.texts.class_type} />
+                            <TableCell children={translatables.texts.class_type} />
                         </TableRow>
                     </TableHead>
                     <TableBody>
