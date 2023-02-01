@@ -58,7 +58,7 @@ const View = () => {
     return (
         <Box>
             <Grid container spacing={2} sx={{mt:4}}>
-                <Grid item xs={12} lg={8} xl={9}>
+                <Grid item xs={12} lg={8}>
                     <TableContainer component={Paper} sx={{ mb: 2 }}>
                         <Table>
                             <TableHead>
@@ -115,7 +115,7 @@ const View = () => {
                         </Table>
                     </TableContainer>
                 </Grid>
-                <Grid item xs={12} lg={4} xl={3}>
+                <Grid item xs={12} lg={4}>
                     <TableContainer component={Paper} sx={{ mb: 2 }}>
                         <Table>
                             <TableHead>
