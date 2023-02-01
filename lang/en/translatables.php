@@ -164,6 +164,7 @@ return [
         'points_earned' => 'Points Earned',
         'price' => 'Price',
         'pricing_information' => 'Pricing Information',
+        'processing' => 'Processing',
         'profile' => 'Profile',
         'role' => 'Role',
         'save_changes' => 'Save Changes',
