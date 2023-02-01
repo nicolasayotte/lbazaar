@@ -140,6 +140,7 @@ return [
         'class_type' => 'Class Type',
         'classification' => 'Classification',
         'commission_rate' => 'Commission Rate',
+        'confirm' => 'Confirm',
         'confirm_password' => 'Confirm Password',
         'content_information' => 'Content Information',
         'country' => 'Country',
