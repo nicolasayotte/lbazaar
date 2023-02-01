@@ -16,11 +16,11 @@ const Index = () => {
 
     const dispatch = useDispatch()
 
-    const { users, roleOptions, statusOptions, status, keyword, role, sort, messages, page } = usePage().props
+    const { users, roleOptions, statusOptions, status, keyword, role, sort, translatables, page } = usePage().props
 
     const [dialog, setDialog] = useState({
         open: false,
-        title: 'Manage Users',
+        title: translatables.title.users,
         text: '',
         url: ''
     })
@@ -34,10 +34,10 @@ const Index = () => {
     })
 
     const sortOptions = [
-        { name: 'Name A-Z', value: 'first_name:asc' },
-        { name: 'Name Z-A', value: 'first_name:desc' },
-        { name: 'Date - Oldest',  value: 'created_at:asc' },
-        { name: 'Date - Newest', value: 'created_at:desc' }
+        { name: translatables.filters.name.asc, value: 'first_name:asc' },
+        { name: translatables.filters.name.desc, value: 'first_name:desc' },
+        { name: translatables.filters.date.asc,  value: 'created_at:asc' },
+        { name: translatables.filters.date.desc, value: 'created_at:desc' }
     ]
 
     const handleFilterSubmit = e => {
@@ -62,7 +62,7 @@ const Index = () => {
         setDialog(dialog => ({
             ...dialog,
             open: true,
-            text: messages.confirm.user.enable,
+            text: translatables.confirm.user.enable,
             url: getRoute('admin.users.status.update', {
                 id: id,
                 status: 'active'
@@ -75,7 +75,7 @@ const Index = () => {
         setDialog(dialog => ({
             ...dialog,
             open: true,
-            text: messages.confirm.user.disable,
+            text: translatables.confirm.user.disable,
             url: getRoute('admin.users.status.update', {
                 id: id,
                 status: 'disabled'
@@ -98,11 +98,11 @@ const Index = () => {
                 setDialog({ open: false })
 
                 dispatch(actions.success({
-                    message: messages.success.user.status.update
+                    message: translatables.success.user.status.update
                 }))
             },
             onError: () => dispatch(actions.error({
-                message: messages.error
+                message: translatables.error
             }))
         })
     }
@@ -113,7 +113,7 @@ const Index = () => {
                 <Grid item xs={12} md={6}>
                     <Typography
                         variant="h4"
-                        children="Manage Users"
+                        children={translatables.title.users}
                     />
                 </Grid>
             </Grid>
@@ -121,10 +121,10 @@ const Index = () => {
                 <CardContent>
                     <form onSubmit={handleFilterSubmit}>
                         <Grid container spacing={2}>
-                            <Grid item xs={12} md={5}>
+                            <Grid item xs={12} md={4}>
                                 <Input
-                                    label="Keyword"
-                                    placeholder="Search for name or email"
+                                    label={translatables.texts.keyword}
+                                    placeholder={translatables.texts.search_name_email}
                                     name="keyword"
                                     value={filters.keyword}
                                     onChange={e => handleOnChange(e, setFilters)}
@@ -132,7 +132,7 @@ const Index = () => {
                             </Grid>
                             <Grid item xs={12} md={2}>
                                 <Input
-                                    label="Role"
+                                    label={translatables.texts.role}
                                     select
                                     name="role"
                                     value={filters.role}
@@ -147,7 +147,7 @@ const Index = () => {
                             </Grid>
                             <Grid item xs={12} md={2}>
                                 <Input
-                                    label="Status"
+                                    label={translatables.texts.status}
                                     select
                                     name="status"
                                     value={filters.status}
@@ -162,7 +162,7 @@ const Index = () => {
                             </Grid>
                             <Grid item xs={12} md={2}>
                                 <Input
-                                    label="Sort"
+                                    label={translatables.texts.sort}
                                     select
                                     name="sort"
                                     value={filters.sort}
@@ -170,11 +170,11 @@ const Index = () => {
                                     onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
                                 />
                             </Grid>
-                            <Grid item xs={12} md={1}>
+                            <Grid item xs={12} md={2}>
                                 <Button
                                     type="submit"
                                     variant="contained"
-                                    children="Filter"
+                                    children={translatables.texts.filter}
                                     fullWidth
                                     onClick={handleFilterSubmit}
                                 />
