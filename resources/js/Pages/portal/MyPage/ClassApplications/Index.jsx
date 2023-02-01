@@ -1,15 +1,14 @@
-import { useForm, usePage, Link } from "@inertiajs/inertia-react"
-import { Box, Button, Card, CardContent, Grid, Pagination, Typography } from "@mui/material"
+import { useForm, usePage } from "@inertiajs/inertia-react"
+import { Box, Button, Card, CardContent, Grid, Pagination } from "@mui/material"
 import Input from "../../../../components/forms/Input"
 import { displaySelectOptions, handleOnChange, handleOnSelectChange } from "../../../../helpers/form.helper"
 import ClassApplicationTable from "../components/ClassApplicationTable"
-import routes, {getRoute} from "../../../../helpers/routes.helper"
+import routes from "../../../../helpers/routes.helper"
 import TableLoader from "../../../../components/common/TableLoader"
-import { NoteAdd } from '@mui/icons-material';
 
 const Index = () => {
 
-    const { courseApplications, categoryOptions, typeOptions, keyword, course_type, category, status, sort, page, messages } = usePage().props
+    const { courseApplications, categoryOptions, typeOptions, keyword, course_type, category, status, sort, page } = usePage().props
 
     const sortOptions = [
         { name: 'Title A-Z', value: 'title:asc' },

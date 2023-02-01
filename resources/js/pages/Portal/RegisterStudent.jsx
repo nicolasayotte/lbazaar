@@ -1,18 +1,20 @@
-import { useForm } from "@inertiajs/inertia-react"
+import { useForm, usePage } from "@inertiajs/inertia-react"
 import { Box, Button, Card, CardContent, Container, Divider, Grid, TextField, Typography, FormControl, FormControlLabel, FormLabel, RadioGroup, Radio } from "@mui/material"
 import { actions } from '../../store/slices/ToasterSlice'
 import { useDispatch } from "react-redux"
 import Input from "../../components/forms/Input"
 import routes from "../../helpers/routes.helper"
 import { displaySelectOptions } from "../../helpers/form.helper"
-import React,{useState} from "react"
+import React from "react"
 import { Link } from "@inertiajs/inertia-react"
 
-const RegisterStudent  = ({ countries, errors }) => {
+const RegisterStudent  = () => {
 
     const dispatch = useDispatch()
 
-    const { data, setData, post, processing, reset, clearErrors } = useForm({
+    const { countries } = usePage().props
+
+    const { data, setData, post, processing, errors, reset, clearErrors } = useForm({
         first_name: '',
         last_name: '',
         email: '',

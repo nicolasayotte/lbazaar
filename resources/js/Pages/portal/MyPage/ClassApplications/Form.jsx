@@ -4,7 +4,7 @@ import ClassApplicationForm from "../components/ClassApplicationForm"
 import routes from "../../../../helpers/routes.helper"
 
 
-const Form = ({ auth, countries, errors, messages, categoryOptions, typeOptions, command = null }) => {
+const Form = ({ auth, countries, errors, translatables, categoryOptions, typeOptions, command = null }) => {
     return (
         <>
             <Box sx={{mt:6}}>
@@ -12,7 +12,7 @@ const Form = ({ auth, countries, errors, messages, categoryOptions, typeOptions,
                     auth={auth}
                     countries={countries}
                     errors={errors}
-                    messages={messages}
+                    messages={translatables}
                     routes={routes}
                     categoryOptions={categoryOptions}
                     typeOptions={typeOptions}
