@@ -94,9 +94,6 @@ return [
         ],
         'categories' => 'Categories',
         'classifications' => 'Classifications',
-        'profile' => [
-            'edit' => 'Edit Profile'
-        ],
         'password' => [
             'update' => 'Update Password'
         ],
@@ -161,6 +158,7 @@ return [
         'edit' => 'Edit',
         'edit_category' => 'Edit Category',
         'edit_classification' => 'Edit Classification',
+        'edit_profile' => 'Edit Profile',
         'email' => 'Email',
         'enable' => 'Enable',
         'filter' => 'Filter',
