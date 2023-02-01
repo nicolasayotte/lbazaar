@@ -79,7 +79,8 @@ return [
     'title' => [
         'class' => [
             'applications' => 'Class Applications',
-            'types' => 'Class Types'
+            'application_details' => 'Class Application',
+            'types' => 'Class Types',
         ],
         'users' => 'Manage Users',
         'inquiries' => 'Inquiries',
@@ -124,6 +125,7 @@ return [
         'actions' => 'Actions',
         'admin' => 'Admin',
         'all' => 'All',
+        'approve' => 'Approve',
         'back_to_top' => 'Back to Top Page',
         'cancel' => 'Cancel',
         'category' => 'Category',
@@ -136,6 +138,7 @@ return [
         'create_category' => 'Create Category',
         'create_classification' => 'Create Classification',
         'current_password' => 'Current Password',
+        'deny' => 'Deny',
         'date' => 'Date',
         'date_applied' => 'Date Applied',
         'date_approved' => 'Date Approved',

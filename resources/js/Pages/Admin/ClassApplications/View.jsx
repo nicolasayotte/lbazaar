@@ -11,14 +11,14 @@ const View = () => {
 
     const dispatch = useDispatch()
 
-    const { courseApplication, messages } = usePage().props
+    const { courseApplication, translatables } = usePage().props
 
     const [dialog, setDialog] = useState({
         open: false,
-        title: 'Class Application',
+        title: translatables.title.class.applications,
         text: '',
         url: '',
-        confirmButtonText: 'Confirm',
+        confirmButtonText: translatables.texts.confirm,
         processing: false
     })
 
@@ -41,7 +41,7 @@ const View = () => {
 
         return (
             <TableRow>
-                <TableCell children={`Date ${courseApplication.status}`}/>
+                <TableCell children={translatables.texts[`date_${courseApplication.status.toLowerCase()}`]}/>
                 <TableCell
                     align="right"
                     children={
@@ -58,7 +58,7 @@ const View = () => {
         setDialog(dialog => ({
             ...dialog,
             open: true,
-            text: messages.confirm.class.applications.approve,
+            text: translatables.confirm.class.applications.approve,
             url: getRoute('admin.class.applications.status.update', {
                 id: courseApplication.id,
                 status: 'approve'
@@ -70,7 +70,7 @@ const View = () => {
         setDialog(dialog => ({
             ...dialog,
             open: true,
-            text: messages.confirm.class.applications.deny,
+            text: translatables.confirm.class.applications.deny,
             url: getRoute('admin.class.applications.status.update', {
                 id: courseApplication.id,
                 status: 'deny'
@@ -93,16 +93,16 @@ const View = () => {
     const handleOnDialogConfirm = () => {
         setDialog(dialog => ({
             ...dialog,
-            confirmButtonText: 'Processing',
+            confirmButtonText: translatables.texts.processing,
             processing: true
         }))
 
         Inertia.patch(dialog.url, dialog, {
             onSuccess: () => dispatch(actions.success({
-                message: messages.success.class.applications.status.update
+                message: translatables.success.class.applications.status.update
             })),
             onError: () => dispatch(actions.success({
-                message: messages.error
+                message: translatables.error
             }))
         })
     }
@@ -113,12 +113,12 @@ const View = () => {
                 <Grid item xs={12} md={9}>
                     <Typography
                         variant="h4"
-                        children="Class Application Details"
+                        children={translatables.title.class.application_details}
                         gutterBottom
                     />
                     <Box>
                         <Breadcrumbs>
-                            <Link href={routes["admin.class.applications.index"]} children="Class Applications" />
+                            <Link href={routes["admin.class.applications.index"]} children={translatables.title.class.applications} />
                             <Typography color={'text.primary'} children={courseApplication.title} />
                         </Breadcrumbs>
                     </Box>
@@ -128,7 +128,7 @@ const View = () => {
                     <Grid item container xs={12} md={3} textAlign="right" spacing={1}>
                         <Grid item xs={12} md={6}>
                             <Button
-                                children="Deny"
+                                children={translatables.texts.deny}
                                 size="large"
                                 variant="outlined"
                                 fullWidth
@@ -137,7 +137,7 @@ const View = () => {
                         </Grid>
                         <Grid item xs={12} md={6}>
                             <Button
-                                children="Approve"
+                                children={translatables.texts.approve}
                                 size="large"
                                 variant="contained"
                                 fullWidth
@@ -153,33 +153,33 @@ const View = () => {
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell colSpan={2} children="General Information"/>
+                                    <TableCell colSpan={2} children={translatables.texts.general_information} />
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 <TableRow>
-                                    <TableCell width="10%" children="Title"/>
+                                    <TableCell width="10%" children={translatables.texts.title} />
                                     <TableCell
                                         sx={generalInformationStyle}
                                         children={courseApplication.title}
                                     />
                                 </TableRow>
                                 <TableRow>
-                                    <TableCell width="10%" children="Type"/>
+                                    <TableCell width="10%" children={translatables.texts.type} />
                                     <TableCell
                                         sx={generalInformationStyle}
                                         children={courseApplication.type}
                                     />
                                 </TableRow>
                                 <TableRow>
-                                    <TableCell width="10%" children="Category"/>
+                                    <TableCell width="10%" children={translatables.texts.category} />
                                     <TableCell
                                         sx={generalInformationStyle}
                                         children={courseApplication.category}
                                     />
                                 </TableRow>
                                 <TableRow>
-                                    <TableCell width="10%" children="Language"/>
+                                    <TableCell width="10%" children={translatables.texts.language} />
                                     <TableCell
                                         sx={generalInformationStyle}
                                         children={courseApplication.language}
@@ -192,7 +192,7 @@ const View = () => {
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell children="Content Information"/>
+                                    <TableCell children={translatables.texts.content_information} />
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -210,18 +210,18 @@ const View = () => {
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell colSpan={2} children="Status Information"/>
+                                    <TableCell colSpan={2} children={translatables.texts.status_information} />
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 <TableRow>
-                                    <TableCell children="Status"/>
+                                    <TableCell children={translatables.texts.status} />
                                     <TableCell align="right">
                                         <Chip label={courseApplication.status} size="small" color={statusColors[courseApplication.status]}/>
                                     </TableCell>
                                 </TableRow>
                                 <TableRow>
-                                    <TableCell children="Date Applied"/>
+                                    <TableCell children={translatables.texts.date_applied} />
                                     <TableCell align="right" children={courseApplication.created_at}/>
                                 </TableRow>
                                 {displayApprovalStatus()}
@@ -232,24 +232,20 @@ const View = () => {
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell colSpan={2} children="Teacher Information"/>
+                                    <TableCell colSpan={2} children={translatables.texts.teacher_information} />
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 <TableRow>
-                                    <TableCell children="Name"/>
+                                    <TableCell children={translatables.texts.name} />
                                     <TableCell align="right" children={courseApplication.professor_name}/>
                                 </TableRow>
                                 <TableRow>
-                                    <TableCell children="Email"/>
+                                    <TableCell children={translatables.texts.email} />
                                     <TableCell align="right" children={courseApplication.professor_email}/>
                                 </TableRow>
                                 <TableRow>
-                                    <TableCell children="Classification"/>
-                                    <TableCell align="right" children={courseApplication.professor_classification}/>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell children="Member Since"/>
+                                    <TableCell children={translatables.texts.date_joined} />
                                     <TableCell align="right" children={courseApplication.professor_created_at}/>
                                 </TableRow>
                             </TableBody>
@@ -259,16 +255,16 @@ const View = () => {
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell colSpan={2} children="Pricing Information"/>
+                                    <TableCell colSpan={2} children={translatables.texts.pricing_information} />
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 <TableRow>
-                                    <TableCell width="50%" children="Price"/>
+                                    <TableCell width="50%" children={translatables.texts.price} />
                                     <TableCell align="right" children={courseApplication.price}/>
                                 </TableRow>
                                 <TableRow>
-                                    <TableCell width="50%" children="Points Earned"/>
+                                    <TableCell width="50%" children={translatables.texts.points_earned} />
                                     <TableCell align="right" children={courseApplication.points_earned}/>
                                 </TableRow>
                             </TableBody>
