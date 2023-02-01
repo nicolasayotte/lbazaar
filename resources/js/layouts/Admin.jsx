@@ -8,7 +8,7 @@ import AdminTheme from "../themes/admin.theme"
 
 const Admin = ({children}) => {
 
-    const [drawerWidth, setDrawerWidth] = useState(280)
+    const [drawerWidth, setDrawerWidth] = useState(300)
 
     const { isLoggedIn, title } = usePage().props
 

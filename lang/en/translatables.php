@@ -93,6 +93,7 @@ return [
         ],
         'login' => 'Login',
         'translations' => 'Translations',
+        'settings' => 'Settings'
     ],
     'filters' => [
         'date' => [
