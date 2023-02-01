@@ -3,16 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Inquiry;
 use App\Repositories\InquiryRepository;
+use App\Repositories\TranslationRepository;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class InquiriesController extends Controller
 {
     private $inquiryRepository;
-
-    private $title = 'Inquiries | Admin';
 
     public function __construct()
     {
@@ -21,23 +19,28 @@ class InquiriesController extends Controller
 
     public function index(Request $request)
     {
+        $title = TranslationRepository::getTranslation('title.inquiries.index');
+
         return Inertia::render('Admin/Inquiries/Index', [
             'inquiries' => $this->inquiryRepository->get($request->all()),
             'page'      => @$request['page'] ?? 1,
             'keyword'   => @$request['keyword'] ?? '',
             'sort'      => @$request['sort'] ?? 'created_at:desc',
-            'title'     => $this->title
+            'title'     => $title
         ])->withViewData([
-            'title' => $this->title
+            'title' => $title
         ]);
     }
 
     public function view($id)
     {
+        $title = TranslationRepository::getTranslation('title.inquiries.view');
+
         return Inertia::render('Admin/Inquiries/View', [
-            'inquiry' => $this->inquiryRepository->findOne($id)
+            'inquiry' => $this->inquiryRepository->findOne($id),
+            'title' => $title
         ])->withViewData([
-            'title' => 'View Inquiry | Admin'
+            'title' => $title
         ]);
     }
 }
