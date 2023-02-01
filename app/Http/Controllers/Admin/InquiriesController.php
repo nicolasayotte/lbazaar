@@ -34,7 +34,7 @@ class InquiriesController extends Controller
 
     public function view($id)
     {
-        return Inertia::render('Admin/Inquiries/InquiryView', [
+        return Inertia::render('Admin/Inquiries/View', [
             'inquiry' => $this->inquiryRepository->findOne($id)
         ])->withViewData([
             'title' => 'View Inquiry | Admin'
