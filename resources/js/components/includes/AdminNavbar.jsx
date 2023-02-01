@@ -25,19 +25,19 @@ const AdminNavbar = ({ drawerWidth, window }) => {
 
     const navItems = [
         {
-            name: translatables.title.class.applications,
+            name: translatables.title.class.applications.index,
             link: routes["admin.class.applications.index"],
             icon: <Article />,
             active: component.startsWith('Admin/ClassApplications')
         },
         {
-            name: translatables.title.users,
+            name: translatables.title.users.index,
             link: routes["admin.users.index"],
             icon: <People />,
             active: component.startsWith('Admin/Users')
         },
         {
-            name: translatables.title.inquiries,
+            name: translatables.title.inquiries.index,
             link: routes["admin.inquiries.index"],
             icon: <Inbox />,
             active: component.startsWith('Admin/Inquiries')
@@ -45,16 +45,6 @@ const AdminNavbar = ({ drawerWidth, window }) => {
     ]
 
     const settingsItems = [
-        // {
-        //     name: 'General Settings',
-        //     link: '',
-        //     icon: <Settings />
-        // },
-        // {
-        //     name: 'Email Settings',
-        //     link: '',
-        //     icon: <Mail />
-        // },
         {
             name: translatables.title.categories,
             link: routes["admin.settings.categories.index"],
@@ -67,12 +57,6 @@ const AdminNavbar = ({ drawerWidth, window }) => {
             icon: <LibraryBooks />,
             active: component.startsWith('Admin/Settings/CourseTypes')
         },
-        // {
-        //     name: 'Classifications',
-        //     link: routes["admin.settings.classifications.index"],
-        //     icon: <ManageAccounts />,
-        //     active: component.startsWith('Admin/Settings/Classifications')
-        // },
         {
             name: translatables.title.translations,
             link: routes["admin.settings.translations.index"],

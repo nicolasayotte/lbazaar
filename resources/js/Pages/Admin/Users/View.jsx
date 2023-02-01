@@ -4,47 +4,47 @@ import routes from "../../../helpers/routes.helper"
 
 const View = () => {
 
-    const { user } = usePage().props
+    const { user, translatables } = usePage().props
 
     return (
         <Box>
             <Typography
                 variant="h4"
-                children="User Details"
+                children={translatables.title.users.view}
                 gutterBottom
             />
             <Box sx={{ mb: 2 }}>
                 <Breadcrumbs>
-                    <Link href={routes["admin.users.index"]} children="Manage Users" />
-                    <Typography color={'text.primary'} children="User Details" />
+                    <Link href={routes["admin.users.index"]} children={translatables.title.users.index} />
+                    <Typography color={'text.primary'} children={translatables.title.users.view} />
                 </Breadcrumbs>
             </Box>
             <TableContainer component={Paper}>
                 <Table>
                     <TableBody>
                         <TableRow>
-                            <TableCell children="Name" />
-                            <TableCell align="right" children={user.name} />
+                            <TableCell sx={{ width: { xs: '30%', md: '20%' } }} children={translatables.texts.name} />
+                            <TableCell children={user.name} />
                         </TableRow>
                         <TableRow>
-                            <TableCell children="Email" />
-                            <TableCell align="right" children={user.email} />
+                            <TableCell sx={{ width: { xs: '30%', md: '20%' } }} children={translatables.texts.email} />
+                            <TableCell children={user.email} />
                         </TableRow>
                         <TableRow>
-                            <TableCell children="Roles" />
-                            <TableCell align="right" children={user.roles.join(' / ')} />
+                            <TableCell sx={{ width: { xs: '30%', md: '20%' } }} children={translatables.texts.role} />
+                            <TableCell children={user.roles.join(' / ')} />
                         </TableRow>
                         <TableRow>
-                            <TableCell children="Country" />
-                            <TableCell align="right" children={user.country} />
+                            <TableCell sx={{ width: { xs: '30%', md: '20%' } }} children={translatables.texts.country} />
+                            <TableCell children={user.country} />
                         </TableRow>
                         <TableRow>
-                            <TableCell children="Date Joined" />
-                            <TableCell align="right" children={user.date_joined} />
+                            <TableCell sx={{ width: { xs: '30%', md: '20%' } }} children={translatables.texts.date_joined} />
+                            <TableCell children={user.date_joined} />
                         </TableRow>
                         <TableRow>
-                            <TableCell children="Status" />
-                            <TableCell align="right" children={user.status} />
+                            <TableCell sx={{ width: { xs: '30%', md: '20%' } }} children={translatables.texts.status} />
+                            <TableCell children={user.status} />
                         </TableRow>
                     </TableBody>
                 </Table>

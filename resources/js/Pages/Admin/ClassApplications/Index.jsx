@@ -20,7 +20,7 @@ const Index = () => {
 
     const [dialog, setDialog] = useState({
         open: false,
-        title: translatables.title.class.applications,
+        title: translatables.title.class.applications.index,
         text: '',
         url: '',
         confirmButtonText: 'Confirm',
@@ -123,7 +123,7 @@ const Index = () => {
         <Box>
             <Typography
                 variant="h4"
-                children={translatables.title.class.applications}
+                children={translatables.title.class.applications.index}
                 gutterBottom
             />
             <Card sx={{ mb: 2 }}>

@@ -20,7 +20,7 @@ const Index = () => {
 
     const [dialog, setDialog] = useState({
         open: false,
-        title: translatables.title.users,
+        title: translatables.title.users.index,
         text: '',
         url: ''
     })
@@ -113,7 +113,7 @@ const Index = () => {
                 <Grid item xs={12} md={6}>
                     <Typography
                         variant="h4"
-                        children={translatables.title.users}
+                        children={translatables.title.users.index}
                     />
                 </Grid>
             </Grid>

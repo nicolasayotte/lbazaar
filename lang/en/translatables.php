@@ -78,12 +78,20 @@ return [
     ],
     'title' => [
         'class' => [
-            'applications' => 'Class Applications',
-            'application_details' => 'Class Application',
+            'applications' => [
+                'index' => 'Class Applications',
+                'view' => 'Class Application'
+            ],
             'types' => 'Class Types',
         ],
-        'users' => 'Manage Users',
-        'inquiries' => 'Inquiries',
+        'users' => [
+            'index' => 'Manage Users',
+            'view' => 'User'
+        ],
+        'inquiries' => [
+            'index' => 'Inquiries',
+            'view' => 'Inquiry'
+        ],
         'categories' => 'Categories',
         'classifications' => 'Classifications',
         'profile' => [

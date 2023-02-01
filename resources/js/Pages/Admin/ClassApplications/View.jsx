@@ -15,7 +15,7 @@ const View = () => {
 
     const [dialog, setDialog] = useState({
         open: false,
-        title: translatables.title.class.applications,
+        title: translatables.title.class.applications.view,
         text: '',
         url: '',
         confirmButtonText: translatables.texts.confirm,
@@ -113,12 +113,12 @@ const View = () => {
                 <Grid item xs={12} md={9}>
                     <Typography
                         variant="h4"
-                        children={translatables.title.class.application_details}
+                        children={translatables.title.class.applications.view}
                         gutterBottom
                     />
                     <Box>
                         <Breadcrumbs>
-                            <Link href={routes["admin.class.applications.index"]} children={translatables.title.class.applications} />
+                            <Link href={routes["admin.class.applications.index"]} children={translatables.title.class.applications.index} />
                             <Typography color={'text.primary'} children={courseApplication.title} />
                         </Breadcrumbs>
                     </Box>
