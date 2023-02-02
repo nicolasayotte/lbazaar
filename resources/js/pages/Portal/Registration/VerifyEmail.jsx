@@ -1,8 +1,11 @@
 import { Box, Card, CardContent, Container, Divider, Grid, Typography, Link } from "@mui/material"
 import routes from "../../../helpers/routes.helper"
-import React,{useState} from "react"
+import React from "react"
+import { usePage } from "@inertiajs/inertia-react"
 
-const VerifyEmail  = ({ isEmailVerified }) => {
+const VerifyEmail  = () => {
+
+    const { isEmailVerified } = usePage().props
 
     const notification = (
         <Typography variant="h5">Please verify your email</Typography>

@@ -8,13 +8,13 @@ import InquiryTable from "./components/InquiryTable"
 
 const Index = () => {
 
-    const { inquiries, page, keyword, sort } = usePage().props
+    const { inquiries, page, keyword, sort, translatables } = usePage().props
 
     const sortItems = [
-        { name: 'Name A-Z', value: 'name:asc' },
-        { name: 'Name Z-A', value: 'name:desc' },
-        { name: 'Date - Oldest', value: 'created_at:asc' },
-        { name: 'Date - Newest', value: 'created_at:desc' }
+        { name: translatables.filters.name.asc, value: 'name:asc' },
+        { name: translatables.filters.name.desc, value: 'name:desc' },
+        { name: translatables.filters.date.asc, value: 'created_at:asc' },
+        { name: translatables.filters.date.desc, value: 'created_at:desc' }
     ]
 
     const { data: filters, setData: setFilters, get, processing, transform } = useForm({
@@ -42,7 +42,7 @@ const Index = () => {
         <Box>
             <Typography
                 variant="h4"
-                children="Inquiries"
+                children={translatables.title.translations}
                 gutterBottom
             />
             <Card sx={{ mb: 2 }}>
@@ -51,8 +51,8 @@ const Index = () => {
                         <Grid container spacing={2}>
                             <Grid item xs={12} md={8}>
                                 <Input
-                                    label="Keyword"
-                                    placeholder="Search for name, email or subject"
+                                    label={translatables.texts.keyword}
+                                    placeholder={translatables.texts.search_name_email_subject}
                                     size="small"
                                     name="keyword"
                                     autoFocus
@@ -62,7 +62,7 @@ const Index = () => {
                             </Grid>
                             <Grid item xs={12} md={2}>
                                 <Input
-                                    label="Sort By"
+                                    label={translatables.texts.sort}
                                     select
                                     name="sort"
                                     children={displaySelectOptions(sortItems, 'value', 'name')}
@@ -73,7 +73,7 @@ const Index = () => {
                             <Grid item xs={12} md={2}>
                                 <Button
                                     variant="contained"
-                                    children="Filter"
+                                    children={translatables.texts.filter}
                                     fullWidth
                                     type="submit"
                                     onClick={handleFilterSubmit}

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ProfileRequest;
 use App\Http\Requests\UpdatePasswordRequest;
 use App\Models\Country;
+use App\Repositories\TranslationRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -14,8 +15,6 @@ use Inertia\Inertia;
 class ProfileController extends Controller
 {
     private $userRepository;
-
-    private $title = 'Profile | Admin';
 
     public function __construct()
     {
@@ -26,11 +25,13 @@ class ProfileController extends Controller
     {
         $countries = Country::all();
 
+        $title = TranslationRepository::getTranslation('texts.profile');
+
         return Inertia::render('Admin/Profile/Index', [
             'countries' => $countries,
-            'title'     => $this->title
+            'title'     => $title
         ])->withViewData([
-            'title' => $this->title
+            'title' => $title
         ]);
     }
 

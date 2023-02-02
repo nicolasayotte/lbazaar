@@ -5,7 +5,7 @@ import Input from "../../../../components/forms/Input"
 import { handleOnChange, displaySelectOptions } from "../../../../helpers/form.helper"
 import { actions } from "../../../../store/slices/ToasterSlice"
 
-const ProfileForm = ({ errors, auth, countries, messages, routes }) => {
+const ProfileForm = ({ errors, auth, countries, translatables, routes }) => {
 
     const dispatch = useDispatch()
 
@@ -23,10 +23,10 @@ const ProfileForm = ({ errors, auth, countries, messages, routes }) => {
             preserveScroll: true,
             errorBag: 'profile',
             onSuccess: () => dispatch(actions.success({
-                message: messages.success.profile
+                message: translatables.success.profile
             })),
             onError: () => dispatch(actions.error({
-                message: messages.error
+                message: translatables.error
             }))
         })
     }
@@ -35,11 +35,17 @@ const ProfileForm = ({ errors, auth, countries, messages, routes }) => {
         <Card key="Profile Form Card">
             <form onSubmit={handleSubmit}>
                 <CardContent sx={{ p: 4 }}>
-                    <Typography fontFamily="inherit" variant="h5" component="div" sx={{ mb: 4 }}>Edit Profile</Typography>
+                    <Typography
+                        fontFamily="inherit"
+                        variant="h5"
+                        component="div"
+                        sx={{ mb: 4 }}
+                        children={translatables.texts.edit_profile}
+                    />
                     <Grid container spacing={3}>
                         <Grid item xs={12} md={6}>
                             <Input
-                                label="First Name"
+                                label={translatables.texts.first_name}
                                 name="first_name"
                                 value={data.first_name}
                                 onChange={e => handleOnChange(e, setData)}
@@ -48,7 +54,7 @@ const ProfileForm = ({ errors, auth, countries, messages, routes }) => {
                         </Grid>
                         <Grid item xs={12} md={6}>
                             <Input
-                                label="Last Name"
+                                label={translatables.texts.last_name}
                                 name="last_name"
                                 value={data.last_name}
                                 onChange={e => handleOnChange(e, setData)}
@@ -57,7 +63,7 @@ const ProfileForm = ({ errors, auth, countries, messages, routes }) => {
                         </Grid>
                         <Grid item xs={12}>
                             <Input
-                                label="Email"
+                                label={translatables.texts.email}
                                 disabled
                                 name="email"
                                 value={data.email}
@@ -66,7 +72,7 @@ const ProfileForm = ({ errors, auth, countries, messages, routes }) => {
                         </Grid>
                         <Grid item xs={12}>
                             <Input
-                                label="Country"
+                                label={translatables.texts.country}
                                 select
                                 name="country_id"
                                 value={data.country_id}
@@ -82,7 +88,8 @@ const ProfileForm = ({ errors, auth, countries, messages, routes }) => {
                                 variant="contained"
                                 onClick={handleSubmit}
                                 disabled={processing}
-                            >Update</Button>
+                                children={translatables.texts.update_profile}
+                            />
                         </Grid>
                     </Grid>
                 </CardContent>

@@ -1,4 +1,4 @@
-import { Link } from "@inertiajs/inertia-react"
+import { Link, usePage } from "@inertiajs/inertia-react"
 import { Block, Check, Search } from "@mui/icons-material"
 import { IconButton, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
 import EmptyCard from "../../../../components/common/EmptyCard"
@@ -6,10 +6,12 @@ import { getRoute } from "../../../../helpers/routes.helper"
 
 const UserTable = ({ data, handleOnEnable, handleOnDisable }) => {
 
+    const { translatables } = usePage().props
+
     const enableButton = (id, isDisabled) => (
         <IconButton
             size="small"
-            title="Enable"
+            title={translatables.texts.enable}
             disabled={isDisabled}
             onClick={() => handleOnEnable(id)}
         >
@@ -20,7 +22,7 @@ const UserTable = ({ data, handleOnEnable, handleOnDisable }) => {
     const disableButton = (id, isDisabled) => (
         <IconButton
             size="small"
-            title="Disabled"
+            title={translatables.texts.disable}
             disabled={isDisabled}
             onClick={() => handleOnDisable(id)}
         >
@@ -38,7 +40,7 @@ const UserTable = ({ data, handleOnEnable, handleOnDisable }) => {
             <TableCell align="center">
                 <Stack direction="row" spacing={1} justifyContent="center">
                     <Link href={getRoute('admin.users.view', { id: row.id })}>
-                        <IconButton size="small" title="View">
+                        <IconButton size="small" title={translatables.texts.view}>
                             <Search fontSize="inherit" />
                         </IconButton>
                     </Link>
@@ -58,12 +60,12 @@ const UserTable = ({ data, handleOnEnable, handleOnDisable }) => {
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell children="Name"/>
-                        <TableCell children="Email"/>
-                        <TableCell children="Role" align="center"/>
-                        <TableCell children="Status" align="center"/>
-                        <TableCell children="Date Joined" align="center"/>
-                        <TableCell children="Actions" align="center"/>
+                        <TableCell children={translatables.texts.name} />
+                        <TableCell children={translatables.texts.email} />
+                        <TableCell children={translatables.texts.role} align="center" />
+                        <TableCell children={translatables.texts.status} align="center" />
+                        <TableCell children={translatables.texts.date_joined} align="center" />
+                        <TableCell children={translatables.texts.actions} align="center" />
                     </TableRow>
                 </TableHead>
                 <TableBody>

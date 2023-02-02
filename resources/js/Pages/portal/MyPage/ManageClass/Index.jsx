@@ -9,7 +9,7 @@ import { NoteAdd } from '@mui/icons-material';
 
 const Index = () => {
 
-    const { courses, categoryOptions, typeOptions, keyword, course_type, category, status, sort, page, messages } = usePage().props
+    const { courses, categoryOptions, typeOptions, keyword, course_type, category, status, sort, page } = usePage().props
 
     const sortOptions = [
         { name: 'Title A-Z', value: 'courses.title:asc' },

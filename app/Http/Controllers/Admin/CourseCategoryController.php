@@ -6,14 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CategoryFormRequest;
 use App\Models\CourseCategory;
 use App\Repositories\CourseCategoryRepository;
+use App\Repositories\TranslationRepository;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class CourseCategoryController extends Controller
 {
     private $courseCategoryRepository;
-
-    private $title = 'Categories | Admin';
 
     public function __construct()
     {
@@ -22,14 +21,16 @@ class CourseCategoryController extends Controller
 
     public function index(Request $request)
     {
+        $title = TranslationRepository::getTranslation('title.categories');
+
         return Inertia::render('Admin/Settings/CourseCategories/Index', [
             'categories' => $this->courseCategoryRepository->get($request->all()),
             'keyword'    => @$request['keyword'] ?? '',
             'sort'       => @$request['sort'] ?? 'created_at:desc',
             'page'       => @$request['page'] ?? 1,
-            'title'      => $this->title
+            'title'      => $title
         ])->withViewData([
-            'title' => $this->title,
+            'title' => $title,
         ]);
     }
 

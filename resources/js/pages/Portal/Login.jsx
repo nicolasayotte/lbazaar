@@ -7,11 +7,11 @@ import routes from "../../helpers/routes.helper"
 import { displaySelectOptions } from "../../helpers/form.helper"
 import React,{useState} from "react"
 
-const Login = ({errors}) => {
+const Login = () => {
 
     const dispatch = useDispatch()
 
-    const { data, processing, setData, post } = useForm({
+    const { data, processing, setData, post, errors } = useForm({
         email: '',
         password: ''
     })
@@ -77,7 +77,7 @@ const Login = ({errors}) => {
                                     />
                                 </Box>
                                 <Box sx={{ textAlign: 'center', mt: 3, mb: 3 }}>
-                                    <Grid container justifyContent="space-between">  
+                                    <Grid container justifyContent="space-between">
                                         <Link href={routes["forgot.password.index"]}><Button>Forgot password?</Button></Link>
                                     </Grid>
                                 </Box>

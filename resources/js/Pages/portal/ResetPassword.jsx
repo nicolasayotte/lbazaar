@@ -1,13 +1,15 @@
-import { useForm } from "@inertiajs/inertia-react"
+import { useForm, usePage } from "@inertiajs/inertia-react"
 import { Box, Button, Card, CardContent, Grid, Typography, Container } from "@mui/material"
 import { useDispatch } from "react-redux"
 import Input from "../../components/forms/Input"
 import { actions } from "../../store/slices/ToasterSlice"
 import { getRoute } from "../../helpers/routes.helper"
 
-const ResetPassword = ({ errors, messages, token }) => {
+const ResetPassword = () => {
 
     const dispatch = useDispatch()
+
+    const { errors, translatables, token } = usePage().props
 
     const email = new URLSearchParams(window.location.search).get('email');
 
@@ -28,11 +30,11 @@ const ResetPassword = ({ errors, messages, token }) => {
         patch(getRoute('password.reset.update', {token}), {
             onSuccess: () => {
                 dispatch(actions.success({
-                    message: messages.success.password
+                    message: translatables.success.password
                 }))
             },
             onError: () => dispatch(actions.error({
-                message: messages.error
+                message: translatables.error
             }))
         })
     }

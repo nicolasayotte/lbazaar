@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\CourseCategoryController;
 use App\Http\Controllers\Admin\CourseTypeController;
 use App\Http\Controllers\Admin\InquiriesController as AdminInquiriesController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\TranslationController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Portal\AuthPortalController;
 use App\Http\Controllers\Portal\CourseApplicationController as PortalClassApplicationController;
@@ -34,8 +35,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
 # Top Page
 Route::get('/', [TopPageController::class, 'index'])->name('top');
+
+# Set Locale
+Route::get('lang/{locale}', [TopPageController::class, 'setLanguage'])->name('language.set');
 
 # Inquiries
 Route::get('/inquiries', [InquiriesController::class, 'index'])->name('inquiries.index');
@@ -101,11 +106,18 @@ Route::prefix('admin')->name('admin.')->group(function() {
                 Route::patch('/update', [CourseTypeController::class, 'update'])->name('update');
             });
 
+            # Classifications
             Route::prefix('classifications')->name('classifications.')->group(function() {
                 Route::get('/', [ClassificationController::class, 'index'])->name('index');
                 Route::post('/', [ClassificationController::class, 'store'])->name('store');
                 Route::patch('/{id}/update', [ClassificationController::class, 'update'])->name('update');
                 Route::delete('/{id}/delete', [ClassificationController::class, 'delete'])->name('delete');
+            });
+
+            # Translations
+            Route::prefix('translations')->name('translations.')->group(function() {
+                Route::get('/', [TranslationController::class, 'index'])->name('index');
+                Route::patch('/', [TranslationController::class, 'update'])->name('update');
             });
         });
     });

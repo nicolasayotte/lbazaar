@@ -1,18 +1,14 @@
-import { Inertia } from "@inertiajs/inertia"
-import { Link, usePage } from "@inertiajs/inertia-react"
-import { Box, Breadcrumbs, Button, Chip, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
+import { usePage } from "@inertiajs/inertia-react"
+import { Box, Chip, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
 import { useState } from "react"
 import { useDispatch } from "react-redux"
 import BackButton from "../../../../components/common/BackButton"
-import ConfirmationDialog from "../../../../components/common/ConfirmationDialog"
-import routes, { getRoute } from "../../../../helpers/routes.helper"
-import { actions } from "../../../../store/slices/ToasterSlice"
 
 const View = () => {
 
     const dispatch = useDispatch()
 
-    const { courseApplication, messages } = usePage().props
+    const { courseApplication } = usePage().props
 
     const [dialog, setDialog] = useState({
         open: false,
@@ -58,7 +54,7 @@ const View = () => {
     return (
         <Box>
             <Grid container spacing={2} sx={{mt:4}}>
-                <Grid item xs={12} lg={8} xl={9}>
+                <Grid item xs={12} lg={8}>
                     <TableContainer component={Paper} sx={{ mb: 2 }}>
                         <Table>
                             <TableHead>
@@ -115,7 +111,7 @@ const View = () => {
                         </Table>
                     </TableContainer>
                 </Grid>
-                <Grid item xs={12} lg={4} xl={3}>
+                <Grid item xs={12} lg={4}>
                     <TableContainer component={Paper} sx={{ mb: 2 }}>
                         <Table>
                             <TableHead>

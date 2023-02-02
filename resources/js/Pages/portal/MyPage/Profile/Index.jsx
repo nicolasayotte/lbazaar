@@ -4,8 +4,7 @@ import ProfileForm from "../components/ProfileForm"
 import PasswordForm from "../../../../components/common/forms/PasswordForm"
 import { Box } from "@mui/material"
 
-const Index = ({ auth, countries, errors, messages }) => {
-
+const Index = ({ auth, countries, errors, translatables }) => {
     return (
         <>
             <Box sx={{mt:6}}>
@@ -13,12 +12,12 @@ const Index = ({ auth, countries, errors, messages }) => {
                     auth={auth}
                     countries={countries}
                     errors={errors.profile}
-                    messages={messages}
+                    messages={translatables}
                     routes={routes}
                 />
                 <PasswordForm
                     errors={errors.passwords}
-                    messages={messages}
+                    messages={translatables}
                     routes={routes}
                     logoutUrl='portal.logout'
                 />

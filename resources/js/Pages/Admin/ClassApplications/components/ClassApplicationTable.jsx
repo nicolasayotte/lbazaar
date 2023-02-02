@@ -1,10 +1,12 @@
-import { Link } from "@inertiajs/inertia-react"
+import { Link, usePage } from "@inertiajs/inertia-react"
 import { Block, Check, Search } from "@mui/icons-material"
 import { Chip, IconButton, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
 import EmptyCard from "../../../../components/common/EmptyCard"
 import { getRoute } from "../../../../helpers/routes.helper"
 
 const ClassApplicationTable = ({ data, handleOnApprove, handleOnDeny }) => {
+
+    const { translatables } = usePage().props
 
     const displayTableData = rows => rows.map((row, index) => {
 
@@ -21,7 +23,7 @@ const ClassApplicationTable = ({ data, handleOnApprove, handleOnDeny }) => {
                 <>
                     <IconButton
                         size="small"
-                        title="Enable"
+                        title={translatables.texts.enable}
                         disabled={disabled}
                         onClick={() => handleOnApprove(id)}
                     >
@@ -29,7 +31,7 @@ const ClassApplicationTable = ({ data, handleOnApprove, handleOnDeny }) => {
                     </IconButton>
                     <IconButton
                         size="small"
-                        title="Disabled"
+                        title={translatables.texts.disable}
                         disabled={disabled}
                         onClick={() => handleOnDeny(id)}
                     >
@@ -53,7 +55,7 @@ const ClassApplicationTable = ({ data, handleOnApprove, handleOnDeny }) => {
                 <TableCell align="center">
                     <Stack direction="row" spacing={1} justifyContent="center">
                         <Link href={getRoute('admin.class.applications.view', { id: row.id })}>
-                            <IconButton size="small">
+                            <IconButton size="small" title={translatables.texts.view}>
                                 <Search fontSize="inherit"/>
                             </IconButton>
                         </Link>
@@ -74,14 +76,14 @@ const ClassApplicationTable = ({ data, handleOnApprove, handleOnDeny }) => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell children="Title"/>
-                            <TableCell children="Teacher"/>
-                            <TableCell align="center" children="Type"/>
-                            <TableCell align="center" children="Category"/>
-                            <TableCell align="center" children="Price"/>
-                            <TableCell align="center" children="Date Applied"/>
-                            <TableCell align="center" children="Status"/>
-                            <TableCell align="center" children="Actions"/>
+                            <TableCell children={translatables.texts.title} />
+                            <TableCell children={translatables.texts.teacher} />
+                            <TableCell align="center" children={translatables.texts.type} />
+                            <TableCell align="center" children={translatables.texts.category} />
+                            <TableCell align="center" children={translatables.texts.price} />
+                            <TableCell align="center" children={translatables.texts.date_applied} />
+                            <TableCell align="center" children={translatables.texts.status} />
+                            <TableCell align="center" children={translatables.texts.actions} />
                         </TableRow>
                     </TableHead>
                     <TableBody>

@@ -1,16 +1,18 @@
-import { useForm } from "@inertiajs/inertia-react"
-import { Box, Button, Card, CardContent, Container, Divider, Grid, TextField, Typography } from "@mui/material"
+import { useForm, usePage } from "@inertiajs/inertia-react"
+import { Box, Button, Card, CardContent, Container, Grid, Typography } from "@mui/material"
 import { actions } from '../../store/slices/ToasterSlice'
 import { useDispatch } from "react-redux"
 import routes from "../../helpers/routes.helper"
 import Input from "../../components/forms/Input"
 import Header from "../../components/common/Header"
 
-const Inquiries = ({ messages }) => {
+const Inquiries = () => {
+
+    const { translatables } = usePage().props
 
     const dispatch = useDispatch()
 
-    const { data, setData, post, processing, reset, errors, clearErrors } = useForm({
+    const { data, setData, post, processing, reset, errors, clearErrors, } = useForm({
         name: '',
         email: '',
         subject: '',
@@ -30,11 +32,11 @@ const Inquiries = ({ messages }) => {
                 clearErrors()
 
                 dispatch(actions.success({
-                    message: messages.success.inquiry
+                    message: translatables.success.inquiry
                 }))
             },
             onError: () => dispatch(actions.error({
-                message: messages.error
+                message: translatables.error
             }))
         });
     }
