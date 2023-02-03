@@ -25,7 +25,7 @@ class ProfileController extends Controller
     public function index()
     {
         $countries = Country::all();
-        
+
         return Inertia::render('Portal/MyPage/Profile/Index', [
             'countries' => $countries,
             'title' => 'My Page | Profile'
@@ -47,7 +47,10 @@ class ProfileController extends Controller
     {
         $user = $this->userRepository->findOrFail(auth()->user()->id);
 
-        $user->update(['password' => bcrypt($request['new_password'])]);
+        $user->update([
+            'password' => bcrypt($request['new_password']),
+            'is_temp_password' => false,
+        ]);
 
         return redirect()->back();
     }

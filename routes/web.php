@@ -150,7 +150,7 @@ Route::prefix('portal')->name('portal.')->group(function() {
     # Portal Authentication
     Route::get('/login', [AuthPortalController::class, 'login'])->name('login');
     Route::post('/authenticate', [AuthPortalController::class, 'authenticate'])->name('authenticate');
-
+    Route::get('/update-temp-password', [AuthPortalController::class, 'updateTempPassword'])->name('update.temp.password');
     Route::middleware(['auth'])->group(function() {
         # Logout
         Route::post('/logout', [AuthPortalController::class, 'logout'])->name('logout');
