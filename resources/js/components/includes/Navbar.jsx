@@ -88,6 +88,8 @@ const Navbar = (props) => {
         ))
     )
 
+    const appNavbar = document.getElementById('appNavbar');
+
     return (
         <>
             <AppBar position="fixed" color="primary" id="appNavbar">
@@ -126,7 +128,7 @@ const Navbar = (props) => {
                     {drawer}
                 </Drawer>
             </Box>
-            <Box sx={{ height: document.getElementById('appNavbar').clientHeight + 'px' }} />
+            <Box sx={{ height: appNavbar && appNavbar.clientHeight + 'px' }} />
         </>
     )
 }
