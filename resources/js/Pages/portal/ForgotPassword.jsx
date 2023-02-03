@@ -72,7 +72,7 @@ const ForgotPassword = () => {
                         </CardContent>
                     </Card>
                     <Box sx={{ textAlign: 'center', mt: 3 }}>
-                        <Link href={routes["portal.login"]}><Button>Back to login</Button></Link>
+                        <Link href={routes["portal.login"]}><Button>Back to sign in</Button></Link>
                     </Box>
                 </Grid>
             </Grid>
