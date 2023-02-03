@@ -1,5 +1,5 @@
 import { Link } from "@inertiajs/inertia-react"
-import { Block, NoteAdd, Search } from "@mui/icons-material"
+import { NoteAdd, Search } from "@mui/icons-material"
 import { Chip, IconButton, Paper, Tooltip, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
 import EmptyCard from "../../../../components/common/EmptyCard"
 import routes, { getRoute } from "../../../../helpers/routes.helper"
@@ -20,14 +20,14 @@ const ClassApplicationTable = ({ data }) => {
             'Denied'  : 'Application denied'
         }
 
-        const displayCreateClass = (status, isCourseCreated) => {
+        const displayCreateClass = (id, status, isCourseCreated) => {
             return (
                 <Tooltip title={isCourseCreated ? 'Class already created' : title[status]}>
-                    <span>
-                        <IconButton size="small" color="success" disabled={(status != 'Approved' || isCourseCreated)}>
+                    <IconButton size="small" color="success" disabled={(status != 'Approved' || isCourseCreated)}>
+                        <Link href={getRoute('course.create', { id })}>
                             <NoteAdd fontSize="inherit"/>
-                        </IconButton>
-                    </span>
+                        </Link>
+                    </IconButton>
                 </Tooltip>
             )
         }
@@ -48,7 +48,7 @@ const ClassApplicationTable = ({ data }) => {
                                 <Search fontSize="inherit"/>
                             </IconButton>
                         </Link>
-                        {displayCreateClass(row.status, row.isCourseCreated)}
+                        {displayCreateClass(row.id, row.status, row.isCourseCreated)}
                     </Stack>
                 </TableCell>
             </TableRow>

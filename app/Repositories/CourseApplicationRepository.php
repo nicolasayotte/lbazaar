@@ -116,4 +116,13 @@ class CourseApplicationRepository extends BaseRepository
                 'approved_at' => null
             ]);
     }
+
+    public function findOneApproved($id)
+    {
+        return $this->model
+                    ->where('approved_at', '!=', NULL)
+                    ->where('created_at', '!=', NULL)
+                    ->where('id', $id)
+                    ->firstOrFail();
+    }
 }

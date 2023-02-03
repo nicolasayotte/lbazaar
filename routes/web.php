@@ -124,14 +124,20 @@ Route::prefix('admin')->name('admin.')->group(function() {
 });
 
 # Courses
-Route::prefix('courses')->name('course.')->group(function() {
+Route::prefix('classes')->name('course.')->group(function() {
     Route::get('/', [CourseController::class, 'index'])->name('index');
-    Route::get('/details/{id}', [CourseController::class, 'details'])->name('details');
-    Route::middleware('auth')->group(function() {
-        Route::get('/feedback/{id}', [CourseFeedbackController::class, 'index'])->name('feedback.index');
-        Route::post('/feedback/{id}', [CourseFeedbackController::class, 'store'])->name('feedback.store');
-    });
+    Route::get('/{id}', [CourseController::class, 'details'])->name('details');
 
+    Route::middleware('auth')->group(function() {
+        # Course Feedback
+        Route::get('/{id}/feedback', [CourseFeedbackController::class, 'index'])->name('feedback.index');
+        Route::post('/{id}/feedback', [CourseFeedbackController::class, 'store'])->name('feedback.store');
+
+        Route::middleware(['auth', 'teacher'])->group(function() {
+            # Create Course
+            Route::get('/{id}/create', [CourseController::class, 'create'])->name('create');
+        });
+    });
 });
 
 # User Registration
@@ -186,6 +192,7 @@ Route::get('/mail', function() {
 
 # Profile
 Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function() {
+
     Route::get('/', function(Request $request) {
         return redirect()->route(@$request->user() ? 'mypage.profile.index' : 'portal.login');
     });
