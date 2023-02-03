@@ -1,14 +1,22 @@
 import { Link, usePage } from "@inertiajs/inertia-react";
-import { ImportantDevicesRounded, Menu as MenuIcon } from "@mui/icons-material"
-import { AppBar, Box, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemText, Toolbar, Typography, Tooltip, Avatar, Container, useRadioGroup } from "@mui/material"
+import { Menu as MenuIcon } from "@mui/icons-material"
+import { AppBar, Box, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemText, Stack, Toolbar, Typography } from "@mui/material"
 import { useState } from "react"
 import routes from "../../helpers/routes.helper"
 
-const Navbar = (props) => {
+const Navbar = () => {
 
-    const { isLoggedIn, auth } = usePage().props
+    const { isLoggedIn, auth, window } = usePage().props
 
     const [showDrawer, setShowDrawer] = useState(false);
+
+    const drawerWidth = 300
+
+    const container = window !== undefined ? () => window().document.body : undefined;
+
+    const toggleDrawer = () => {
+        setShowDrawer(!showDrawer)
+    }
 
     const navItems = [
         {
@@ -25,50 +33,81 @@ const Navbar = (props) => {
         }
     ]
 
-    const signInButton = (
-        <Box sx={{ flexGrow: 0, display: { xs: "none", sm: "flex" } }}>
-            <ListItemButton>
-                <Link href={routes["register.index"]}>Sign Up</Link>
-            </ListItemButton>
-            <ListItemButton>
-                <Link href={routes["portal.login"]}>Sign In</Link>
-            </ListItemButton>
-        </Box>
-    )
+    const authNavItems = [
+        {
+            name: 'Sign Up',
+            link: routes["register.index"],
+            auth: false
+        },
+        {
+            name: 'Sign In',
+            link: routes["portal.login"],
+            auth: false
+        },
+        {
+            name: 'Profile',
+            link: routes["mypage.profile.index"],
+            auth: true
+        },
+        {
+            name: 'Sign Out',
+            link: routes["portal.logout"],
+            auth: true,
+            method: 'POST'
+        }
+    ]
 
-    const signOutButton = (
-        <Box sx={{ flexGrow: 0, display: { xs: "none", sm: "flex" } }}>
-            <ListItemButton>
-                <Link href={routes["mypage.profile.index"]}>Profile</Link>
-            </ListItemButton>
-            <ListItemButton>
-                <Link as="span" method="POST" href={routes["portal.logout"]}>Sign Out</Link>
-            </ListItemButton>
-        </Box>
-    )
+    const authButtons = (isLoggedIn, ParentComponent = null, parentProps = {}) => authNavItems.map(item => {
 
-    const drawerWidth = 240
+        const itemProps = item.method && { method: item.method }
 
-    const { window } = props
+        const output = (
+            <Link
+                as="div"
+                style={{
+                    cursor: 'pointer',
+                    width: '100%',
+                    minWidth: '100px',
+                    textAlign: 'center'
+                }}
+                href={item.link}
+                key={item.name}
+                {...itemProps}
+            >
+                <ListItemButton>
+                    <ListItemText primary={item.name} sx={{ textAlign: { xs: 'left', md: 'center' } }} />
+                </ListItemButton>
+            </Link>
+        )
 
-    const container = window !== undefined ? () => window().document.body : undefined;
-
-    const toggleDrawer = () => {
-        setShowDrawer(!showDrawer)
-    }
+        if (isLoggedIn === item.auth) {
+            return ParentComponent
+            ? <ParentComponent {...parentProps} key={item.name} children={output} />
+            : output
+        }
+    })
 
     const drawer = (
-        <Box onClick={toggleDrawer} sx={{ textAlign: "center" }}>
-            <Typography variant="h6" sx={{ textAlign: "center", my: 4 }}>L-Earning Bazaar</Typography>
+        <Box onClick={toggleDrawer}>
+            <Toolbar>
+                <Typography
+                    variant="h5"
+                    py={3}
+                    children="L-Earning Bazaar"
+                />
+            </Toolbar>
             <Divider />
             <List>
                 {navItems.map(item => (
                     <ListItem key={item.name} disablePadding>
-                        <ListItemButton>
-                            <ListItemText primary={item.name} />
-                        </ListItemButton>
+                        <Link href={item.link} style={{ width: '100%' }}>
+                            <ListItemButton>
+                                <ListItemText primary={item.name} />
+                            </ListItemButton>
+                        </Link>
                     </ListItem>
                 ))}
+                { authButtons(isLoggedIn, ListItem, {disablePadding: true}) }
             </List>
         </Box>
     )
@@ -108,7 +147,9 @@ const Navbar = (props) => {
                     >
                         <MenuIcon />
                     </IconButton>
-                    { isLoggedIn? signOutButton : signInButton }
+                    <Stack display={{ xs: 'none', md: 'flex' }} direction="row" spacing={1}>
+                        { authButtons(isLoggedIn) }
+                    </Stack>
                 </Toolbar>
             </AppBar>
             <Box>

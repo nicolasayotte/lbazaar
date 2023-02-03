@@ -62,7 +62,7 @@ const MyPage = ({ page }) => {
                 <ListItem key={item.name}>
                     <ListItemButton selected={item.active}>
                         {
-                            item.icon &&
+                            item.icon && !openMobileDrawer &&
                             <ListItemIcon children={item.icon} />
                         }
                         <Link
@@ -92,30 +92,35 @@ const MyPage = ({ page }) => {
     const sidebarLink = (
         <List>
             {menu}
-            <ListItem>
-                {logoutBtn}
-            </ListItem>
+            {
+                !openMobileDrawer &&
+                <ListItem>
+                    {logoutBtn}
+                </ListItem>
+            }
         </List>
     )
 
     const mobileDrawer = (
-        <Drawer
-            variant="temporary"
-            anchor="left"
-            container={container}
-            open={openMobileDrawer}
-            onClose={toggleMobileDrawer}
-            sx={{
-                display: { xs: 'block', md: 'none' },
-                '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-            }}
-        >
-            <Toolbar>
-                <Typography variant="body" py={3} children={myPageTitle} />
-            </Toolbar>
-            <Divider />
-           {sidebarLink}
-        </Drawer>
+        <Box onClick={toggleMobileDrawer}>
+            <Drawer
+                variant="temporary"
+                anchor="left"
+                container={container}
+                open={openMobileDrawer}
+                onClose={toggleMobileDrawer}
+                sx={{
+                    display: { xs: 'block', md: 'none' },
+                    '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+                }}
+            >
+                <Toolbar>
+                    <Typography variant="h5" py={3} children="My Page" />
+                </Toolbar>
+                <Divider />
+                {sidebarLink}
+            </Drawer>
+        </Box>
     )
 
     return (
