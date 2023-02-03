@@ -31,7 +31,7 @@ const Navbar = (props) => {
                 <Link href={routes["register.index"]}>Sign Up</Link>
             </ListItemButton>
             <ListItemButton>
-                <Link href={routes["portal.login"]}>Login</Link>
+                <Link href={routes["portal.login"]}>Sign In</Link>
             </ListItemButton>
         </Box>
     )
@@ -90,7 +90,7 @@ const Navbar = (props) => {
 
     return (
         <>
-            <AppBar position="static" color="primary">
+            <AppBar position="fixed" color="primary" id="appNavbar">
                 <Toolbar>
                     <Typography variant="h6" sx={{ my: 3, mr: 4 }}>L-Earning Bazaar</Typography>
                     <Box sx={{ flexGrow: 1, display: { xs: "none", sm: "flex" } }}>
@@ -126,6 +126,7 @@ const Navbar = (props) => {
                     {drawer}
                 </Drawer>
             </Box>
+            <Box sx={{ height: document.getElementById('appNavbar').clientHeight + 'px' }} />
         </>
     )
 }
