@@ -7,7 +7,7 @@ import { Box } from "@mui/material"
 const Index = ({ auth, countries, errors, translatables }) => {
     return (
         <>
-            <Box sx={{mt:6}}>
+            <Box>
                 <ProfileForm
                     auth={auth}
                     countries={countries}
