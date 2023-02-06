@@ -1,15 +1,15 @@
 import { useForm } from "@inertiajs/inertia-react"
-import { Box, Button, Card, CardContent, Grid, Typography } from "@mui/material"
+import { Button, Grid } from "@mui/material"
 import { useDispatch } from "react-redux"
 import Input from "../../forms/Input"
 import { actions } from "../../../store/slices/ToasterSlice"
 import { handleOnChange } from "../../../helpers/form.helper"
 
-const BasePasswordForm = ({ errors, messages: translatables, routes, redirectUrl }) => {
+const BasePasswordForm = ({ errors, messages: translatables, routes }) => {
 
     const dispatch = useDispatch()
 
-    const { data, setData, patch, processing, post } = useForm('PasswordUpdateForm', {
+    const { data, setData, patch, processing } = useForm('PasswordUpdateForm', {
         new_password: '',
         new_password_confirmation: ''
     })
@@ -23,7 +23,6 @@ const BasePasswordForm = ({ errors, messages: translatables, routes, redirectUrl
                 dispatch(actions.success({
                     message: translatables.success.password
                 }))
-                navigate(routes[redirectUrl]);
             },
             onError: () => dispatch(actions.error({
                 message: translatables.error
