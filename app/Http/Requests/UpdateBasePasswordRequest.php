@@ -28,4 +28,17 @@ class UpdateBasePasswordRequest extends FormRequest
             'new_password_confirmation' => 'required'
         ];
     }
+
+    /**
+     * Get custom attributes for validator errors.
+     *
+     * @return array
+     */
+    public function attributes()
+    {
+        return [
+            'new_password' => 'password',
+            'new_password_confirmation' => 'password confirmation',
+        ];
+    }
 }
