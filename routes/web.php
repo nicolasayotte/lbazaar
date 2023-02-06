@@ -193,6 +193,7 @@ Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function()
     Route::get('/profile', [PortalProfileController::class, 'index'])->name('profile.index');
     Route::patch('/profile', [PortalProfileController::class, 'update'])->name('profile.update');
     Route::patch('/password/update', [PortalProfileController::class, 'updatePassword'])->name('profile.password.update');
+    Route::patch('/base-password/update', [PortalProfileController::class, 'updateBasePassword'])->name('profile.base.password.update');
     Route::get('/class-history', [CourseHistoryController::class, 'index'])->name('course.history.index');
 
     Route::prefix('/class-application')->name('course.applications.')->group(function() {

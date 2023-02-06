@@ -1,8 +1,9 @@
 import { Box, Card, CardContent, Container, Divider, Grid, Typography, Link } from "@mui/material"
 import routes from "../../helpers/routes.helper"
 import React from "react"
+import BasePasswordForm from "../../components/common/forms/BasePasswordForm"
 
-const UpdateTempPassword  = () => {
+const UpdateTempPassword  = ({ errors, translatables }) => {
 
     const notification = (
         <Typography variant="h5">Password Temporary</Typography>
@@ -17,8 +18,13 @@ const UpdateTempPassword  = () => {
                             <CardContent sx={{ p: 3 }}>
                                 { notification }
                                     <Divider sx={{ my: 2 }} />
-                                    <Typography variant="h8">Your password is still the temporary. For security purposes, please update your password by going to this </Typography>
-                                    <Link method = "GET" href={routes["mypage.profile.index"]}> Link</Link>
+                                    <Typography variant="h8">Your password is still the temporary. For security purposes, please update your password </Typography>
+                            <BasePasswordForm
+                                errors={errors.passwords}
+                                messages={translatables}
+                                routes={routes}
+                                redirectUrl='top'
+                            />
                             </CardContent>
                         </Card>
                     </Grid>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Portal;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProfileRequest;
 use App\Http\Requests\UpdatePasswordRequest;
+use App\Http\Requests\UpdateBasePasswordRequest;
 use App\Models\Country;
 use App\Models\User;
 use App\Repositories\UserRepository;
@@ -53,5 +54,17 @@ class ProfileController extends Controller
         ]);
 
         return redirect()->back();
+    }
+
+    public function updateBasePassword(UpdateBasePasswordRequest $request)
+    {
+        $user = $this->userRepository->findOrFail(auth()->user()->id);
+
+        $user->update([
+            'password' => bcrypt($request['new_password']),
+            'is_temp_password' => false,
+        ]);
+
+        return to_route('top');
     }
 }
