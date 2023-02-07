@@ -1,12 +1,19 @@
-import { Box, Button, Card, CardContent, CardMedia, Container, Grid, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
+import { Box, Button, Card, CardContent, CardMedia, Container, Divider, Grid, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from "@mui/material"
 import Input from "../../../components/forms/Input"
 import TextEditorInput from "../../../components/forms/TextEditorInput"
 import placeholderImg from "../../../../img/placeholder.png"
-import { Add, Delete } from "@mui/icons-material"
 import { Stack } from "@mui/system"
 import FileInput from "../../../components/forms/FileInput"
+import { AddCircle } from "@mui/icons-material"
+import { useState } from "react"
 
 const Create = () => {
+
+    const [isLive, setIsLive] = useState(true)
+
+    const handleOnClassFormatChange = value => {
+        setIsLive(value === 'live')
+    }
 
     return (
         <Container sx={{ mt: 4 }}>
@@ -50,83 +57,51 @@ const Create = () => {
                                     </Box>
                                 </Grid>
                                 <Grid item xs={12}>
-                                    <Input label="Title" />
+                                    <Input placeholder="Title" />
                                 </Grid>
                                 <Grid item xs={12}>
                                     <TextEditorInput
                                         style={{ height: '200px', minHeight: '200px' }}
                                     />
                                 </Grid>
-                            </Grid>
-                        </CardContent>
-                    </Card>
-                    <Card sx={{ mb: 2 }}>
-                        <CardContent>
-                            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                                <Typography variant="h6" children="Content" />
-                                <IconButton color="error">
-                                    <Delete fontSize="inherit" />
-                                </IconButton>
-                            </Box>
-                            <Grid container spacing={2}>
                                 <Grid item xs={12}>
-                                    <CardMedia
-                                        image={placeholderImg}
-                                        sx={{
-                                            minHeight: '300px',
-                                            backgroundSize: 'cover'
-                                        }}
-                                    />
-                                    <Box sx={{ mt: 2 }}>
-                                        <FileInput />
-                                    </Box>
+                                    <Input placeholder="Title" />
                                 </Grid>
                                 <Grid item xs={12}>
-                                    <Input label="Title" />
+                                    <Grid container spacing={2}>
+                                        <Grid item xs={12} md={6}>
+                                            <Button
+                                                variant={isLive ? 'contained' : 'outlined'}
+                                                fullWidth
+                                                children="Live"
+                                                onClick={() => handleOnClassFormatChange('live')}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12} md={6}>
+                                            <Button
+                                                variant={!isLive ? 'contained' : 'outlined'}
+                                                fullWidth
+                                                children="On-Demand"
+                                                onClick={() =>handleOnClassFormatChange('on_demand')}
+                                            />
+                                        </Grid>
+                                    </Grid>
+                                    <Divider sx={{ mt: 2 }} />
                                 </Grid>
-                                <Grid item xs={12}>
-                                    <Input multiline label="Description" rows={4} />
+                                <Grid item xs={12} display={isLive ? 'grid' : 'none'}>
+                                    <Input placeholder="Zoom Link" />
                                 </Grid>
-                                <Grid item xs={12}>
-                                    <Input
-                                        type="datetime-local"
-                                        label="Schedule"
-                                        InputLabelProps={{
-                                            shrink: true
-                                        }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <Input
-                                        label="Class Format"
-                                        select
-                                        InputLabelProps={{
-                                            shrink: true
-                                        }}
-                                    >
-                                        <option value="live">Live</option>
-                                        <option value="on_demand">On-Demand</option>
-                                    </Input>
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <Input label="Zoom Link" />
-                                </Grid>
-                                <Grid item xs={12}>
+                                <Grid item xs={12} display={!isLive ? 'grid' : 'none'}>
+                                    <Input placeholder="Video Link" />
+                                    <Typography children="or" color="GrayText" textAlign="center" my={0.5} />
                                     <FileInput/>
                                 </Grid>
                             </Grid>
                         </CardContent>
                     </Card>
-                    <Box textAlign="center">
-                        <Button
-                            variant="contained"
-                            children="Add Content"
-                            startIcon={<Add />}
-                        />
-                    </Box>
                 </Grid>
                 <Grid item xs={12} md={4}>
-                    <TableContainer component={Paper}>
+                    <TableContainer component={Paper} sx={{ mb: 2 }}>
                         <Table>
                             <TableHead>
                                 <TableRow>
@@ -141,10 +116,6 @@ const Create = () => {
                                 <TableRow>
                                     <TableCell children="Type" />
                                     <TableCell align="right" children="General" />
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell children="Category" />
-                                    <TableCell align="right" children="Sample" />
                                 </TableRow>
                                 <TableRow>
                                     <TableCell children="Price" />
