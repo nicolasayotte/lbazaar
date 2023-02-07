@@ -31,17 +31,26 @@ class AuthPortalController extends Controller
             'is_enabled' => 1,
             fn ($query) => $query->whereRoleIs([Role::STUDENT, Role::TEACHER])->where('email_verified_at', '!=', NULL)
         ])) {
+            if (auth()->user()->hasRole(Role::TEACHER) && auth()->user()->is_temp_password == 1) {
+                return redirect()->intended('/portal/update-temp-password');
+            }
             return redirect()->intended('/');
         }
         return redirect()->back()->withErrors(['email' => 'Invalid credentials']);
     }
-
     public function verifyEmail()
     {
         return Inertia::render('Portal/Registration/VerifyEmail', [
         ])->withViewData([
             'title' => 'Email Verification'
         ]);
+    }
+    public function updateTempPassword()
+    {
+        return Inertia::render('Portal/UpdateTempPassword', [
+            ])->withViewData([
+                'title' => 'Update Temporary Password'
+            ]);
     }
     public function logout(Request $request)
     {
