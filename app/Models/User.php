@@ -40,6 +40,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'country_id',
         'password',
         'is_enabled',
+        'is_temp_password',
         'classification_id'
     ];
 

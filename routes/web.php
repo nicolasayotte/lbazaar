@@ -156,7 +156,7 @@ Route::prefix('portal')->name('portal.')->group(function() {
     # Portal Authentication
     Route::get('/login', [AuthPortalController::class, 'login'])->name('login');
     Route::post('/authenticate', [AuthPortalController::class, 'authenticate'])->name('authenticate');
-
+    Route::get('/update-temp-password', [AuthPortalController::class, 'updateTempPassword'])->name('update.temp.password');
     Route::middleware(['auth'])->group(function() {
         # Logout
         Route::post('/logout', [AuthPortalController::class, 'logout'])->name('logout');
@@ -200,6 +200,7 @@ Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function()
     Route::get('/profile', [PortalProfileController::class, 'index'])->name('profile.index');
     Route::patch('/profile', [PortalProfileController::class, 'update'])->name('profile.update');
     Route::patch('/password/update', [PortalProfileController::class, 'updatePassword'])->name('profile.password.update');
+    Route::patch('/base-password/update', [PortalProfileController::class, 'updateBasePassword'])->name('profile.base.password.update');
     Route::get('/class-history', [CourseHistoryController::class, 'index'])->name('course.history.index');
 
     Route::prefix('/class-application')->name('course.applications.')->group(function() {
