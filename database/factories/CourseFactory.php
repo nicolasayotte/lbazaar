@@ -2,8 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Models\CourseCategory;
-use App\Models\CourseType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
