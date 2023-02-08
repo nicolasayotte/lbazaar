@@ -35,7 +35,8 @@ class CourseApplicationFactory extends Factory
             'created_at'         => fake()->dateTime(),
             'course_type_id'     => $this->getCourseType(CourseType::GENERAL),
             'professor_id'       => $user->id,
-            'course_category'    => $category->name
+            'course_category_id' => $category->id,
+            'max_participant'    => 1000
         ];
     }
 

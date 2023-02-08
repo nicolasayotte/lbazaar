@@ -38,7 +38,8 @@ class CourseSeeder extends Seeder
                         'course_application_id' => $application->id,
                         'price'                 => $application->price,
                         'language'              => $application->language,
-                        'points_earned'         => $application->points_earned
+                        'points_earned'         => $application->points_earned,
+                        'max_participant'       => $application->max_participant,
                     ]))
                     ->create();
         }
