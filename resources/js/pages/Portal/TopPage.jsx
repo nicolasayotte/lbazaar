@@ -1,5 +1,6 @@
 import { Box, Divider, TextField, Button, Grid, Typography, Container } from "@mui/material";
 import Course from "../../components/cards/Course";
+import UpcomingCourse from "../../components/cards/UpcomingCourse";
 import User from "../../components/cards/User";
 import { Link, useForm, usePage } from "@inertiajs/inertia-react";
 import routes from "../../helpers/routes.helper";
@@ -24,6 +25,17 @@ const TopPage = () => {
         <Course
             key={course.id}
             course={course}
+            showDate={true}
+            viewDetailId={detailId}
+            showDescription={showDescription}
+            imagePosition={imagePosition}
+        />
+    ))
+
+    const displayUpcomingCourses = (upcomingCourses, showDescription = true, detailId = 'id', imagePosition = 'left') => upcomingCourses && upcomingCourses.length > 0 && upcomingCourses.map(upcomingCourse => (
+        <UpcomingCourse
+            key={upcomingCourse.id}
+            upcomingCourse={upcomingCourse}
             showDate={true}
             viewDetailId={detailId}
             showDescription={showDescription}
@@ -102,7 +114,7 @@ const TopPage = () => {
                     </Grid>
                     <Grid item xs={12} md={4}>
                         <Typography variant="h5" gutterBottom children="Coming Soon" />
-                        { displayCourses(upcomingCourses, false, 'course_id', 'top') }
+                        { displayUpcomingCourses(upcomingCourses, false, 'course_id', 'top') }
                         <Typography variant="h5" gutterBottom children="Featured Teachers" />
                         { displayTeachers(teachers) }
                     </Grid>
