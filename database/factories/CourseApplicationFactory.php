@@ -33,7 +33,7 @@ class CourseApplicationFactory extends Factory
             'approved_at'        => null,
             'denied_at'          => null,
             'created_at'         => fake()->dateTime(),
-            'course_type'        => $this->getCourseType(CourseType::GENERAL),
+            'course_type_id'     => $this->getCourseType(CourseType::GENERAL),
             'professor_id'       => $user->id,
             'course_category'    => $category->name
         ];
@@ -43,7 +43,7 @@ class CourseApplicationFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'price'          => null,
-            'course_type' => $this->getCourseType(CourseType::FREE)
+            'course_type_id' => $this->getCourseType(CourseType::FREE)
         ]);
     }
 
@@ -51,14 +51,14 @@ class CourseApplicationFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'points_earned'  => fake()->numberBetween(1, 20),
-            'course_type' => $this->getCourseType(CourseType::EARN)
+            'course_type_id' => $this->getCourseType(CourseType::EARN)
         ]);
     }
 
     public function special()
     {
         return $this->state(fn (array $attributes) => [
-            'course_type' => $this->getCourseType(CourseType::SPECIAL)
+            'course_type_id' => $this->getCourseType(CourseType::SPECIAL)
         ]);
     }
 
@@ -87,6 +87,6 @@ class CourseApplicationFactory extends Factory
     {
         $type = CourseType::where('name', $type)->first();
 
-        return @$type ? @$type->name : null;
+        return @$type ? @$type->id : null;
     }
 }
