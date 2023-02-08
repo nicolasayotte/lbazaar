@@ -9,7 +9,7 @@ import Header from "../../components/common/Header";
 const TopPage = () => {
 
     const { courses, teachers, upcomingCourses } = usePage().props
-
+    console.log(upcomingCourses)
     const { data, setData, get } = useForm({
         search_text: ''
     })

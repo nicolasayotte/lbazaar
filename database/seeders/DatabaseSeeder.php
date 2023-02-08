@@ -25,13 +25,13 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             CourseApplicationSeeder::class,
             CourseSeeder::class,
-            CourseContentSeeder::class,
             CourseHistorySeeder::class,
             CourseFeedbackSeeder::class,
             EmailSettingsSeeder::class,
             InquirySeeder::class,
             TeacherInformationSeeder::class,
-            TranslationSeeder::class
+            TranslationSeeder::class,
+            CourseScheduleSeeder::class
         ]);
     }
 }

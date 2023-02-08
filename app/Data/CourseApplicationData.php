@@ -242,8 +242,8 @@ class CourseApplicationData
 
         $courseData->setId($courseApplication->id);
         $courseData->setTitle($courseApplication->title);
-        $courseData->setType($courseApplication->courseType->name);
-        $courseData->setCategory($courseApplication->courseCategory->name);
+        $courseData->setType($courseApplication->course_type);
+        $courseData->setCategory($courseApplication->course_category);
         $courseData->setLanguage($courseApplication->language);
         $courseData->setDescription($courseApplication->description);
 

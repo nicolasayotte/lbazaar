@@ -1,13 +1,13 @@
 import { Card, CardContent, Typography, CardMedia, Divider, Box} from "@mui/material"
 
-const CourseContent = ({ course, showDescription = true, showDate = true }) => {
+const CourseContent = ({ courseSchedule, showDescription = true, showDate = true }) => {
 
     const description = (
-        showDescription && <Typography variant="subtitle1" gutterBottom children={course.description} />
+        showDescription && <Typography variant="subtitle1" gutterBottom children={courseSchedule.course.description} />
     )
 
     const schedule = (
-        showDate && <Typography variant="caption" color="GrayText" children={`Schedule: ${course.schedule_datetime}`} />
+        showDate && <Typography variant="caption" color="GrayText" children={`Schedule: ${courseSchedule.schedule_datetime}`} />
     )
 
     return (
@@ -23,7 +23,7 @@ const CourseContent = ({ course, showDescription = true, showDate = true }) => {
         >
             <CardMedia
                 component="img"
-                image={course.image_thumbnail}
+                image={courseSchedule.course.image_thumbnail}
                 sx={{
                     width: {
                         xs: '100%',
@@ -34,7 +34,7 @@ const CourseContent = ({ course, showDescription = true, showDate = true }) => {
                 }}
             />
             <CardContent sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <Typography variant="h6" gutterBottom children={course.title} />
+                <Typography variant="h6" gutterBottom children={courseSchedule.course.title} />
                 { description }
                 <Box>
                     { showDate && <Divider sx={{ my: 2 }} />}

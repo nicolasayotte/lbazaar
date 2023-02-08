@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\CourseCategory;
+use App\Models\CourseType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +19,27 @@ class CourseFactory extends Factory
     public function definition()
     {
         return [
-            'image_thumbnail' => 'https://picsum.photos/id/'.(fake()->numberBetween(100, 140)).'/1000/650'
+            'image_thumbnail' => 'https://picsum.photos/id/'.(fake()->numberBetween(100, 140)).'/1000/650',
         ];
     }
+
+    public function setCourseType($type)
+    {
+        $type = CourseType::where('name', $type)->first();
+
+        return $this->state(fn (array $attributes) => [
+            'course_type_id' => @$type ? @$type->id : null
+        ]);
+    }
+
+    public function setCourseCategory($category)
+    {
+        $category = CourseCategory::where('name', $category)->first();
+
+        return $this->state(fn (array $attributes) => [
+            'course_category_id' => @$category ? @$category->id : null
+        ]);
+    }
+
+
 }

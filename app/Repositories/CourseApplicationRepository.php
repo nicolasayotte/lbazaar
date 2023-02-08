@@ -69,10 +69,10 @@ class CourseApplicationRepository extends BaseRepository
                     return $q->where('title', 'LIKE', '%'. @$filters['keyword'] .'%');
                 })
                 ->when(@$filters['course_type'], function($q) use($filters) {
-                    return $q->where('course_type_id', @$filters['course_type']);
+                    return $q->where('course_type', @$filters['course_type']);
                 })
                 ->when(@$filters['category'], function($q) use($filters) {
-                    return $q->where('course_category_id', @$filters['category']);
+                    return $q->where('course_category', @$filters['category']);
                 })
                 ->when(@$filters['status'], function($q) use($filters) {
                     // Check if pending
