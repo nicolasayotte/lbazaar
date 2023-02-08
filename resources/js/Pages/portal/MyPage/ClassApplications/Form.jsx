@@ -1,6 +1,6 @@
 import { usePage } from "@inertiajs/inertia-react"
 import { Box, Button, Card, CardContent, Grid, Pagination, Typography } from "@mui/material"
-import ClassApplicationForm from "../components/ClassApplicationForm"
+import ClassApplicationForm from "./components/ClassApplicationForm"
 import routes from "../../../../helpers/routes.helper"
 
 

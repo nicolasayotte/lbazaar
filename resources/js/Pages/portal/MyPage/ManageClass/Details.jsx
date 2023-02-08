@@ -1,14 +1,9 @@
-import { useForm, usePage, Link } from "@inertiajs/inertia-react"
-import { Tabs, Tab, Card, CardContent, Grid, Box, Typography } from "@mui/material"
-import Input from "../../../../components/forms/Input"
-import { displaySelectOptions, handleOnChange, handleOnSelectChange } from "../../../../helpers/form.helper"
-import ClassManageTable from "../components/ClassManageTable"
-import routes, {getRoute} from "../../../../helpers/routes.helper"
-import TableLoader from "../../../../components/common/TableLoader"
-import { NoteAdd } from '@mui/icons-material';
-import ManageClassTabs from "../components/ManageClassTabs"
-import ClassInformationView from "../components/ClassInformationView"
-import ClassInformationForm from "../components/ClassInformationForm"
+import { usePage } from "@inertiajs/inertia-react"
+import { Grid } from "@mui/material"
+import routes from "../../../../helpers/routes.helper"
+import ManageClassTabs from "./components/ManageClassTabs"
+import ClassInformationView from "./components/ClassInformationView"
+import ClassInformationForm from "./components/ClassInformationForm"
 import { useState } from "react"
 
 const Details = () => {

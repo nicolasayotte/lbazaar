@@ -1,9 +1,9 @@
-import { useForm, usePage, Link } from "@inertiajs/inertia-react"
-import { Tabs, Tab, Button, Card, CardContent, Grid, Box, Pagination } from "@mui/material"
+import { useForm, usePage } from "@inertiajs/inertia-react"
+import { Button, Card, CardContent, Grid, Box, Pagination } from "@mui/material"
 import Input from "../../../../components/forms/Input"
 import { displaySelectOptions, handleOnChange, handleOnSelectChange } from "../../../../helpers/form.helper"
 import {getRoute} from "../../../../helpers/routes.helper"
-import ManageClassTabs from "../components/ManageClassTabs"
+import ManageClassTabs from "./components/ManageClassTabs"
 import Feedback from "../../../../components/cards/Feedback"
 
 const Feedbacks = () => {

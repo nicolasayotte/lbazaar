@@ -5,7 +5,7 @@ import { displaySelectOptions, handleOnChange, handleOnSelectChange } from "../.
 import { Box, Button, Card, CardContent, Grid, Pagination, Typography } from "@mui/material"
 import Input from "../../../../components/forms/Input"
 import TableLoader from "../../../../components/common/TableLoader"
-import CourseHistoryTable from "../components/CourseHistoryTable"
+import CourseHistoryTable from "./components/CourseHistoryTable"
 
 const Index = ({ errors }) => {
 

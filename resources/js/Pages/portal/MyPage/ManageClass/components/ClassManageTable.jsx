@@ -1,8 +1,8 @@
 import { Link } from "@inertiajs/inertia-react"
 import { Block, RoomPreferences, Search } from "@mui/icons-material"
 import { Chip, IconButton, Paper, Tooltip, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
-import EmptyCard from "../../../../components/common/EmptyCard"
-import { getRoute } from "../../../../helpers/routes.helper"
+import EmptyCard from "../../../../../components/common/EmptyCard"
+import { getRoute } from "../../../../../helpers/routes.helper"
 
 const ClassManageTable = ({ data }) => {
 

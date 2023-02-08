@@ -1,12 +1,11 @@
-import { useForm, usePage, Link } from "@inertiajs/inertia-react"
-import { Card, CardContent, Grid, Box, Pagination, Button, Divider } from "@mui/material"
+import { useForm, usePage } from "@inertiajs/inertia-react"
+import { Card, CardContent, Grid, Box, Pagination, Button } from "@mui/material"
 import Input from "../../../../components/forms/Input"
 import { displaySelectOptions, handleOnChange, handleOnSelectChange } from "../../../../helpers/form.helper"
-import routes, {getRoute} from "../../../../helpers/routes.helper"
+import {getRoute} from "../../../../helpers/routes.helper"
 import TableLoader from "../../../../components/common/TableLoader"
-import { NoteAdd } from '@mui/icons-material';
-import ManageClassTabs from "../components/ManageClassTabs"
-import ClassStudentsTable from "../components/ClassStudentsTable"
+import ManageClassTabs from "./components/ManageClassTabs"
+import ClassStudentsTable from "./components/ClassStudentsTable"
 import ConfirmationDialog from "../../../../components/common/ConfirmationDialog"
 import { useDispatch } from "react-redux"
 import { useState } from "react"
@@ -106,11 +105,11 @@ const Details = () => {
 
     return (
         <>
-            <Grid item md={12} lg={12} xs={12}>
+            <Grid item xs={12}>
                 <ManageClassTabs tabValue={tabValue} id={courseId}/>
             </Grid>
-            <Grid item md={12} xs={12} sx={{mb: 2}}>
-                <Card>
+            <Grid item xs={12} sx={{mb: 2}}>
+                <Card sx={{ mb: 2 }}>
                     <CardContent>
                         <form onSubmit={handleFilterSubmit}>
                             <Grid container spacing={2}>

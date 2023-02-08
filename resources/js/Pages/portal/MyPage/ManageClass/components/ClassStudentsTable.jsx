@@ -1,8 +1,8 @@
 import { Link } from "@inertiajs/inertia-react"
 import { Search, DisabledByDefault, CheckBox } from "@mui/icons-material"
-import { Chip, IconButton, Paper, Tooltip, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
-import EmptyCard from "../../../../components/common/EmptyCard"
-import { getRoute } from "../../../../helpers/routes.helper"
+import { IconButton, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
+import EmptyCard from "../../../../../components/common/EmptyCard"
+import { getRoute } from "../../../../../helpers/routes.helper"
 
 const ClassStudentsTable = ({ data, handleOnComplete, handleOnOngoing }) => {
 
@@ -36,7 +36,6 @@ const ClassStudentsTable = ({ data, handleOnComplete, handleOnOngoing }) => {
             <TableRow key={index}>
                 <TableCell children={row.studentId}/>
                 <TableCell children={row.fullname}/>
-                <TableCell children={row.country}/>
                 <TableCell children={row.bookedDate}/>
                 <TableCell children={row.completedAt}/>
                 <TableCell sx={{ whiteSpace: 'nowrap'}} align="center">
@@ -66,7 +65,6 @@ const ClassStudentsTable = ({ data, handleOnComplete, handleOnOngoing }) => {
                         <TableRow>
                             <TableCell children="Student ID"/>
                             <TableCell children="Full Name"/>
-                            <TableCell children="Country"/>
                             <TableCell children="Booked Date"/>
                             <TableCell children="Completed Date"/>
                             <TableCell align="center" children="Actions"/>

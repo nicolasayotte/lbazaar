@@ -2,12 +2,12 @@ import { useForm, usePage } from "@inertiajs/inertia-react"
 import { Cancel, Edit, Save } from "@mui/icons-material"
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, Button, Grid, Box, Card, CardContent, Typography, Divider } from "@mui/material"
 import { useDispatch } from "react-redux"
-import { displaySelectOptions, handleOnChange, handleEditorOnChange, handleOnFileChange } from "../../../../helpers/form.helper"
-import Input from "../../../../components/forms/Input"
+import { displaySelectOptions, handleOnChange, handleEditorOnChange, handleOnFileChange } from "../../../../../helpers/form.helper"
+import Input from "../../../../../components/forms/Input"
 import { useEffect, useState } from "react"
-import TextEditorInput from "../../../../components/forms/TextEditorInput"
-import { actions } from "../../../../store/slices/ToasterSlice"
-import FileInput from "../../../../components/forms/FileInput"
+import TextEditorInput from "../../../../../components/forms/TextEditorInput"
+import { actions } from "../../../../../store/slices/ToasterSlice"
+import FileInput from "../../../../../components/forms/FileInput"
 
 const ClassInformationForm = ({ course, cancelEdit, typeOptions, routes, categoryOptions, errors }) => {
 

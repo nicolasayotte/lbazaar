@@ -120,8 +120,8 @@ class CourseManageStudentData
         $courseHistoryData->setFullname($courseHistory->user->fullname);
         $courseHistoryData->setCountry($courseHistory->user->country->name);
         $courseHistoryData->setIsCompleted($courseHistory->completed_at != null);
-        $courseHistoryData->setBookedDate(Carbon::parse($courseHistory->created_at)->format('Y-m-d H:i'));
-        $courseHistoryData->setCompletedAt($courseHistory->completed_at);
+        $courseHistoryData->setBookedDate(Carbon::parse($courseHistory->created_at)->format('M j, Y'));
+        $courseHistoryData->setCompletedAt(Carbon::parse($courseHistory->completed_at)->format('M j, Y'));
 
         return $courseHistoryData->getProperties();
     }

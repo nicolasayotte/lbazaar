@@ -1,6 +1,6 @@
 
 import routes from "../../../../helpers/routes.helper"
-import ProfileForm from "../components/ProfileForm"
+import ProfileForm from "./components/ProfileForm"
 import PasswordForm from "../../../../components/common/forms/PasswordForm"
 import { Box } from "@mui/material"
 
