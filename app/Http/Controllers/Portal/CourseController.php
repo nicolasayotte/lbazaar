@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Portal;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SearchClassRequest;
 use App\Repositories\CourseCategoryRepository;
-use App\Repositories\CourseContentRepository;
+use App\Repositories\CourseScheduleRepository;
 use App\Repositories\CourseRepository;
 use App\Repositories\CourseTypeRepository;
 use App\Repositories\UserRepository;
@@ -16,7 +16,7 @@ class CourseController extends Controller
     public $courseTypeRepository;
     public $courseCategoryRepository;
     public $courseRepository;
-    public $courseContentRepository;
+    public $courseScheduleRepository;
     public $userRepository;
 
     public function __construct()
@@ -24,7 +24,7 @@ class CourseController extends Controller
         $this->courseTypeRepository = new CourseTypeRepository();
         $this->courseCategoryRepository = new CourseCategoryRepository();
         $this->courseRepository = new CourseRepository();
-        $this->courseContentRepository = new CourseContentRepository();
+        $this->courseScheduleRepository = new CourseScheduleRepository();
         $this->userRepository = new UserRepository();
     }
 
@@ -61,11 +61,11 @@ class CourseController extends Controller
     public function details($id)
     {
         $course = $this->courseRepository->findById($id);
-        $contents = $this->courseContentRepository->findByCourseId($course->id);
+        $schedule = $this->courseScheduleRepository->findByCourseId($course->id);
 
         return Inertia::render('Portal/Course/Details', [
             'course'            => $course,
-            'contents'          => $contents,
+            'schedule'          => $schedule,
             'isBooked'          => auth()->user() && auth()->user()->isCourseBooked($id),
             'hasFeedback'       => auth()->user() && auth()->user()->hasFeedback($id),
             'title'             => 'Course - ' . $course->title,

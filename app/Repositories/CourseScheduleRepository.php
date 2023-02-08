@@ -2,21 +2,21 @@
 
 namespace App\Repositories;
 
-use App\Models\CourseContent;
+use App\Models\CourseSchedule;
 use Carbon\Carbon;
 
-class CourseContentRepository extends BaseRepository
+class CourseScheduleRepository extends BaseRepository
 {
     const PERPAGE = 5;
 
     public function __construct()
     {
-        parent::__construct(new CourseContent());
+        parent::__construct(new CourseSchedule());
     }
 
-    public function getUpcomingCourseContent($take = self::PERPAGE)
+    public function getUpcomingCourseSchedule($take = self::PERPAGE)
     {
-        return $this->model->where('schedule_datetime', '>=', Carbon::now('Asia/Tokyo'))->take($take)->orderBy('id', 'desc')->with(['professor', 'courseType', 'courseCategory'])->get();
+        return $this->model->where('schedule_datetime', '>=', Carbon::now('Asia/Tokyo'))->take($take)->orderBy('id', 'desc')->with(['course', 'professor', 'courseType', 'courseCategory'])->get();
     }
 
     public function search($request)
@@ -63,6 +63,6 @@ class CourseContentRepository extends BaseRepository
 
     public function findByCourseId($id)
     {
-        return $this->model->where('course_id', $id)->orderBy('sort', 'ASC')->get();
+        return $this->model->where('course_id', $id)->orderBy('schedule_datetime', 'ASC')->with(['course'])->get();
     }
 }

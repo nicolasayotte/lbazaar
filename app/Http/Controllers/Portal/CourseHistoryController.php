@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SearchClassRequest;
 use App\Models\Country;
 use App\Repositories\CourseCategoryRepository;
-use App\Repositories\CourseContentRepository;
 use App\Repositories\CourseHistoryRepository;
 use App\Repositories\CourseRepository;
 use App\Repositories\CourseTypeRepository;
@@ -23,8 +22,6 @@ class CourseHistoryController extends Controller
 
     public $courseHistoryRepository;
 
-    public $courseContentRepository;
-
     public $userRepository;
 
     public $courseRepository;
@@ -34,7 +31,6 @@ class CourseHistoryController extends Controller
         $this->courseTypeRepository = new CourseTypeRepository();
         $this->courseCategoryRepository = new CourseCategoryRepository();
         $this->courseHistoryRepository = new CourseHistoryRepository();
-        $this->courseContentRepository = new CourseContentRepository();
         $this->userRepository = new UserRepository();
         $this->courseRepository = new CourseRepository();
     }
