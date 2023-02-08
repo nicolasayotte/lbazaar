@@ -13,9 +13,7 @@ const Layout = ({ children }) => {
         <>
             <Head title={title} />
             <Navbar />
-            <Container>
-                <MyPageSideBar page={children} />
-            </Container>
+            <MyPageSideBar page={children} />
             <Toaster />
             <Footer />
         </>
