@@ -52,7 +52,7 @@ const Index = ({ errors }) => {
 
     return (
         <>
-            <Card sx={{ mb: 2, width: '100%', mt: 6 }}>
+            <Card sx={{ mb: 2, width: '100%' }}>
                 <CardContent>
                     <form onSubmit={handleFilterSubmit}>
                         <Grid container spacing={2}>

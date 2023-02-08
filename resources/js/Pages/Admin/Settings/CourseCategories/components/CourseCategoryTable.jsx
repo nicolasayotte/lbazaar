@@ -2,7 +2,7 @@ import { Delete, Edit } from "@mui/icons-material"
 import { IconButton, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
 import EmptyCard from "../../../../../components/common/EmptyCard"
 
-const CourseCategoryTable = ({ data, handleOnEdit, handleOnDelete }) => {
+const CourseCategoryTable = ({ data, handleOnEdit, handleOnDelete, translatables }) => {
 
     const displayTableData = (rows) => rows.map((row, index) => {
 
@@ -14,14 +14,14 @@ const CourseCategoryTable = ({ data, handleOnEdit, handleOnDelete }) => {
                     <Stack spacing={1} direction="row" justifyContent="center">
                         <IconButton
                             size="small"
-                            title="Edit"
+                            title={translatables.texts.edit}
                             onClick={() => handleOnEdit(row.id, row.name)}
                         >
                             <Edit fontSize="inherit" />
                         </IconButton>
                         <IconButton
                             size="small"
-                            title="Delete"
+                            title={translatables.texts.delete}
                             onClick={() => handleOnDelete(row.id)}
                         >
                             <Delete color="error" fontSize="inherit" />
@@ -42,9 +42,9 @@ const CourseCategoryTable = ({ data, handleOnEdit, handleOnDelete }) => {
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell width="70%" children="Name" />
-                        <TableCell width="20%" align="center" children="Date Created" />
-                        <TableCell align="center" children="Actions" />
+                        <TableCell width="60%" children={translatables.texts.name} />
+                        <TableCell width="25%" align="center" children={translatables.texts.date_created} />
+                        <TableCell align="center" children={translatables.texts.actions} />
                     </TableRow>
                 </TableHead>
                 <TableBody>

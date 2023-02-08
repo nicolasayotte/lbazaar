@@ -16,11 +16,11 @@ const Index = () => {
 
     const dispatch = useDispatch()
 
-    const { courseApplications, categoryOptions, typeOptions, keyword, course_type, category, status, sort, page, messages } = usePage().props
+    const { courseApplications, categoryOptions, typeOptions, keyword, course_type, category, status, sort, page, translatables } = usePage().props
 
     const [dialog, setDialog] = useState({
         open: false,
-        title: 'Class Application',
+        title: translatables.title.class.applications.index,
         text: '',
         url: '',
         confirmButtonText: 'Confirm',
@@ -28,12 +28,12 @@ const Index = () => {
     })
 
     const sortOptions = [
-        { name: 'Title A-Z', value: 'title:asc' },
-        { name: 'Title Z-A', value: 'title:desc' },
-        { name: 'Price - Low to High', value: 'price:asc' },
-        { name: 'Price - High to Low', value: 'price:desc' },
-        { name: 'Date - Oldest', value: 'created_at:asc' },
-        { name: 'Date - Newest', value: 'created_at:desc' }
+        { name: translatables.filters.title.asc, value: 'title:asc' },
+        { name: translatables.filters.title.desc, value: 'title:desc' },
+        { name: translatables.filters.price.asc, value: 'price:asc' },
+        { name: translatables.filters.price.desc, value: 'price:desc' },
+        { name: translatables.filters.date.asc, value: 'created_at:asc' },
+        { name: translatables.filters.date.desc, value: 'created_at:desc' }
     ]
 
     const statusOptions = [
@@ -70,7 +70,7 @@ const Index = () => {
         setDialog(dialog => ({
             ...dialog,
             open: true,
-            text: messages.confirm.class.applications.approve,
+            text: translatables.confirm.class.applications.approve,
             url: getRoute('admin.class.applications.status.update', {
                 id,
                 status: 'approve'
@@ -82,7 +82,7 @@ const Index = () => {
         setDialog(dialog => ({
             ...dialog,
             open: true,
-            text: messages.confirm.class.applications.deny,
+            text: translatables.confirm.class.applications.deny,
             url: getRoute('admin.class.applications.status.update', {
                 id,
                 status: 'deny'
@@ -105,16 +105,16 @@ const Index = () => {
     const handleOnDialogConfirm = () => {
         setDialog(dialog => ({
             ...dialog,
-            confirmButtonText: 'Processing',
+            confirmButtonText: translatables.texts.processing,
             processing: true
         }))
 
         Inertia.patch(dialog.url, dialog, {
             onSuccess: () => dispatch(actions.success({
-                message: messages.success.class.applications.status.update
+                message: translatables.success.class.applications.status.update
             })),
             onError: () => dispatch(actions.success({
-                message: messages.error
+                message: translatables.error
             }))
         })
     }
@@ -123,17 +123,17 @@ const Index = () => {
         <Box>
             <Typography
                 variant="h4"
-                children="Class Applications"
+                children={translatables.title.class.applications.index}
                 gutterBottom
             />
             <Card sx={{ mb: 2 }}>
                 <CardContent>
                     <form onSubmit={handleFilterSubmit}>
                         <Grid container spacing={2}>
-                            <Grid item xs={12} md={3}>
+                            <Grid item xs={12} md={2}>
                                 <Input
-                                    label="Keyword"
-                                    placeholder="Search for title or teacher"
+                                    label={translatables.texts.keyword}
+                                    placeholder={translatables.texts.search_title_teacher}
                                     name="keyword"
                                     value={filters.keyword}
                                     onChange={e => handleOnChange(e, setFilters)}
@@ -142,7 +142,7 @@ const Index = () => {
                             <Grid item xs={12} md={2}>
                                 <Input
                                     select
-                                    label="Type"
+                                    label={translatables.texts.type}
                                     InputLabelProps={{
                                         shrink: true
                                     }}
@@ -157,7 +157,7 @@ const Index = () => {
                             <Grid item xs={12} md={2}>
                                 <Input
                                     select
-                                    label="Category"
+                                    label={translatables.texts.category}
                                     InputLabelProps={{
                                         shrink: true
                                     }}
@@ -172,7 +172,7 @@ const Index = () => {
                             <Grid item xs={12} md={2}>
                                 <Input
                                     select
-                                    label="Status"
+                                    label={translatables.texts.status}
                                     InputLabelProps={{
                                         shrink: true
                                     }}
@@ -187,7 +187,7 @@ const Index = () => {
                             <Grid item xs={12} md={2}>
                                 <Input
                                     select
-                                    label="Sort"
+                                    label={translatables.texts.sort}
                                     InputLabelProps={{
                                         shrink: true
                                     }}
@@ -198,9 +198,9 @@ const Index = () => {
                                     {displaySelectOptions(sortOptions, 'value')}
                                 </Input>
                             </Grid>
-                            <Grid item xs={12} md={1} textAlign="right">
+                            <Grid item xs={12} md={2} textAlign="right">
                                 <Button
-                                    children="Filter"
+                                    children={translatables.texts.filter}
                                     variant="contained"
                                     fullWidth
                                     onClick={handleFilterSubmit}

@@ -5,7 +5,7 @@ import Input from "../../forms/Input"
 import { actions } from "../../../store/slices/ToasterSlice"
 import { handleOnChange } from "../../../helpers/form.helper"
 
-const PasswordForm = ({ errors, messages, routes, logoutUrl }) => {
+const PasswordForm = ({ errors, messages: translatables, routes, logoutUrl }) => {
 
     const dispatch = useDispatch()
 
@@ -22,19 +22,19 @@ const PasswordForm = ({ errors, messages, routes, logoutUrl }) => {
             errorBag: 'passwords',
             onSuccess: () => {
                 dispatch(actions.success({
-                    message: messages.success.password
+                    message: translatables.success.password
                 }))
                 setTimeout(() => {
                     dispatch(actions.hide())
                     post(routes[logoutUrl], {
                         onSuccess: () => dispatch(actions.success({
-                            message: messages.success.user.logout
+                            message: translatables.success.user.logout
                         }))
                     })
                 }, 2000)
             },
             onError: () => dispatch(actions.error({
-                message: messages.error
+                message: translatables.error
             }))
         })
     }
@@ -44,16 +44,16 @@ const PasswordForm = ({ errors, messages, routes, logoutUrl }) => {
             <form onSubmit={handleSubmit}>
                 <CardContent sx={{ p: 4 }}>
                     <Box sx={{ mb: 3 }}>
-                        <Typography fontFamily="inherit" variant="h5" component="div">Update Password</Typography>
-                        <Typography variant="p" fontSize="small" color={"GrayText"}>You will be signed out when your password is updated</Typography>
+                        <Typography fontFamily="inherit" variant="h5" component="div" children={translatables.texts.update_password} />
+                        <Typography variant="p" fontSize="small" color={"GrayText"} children={translatables.texts.update_password_notice} />
                     </Box>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <Input
                                 type="password"
-                                label="Current Password"
+                                label={translatables.texts.current_password}
                                 name="current_password"
-                                helperText="Enter your current password for verification"
+                                helperText={errors && errors.current_password ? '' : translatables.texts.update_password_help}
                                 data={data.current_password}
                                 errors={errors}
                                 onChange={e => handleOnChange(e, setData)}
@@ -62,7 +62,7 @@ const PasswordForm = ({ errors, messages, routes, logoutUrl }) => {
                         <Grid item xs={12}>
                             <Input
                                 type="password"
-                                label="New Password"
+                                label={translatables.texts.new_password}
                                 name="new_password"
                                 data={data.new_password}
                                 errors={errors}
@@ -72,7 +72,7 @@ const PasswordForm = ({ errors, messages, routes, logoutUrl }) => {
                         <Grid item xs={12}>
                             <Input
                                 type="password"
-                                label="Confirm Password"
+                                label={translatables.texts.confirm_password}
                                 name="new_password_confirmation"
                                 data={data.new_password_confirmation}
                                 errors={errors}
@@ -85,7 +85,8 @@ const PasswordForm = ({ errors, messages, routes, logoutUrl }) => {
                                 variant="contained"
                                 onClick={handleSubmit}
                                 disabled={processing}
-                            >Update Password</Button>
+                                children={translatables.texts.update_password}
+                            />
                         </Grid>
                     </Grid>
                 </CardContent>

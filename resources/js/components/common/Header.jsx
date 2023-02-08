@@ -11,7 +11,7 @@ const Header = ({ minHeight = '200px', children }) => {
                 alignItems: 'center',
                 backgroundColor: '#888',
                 color: 'white',
-                backgroundImage: "url(https://i.picsum.photos/id/4/5000/3333.jpg?hmac=ghf06FdmgiD0-G4c9DdNM8RnBIN7BO0-ZGEw47khHP4)",
+                backgroundImage: "url(https://fastly.picsum.photos/id/4/5000/3333.jpg?hmac=ghf06FdmgiD0-G4c9DdNM8RnBIN7BO0-ZGEw47khHP4)",
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 position: 'relative',

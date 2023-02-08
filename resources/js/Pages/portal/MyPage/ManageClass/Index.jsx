@@ -8,7 +8,7 @@ import TableLoader from "../../../../components/common/TableLoader"
 
 const Index = () => {
 
-    const { courses, categoryOptions, typeOptions, keyword, course_type, category, status, sort, page, messages } = usePage().props
+    const { courses, categoryOptions, typeOptions, keyword, course_type, category, status, sort, page } = usePage().props
 
     const sortOptions = [
         { name: 'Title A-Z', value: 'courses.title:asc' },
@@ -49,7 +49,7 @@ const Index = () => {
 
     return (
         <>
-            <Card sx={{ mb: 2, mt: 6 }}>
+            <Card sx={{ mb: 2 }}>
                 <CardContent>
                     <form onSubmit={handleFilterSubmit}>
                         <Grid container spacing={2}>

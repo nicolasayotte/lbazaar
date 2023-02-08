@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SearchClassRequest;
+use App\Repositories\CourseApplicationRepository;
 use App\Repositories\CourseCategoryRepository;
 use App\Repositories\CourseContentRepository;
 use App\Repositories\CourseRepository;
@@ -14,18 +15,25 @@ use Inertia\Inertia;
 class CourseController extends Controller
 {
     public $courseTypeRepository;
+
     public $courseCategoryRepository;
+
     public $courseRepository;
+
     public $courseContentRepository;
+
     public $userRepository;
+
+    public $courseApplicationRepository;
 
     public function __construct()
     {
-        $this->courseTypeRepository = new CourseTypeRepository();
-        $this->courseCategoryRepository = new CourseCategoryRepository();
-        $this->courseRepository = new CourseRepository();
-        $this->courseContentRepository = new CourseContentRepository();
-        $this->userRepository = new UserRepository();
+        $this->courseApplicationRepository = new CourseApplicationRepository();
+        $this->courseTypeRepository        = new CourseTypeRepository();
+        $this->courseCategoryRepository    = new CourseCategoryRepository();
+        $this->courseRepository            = new CourseRepository();
+        $this->courseContentRepository     = new CourseContentRepository();
+        $this->userRepository              = new UserRepository();
     }
 
     public function index(SearchClassRequest $request)
@@ -72,6 +80,18 @@ class CourseController extends Controller
         ])->withViewData([
             'title'       => 'Course - ' . $course->title,
             'description' => 'Course Details'
+        ]);
+    }
+
+    public function create($id)
+    {
+        $courseApplication = $this->courseApplicationRepository->findOneApproved($id);
+
+        return Inertia::render('Portal/Course/Create', [
+            'courseApplication' => $courseApplication,
+            'title' => 'Create Class'
+        ])->withViewData([
+            'title' => 'Create Class'
         ]);
     }
 }

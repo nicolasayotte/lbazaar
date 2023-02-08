@@ -13,7 +13,7 @@ const CourseFeedback = () => {
 
     const dispatch = useDispatch()
 
-    const { messages, course, feedback, errors } = usePage().props;
+    const { translatables, course, feedback, errors } = usePage().props;
 
     const { data, setData, post, processing, reset, clearErrors } = useForm({
         rating: feedback.rating,
@@ -27,11 +27,11 @@ const CourseFeedback = () => {
             onSuccess: () => {
                 clearErrors()
                 dispatch(actions.success({
-                    message: messages.success.feedback
+                    message: translatables.success.feedback
                 }))
             },
             onError: () => dispatch(actions.error({
-                message: messages.error
+                message: translatables.error
             }))
         });
     }

@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\CourseCategoryController;
 use App\Http\Controllers\Admin\CourseTypeController;
 use App\Http\Controllers\Admin\InquiriesController as AdminInquiriesController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\TranslationController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Portal\AuthPortalController;
 use App\Http\Controllers\Portal\CourseApplicationController as PortalClassApplicationController;
@@ -34,8 +35,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
 # Top Page
 Route::get('/', [TopPageController::class, 'index'])->name('top');
+
+# Set Locale
+Route::get('lang/{locale}', [TopPageController::class, 'setLanguage'])->name('language.set');
 
 # Inquiries
 Route::get('/inquiries', [InquiriesController::class, 'index'])->name('inquiries.index');
@@ -101,25 +106,38 @@ Route::prefix('admin')->name('admin.')->group(function() {
                 Route::patch('/update', [CourseTypeController::class, 'update'])->name('update');
             });
 
+            # Classifications
             Route::prefix('classifications')->name('classifications.')->group(function() {
                 Route::get('/', [ClassificationController::class, 'index'])->name('index');
                 Route::post('/', [ClassificationController::class, 'store'])->name('store');
                 Route::patch('/{id}/update', [ClassificationController::class, 'update'])->name('update');
                 Route::delete('/{id}/delete', [ClassificationController::class, 'delete'])->name('delete');
             });
+
+            # Translations
+            Route::prefix('translations')->name('translations.')->group(function() {
+                Route::get('/', [TranslationController::class, 'index'])->name('index');
+                Route::patch('/', [TranslationController::class, 'update'])->name('update');
+            });
         });
     });
 });
 
 # Courses
-Route::prefix('courses')->name('course.')->group(function() {
+Route::prefix('classes')->name('course.')->group(function() {
     Route::get('/', [CourseController::class, 'index'])->name('index');
-    Route::get('/details/{id}', [CourseController::class, 'details'])->name('details');
-    Route::middleware('auth')->group(function() {
-        Route::get('/feedback/{id}', [CourseFeedbackController::class, 'index'])->name('feedback.index');
-        Route::post('/feedback/{id}', [CourseFeedbackController::class, 'store'])->name('feedback.store');
-    });
+    Route::get('/{id}', [CourseController::class, 'details'])->name('details');
 
+    Route::middleware('auth')->group(function() {
+        # Course Feedback
+        Route::get('/{id}/feedback', [CourseFeedbackController::class, 'index'])->name('feedback.index');
+        Route::post('/{id}/feedback', [CourseFeedbackController::class, 'store'])->name('feedback.store');
+
+        Route::middleware(['auth', 'teacher'])->group(function() {
+            # Create Course
+            Route::get('/{id}/create', [CourseController::class, 'create'])->name('create');
+        });
+    });
 });
 
 # User Registration
@@ -138,7 +156,7 @@ Route::prefix('portal')->name('portal.')->group(function() {
     # Portal Authentication
     Route::get('/login', [AuthPortalController::class, 'login'])->name('login');
     Route::post('/authenticate', [AuthPortalController::class, 'authenticate'])->name('authenticate');
-
+    Route::get('/update-temp-password', [AuthPortalController::class, 'updateTempPassword'])->name('update.temp.password');
     Route::middleware(['auth'])->group(function() {
         # Logout
         Route::post('/logout', [AuthPortalController::class, 'logout'])->name('logout');
@@ -174,6 +192,7 @@ Route::get('/mail', function() {
 
 # Profile
 Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function() {
+
     Route::get('/', function(Request $request) {
         return redirect()->route(@$request->user() ? 'mypage.profile.index' : 'portal.login');
     });
@@ -181,6 +200,7 @@ Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function()
     Route::get('/profile', [PortalProfileController::class, 'index'])->name('profile.index');
     Route::patch('/profile', [PortalProfileController::class, 'update'])->name('profile.update');
     Route::patch('/password/update', [PortalProfileController::class, 'updatePassword'])->name('profile.password.update');
+    Route::patch('/base-password/update', [PortalProfileController::class, 'updateBasePassword'])->name('profile.base.password.update');
     Route::get('/class-history', [CourseHistoryController::class, 'index'])->name('course.history.index');
 
     Route::prefix('/class-application')->name('course.applications.')->group(function() {

@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Repositories\ClassificationRepository;
 use App\Repositories\CountryRepository;
 use App\Repositories\RoleRepository;
+use App\Repositories\TranslationRepository;
 use App\Repositories\UserRepository;
 use Carbon\Carbon;
 use Exception;
@@ -30,8 +31,6 @@ class UserController extends Controller
 
     private $classificationRepository;
 
-    private $title = 'Users | Admin';
-
     public function __construct()
     {
         $this->userRepository           = new UserRepository();
@@ -42,6 +41,8 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
+        $title = TranslationRepository::getTranslation('title.users.index');
+
         return Inertia::render('Admin/Users/Index', [
             'users'         => $this->userRepository->get($request->all()),
             'roleOptions'   => $this->roleRepository->getDropdownData(),
@@ -51,20 +52,22 @@ class UserController extends Controller
             'status'        => @$request['status'] ?? '',
             'sort'          => @$request['sort'] ?? 'created_at:desc',
             'page'          => @$request['page'] ?? 1,
-            'title'         => $this->title
+            'title'         => $title
         ])->withViewData([
-            'title' => $this->title
+            'title' => $title
         ]);
     }
 
     public function view($id)
     {
+        $title = TranslationRepository::getTranslation('title.users.view');
+
         return Inertia::render('Admin/Users/View', [
             'user' => $this->userRepository->findOne($id),
-            'title' => $this->title
+            'title' => $title
         ])
         ->withViewData([
-            'title' => $this->title
+            'title' => $title
         ]);
     }
 
@@ -74,9 +77,9 @@ class UserController extends Controller
             'roleOptions'           => $this->roleRepository->getDropdownData(),
             'countryOptions'        => $this->countryRepository->getDropdownData(),
             'classificationOptions' => $this->classificationRepository->getDropdownData(),
-            'title'                 => $this->title
+            'title'                 => 'Create'
         ])->withViewData([
-            'title' => $this->title
+            'title' => 'Create'
         ]);
     }
 

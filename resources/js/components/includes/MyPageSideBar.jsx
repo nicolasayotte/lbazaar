@@ -1,6 +1,6 @@
 
 import routes from "../../helpers/routes.helper"
-import { Typography, Container, Box, Grid, Card, List, IconButton, Drawer, ListItem, ListItemButton, ListItemIcon} from "@mui/material"
+import { Typography, Container, Box, Grid, Card, List, IconButton, Drawer, ListItem, ListItemButton, ListItemIcon, Stack, Toolbar, Divider} from "@mui/material"
 import { Article, Logout, History, MenuBook, ManageAccounts, Menu } from "@mui/icons-material"
 import { useState } from "react"
 import { Link, usePage } from "@inertiajs/inertia-react"
@@ -15,7 +15,7 @@ const MyPage = ({ page }) => {
 
     const [openMobileDrawer, setopenMobileDrawer] = useState(false)
 
-    const drawerWidth = 240
+    const drawerWidth = 300
 
     const toggleMobileDrawer = () => {
         setopenMobileDrawer(!openMobileDrawer)
@@ -52,34 +52,30 @@ const MyPage = ({ page }) => {
         }
     ]
 
-    const menu = (
-        <>
-            {navItems.map(item => {
-                let isAccessible = page.props.auth.user.roles.some(role => {
-                    return item.roles.includes(role.name);
-                  });
-                return isAccessible ?
-                        <ListItem key={item.name}>
-                            <ListItemButton selected={item.active}>
-                                {
-                                    item.icon &&
-                                    <ListItemIcon children={item.icon} />
-                                }
-                                <Link
-                                    as="span"
-                                    href={item.link}
-                                    children={item.name}
-                                    style={{
-                                        width: '100%'
-                                    }}
-                                />
-                            </ListItemButton>
-                        </ListItem>
-                    :
-                       null
-            })}
-        </>
-    )
+    const menu = navItems.map(item => {
+        let isAccessible = page.props.auth.user.roles.some(role => {
+            return item.roles.includes(role.name);
+        });
+
+        if (isAccessible) {
+            return (
+                <ListItem key={item.name}>
+                    <ListItemButton selected={item.active}>
+                        {
+                            item.icon && !openMobileDrawer &&
+                            <ListItemIcon children={item.icon} />
+                        }
+                        <Link
+                            as="span"
+                            href={item.link}
+                            children={item.name}
+                            style={{ width: '100%' }}
+                        />
+                    </ListItemButton>
+                </ListItem>
+            )
+        }
+    })
 
     const logoutBtn = (
         <ListItemButton>
@@ -94,63 +90,69 @@ const MyPage = ({ page }) => {
     )
 
     const sidebarLink = (
-        <>
-            <List>
-                {menu}
+        <List>
+            {menu}
+            {
+                !openMobileDrawer &&
                 <ListItem>
                     {logoutBtn}
                 </ListItem>
-            </List>
-        </>
+            }
+        </List>
     )
+
     const mobileDrawer = (
-        <Drawer
-            variant="temporary"
-            anchor="left"
-            container={container}
-            open={openMobileDrawer}
-            onClose={toggleMobileDrawer}
-            ModalProps={{
-                keepMounted: true
-            }}
-            sx={{
-                display: { xs: 'block', md: 'none' },
-                '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-            }}
-        >
-           {sidebarLink}
-        </Drawer>
+        <Box onClick={toggleMobileDrawer}>
+            <Drawer
+                variant="temporary"
+                anchor="left"
+                container={container}
+                open={openMobileDrawer}
+                onClose={toggleMobileDrawer}
+                sx={{
+                    display: { xs: 'block', md: 'none' },
+                    '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+                }}
+            >
+                <Toolbar>
+                    <Typography variant="h5" py={3} children="My Page" />
+                </Toolbar>
+                <Divider />
+                {sidebarLink}
+            </Drawer>
+        </Box>
     )
 
     return (
-        <Box sx={{ minHeight: '80.75vh' }}>
+        <Box sx={{ minHeight: { xs: '100vh', lg: '83.7vh' } }}>
             <Container>
-                <Grid container sx={{mt: 4}}>
-                    <Grid item xs={10} sm={3} md={3} lg={3}>
-                        <Typography variant="h6" sx={{mb: 2, display: { xs: 'none', sm: 'none', md: 'inline-block' } }}>
-                            {myPageTitle}
-                        </Typography>
-                        <Card sx={{ minWidth: '250px', display: { xs: 'none', sm: 'none', md: 'inline-block' } }}>
-                            {sidebarLink}
-                        </Card>
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <Typography
+                            variant="h5"
+                            sx={{ mt: 3, display: { xs: 'none', md: 'inline-block' } }}
+                            children={myPageTitle}
+                        />
                     </Grid>
-                    <Grid className="myprofile-card" item xs={12} sm={12} md={9} lg={9}>
-                        <Grid container>
+                    <Grid item xs={3}>
+                        <Card sx={{ display: { xs: 'none', md: 'block' } }} children={sidebarLink} />
+                    </Grid>
+                    <Grid className="myprofile-card" item xs={12} md={9}>
+                        <Stack direction="row" alignItems="center">
                             <IconButton
-                                    color="white"
-                                    sx={{ display: { xs: 'inline-block', sm: 'inline-block', md: 'none' } }}
-                                    onClick={toggleMobileDrawer}
-                                >
-                                    <Menu color="inherit" />
-                                </IconButton>
-                                <Typography
-                                    variant="h6"
-                                    children={myPageTitle}
-                                    gutterBottom
-                                    sx={{ display: { xs: 'inline-block', sm: 'inline-block', md: 'none' } }}
-                                />
-                            {page}
-                        </Grid>
+                                sx={{ display: { xs: 'block', md: 'none' } }}
+                                onClick={toggleMobileDrawer}
+                            >
+                                <Menu color="inherit" />
+                            </IconButton>
+                            <Typography
+                                variant="h6"
+                                children={myPageTitle}
+                                gutterBottom
+                                sx={{ display: { xs: 'block', md: 'none' } }}
+                            />
+                        </Stack>
+                        {page}
                     </Grid>
                 </Grid>
                 {mobileDrawer}

@@ -17,14 +17,14 @@ const Index = () => {
 
     const dispatch = useDispatch()
 
-    const sortOptions = [
-        { name: 'Name A-Z', value: 'name:asc' },
-        { name: 'Name Z-A', value: 'name:desc' },
-        { name: 'Date - Oldest', value: 'created_at:asc' },
-        { name: 'Date - Newest', value: 'created_at:desc' }
-    ]
+    const { categories, keyword, sort, page, errors, translatables } = usePage().props
 
-    const { categories, keyword, sort, page, errors, messages } = usePage().props
+    const sortOptions = [
+        { name: translatables.filters.name.asc, value: 'name:asc' },
+        { name: translatables.filters.name.desc, value: 'name:desc' },
+        { name: translatables.filters.date.asc, value: 'created_at:asc' },
+        { name: translatables.filters.date.desc, value: 'created_at:desc' }
+    ]
 
     const [hideErrorMessages, setHideErrorMessages] = useState(false)
 
@@ -69,7 +69,7 @@ const Index = () => {
             ...dialog,
             value: inputValue,
             open: true,
-            title: 'Create Category',
+            title: translatables.texts.create_category,
             submitUrl: routes["admin.settings.categories.store"],
             method: 'post',
             action: 'create'
@@ -87,7 +87,7 @@ const Index = () => {
         setDialog(dialog => ({
             ...dialog,
             open: true,
-            title: 'Edit Category',
+            title: translatables.texts.edit_category,
             submitUrl: getRoute('admin.settings.categories.update', {id}),
             method: 'patch',
             action: 'update',
@@ -99,8 +99,8 @@ const Index = () => {
         setDialog(dialog => ({
             ...dialog,
             open: true,
-            title: 'Delete Category',
-            text: messages.confirm.category.delete,
+            title: translatables.texts.delete_category,
+            text: translatables.confirm.category.delete,
             submitUrl: getRoute('admin.settings.categories.delete', {id}),
             method: 'delete',
             action: 'delete'
@@ -130,10 +130,10 @@ const Index = () => {
                 }))
             },
             onSuccess: () => dispatch(actions.success({
-                message: messages.success.category[dialog.action]
+                message: translatables.success.category[dialog.action]
             })),
             onError: () => dispatch(actions.error({
-                message: messages.error
+                message: translatables.error
             }))
         })
     }
@@ -173,28 +173,29 @@ const Index = () => {
 
     return (
         <Box>
-            <Stack direction="row" justifyContent="space-between" mb={2}>
+            <Stack direction={{ xs: 'column', md: 'row' }} justifyContent="space-between" mb={2}>
                 <Typography
                     variant="h4"
-                    children="Categories"
+                    children={translatables.title.categories}
                 />
                 <Button
-                    children="Create Category"
+                    children={translatables.texts.create_category}
                     variant="contained"
                     startIcon={
                         <Add/>
                     }
                     onClick={() => handleOnCreate('')}
+                    sx={{ mt: { xs: 2, md: 0} }}
                 />
             </Stack>
             <Card sx={{ mb: 2 }}>
                 <CardContent>
                     <form onSubmit={handleFilterSubmit}>
                         <Grid container spacing={2}>
-                            <Grid item xs={12} md={8}>
+                            <Grid item xs={12} md={7}>
                                 <Input
-                                    label="Keyword"
-                                    placeholder="Search for name"
+                                    label={translatables.texts.keyword}
+                                    placeholder={translatables.texts.search_name}
                                     name="keyword"
                                     value={filters.keyword}
                                     onChange={e => handleOnChange(e, setFilters)}
@@ -202,7 +203,7 @@ const Index = () => {
                             </Grid>
                             <Grid item xs={12} md={3}>
                                 <Input
-                                    label="Sort"
+                                    label={translatables.texts.sort}
                                     select
                                     name="sort"
                                     value={filters.sort}
@@ -214,9 +215,9 @@ const Index = () => {
                                     {displaySelectOptions(sortOptions, 'value')}
                                 </Input>
                             </Grid>
-                            <Grid item xs={12} md={1}>
+                            <Grid item xs={12} md={2}>
                                 <Button
-                                    children="Filter"
+                                    children={translatables.texts.filter}
                                     variant="contained"
                                     fullWidth
                                 />
@@ -228,7 +229,7 @@ const Index = () => {
             {
                 processingFilters
                 ? <TableLoader />
-                : <CourseCategoryTable data={categories.data} handleOnEdit={handleOnEdit} handleOnDelete={handleOnDelete}/>
+                : <CourseCategoryTable translatables={translatables} data={categories.data} handleOnEdit={handleOnEdit} handleOnDelete={handleOnDelete}/>
             }
             <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
                 <Pagination

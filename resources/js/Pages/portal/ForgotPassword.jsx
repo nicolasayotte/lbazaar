@@ -1,13 +1,15 @@
-import { Link, useForm } from "@inertiajs/inertia-react"
+import { Link, useForm, usePage } from "@inertiajs/inertia-react"
 import { Box, Button, Card, CardContent, Container, Grid, Typography } from "@mui/material"
 import { useDispatch } from "react-redux"
 import Input from "../../components/forms/Input"
 import { actions } from "../../store/slices/ToasterSlice"
 import routes from "../../helpers/routes.helper"
 
-const ForgotPassword = ({errors, messages}) => {
+const ForgotPassword = () => {
 
     const dispatch = useDispatch()
+
+    const { errors, translatables } = usePage().props
 
     const { data, setData, post, processing } = useForm({
         email: ''
@@ -23,11 +25,11 @@ const ForgotPassword = ({errors, messages}) => {
         post('/forgot-password', {
             onSuccess: response => {
                 dispatch(actions.success({
-                    message: messages.success.forgotPassword
+                    message: translatables.success.forgotPassword
                 }))
             },
             onError: () => dispatch(actions.error({
-                message: messages.error
+                message: translatables.error
             }))
         })
     }
@@ -70,7 +72,7 @@ const ForgotPassword = ({errors, messages}) => {
                         </CardContent>
                     </Card>
                     <Box sx={{ textAlign: 'center', mt: 3 }}>
-                        <Link href={routes["portal.login"]}><Button>Back to login</Button></Link>
+                        <Link href={routes["portal.login"]}><Button>Back to sign in</Button></Link>
                     </Box>
                 </Grid>
             </Grid>
