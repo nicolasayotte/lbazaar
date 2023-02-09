@@ -19,6 +19,8 @@ class TranslationSeeder extends Seeder
 
         $insertData = [];
 
+        Translation::truncate();
+
         foreach ($locales as $locale) {
             app()->setLocale($locale);
 
