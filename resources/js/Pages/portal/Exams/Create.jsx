@@ -153,6 +153,9 @@ const Create = () => {
         e.preventDefault()
 
         post(getRoute('exams.store', { id: courseId }), {
+            onSuccess: () => dispatch(actions.success({
+                message: translatables.success.exams.create
+            })),
             onError: () => dispatch(actions.error({
                 message: translatables.error
             }))

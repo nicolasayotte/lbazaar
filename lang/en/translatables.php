@@ -50,6 +50,9 @@ return [
         ],
         'translations' => [
             'update' => 'Translations successfully updated'
+        ],
+        'exams' => [
+            'create' => 'Exam successfully created'
         ]
     ],
     'confirm' => [
