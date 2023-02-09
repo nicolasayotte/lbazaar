@@ -83,6 +83,10 @@ return [
                 'view' => 'Class Application'
             ],
             'types' => 'Class Types',
+            'manage' => [
+                'index' => 'Manage Classes',
+                'view' => 'Manage Class'
+            ]
         ],
         'users' => [
             'index' => 'Manage Users',
@@ -99,7 +103,8 @@ return [
         ],
         'login' => 'Login',
         'translations' => 'Translations',
-        'settings' => 'Settings'
+        'settings' => 'Settings',
+        'exams' => 'Exams'
     ],
     'filters' => [
         'date' => [
@@ -128,21 +133,26 @@ return [
     ],
     'texts' => [
         'actions' => 'Actions',
+        'add_choice' => 'Add Choice',
+        'add_item' => 'Add Item',
         'admin' => 'Admin',
         'all' => 'All',
         'approve' => 'Approve',
         'back_to_top' => 'Back to Top Page',
         'cancel' => 'Cancel',
         'category' => 'Category',
+        'choice' => 'Choice',
         'class_type' => 'Class Type',
         'classification' => 'Classification',
         'commission_rate' => 'Commission Rate',
         'confirm' => 'Confirm',
         'confirm_password' => 'Confirm Password',
         'content_information' => 'Content Information',
+        'correct_value' => 'Correct Value',
         'country' => 'Country',
         'create_category' => 'Create Category',
         'create_classification' => 'Create Classification',
+        'create_exam' => 'Create Exam',
         'current_password' => 'Current Password',
         'deny' => 'Deny',
         'date' => 'Date',
@@ -161,6 +171,7 @@ return [
         'edit_profile' => 'Edit Profile',
         'email' => 'Email',
         'enable' => 'Enable',
+        'exam_name' => 'Exam Name',
         'filter' => 'Filter',
         'first_name' => 'First Name',
         'general_information' => 'General Information',
@@ -171,11 +182,13 @@ return [
         'name' => 'Name',
         'new_password' => 'New Password',
         'no_records_found' => 'No Records Found',
+        'points' => 'Points',
         'points_earned' => 'Points Earned',
         'price' => 'Price',
         'pricing_information' => 'Pricing Information',
         'processing' => 'Processing',
         'profile' => 'Profile',
+        'question' => 'Question',
         'role' => 'Role',
         'save_changes' => 'Save Changes',
         'search_name' => 'Search for name',
@@ -193,6 +206,8 @@ return [
         'teacher' => 'Teacher',
         'teacher_information' => 'Teacher Information',
         'title' => 'Title',
+        'total_items' => 'Total Items',
+        'total_points' => 'Total Points',
         'type' => 'Type',
         'update_password' => 'Update Password',
         'update_password_help' => 'Enter your current password for verification',
