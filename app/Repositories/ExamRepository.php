@@ -19,10 +19,13 @@ class ExamRepository extends BaseRepository
 
         $items = $data['items'];
 
-        foreach ($items as $item) {
+        foreach ($items as $index => $item) {
+            $item['sort'] = $index + 1;
+
             $examItem = $exam->items()->create($item);
 
             foreach ($item['choices'] as $choiceIndex => $choice) {
+                $choice['sort'] = $choiceIndex + 1;
 
                 $examItemChoice = ExamItemChoice::create($choice);
 

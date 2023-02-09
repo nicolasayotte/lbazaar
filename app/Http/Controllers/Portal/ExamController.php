@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Portal;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateExamRequest;
 use App\Repositories\ExamRepository;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -43,9 +44,10 @@ class ExamController extends Controller
         $inputs = $request->all();
 
         $inputs['course_id'] = $id;
+        $inputs['published_at'] = Carbon::now();
 
         $this->examRepository->create($inputs);
 
-        return to_route('mypage.course.manage_class.exams');
+        return to_route('mypage.course.manage_class.exams', ['id' => $id]);
     }
 }
