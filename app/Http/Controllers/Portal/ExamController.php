@@ -44,7 +44,6 @@ class ExamController extends Controller
         $inputs = $request->all();
 
         $inputs['course_id'] = $id;
-        $inputs['published_at'] = Carbon::now();
 
         $this->examRepository->create($inputs);
 
