@@ -107,12 +107,12 @@ class CourseRepository extends BaseRepository
 
     public function findById($id)
     {
-        return $this->model->with(['professor', 'courseType', 'contents', 'courseCategory', 'feedbacks', 'feedbacks.user'])->findOrFail($id);
+        return $this->model->with(['professor', 'courseType', 'schedules', 'courseCategory', 'feedbacks', 'feedbacks.user'])->findOrFail($id);
     }
 
     public function findByIdManageClass($id)
     {
-        return CourseData::fromModel($this->model->with(['courseType', 'contents', 'courseCategory'])->findOrFail($id));
+        return CourseData::fromModel($this->model->with(['courseType', 'schedules', 'courseCategory'])->findOrFail($id));
     }
 
     public function findByIdManageClassFeedbacks($id)
