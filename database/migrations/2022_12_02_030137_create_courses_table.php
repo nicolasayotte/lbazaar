@@ -26,6 +26,9 @@ return new class extends Migration
             $table->string('image_thumbnail')->nullable();
             $table->string('language')->nullable();
             $table->double('points_earned')->nullable();
+            $table->string('video_path')->nullable();
+            $table->string('zoom_link')->nullable();
+            $table->integer('max_participant');
             $table->timestamps();
             $table->softDeletes();
 

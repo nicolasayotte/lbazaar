@@ -17,8 +17,6 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('course_id')->unsigned()->index()->nullable();
             $table->string('name');
-            $table->dateTime('date_start');
-            $table->dateTime('date_end');
             $table->dateTime('published_at');
             $table->timestamps();
 

@@ -10,6 +10,7 @@ use App\Repositories\CourseFeedbackRepository;
 use App\Repositories\CourseHistoryRepository;
 use App\Repositories\CourseRepository;
 use App\Repositories\CourseTypeRepository;
+use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -20,6 +21,7 @@ class ManageCourseController extends Controller
     public $courseRepository;
     public $courseHistoryRepository;
     public $courseFeedbackRepository;
+    public $userRepository;
 
     public function __construct()
     {
@@ -28,6 +30,7 @@ class ManageCourseController extends Controller
         $this->courseRepository = new CourseRepository();
         $this->courseHistoryRepository = new CourseHistoryRepository();
         $this->courseFeedbackRepository = new CourseFeedbackRepository();
+        $this->userRepository = new UserRepository();
     }
 
     public function index(Request $request)
@@ -40,7 +43,7 @@ class ManageCourseController extends Controller
             'course_type'        => @$request['course_type'] ?? '',
             'category'           => @$request['category'] ?? '',
             'status'             => @$request['status'] ?? '',
-            'sort'               => @$request['sort'] ?? 'course_contents.schedule_datetime:desc',
+            'sort'               => @$request['sort'] ?? 'course_schedules.schedule_datetime:desc',
             'page'               => @$request['page'] ?? 1,
             'title'              => 'My Page | Manage Class'
         ])->withViewData([

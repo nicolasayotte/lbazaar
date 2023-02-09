@@ -41,9 +41,9 @@ class Course extends Model
         return $this->belongsTo(Status::class);
     }
 
-    public function contents()
+    public function schedules()
     {
-        return $this->hasMany(CourseContent::class);
+        return $this->hasMany(CourseSchedule::class);
     }
 
     public function students()

@@ -40,7 +40,7 @@ class CourseRepository extends BaseRepository
 
     public function search($request)
     {
-        return $this->model->with(['professor', 'contents', 'courseCategory', 'courseType'])
+        return $this->model->with(['professor', 'schedules', 'courseCategory', 'courseType'])
             ->when($request->has('professor_id') && !empty($request->get('professor_id')), function ($q) use ($request)  {
                 return $q->where('professor_id', $request->get('professor_id'));
             })
@@ -54,7 +54,7 @@ class CourseRepository extends BaseRepository
                 return $q->where('language', $request->get('language'));
             })
             ->when($request->has('month') && !empty($request->get('month')), function ($q) use ($request)  {
-                return $q->whereHas('contents', function($query) use ($request) {
+                return $q->whereHas('schedules', function($query) use ($request) {
 
                     $startDate = date('Y-m-d', strtotime($request->get('month') . '-01'));
                     $endDate   = date('Y-m-t', strtotime($startDate));
@@ -74,13 +74,13 @@ class CourseRepository extends BaseRepository
 
     public function getMyCourses($filters)
     {
-        $sortFilterArr = explode(':', @$filters['sort'] ?? 'course_contents.schedule_datetime:desc');
+        $sortFilterArr = explode(':', @$filters['sort'] ?? 'course_schedules.schedule_datetime:desc');
 
         $sortBy    = $sortFilterArr[0];
         $sortOrder = $sortFilterArr[1];
 
 
-        return $this->model->select('statuses.*', 'courses.*', 'course_contents.schedule_datetime' )
+        return $this->model->select('statuses.*', 'courses.*', 'course_schedules.schedule_datetime' )
             ->where('professor_id', Auth::user()->id)
             ->where(function($q) use($filters) {
                 return $q->where('courses.title', 'LIKE', '%'. @$filters['keyword'] .'%');
@@ -95,8 +95,8 @@ class CourseRepository extends BaseRepository
                 return $q->where('statuses.name', $filters['status']);
             })
             ->join('statuses', 'statuses.id', '=', 'courses.status_id')
-            ->join('course_contents', function ($join) {
-                $join->on('course_contents.id', '=', DB::raw('(SELECT id FROM course_contents WHERE course_contents.course_id = courses.id LIMIT 1)'));
+            ->join('course_schedules', function ($join) {
+                $join->on('course_schedules.id', '=', DB::raw('(SELECT id FROM course_schedules WHERE course_schedules.course_id = courses.id LIMIT 1)'));
             })
             ->orderBy($sortBy, $sortOrder)
             ->paginate(self::PER_PAGE)->withQueryString()

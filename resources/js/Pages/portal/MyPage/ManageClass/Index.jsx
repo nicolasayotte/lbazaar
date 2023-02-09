@@ -13,8 +13,8 @@ const Index = () => {
     const sortOptions = [
         { name: 'Title A-Z', value: 'courses.title:asc' },
         { name: 'Title Z-A', value: 'courses.title:desc' },
-        { name: 'Published Date - Oldest', value: 'course_contents.schedule_datetime:asc' },
-        { name: 'Published Date - Newest', value: 'course_contents.schedule_datetime:desc' }
+        { name: 'Published Date - Oldest', value: 'course_schedules.schedule_datetime:asc' },
+        { name: 'Published Date - Newest', value: 'course_schedules.schedule_datetime:desc' }
     ]
 
     const statusOptions = [
