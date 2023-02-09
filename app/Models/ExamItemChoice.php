@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class ExamItemChoice extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'exam_item_id',
+        'value'
+    ];
 }
