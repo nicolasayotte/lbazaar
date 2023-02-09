@@ -19,8 +19,9 @@ return new class extends Migration
             $table->string('name');
             $table->dateTime('published_at');
             $table->timestamps();
+            $table->softDeletes();
 
-            $table->foreign('course_id')->references('id')->on('courses');
+            $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
         });
     }
 

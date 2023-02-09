@@ -20,8 +20,9 @@ return new class extends Migration
             $table->integer('sort');
             $table->double('points');
             $table->timestamps();
+            $table->softDeletes();
 
-            $table->foreign('exam_id')->references('id')->on('exams');
+            $table->foreign('exam_id')->references('id')->on('exams')->onDelete('cascade');
         });
     }
 
