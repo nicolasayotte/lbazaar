@@ -4,21 +4,13 @@ namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CourseUpdateRequest;
-use App\Http\Requests\SearchClassRequest;
-use App\Models\Course;
-use App\Models\CourseContent;
 use App\Models\CourseHistory;
-use App\Models\User;
 use App\Repositories\CourseCategoryRepository;
-use App\Repositories\CourseContentRepository;
 use App\Repositories\CourseFeedbackRepository;
 use App\Repositories\CourseHistoryRepository;
 use App\Repositories\CourseRepository;
 use App\Repositories\CourseTypeRepository;
-use App\Repositories\UserRepository;
-use DateTime;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class ManageCourseController extends Controller
@@ -82,7 +74,7 @@ class ManageCourseController extends Controller
             'courseId'          => $id,
             'title'             => 'My Page | Manage Class '
         ])->withViewData([
-            'title'       => 'My Page | Manage Class - Students Lists',
+            'title'       => 'My Page | Manage Class - Students List',
         ]);
     }
 

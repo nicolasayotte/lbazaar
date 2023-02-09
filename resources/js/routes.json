@@ -68,6 +68,9 @@
     "mypage.course.manage_class.details": "\/mypage\/manage-class\/{id}\/details",
     "mypage.course.manage_class.students": "\/mypage\/manage-class\/{id}\/students",
     "mypage.course.manage_class.feedbacks": "\/mypage\/manage-class\/{id}\/feedbacks",
+    "mypage.course.manage_class.exams": "\/mypage\/manage-class\/{id}\/exams",
     "mypage.course.manage_class.students.update.complete.status": "\/mypage\/manage-class\/update-student-complete\/{id}\/{status}",
-    "mypage.course.manage_class.course.update": "\/mypage\/manage-class\/course\/update"
+    "mypage.course.manage_class.course.update": "\/mypage\/manage-class\/course\/update",
+    "exams.create": "\/exams\/{id}\/create",
+    "exams.store": "\/exams\/{id}"
 }

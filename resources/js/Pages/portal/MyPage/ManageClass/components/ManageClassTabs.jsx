@@ -25,7 +25,7 @@ const ManageClassTabs = ({ tabValue, id }) => {
                 <Tab label="Class Information" value="details"/>
                 <Tab label="Student List" value="students"/>
                 <Tab label="Feedbacks" value="feedbacks" />
-                <Tab label="Quiz" value="quiz" />
+                <Tab label="Exams" value="exams" />
             </Tabs>
         </Paper>
     )
