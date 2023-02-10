@@ -44,7 +44,7 @@ const MyPage = ({ page }) => {
             icon: <MenuBook />,
         },
         {
-            name: 'Class Histories',
+            name: 'Class History',
             link: routes["mypage.course.history.index"],
             roles: ['student', 'teacher'],
             active: component.startsWith('Portal/MyPage/CourseHistory'),

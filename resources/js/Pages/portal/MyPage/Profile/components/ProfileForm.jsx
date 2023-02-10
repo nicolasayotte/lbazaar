@@ -1,9 +1,9 @@
 import { useForm } from "@inertiajs/inertia-react"
 import { Button, Card, CardContent, Grid, Typography } from "@mui/material"
 import { useDispatch } from "react-redux"
-import Input from "../../../../components/forms/Input"
-import { displaySelectOptions, handleOnChange } from "../../../../helpers/form.helper"
-import { actions } from "../../../../store/slices/ToasterSlice"
+import Input from "../../../../../components/forms/Input"
+import { displaySelectOptions, handleOnChange } from "../../../../../helpers/form.helper"
+import { actions } from "../../../../../store/slices/ToasterSlice"
 
 const ProfileForm = ({ errors, auth, countries, messages, routes }) => {
 

@@ -1,11 +1,10 @@
-import { Box, Button, Card, CardContent, CardMedia, Container, Divider, Grid, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from "@mui/material"
+import { Box, Button, Card, CardContent, CardMedia, Container, Divider, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from "@mui/material"
 import Input from "../../../components/forms/Input"
 import TextEditorInput from "../../../components/forms/TextEditorInput"
 import placeholderImg from "../../../../img/placeholder.png"
 import { Stack } from "@mui/system"
-import FileInput from "../../../components/forms/FileInput"
-import { AddCircle } from "@mui/icons-material"
 import { useState } from "react"
+import FileInput from "../../../components/forms/CustomFileInput"
 
 const Create = () => {
 

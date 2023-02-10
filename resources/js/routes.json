@@ -64,5 +64,17 @@
     "mypage.course.applications.create": "\/mypage\/class-application\/create",
     "mypage.course.applications.view": "\/mypage\/class-application\/details\/{id}",
     "mypage.course.applications.generate": "\/mypage\/class-application\/generate",
-    "mypage.course.manage_class.index": "\/mypage\/manage-class"
+    "mypage.course.manage_class.index": "\/mypage\/manage-class",
+    "mypage.course.manage_class.details": "\/mypage\/manage-class\/{id}\/details",
+    "mypage.course.manage_class.students": "\/mypage\/manage-class\/{id}\/students",
+    "mypage.course.manage_class.feedbacks": "\/mypage\/manage-class\/{id}\/feedbacks",
+    "mypage.course.manage_class.exams": "\/mypage\/manage-class\/{id}\/exams",
+    "mypage.course.manage_class.students.update.complete.status": "\/mypage\/manage-class\/update-student-complete\/{id}\/{status}",
+    "mypage.course.manage_class.course.update": "\/mypage\/manage-class\/course\/update",
+    "exams.create": "\/exams\/{id}\/create",
+    "exams.store": "\/exams\/{id}",
+    "exams.edit": "\/exams\/{id}\/edit",
+    "exams.update": "\/exams\/{id}\/update",
+    "exams.status.toggle": "\/exams\/{id}\/status\/{status}",
+    "exams.delete": "\/exams\/{id}\/delete"
 }

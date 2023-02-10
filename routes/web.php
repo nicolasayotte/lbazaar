@@ -14,6 +14,7 @@ use App\Http\Controllers\Portal\CourseApplicationController as PortalClassApplic
 use App\Http\Controllers\Portal\CourseController;
 use App\Http\Controllers\Portal\CourseFeedbackController;
 use App\Http\Controllers\Portal\CourseHistoryController;
+use App\Http\Controllers\Portal\ExamController;
 use App\Http\Controllers\Portal\ForgotPasswordController;
 use App\Http\Controllers\Portal\InquiriesController;
 use App\Http\Controllers\Portal\ManageCourseController;
@@ -197,21 +198,59 @@ Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function()
         return redirect()->route(@$request->user() ? 'mypage.profile.index' : 'portal.login');
     });
 
+    # Profile
     Route::get('/profile', [PortalProfileController::class, 'index'])->name('profile.index');
     Route::patch('/profile', [PortalProfileController::class, 'update'])->name('profile.update');
     Route::patch('/password/update', [PortalProfileController::class, 'updatePassword'])->name('profile.password.update');
     Route::patch('/base-password/update', [PortalProfileController::class, 'updateBasePassword'])->name('profile.base.password.update');
+
+    # Class History
     Route::get('/class-history', [CourseHistoryController::class, 'index'])->name('course.history.index');
 
-    Route::prefix('/class-application')->name('course.applications.')->group(function() {
+    # Class Applications
+    Route::prefix('/class-application')->middleware(['teacher'])->name('course.applications.')->group(function() {
         Route::get('/', [PortalClassApplicationController::class, 'index'])->name('index');
         Route::get('/create', [PortalClassApplicationController::class, 'create'])->name('create');
         Route::get('/details/{id}', [PortalClassApplicationController::class, 'view'])->name('view');
         Route::post('/generate', [PortalClassApplicationController::class, 'generate'])->name('generate');
     });
 
-    Route::prefix('/manage-class')->name('course.manage_class.')->group(function() {
-        Route::get('/', [ManageCourseController::class, 'index'])->name('index');
-    });
+    # Manage Classes
+    Route::prefix('/manage-class')->middleware(['teacher'])->name('course.manage_class.')->group(function() {
 
+        Route::get('/', [ManageCourseController::class, 'index'])->name('index');
+
+        # Manage Class Details
+        Route::prefix('/{id}')->group(function() {
+            Route::get('/details', [ManageCourseController::class, 'details'])->name('details');
+            Route::get('/students', [ManageCourseController::class, 'students'])->name('students');
+            Route::get('/feedbacks', [ManageCourseController::class, 'feedbacks'])->name('feedbacks');
+
+            # Exams
+            Route::prefix('exams')->group(function() {
+                Route::get('/', [ExamController::class, 'index'])->name('exams');
+            });
+        });
+
+        Route::post('/update-student-complete/{id}/{status}', [ManageCourseController::class, 'updateCompleted'])->name('students.update.complete.status');
+        Route::post('/course/update', [ManageCourseController::class, 'updateCourse'])->name('course.update');
+    });
+});
+
+# Exams
+Route::prefix('exams')->middleware(['auth', 'teacher'])->name('exams.')->group(function() {
+
+    Route::prefix('/{id}')->group(function() {
+        # Create
+        Route::get('/create', [ExamController::class, 'create'])->name('create');
+        Route::post('/', [ExamController::class, 'store'])->name('store');
+
+        # Edit
+        Route::get('/edit', [ExamController::class, 'edit'])->name('edit');
+        Route::patch('/update', [ExamController::class, 'update'])->name('update');
+
+        # Update Status / Delete
+        Route::patch('/status/{status}', [ExamController::class, 'toggleStatus'])->name('status.toggle');
+        Route::delete('/delete', [ExamController::class, 'delete'])->name('delete');
+    });
 });

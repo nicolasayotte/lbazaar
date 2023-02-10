@@ -19,8 +19,9 @@ return new class extends Migration
             $table->string('value');
             $table->integer('sort');
             $table->timestamps();
+            $table->softDeletes();
 
-            $table->foreign('exam_item_id')->references('id')->on('exam_items');
+            $table->foreign('exam_item_id')->references('id')->on('exam_items')->onDelete('cascade');
         });
     }
 

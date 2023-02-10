@@ -13,18 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('course_contents', function (Blueprint $table) {
+        Schema::create('course_schedules', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('course_id')->unsigned()->index()->nullable();
-            $table->string('title');
-            $table->longtext('description');
-            $table->string('video_path')->nullable();
+            $table->dateTime('schedule_datetime');
             $table->string('zoom_link')->nullable();
-            $table->text('image_thumbnail')->nullable();
-            $table->integer('sort');
             $table->boolean('is_live');
             $table->integer('max_participant');
-            $table->dateTime('schedule_datetime');
+            $table->dateTime('schedule_validity_datetime');
+
             $table->timestamps();
             $table->softDeletes();
 
@@ -39,6 +36,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('course_contents');
+        Schema::dropIfExists('course_schedules');
     }
 };

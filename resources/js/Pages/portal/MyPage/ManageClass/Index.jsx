@@ -1,11 +1,10 @@
-import { useForm, usePage, Link } from "@inertiajs/inertia-react"
-import { Box, Button, Card, CardContent, Grid, Pagination, Typography } from "@mui/material"
+import { useForm, usePage } from "@inertiajs/inertia-react"
+import { Box, Button, Card, CardContent, Grid, Pagination } from "@mui/material"
 import Input from "../../../../components/forms/Input"
 import { displaySelectOptions, handleOnChange, handleOnSelectChange } from "../../../../helpers/form.helper"
-import ClassManageTable from "../components/ClassManageTable"
-import routes, {getRoute} from "../../../../helpers/routes.helper"
+import ClassManageTable from "./components/ClassManageTable"
+import routes from "../../../../helpers/routes.helper"
 import TableLoader from "../../../../components/common/TableLoader"
-import { NoteAdd } from '@mui/icons-material';
 
 const Index = () => {
 
@@ -14,8 +13,8 @@ const Index = () => {
     const sortOptions = [
         { name: 'Title A-Z', value: 'courses.title:asc' },
         { name: 'Title Z-A', value: 'courses.title:desc' },
-        { name: 'Published Date - Oldest', value: 'course_contents.schedule_datetime:asc' },
-        { name: 'Published Date - Newest', value: 'course_contents.schedule_datetime:desc' }
+        { name: 'Published Date - Oldest', value: 'course_schedules.schedule_datetime:asc' },
+        { name: 'Published Date - Newest', value: 'course_schedules.schedule_datetime:desc' }
     ]
 
     const statusOptions = [

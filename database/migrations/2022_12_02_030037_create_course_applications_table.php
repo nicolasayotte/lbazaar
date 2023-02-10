@@ -23,6 +23,7 @@ return new class extends Migration
             $table->double('price')->nullable();
             $table->string('language')->nullable();
             $table->double('points_earned')->nullable();
+            $table->integer('max_participant');
             $table->dateTime('approved_at')->nullable();
             $table->dateTime('denied_at')->nullable();
             $table->timestamps();

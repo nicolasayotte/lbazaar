@@ -13,6 +13,14 @@ class Course extends Model
 
     const PER_PAGE = 10;
 
+    protected $fillable = [
+        "title",
+        "description",
+        "language",
+        "image_thumbnail",
+        "course_category_id"
+    ];
+
     public function professor()
     {
         return $this->belongsTo(User::class, 'professor_id');
@@ -33,9 +41,21 @@ class Course extends Model
         return $this->belongsTo(Status::class);
     }
 
-    public function contents()
+    public function schedules()
     {
-        return $this->hasMany(CourseContent::class);
+        return $this->hasMany(CourseSchedule::class);
+    }
+
+    public function students()
+    {
+        return $this->hasManyThrough(
+            User::class,
+            CourseHistory::class,
+            'course_id',
+            'id',
+            'id',
+            'user_id'
+        );
     }
 
     public function feedbacks()

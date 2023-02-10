@@ -6,13 +6,13 @@ import { usePage } from "@inertiajs/inertia-react"
 
 const Details = () => {
 
-    const { auth, course, contents } = usePage().props
+    const { auth, course, schedule } = usePage().props
 
-    const displayCourseContents = courseContents => courseContents && courseContents.length > 0 && courseContents.map(course => (
+    const displayCourseContents = courseSchedules => courseSchedules && courseSchedules.length > 0 && courseSchedules.map(courseSchedule => (
         <CourseContent
             showDate={true}
             key={course.id}
-            course={course}
+            courseSchedule={courseSchedule}
             viewDetailId="id"
             showDescription={true}
         />
@@ -90,7 +90,7 @@ const Details = () => {
                                 <div dangerouslySetInnerHTML={{ __html: course.description }} style={{ lineHeight: 1.8 }} />
                             </CardContent>
                         </Card>
-                        {displayCourseContents(contents)}
+                        {displayCourseContents(schedule)}
                     </Grid>
                     <Grid item xs={12} md={4}>
                         <Box display={{

@@ -2,13 +2,13 @@
 
 namespace Database\Seeders;
 
-use App\Models\Course;
-use App\Models\CourseContent;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Database\Seeder;
+use Illuminate\Database\Eloquent\Factories\Sequence;
+use App\Models\Course;
+use App\Models\CourseSchedule;
 
-class CourseContentSeeder extends Seeder
+class CourseScheduleSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -20,7 +20,7 @@ class CourseContentSeeder extends Seeder
         $courses = Course::all();
 
         foreach ($courses as $course) {
-            CourseContent::factory()
+            CourseSchedule::factory()
                         ->count(1)
                         ->state(new Sequence([
                             'course_id' => $course->id
