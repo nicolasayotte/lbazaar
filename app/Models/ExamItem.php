@@ -17,4 +17,9 @@ class ExamItem extends Model
         'points',
         'sort'
     ];
+
+    public function choices()
+    {
+        return $this->hasMany(ExamItemChoice::class);
+    }
 }

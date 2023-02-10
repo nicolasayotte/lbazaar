@@ -10,6 +10,8 @@ class Exam extends Model
 {
     use HasFactory, SoftDeletes;
 
+    public const PER_PAGE = 10;
+
     protected $fillable = [
         'name',
         'course_id',
