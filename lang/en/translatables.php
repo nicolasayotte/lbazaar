@@ -52,7 +52,9 @@ return [
             'update' => 'Translations successfully updated'
         ],
         'exams' => [
-            'create' => 'Exam successfully created'
+            'create' => 'Exam successfully created',
+            'update_status' => 'Exam status successfully updated',
+            'delete' => 'Exam successfully deleted'
         ]
     ],
     'confirm' => [
@@ -77,6 +79,9 @@ return [
         ],
         'translations' => [
             'update' => 'Are you sure you want to update these translations?'
+        ],
+        'exams' => [
+            'delete' => 'Are you sure you want to delete this exam?'
         ]
     ],
     'title' => [
