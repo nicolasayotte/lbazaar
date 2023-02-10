@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateExamRequest;
+use App\Models\Exam;
 use App\Repositories\ExamRepository;
+use App\Repositories\TranslationRepository;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -37,11 +39,33 @@ class ExamController extends Controller
     public function create($id)
     {
         return Inertia::render('Portal/Exams/Create', [
-            'title' => 'Manage Class - Create Exam',
+            'title'    => TranslationRepository::getTranslation('texts.create_exam'),
             'courseId' => $id
         ])->withViewData([
-            'title' => 'Manage Class - Create Exam'
+            'title' => TranslationRepository::getTranslation('texts.create_exam')
         ]);
+    }
+
+    public function edit($id)
+    {
+        $exam = $this->examRepository->with(['items', 'items.choices'])->findOrFail($id);
+
+        return Inertia::render('Portal/Exams/Create', [
+            'title'    => TranslationRepository::getTranslation('texts.edit_exam'),
+            'exam'     => $exam,
+            'courseId' => $exam->course_id
+        ])->withViewData([
+            'title' => TranslationRepository::getTranslation('texts.edit_exam'),
+        ]);
+    }
+
+    public function update($id, CreateExamRequest $request)
+    {
+        $this->examRepository->update($id, $request->all());
+
+        $exam = $this->examRepository->findOrFail($id);
+
+        return to_route('mypage.course.manage_class.exams', ['id' => $exam->course_id]);
     }
 
     public function toggleStatus($id, $status)

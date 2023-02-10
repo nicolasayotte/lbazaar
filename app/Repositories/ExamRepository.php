@@ -43,26 +43,18 @@ class ExamRepository extends BaseRepository
 
     public function create($data)
     {
-        $exam = Exam::create($data);
+        $exam = $this->create($data);
 
-        $items = $data['items'];
+        $this->createItems($exam, $data['items']);
+    }
 
-        foreach ($items as $index => $item) {
-            $item['sort'] = $index + 1;
+    public function update($id, $data)
+    {
+        $exam = $this->findOrFail($id);
 
-            $examItem = $exam->items()->create($item);
+        $exam->items()->delete();
 
-            foreach ($item['choices'] as $choiceIndex => $choice) {
-                $choice['sort'] = $choiceIndex + 1;
-
-                $examItemChoice = ExamItemChoice::create($choice);
-
-                if ($item['correct_index'] == $choiceIndex) {
-                    $examItem->correct_choice_id = $examItemChoice->id;
-                    $examItem->save();
-                }
-            }
-        }
+        $this->createItems($exam, $data['items']);
     }
 
     public function toggleStatus($id, $status)
@@ -71,5 +63,25 @@ class ExamRepository extends BaseRepository
 
         $exam->published_at = $status === Status::ACTIVE ? Carbon::now() : null;
         $exam->save();
+    }
+
+    private function createItems($exam, $items)
+    {
+        foreach ($items as $index => $item) {
+            $item['sort'] = $index + 1;
+
+            $examItem = $exam->items()->create($item);
+
+            foreach ($item['choices'] as $choiceIndex => $choice) {
+                $choice['sort'] = $choiceIndex + 1;
+
+                $examItemChoice = $examItem->choices()->create($choice);
+
+                if ($item['correct_index'] == $choiceIndex) {
+                    $examItem->correct_choice_id = $examItemChoice->id;
+                    $examItem->save();
+                }
+            }
+        }
     }
 }

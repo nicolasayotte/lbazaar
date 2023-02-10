@@ -73,6 +73,8 @@
     "mypage.course.manage_class.course.update": "\/mypage\/manage-class\/course\/update",
     "exams.create": "\/exams\/{id}\/create",
     "exams.store": "\/exams\/{id}",
+    "exams.edit": "\/exams\/{id}\/edit",
+    "exams.update": "\/exams\/{id}\/update",
     "exams.status.toggle": "\/exams\/{id}\/status\/{status}",
     "exams.delete": "\/exams\/{id}\/delete"
 }

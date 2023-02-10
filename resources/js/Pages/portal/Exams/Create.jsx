@@ -11,9 +11,9 @@ import { red } from "@mui/material/colors"
 
 const Create = () => {
 
-    const { translatables, courseId } = usePage().props
-
     const dispatch = useDispatch()
+
+    const { translatables, courseId, exam, title } = usePage().props
 
     const choiceBlueprint = {
         value: ''
@@ -24,17 +24,54 @@ const Create = () => {
         points: 1,
         correct_index: 0,
         choices: [
+            choiceBlueprint,
             choiceBlueprint
         ]
     }
 
-    const { data, setData, post, errors } = useForm(`ExamForm:${courseId}`, {
+    const dataBluePrint = {
         points: 1,
         name: '',
         items: [
             itemBluePrint
         ]
-    })
+    }
+
+    const setInitialValues = () => {
+
+        if (exam !== undefined) {
+
+            let totalPoints = 0
+            let items = []
+
+            if (exam.items && exam.items.length > 0) {
+                exam.items.map(item => {
+
+                    let examItem = {
+                        question: item.question,
+                        points: item.points,
+                        correct_index: item.choices.findIndex(choice => choice.id === item.correct_choice_id),
+                        choices: item.choices.map(choice => { return { value: choice.value } })
+                    }
+
+                    totalPoints += item.points
+                    items.push(examItem)
+                })
+            }
+
+            let examData = {
+                points: totalPoints,
+                name: exam.name,
+                items
+            }
+
+            return examData
+        }
+
+        return dataBluePrint
+    }
+
+    const { data, setData, post, patch, errors } = useForm(`ExamForm:${courseId}`, setInitialValues())
 
     const handleOnAddChoice = itemIndex => {
         const { items } = data
@@ -152,9 +189,18 @@ const Create = () => {
     const handleSubmit = e => {
         e.preventDefault()
 
-        post(getRoute('exams.store', { id: courseId }), {
+        const submitURL = exam === undefined
+            ? getRoute('exams.store', { id: courseId })
+            : getRoute('exams.update', { id: exam.id })
+
+        const requestMethods = {
+            'create': post,
+            'update': patch
+        }
+
+        requestMethods[exam === undefined ? 'create' : 'update'](submitURL, {
             onSuccess: () => dispatch(actions.success({
-                message: translatables.success.exams.create
+                message: translatables.success.exams[exam === undefined ? 'create' : 'update']
             })),
             onError: () => dispatch(actions.error({
                 message: translatables.error
@@ -185,12 +231,13 @@ const Create = () => {
                         value={data.items[itemIndex].choices[index].value}
                         onChange={e => handleOnChoiceChange(e, itemIndex, index)}
                     />
-                    <Tooltip title={`${translatables.texts.correct_value}?`}>
+                    <Tooltip title={`${translatables.texts.correct_value}`}>
                         <Radio
                             name={`${itemIndex}.correct_index`}
                             value={index}
                             checked={data.items[itemIndex].correct_index == index}
                             onChange={e => handleOnRadioChange(e, itemIndex)}
+                            color="success"
                         />
                     </Tooltip>
                     <Tooltip title={translatables.texts.delete}>
@@ -283,11 +330,11 @@ const Create = () => {
             <Container sx={{ pt: 4, minHeight: '100vh' }}>
                 <Grid container spacing={2} alignItems="center" sx={{ mb: 2 }}>
                     <Grid item xs={12} md={9}>
-                        <Typography variant="h5" children={translatables.texts.create_exam} />
+                        <Typography variant="h5" children={title} />
                         <Breadcrumbs>
                             <Link href={routes["mypage.course.manage_class.index"]} children={translatables.title.class.manage.index} />
                             <Link href={getRoute('mypage.course.manage_class.exams', { id: courseId })} children={translatables.title.class.manage.view} />
-                            <Typography color="text.primary" children={translatables.texts.create_exam} />
+                            <Typography color="text.primary" children={title} />
                         </Breadcrumbs>
                     </Grid>
                     <Grid item xs={12} md={3} textAlign="right">

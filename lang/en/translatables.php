@@ -54,7 +54,8 @@ return [
         'exams' => [
             'create' => 'Exam successfully created',
             'update_status' => 'Exam status successfully updated',
-            'delete' => 'Exam successfully deleted'
+            'delete' => 'Exam successfully deleted',
+            'update' => 'Exam successfully updated'
         ]
     ],
     'confirm' => [
@@ -176,6 +177,7 @@ return [
         'edit' => 'Edit',
         'edit_category' => 'Edit Category',
         'edit_classification' => 'Edit Classification',
+        'edit_exam' => 'Edit Exam',
         'edit_profile' => 'Edit Profile',
         'email' => 'Email',
         'enable' => 'Enable',

@@ -241,8 +241,15 @@ Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function()
 Route::prefix('exams')->middleware(['auth', 'teacher'])->name('exams.')->group(function() {
 
     Route::prefix('/{id}')->group(function() {
+        # Create
         Route::get('/create', [ExamController::class, 'create'])->name('create');
         Route::post('/', [ExamController::class, 'store'])->name('store');
+
+        # Edit
+        Route::get('/edit', [ExamController::class, 'edit'])->name('edit');
+        Route::patch('/update', [ExamController::class, 'update'])->name('update');
+
+        # Update Status / Delete
         Route::patch('/status/{status}', [ExamController::class, 'toggleStatus'])->name('status.toggle');
         Route::delete('/delete', [ExamController::class, 'delete'])->name('delete');
     });

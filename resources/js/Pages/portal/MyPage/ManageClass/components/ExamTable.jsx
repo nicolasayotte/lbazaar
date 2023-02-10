@@ -3,6 +3,7 @@ import { Delete, Edit } from "@mui/icons-material"
 import { IconButton, Paper, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from "@mui/material"
 import { Stack } from "@mui/system"
 import EmptyCard from "../../../../../components/common/EmptyCard"
+import { getRoute } from "../../../../../helpers/routes.helper"
 
 const ExamTable = ({ data, handleOnStatusToggle, handleOnDelete }) => {
 
@@ -17,7 +18,7 @@ const ExamTable = ({ data, handleOnStatusToggle, handleOnDelete }) => {
 
         const actionButtons = (
             <Stack direction="row" spacing={2} width="100%" justifyContent="center">
-                <Link>
+                <Link href={getRoute('exams.edit', { id: item.id })}>
                     <Tooltip title={translatables.texts.edit}>
                         <IconButton size="small">
                             <Edit fontSize="inherit" />
