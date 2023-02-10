@@ -148,7 +148,7 @@ class CourseRepository extends BaseRepository
             ]);
         }
 
-        return redirect()->route('inquiries.index');
+        return redirect()->back();
     }
 
 }

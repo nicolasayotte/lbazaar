@@ -33,6 +33,7 @@ class CourseController extends Controller
         $this->courseRepository = new CourseRepository();
         $this->courseScheduleRepository = new CourseScheduleRepository();
         $this->userRepository = new UserRepository();
+        $this->courseApplicationRepository = new CourseApplicationRepository();
     }
 
     public function index(SearchClassRequest $request)

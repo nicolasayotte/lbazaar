@@ -44,7 +44,6 @@ class CreateExamRequest extends FormRequest
     public function attributes()
     {
         return [
-            'correct_index' => 'correct choice',
             'items.*.question' => strtolower(TranslationRepository::getTranslation('texts.question')),
             'items.*.points'   => strtolower(TranslationRepository::getTranslation('texts.points')),
             'items.*.choices'   => strtolower(TranslationRepository::getTranslation('texts.question')),
