@@ -46,7 +46,7 @@ const ResetPassword = () => {
                 alignItems='center'
                 justifyContent='center'
                 sx={{
-                    minHeight: '80vh'
+                    minHeight: '100vh'
                 }}
             >
                 <Card key="Password Form Card" sx={{ mt: 2 }}>

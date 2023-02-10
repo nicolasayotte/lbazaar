@@ -1,8 +1,8 @@
 import { Link } from "@inertiajs/inertia-react"
 import { Search, InsertComment } from "@mui/icons-material"
 import { Box, IconButton, Chip, Stack, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
-import EmptyCard from "../../../../components/common/EmptyCard"
-import route, { getRoute } from "../../../../helpers/routes.helper"
+import EmptyCard from "../../../../../components/common/EmptyCard"
+import route, { getRoute } from "../../../../../helpers/routes.helper"
 
 const CourseHistoryTable = ({ data }) => {
 

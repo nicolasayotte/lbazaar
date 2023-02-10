@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Data\CourseHistoryData;
+use App\Data\CourseManageStudentData;
 use App\Models\CourseHistory;
 use Illuminate\Support\Facades\Auth;
 
@@ -67,6 +68,29 @@ class CourseHistoryRepository extends BaseRepository
             ->through(function($histories) {
                 return CourseHistoryData::fromModel($histories);
             });
+    }
+
+    public function searchEnrolledStudents($request, $course_id)
+    {
+        $sortFilterArr = explode(':', @$request->get('sort') ?? 'course_histories.created_at:desc');
+
+        $sortBy    = $sortFilterArr[0];
+        $sortOrder = $sortFilterArr[1];
+
+        return $this->model->select('users.first_name', 'users.last_name', 'course_histories.*')
+        ->where('course_id', $course_id)
+        ->when($request->has('keyword') && !empty($request->get('keyword')), function ($query) use ($request)  {
+            return $query->where( function($q) use($request){
+                return $q->whereRaw("CONCAT(`first_name`, ' ', `last_name`) LIKE ?", ['%'. $request->get('keyword') .'%'])
+                         ->orWhere('email', 'LIKE', '%'. $request->get('keyword') .'%');
+            });
+        })
+        ->join('users', 'users.id', '=', 'course_histories.user_id')
+        ->orderBy($sortBy, $sortOrder)
+        ->paginate(self::PER_PAGE)->withQueryString()
+        ->through(function($histories) {
+            return CourseManageStudentData::fromModel($histories);
+        });
     }
 
     public function isUserBookedCourse($user_id, $course_id)

@@ -17,10 +17,11 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('course_id')->unsigned()->index()->nullable();
             $table->string('name');
-            $table->dateTime('published_at');
+            $table->timestamp('published_at')->nullable();
             $table->timestamps();
+            $table->softDeletes();
 
-            $table->foreign('course_id')->references('id')->on('courses');
+            $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
         });
     }
 
