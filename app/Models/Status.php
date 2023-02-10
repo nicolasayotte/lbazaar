@@ -9,15 +9,19 @@ class Status extends Model
 {
     use HasFactory;
 
-    public const PENDING        = 'pending';
+    public const PENDING   = 'pending';
 
-    public const APPROVED       = 'approved';
+    public const APPROVED  = 'approved';
 
-    public const DENIED         = 'denied';
+    public const DENIED    = 'denied';
 
-    public const DRAFT          = 'draft';
+    public const DRAFT     = 'draft';
 
-    public const PUBLISHED      = 'published';
+    public const PUBLISHED = 'published';
 
-    public const COMPLETED      = 'completed';
+    public const COMPLETED = 'completed';
+
+    public const ACTIVE    = 'active';
+
+    public const DISABLED  = 'disabled';
 }

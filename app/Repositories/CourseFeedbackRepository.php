@@ -9,7 +9,7 @@ use DateTime;
 
 class CourseFeedbackRepository extends BaseRepository
 {
-    const PERPAGE = 5;
+    const PER_PAGE = 10;
 
     public function __construct()
     {
@@ -19,6 +19,26 @@ class CourseFeedbackRepository extends BaseRepository
     public function findByCourseId($id)
     {
         return $this->model->with(['user'])->where('course_id', $id)->orderBy('id', 'DESC')->paginate();
+    }
+
+    public function findByCourseIdAndSearch($id, $filters)
+    {
+        $sortFilterArr = explode(':', @$filters['sort'] ?? 'created_at:desc');
+
+        $sortBy    = $sortFilterArr[0];
+        $sortOrder = $sortFilterArr[1];
+
+        return $this->model->with(['user'])
+        ->where('course_id', $id)
+        ->when(@$filters['keyword'], function ($q) use ($filters)  {
+            return $q->whereHas('user', function($query) use ($filters) {
+                return ($query->where('first_name', 'like', '%' . $filters['keyword'] . '%')
+                ->orWhere('last_name', 'like', '%' . $filters['keyword'] . '%'));
+            });
+
+        })
+        ->orderBy($sortBy, $sortOrder)
+        ->paginate(self::PER_PAGE);
     }
 
     public function updateOrCreate($user_id, $course_id, $form)

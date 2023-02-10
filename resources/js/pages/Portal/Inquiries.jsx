@@ -42,7 +42,7 @@ const Inquiries = () => {
     }
 
     return (
-        <Box>
+        <Box sx={{ minHeight: '100vh' }}>
             <Header>
                 <Container sx={{ position: 'relative', zIndex: 500 }}>
                     <Typography variant="h4" children="Inquiry" textAlign="center" />

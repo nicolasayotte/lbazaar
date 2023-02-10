@@ -7,7 +7,7 @@ const Input = (props) => {
             <TextField
                 size="small"
                 fullWidth
-                error={(props.errors && props.errors[props.name]) ? true : false}
+                error={(props.errors && props.errors[props.custom_name || props.name]) ? true : false}
                 FormHelperTextProps={{
                     variant: 'standard'
                 }}
@@ -18,7 +18,7 @@ const Input = (props) => {
             >
                 { props.children }
             </TextField>
-            {props.errors && props.errors[props.name] && <ErrorText error={props.errors[props.name]} />}
+            {props.errors && props.errors[props.custom_name || props.name] && <ErrorText error={props.errors[props.custom_name || props.name]} />}
         </Box>
     )
 }

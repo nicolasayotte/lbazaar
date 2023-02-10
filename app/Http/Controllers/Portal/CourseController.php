@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SearchClassRequest;
+use App\Repositories\CourseApplicationRepository;
 use App\Repositories\CourseCategoryRepository;
 use App\Repositories\CourseScheduleRepository;
 use App\Repositories\CourseRepository;
@@ -14,10 +15,16 @@ use Inertia\Inertia;
 class CourseController extends Controller
 {
     public $courseTypeRepository;
+
     public $courseCategoryRepository;
+
     public $courseRepository;
+
     public $courseScheduleRepository;
+
     public $userRepository;
+
+    public $courseApplicationRepository;
 
     public function __construct()
     {
@@ -26,6 +33,7 @@ class CourseController extends Controller
         $this->courseRepository = new CourseRepository();
         $this->courseScheduleRepository = new CourseScheduleRepository();
         $this->userRepository = new UserRepository();
+        $this->courseApplicationRepository = new CourseApplicationRepository();
     }
 
     public function index(SearchClassRequest $request)
@@ -72,6 +80,18 @@ class CourseController extends Controller
         ])->withViewData([
             'title'       => 'Course - ' . $course->title,
             'description' => 'Course Details'
+        ]);
+    }
+
+    public function create($id)
+    {
+        $courseApplication = $this->courseApplicationRepository->findOneApproved($id);
+
+        return Inertia::render('Portal/Course/Create', [
+            'courseApplication' => $courseApplication,
+            'title' => 'Create Class'
+        ])->withViewData([
+            'title' => 'Create Class'
         ]);
     }
 }

@@ -2,7 +2,7 @@ import { useForm, usePage } from "@inertiajs/inertia-react"
 import { Box, Button, Card, CardContent, Grid, Pagination } from "@mui/material"
 import Input from "../../../../components/forms/Input"
 import { displaySelectOptions, handleOnChange, handleOnSelectChange } from "../../../../helpers/form.helper"
-import ClassApplicationTable from "../components/ClassApplicationTable"
+import ClassApplicationTable from "./components/ClassApplicationTable"
 import routes from "../../../../helpers/routes.helper"
 import TableLoader from "../../../../components/common/TableLoader"
 
@@ -49,7 +49,7 @@ const Index = () => {
 
     return (
         <>
-            <Card sx={{ mb: 2, mt: 4 }}>
+            <Card sx={{ mb: 2 }}>
                 <CardContent>
                     <form onSubmit={handleFilterSubmit}>
                         <Grid container spacing={2}>

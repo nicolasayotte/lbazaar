@@ -1,11 +1,10 @@
-import { useForm, usePage, Link } from "@inertiajs/inertia-react"
-import { Box, Button, Card, CardContent, Grid, Pagination, Typography } from "@mui/material"
+import { useForm, usePage } from "@inertiajs/inertia-react"
+import { Box, Button, Card, CardContent, Grid, Pagination } from "@mui/material"
 import Input from "../../../../components/forms/Input"
 import { displaySelectOptions, handleOnChange, handleOnSelectChange } from "../../../../helpers/form.helper"
-import ClassManageTable from "../components/ClassManageTable"
-import routes, {getRoute} from "../../../../helpers/routes.helper"
+import ClassManageTable from "./components/ClassManageTable"
+import routes from "../../../../helpers/routes.helper"
 import TableLoader from "../../../../components/common/TableLoader"
-import { NoteAdd } from '@mui/icons-material';
 
 const Index = () => {
 
@@ -50,7 +49,7 @@ const Index = () => {
 
     return (
         <>
-            <Card sx={{ mb: 2, mt: 6 }}>
+            <Card sx={{ mb: 2 }}>
                 <CardContent>
                     <form onSubmit={handleFilterSubmit}>
                         <Grid container spacing={2}>

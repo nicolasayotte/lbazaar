@@ -1,11 +1,9 @@
 import { useForm, Link } from "@inertiajs/inertia-react"
-import { Alert, Box, Button, Card, CardContent, Container, Grid, TextField, Typography, FormControl, FormControlLabel, FormLabel, RadioGroup, Radio } from "@mui/material"
+import { Box, Button, Card, CardContent, Container, Grid, Typography } from "@mui/material"
 import { actions } from '../../store/slices/ToasterSlice'
 import { useDispatch } from "react-redux"
 import Input from "../../components/forms/Input"
 import routes from "../../helpers/routes.helper"
-import { displaySelectOptions } from "../../helpers/form.helper"
-import React,{useState} from "react"
 
 const Login = () => {
 
@@ -24,19 +22,13 @@ const Login = () => {
         e.preventDefault()
 
         post(routes["portal.authenticate"], {
-            onSuccess: response => {
-                dispatch(actions.success({
-                    open: true,
-                    type: 'success',
-                    message: 'User successfully authenticated'
-                }))
-            },
+            onSuccess: () => dispatch(actions.success({
+                message: 'User successfully authenticated'
+            })),
             onError: () => dispatch(actions.error({
-                open: true,
-                type: 'error',
                 message: 'There was an error encountered'
-        }))
-    });
+            }))
+        });
     }
 
     return (
@@ -45,15 +37,13 @@ const Login = () => {
                 container
                 alignItems='center'
                 justifyContent='center'
-                sx={{
-                    minHeight: '100vh'
-                }}
+                minHeight="100vh"
             >
                 <Grid item xs={12} sm={8} md={5}>
                     <Card>
                         <CardContent sx={{ p: 3 }}>
                             <form method="POST" onSubmit={handleSubmit}>
-                                <Typography variant="h5" textAlign='center' sx={{ mb: 2 }}>LOGIN</Typography>
+                                <Typography variant="h5" textAlign='center' sx={{ mb: 2 }}>SIGN IN</Typography>
                                 <Box>
                                     <Input
                                         label="Email"
@@ -76,11 +66,9 @@ const Login = () => {
                                         errors={errors}
                                     />
                                 </Box>
-                                <Box sx={{ textAlign: 'center', mt: 3, mb: 3 }}>
-                                    <Grid container justifyContent="space-between">
-                                        <Link href={routes["forgot.password.index"]}><Button>Forgot password?</Button></Link>
-                                    </Grid>
-                                </Box>
+                                <Typography color="primary" mb={2} variant="caption" display="block">
+                                    <Link href={routes["forgot.password.index"]}>Forgot Password?</Link>
+                                </Typography>
                                 <Button
                                     variant="contained"
                                     fullWidth
