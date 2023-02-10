@@ -238,10 +238,12 @@ Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function()
 });
 
 # Exams
-Route::prefix('exams')->middleware(['auth'])->name('exams.')->group(function() {
+Route::prefix('exams')->middleware(['auth', 'teacher'])->name('exams.')->group(function() {
 
-    Route::prefix('/{id}')->middleware(['auth', 'teacher'])->group(function() {
+    Route::prefix('/{id}')->group(function() {
         Route::get('/create', [ExamController::class, 'create'])->name('create');
         Route::post('/', [ExamController::class, 'store'])->name('store');
+        Route::patch('/status/{status}', [ExamController::class, 'toggleStatus'])->name('status.toggle');
+        Route::delete('/delete', [ExamController::class, 'delete'])->name('delete');
     });
 });

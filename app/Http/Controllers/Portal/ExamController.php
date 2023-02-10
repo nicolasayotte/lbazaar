@@ -22,8 +22,13 @@ class ExamController extends Controller
     {
         return Inertia::render('Portal/MyPage/ManageClass/Exams', [
             'title'    => 'Manage Class - Exams',
+            'exams'    => $this->examRepository->searchCourseExams($id, $request->all()),
             'tabValue' => 'exams',
-            'courseId' => $id
+            'courseId' => $id,
+            'keyword'  => @$request['keyword'] ?? '',
+            'status'   => @$request['status'] ?? '',
+            'sort'     => @$request['sort'] ?? 'created_at:desc',
+            'page'     => @$request['page'] ?? 1
         ])->withViewData([
             'title' => 'Manage Class - Exams'
         ]);
@@ -39,6 +44,13 @@ class ExamController extends Controller
         ]);
     }
 
+    public function toggleStatus($id, $status)
+    {
+        $this->examRepository->toggleStatus($id, $status);
+
+        return redirect()->back();
+    }
+
     public function store($id, CreateExamRequest $request)
     {
         $inputs = $request->all();
@@ -48,5 +60,12 @@ class ExamController extends Controller
         $this->examRepository->create($inputs);
 
         return to_route('mypage.course.manage_class.exams', ['id' => $id]);
+    }
+
+    public function delete($id)
+    {
+        $this->examRepository->destroy($id);
+
+        return redirect()->back();
     }
 }
