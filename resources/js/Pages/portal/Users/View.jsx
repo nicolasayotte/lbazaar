@@ -14,7 +14,6 @@ import LocationOnIcon from '@mui/icons-material/LocationOn'
 const View  = () => {
 
     const { user, is_teacher, translatables, students, teachers } = usePage().props
-    console.log(user)
     const name = (
         <Typography
             color = {'grey'}
