@@ -69,6 +69,19 @@ class UserRepository extends BaseRepository
         return $students->unique('id');
     }
 
+    public function getTeachers(int $id)
+    {
+        $user = $this->getOne($id);
+        $courses = $user->courses()->get();
+        $teachers = new Collection();
+        foreach ($courses as $course) {
+            $courseTeacher = $course->professor()->first();
+            $teachers->add($courseTeacher);
+        }
+
+        return $teachers->unique('id');
+    }
+
     public function getFeaturedTeachers($take = self::PER_PAGE)
     {
         return $this->model->take($take)->whereRoleIs([Role::TEACHER])->orderBy('id', 'desc')->get();

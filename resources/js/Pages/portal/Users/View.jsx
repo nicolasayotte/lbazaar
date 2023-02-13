@@ -13,7 +13,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn'
 
 const View  = () => {
 
-    const { user, is_teacher, translatables, students } = usePage().props
+    const { user, is_teacher, translatables, students, teachers } = usePage().props
     console.log(user)
     const name = (
         <Typography
@@ -60,6 +60,15 @@ const View  = () => {
         />
     )
 
+    const teacher_count = (
+        <Typography
+            color = {'grey'}
+            variant="subtitle2"
+            children={`${teachers.length} ${translatables.texts.teachers}`}
+            ml={1}
+        />
+    )
+
     const joined_date = (
         <Typography
             color = {'grey'}
@@ -74,6 +83,15 @@ const View  = () => {
             color = {'grey'}
             variant="subtitle2"
             children={`${user.created_courses.length} ${translatables.texts.classes}`}
+            ml={1}
+        />
+    )
+
+    const class_attending_count = (
+        <Typography
+            color = {'grey'}
+            variant="subtitle2"
+            children={`${user.courses.length} ${translatables.texts.classes_booked}`}
             ml={1}
         />
     )
@@ -185,82 +203,77 @@ const View  = () => {
                                             </Box>
                                             <Divider/>
                                             { roles(user) }
-                                            { is_teacher && (
-                                                <Grid container>
-                                                    <Grid item xs={12} mx="auto">
-                                                        <Box display="flex" alignItems="center" mb={1}>
-                                                            <Tooltip title="Date Joined" arrow>
-                                                                <CalendarMonthIcon/>
-                                                            </Tooltip>
-                                                            { joined_date }
-                                                        </Box>
-                                                        <Box display="flex" alignItems="center" mb={1}>
-                                                            <Tooltip title="Email" arrow>
-                                                                <AlternateEmailIcon/>
-                                                            </Tooltip>
-                                                            { email }
-                                                        </Box>
-                                                        <Box display="flex" alignItems="center" mb={1}>
-                                                            <Tooltip title="Students" arrow>
-                                                                <PeopleIcon/>
-                                                            </Tooltip>
-                                                            { student_count }
-                                                        </Box>
-                                                        <Box  display="flex" alignItems="center" mb={1}>
-                                                            <Tooltip title="Classes" arrow>
-                                                                <PlayCircleIcon/>
-                                                            </Tooltip>
-                                                            { class_count }
-                                                        </Box>
-                                                        <Grid container>
-                                                            <Grid item xs={12} mx="auto" pt={2}>
-                                                                <Divider/>
-                                                                { About }
-                                                                { about_data }
-                                                            </Grid>
+                                            <Grid container>
+                                                <Grid item xs={12} mx="auto">
+                                                    <Box display="flex" alignItems="center" mb={1}>
+                                                        <Tooltip title="Date Joined" arrow>
+                                                            <CalendarMonthIcon/>
+                                                        </Tooltip>
+                                                        { joined_date }
+                                                    </Box>
+                                                    <Box display="flex" alignItems="center" mb={1}>
+                                                        <Tooltip title="Email" arrow>
+                                                            <AlternateEmailIcon/>
+                                                        </Tooltip>
+                                                        { email }
+                                                    </Box>
+                                                    <Box display="flex" alignItems="center" mb={1}>
+                                                        <Tooltip title={ is_teacher ? 'Students' : 'Teachers' }  arrow>
+                                                            <PeopleIcon/>
+                                                        </Tooltip>
+                                                        { is_teacher ? student_count : teacher_count }
+                                                    </Box>
+                                                    <Box  display="flex" alignItems="center" mb={1}>
+                                                        <Tooltip title={ is_teacher ? 'Classes' : 'Classes attended' } arrow>
+                                                            <PlayCircleIcon/>
+                                                        </Tooltip>
+                                                        { is_teacher ? class_count : class_attending_count }
+                                                    </Box>
+                                                    <Grid container>
+                                                        <Grid item xs={12} mx="auto" pt={2}>
+                                                            <Divider/>
+                                                            { About }
+                                                            { about_data }
                                                         </Grid>
-
                                                     </Grid>
+
                                                 </Grid>
-                                            )}
+                                            </Grid>
+
                                             <Divider/>
                                         </Grid>
                                     </Grid>
                                 </Grid>
-                                <Grid item xs={10}  mx="auto" py={1}>
-                                    <Grid container>
-                                        <Grid item xs={12} mx="auto" py={1}>
-                                            { is_teacher && (
-                                                <Grid container>
-                                                    <Grid item xs={12} mx="auto">
-                                                        { Certification }
-                                                        <CertificationTable data={user.user_certification}/>
+                                { is_teacher && (
+                                    <Grid item xs={10}  mx="auto" py={1}>
+                                        <Grid container>
+                                            <Grid item xs={12} mx="auto" py={1}>
+                                                    <Grid container>
+                                                        <Grid item xs={12} mx="auto">
+                                                            { Certification }
+                                                            <CertificationTable data={user.user_certification}/>
+                                                        </Grid>
                                                     </Grid>
-                                                </Grid>
-                                            )}
-                                        </Grid>
-                                        <Grid item xs={12} mx="auto" py={1}>
-                                            { is_teacher && (
-                                                <Grid container>
-                                                    <Grid item xs={12} mx="auto">
-                                                        { Work }
-                                                        <WorkHistoryTable data={user.user_work_history}/>
+                                            </Grid>
+                                            <Grid item xs={12} mx="auto" py={1}>
+                                                    <Grid container>
+                                                        <Grid item xs={12} mx="auto">
+                                                            { Work }
+                                                            <WorkHistoryTable data={user.user_work_history}/>
+                                                        </Grid>
                                                     </Grid>
-                                                </Grid>
-                                            )}
-                                        </Grid>
-                                        <Grid item xs={12} mx="auto" py={5}>
-                                            { is_teacher && (
-                                                <Grid container>
-                                                    <Grid item xs={12} mx="auto">
-                                                        { Education }
-                                                        <EducationTable data={user.user_education}/>
+                                            </Grid>
+                                            <Grid item xs={12} mx="auto" py={5}>
+                                                    <Grid container>
+                                                        <Grid item xs={12} mx="auto">
+                                                            { Education }
+                                                            <EducationTable data={user.user_education}/>
+                                                        </Grid>
                                                     </Grid>
-                                                </Grid>
-                                            )}
+                                            </Grid>
                                         </Grid>
                                     </Grid>
-                                </Grid>
+                                )}
                             </Grid>
                         </Card>
                     </Grid>
