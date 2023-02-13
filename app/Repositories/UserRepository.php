@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\Role;
 use App\Models\User;
 use App\Data\UserData;
+use Illuminate\Support\Collection;
 
 class UserRepository extends BaseRepository
 {
@@ -43,9 +44,42 @@ class UserRepository extends BaseRepository
 
     public function findOne(int $id)
     {
-        $user = $this->findOrFail($id);
+        $user = $this->model->with('courses', 'createdCourses')->findOrFail($id);
 
         return UserData::fromModel($user);
+    }
+
+    public function getOne(int $id)
+    {
+        return $this->model->with('courses', 'createdCourses', 'userEducation', 'userCertification', 'userWorkHistory', 'roles', 'country')->findOrFail($id);
+    }
+
+    public function getStudents(int $id)
+    {
+        $user = $this->getOne($id);
+        $createdCourses = $user->createdCourses()->get();
+        $students = new Collection();
+        foreach ($createdCourses as $createdCourse) {
+            $courseStudents = $createdCourse->students();
+            foreach ($courseStudents->get() as $courseStudent) {
+                $students->add($courseStudent);
+            }
+        }
+
+        return $students->unique('id');
+    }
+
+    public function getTeachers(int $id)
+    {
+        $user = $this->getOne($id);
+        $courses = $user->courses()->get();
+        $teachers = new Collection();
+        foreach ($courses as $course) {
+            $courseTeacher = $course->professor()->first();
+            $teachers->add($courseTeacher);
+        }
+
+        return $teachers->unique('id');
     }
 
     public function getFeaturedTeachers($take = self::PER_PAGE)

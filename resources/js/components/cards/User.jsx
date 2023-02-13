@@ -1,7 +1,9 @@
 
 import {Card, CardContent, Button, Typography, Box} from "@mui/material"
+import { Link } from "@inertiajs/inertia-react"
+import { getRoute } from "../../helpers/routes.helper"
 
-const Course = ({ user }) => {
+const User = ({ user }) => {
     return (
         <Card sx={{ minWidth: 275, mb: 2, position: 'relative' }}>
             <CardContent>
@@ -10,15 +12,18 @@ const Course = ({ user }) => {
                         <Typography variant="h6" children={user.fullname} />
                         <Typography variant="caption" color="GrayText" children={`Member since ${user.created_at}`} />
                     </Box>
-                    <Button
-                        size="small"
-                        variant="contained"
-                        children="View Profile"
-                    />
+                    <Link href={getRoute('portal.users.view', {id : user.id})}>
+                        <Button
+                            size="small"
+                            variant="contained"
+                            children="View Profile"
+                        />
+                    </Link>
+
                 </Box>
             </CardContent>
         </Card>
     );
 }
 
-export default Course
+export default User

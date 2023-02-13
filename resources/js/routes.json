@@ -47,6 +47,7 @@
     "portal.authenticate": "\/portal\/authenticate",
     "portal.update.temp.password": "\/portal\/update-temp-password",
     "portal.logout": "\/portal\/logout",
+    "portal.users.view": "\/portal\/users\/{id}",
     "verify.email": "\/email\/verify",
     "verification.verify": "\/email\/verify\/{id}\/{hash}",
     "resend.emailverification.send": "\/email\/resend",
