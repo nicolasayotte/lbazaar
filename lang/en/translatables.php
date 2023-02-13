@@ -95,7 +95,8 @@ return [
             'manage' => [
                 'index' => 'Manage Classes',
                 'view' => 'Manage Class'
-            ]
+            ],
+            'create' => 'Create Class'
         ],
         'users' => [
             'index' => 'Manage Users',
@@ -152,6 +153,7 @@ return [
         'category' => 'Category',
         'choice' => 'Choice',
         'class_type' => 'Class Type',
+        'class_information' => 'Class Information',
         'classification' => 'Classification',
         'commission_rate' => 'Commission Rate',
         'confirm' => 'Confirm',

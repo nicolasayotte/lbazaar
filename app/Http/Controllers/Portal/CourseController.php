@@ -9,6 +9,7 @@ use App\Repositories\CourseCategoryRepository;
 use App\Repositories\CourseScheduleRepository;
 use App\Repositories\CourseRepository;
 use App\Repositories\CourseTypeRepository;
+use App\Repositories\TranslationRepository;
 use App\Repositories\UserRepository;
 use Inertia\Inertia;
 
@@ -89,9 +90,10 @@ class CourseController extends Controller
 
         return Inertia::render('Portal/Course/Create', [
             'courseApplication' => $courseApplication,
-            'title' => 'Create Class'
+            'categories'        => $this->courseCategoryRepository->getDropdownData(),
+            'title'             => TranslationRepository::getTranslation('title.class.create')
         ])->withViewData([
-            'title' => 'Create Class'
+            'title'             => TranslationRepository::getTranslation('title.class.create')
         ]);
     }
 }

@@ -120,8 +120,9 @@ class CourseApplicationRepository extends BaseRepository
     public function findOneApproved($id)
     {
         return $this->model
+                    ->with('courseType', 'courseCategory', 'course')
                     ->where('approved_at', '!=', NULL)
-                    ->where('created_at', '!=', NULL)
+                    ->whereDoesntHave('course')
                     ->where('id', $id)
                     ->firstOrFail();
     }
