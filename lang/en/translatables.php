@@ -140,6 +140,26 @@ return [
             'desc' => 'Title Z-A',
         ],
     ],
+    'certification' => [
+        'certificate_title' => 'Title',
+        'awarded_by' => 'Awarded By',
+        'awarded_at' => 'Awarded At',
+    ],
+    'education' => [
+        'school' => 'School',
+        'degree' => 'Degree',
+        'date' => 'Date',
+    ],
+    'work' => [
+        'company' => 'Company',
+        'position' => 'Position',
+        'description' => 'Description',
+        'date' => 'Date',
+    ],
+    'user' => [
+        'about' => 'About',
+        'specialty' => 'Specialization',
+    ],
     'texts' => [
         'actions' => 'Actions',
         'add_choice' => 'Add Choice',
@@ -224,5 +244,10 @@ return [
         'update_password_notice' => 'You will be signed out when your password is updated',
         'update_profile' => 'Update Profile',
         'view' => 'View',
+        'classes' => 'Classes',
+        'students' => 'Students',
+        'certification' => 'Certification',
+        'education' => 'Education',
+        'work' => 'Work',
     ]
 ];

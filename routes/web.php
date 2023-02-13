@@ -21,6 +21,7 @@ use App\Http\Controllers\Portal\ManageCourseController;
 use App\Http\Controllers\Portal\ProfileController as PortalProfileController;
 use App\Http\Controllers\Portal\RegisterStudentController;
 use App\Http\Controllers\Portal\TopPageController;
+use App\Http\Controllers\Portal\UserController as PortalUserController;
 use Illuminate\Http\Request;
 use Illuminate\Mail\Markdown;
 use Illuminate\Support\Facades\Route;
@@ -163,6 +164,10 @@ Route::prefix('portal')->name('portal.')->group(function() {
         Route::post('/logout', [AuthPortalController::class, 'logout'])->name('logout');
     });
 
+    # Users
+    Route::prefix('users')->name('users.')->group(function() {
+        Route::get('/{id}', [PortalUserController::class, 'view'])->name('view');
+    });
 });
 
 # Email verification
