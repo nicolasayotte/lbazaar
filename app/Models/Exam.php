@@ -18,8 +18,35 @@ class Exam extends Model
         'published_at'
     ];
 
+    protected $appends = [
+        'total_points'
+    ];
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
+    }
+
     public function items()
     {
         return $this->hasMany(ExamItem::class);
+    }
+
+    public function userExams()
+    {
+        return $this->hasMany(UserExam::class);
+    }
+
+    public function getTotalPointsAttribute()
+    {
+        $totalPoints = 0;
+
+        $items = $this->items()->get();
+
+        foreach ($items as $item) {
+            $totalPoints += $item->points;
+        }
+
+        return $totalPoints;
     }
 }
