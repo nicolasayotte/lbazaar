@@ -77,5 +77,8 @@
     "exams.edit": "\/exams\/{id}\/edit",
     "exams.update": "\/exams\/{id}\/update",
     "exams.status.toggle": "\/exams\/{id}\/status\/{status}",
-    "exams.delete": "\/exams\/{id}\/delete"
+    "exams.delete": "\/exams\/{id}\/delete",
+    "exams.view": "\/exams\/{id}",
+    "exams.submit": "\/exams\/{id}\/submit",
+    "exams.result": "\/exams\/{id}\/result"
 }

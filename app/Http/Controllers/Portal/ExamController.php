@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Portal;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateExamRequest;
 use App\Models\Exam;
+use App\Models\UserExam;
 use App\Repositories\ExamRepository;
 use App\Repositories\TranslationRepository;
 use Carbon\Carbon;
@@ -61,9 +62,11 @@ class ExamController extends Controller
 
     public function update($id, CreateExamRequest $request)
     {
-        $this->examRepository->update($id, $request->all());
-
         $exam = $this->examRepository->findOrFail($id);
+
+        $exam->update(['name' => $request['name']]);
+
+        $this->examRepository->update($id, $request->all());
 
         return to_route('mypage.course.manage_class.exams', ['id' => $exam->course_id]);
     }
@@ -91,5 +94,44 @@ class ExamController extends Controller
         $this->examRepository->destroy($id);
 
         return redirect()->back();
+    }
+
+    public function view($id)
+    {
+        if (!@$this->examRepository->canUserTakeExam(auth()->user()->id, $id)) {
+            return abort(401);
+        }
+
+        $exam = $this->examRepository->with(['items', 'items.choices'])->findOrFail($id);
+
+        return Inertia::render('Portal/Exams/View', [
+            'title' => $exam->name,
+            'exam'  => $exam
+        ])->withViewData([
+            'title' => $exam->name
+        ]);
+    }
+
+    public function submit($id, Request $request)
+    {
+        $exam = $this->examRepository->findOrFail($id);
+
+        $examResult = $this->examRepository->submitAnswers($exam, $request['answers']);
+
+        session()->flash('success', TranslationRepository::getTranslation('success.exams.submit'));
+
+        return to_route('exams.result', ['id' => $examResult->id]);
+    }
+
+    public function result($id)
+    {
+        $result = UserExam::with('exam')->findOrFail($id);
+
+        return Inertia::render('Portal/Exams/Result', [
+            'title'  => $result->exam->name,
+            'result' => $result
+        ])->withViewData([
+            'title'  => $result->exam->name
+        ]);
     }
 }

@@ -243,19 +243,29 @@ Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function()
 });
 
 # Exams
-Route::prefix('exams')->middleware(['auth', 'teacher'])->name('exams.')->group(function() {
+Route::prefix('exams')->name('exams.')->group(function() {
 
-    Route::prefix('/{id}')->group(function() {
-        # Create
-        Route::get('/create', [ExamController::class, 'create'])->name('create');
-        Route::post('/', [ExamController::class, 'store'])->name('store');
+    Route::prefix('/{id}')->middleware(['auth'])->group(function() {
 
-        # Edit
-        Route::get('/edit', [ExamController::class, 'edit'])->name('edit');
-        Route::patch('/update', [ExamController::class, 'update'])->name('update');
+        Route::middleware(['teacher'])->group(function() {
+            # Create
+            Route::get('/create', [ExamController::class, 'create'])->name('create');
+            Route::post('/', [ExamController::class, 'store'])->name('store');
 
-        # Update Status / Delete
-        Route::patch('/status/{status}', [ExamController::class, 'toggleStatus'])->name('status.toggle');
-        Route::delete('/delete', [ExamController::class, 'delete'])->name('delete');
+            # Edit
+            Route::get('/edit', [ExamController::class, 'edit'])->name('edit');
+            Route::patch('/update', [ExamController::class, 'update'])->name('update');
+
+            # Update Status / Delete
+            Route::patch('/status/{status}', [ExamController::class, 'toggleStatus'])->name('status.toggle');
+            Route::delete('/delete', [ExamController::class, 'delete'])->name('delete');
+        });
+
+        # Take Exam
+        Route::get('/', [ExamController::class, 'view'])->name('view');
+        Route::post('/submit', [ExamController::class, 'submit'])->name('submit');
+
+        # Result
+        Route::get('/result', [ExamController::class, 'result'])->name('result');
     });
 });

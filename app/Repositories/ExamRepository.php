@@ -7,6 +7,7 @@ use App\Models\Exam;
 use App\Models\ExamItem;
 use App\Models\ExamItemChoice;
 use App\Models\Status;
+use App\Models\UserExam;
 use Carbon\Carbon;
 
 class ExamRepository extends BaseRepository
@@ -43,7 +44,7 @@ class ExamRepository extends BaseRepository
 
     public function create($data)
     {
-        $exam = $this->create($data);
+        $exam = $this->model->create($data);
 
         $this->createItems($exam, $data['items']);
     }
@@ -63,6 +64,48 @@ class ExamRepository extends BaseRepository
 
         $exam->published_at = $status === Status::ACTIVE ? Carbon::now() : null;
         $exam->save();
+    }
+
+    public function canUserTakeExam($userID, $examID)
+    {
+        $exam   = $this->findOrFail($examID);
+        $course = @$exam->course;
+
+        $canTakeExam = false;
+
+        if (@$course->students()->where('users.id', $userID)->first() != null) {
+            $canTakeExam = true;
+        }
+
+        return $canTakeExam;
+    }
+
+    public function submitAnswers(Exam $exam, $answers)
+    {
+        $userExam = UserExam::create([
+            'exam_id'     => $exam->id,
+            'user_id'     => auth()->user()->id,
+            'total_score' => 0
+        ]);
+
+        $totalPoints = 0;
+
+        foreach ($answers as $answer) {
+            $answer['is_correct'] = false;
+
+            $examItem = $exam->items()->where('id', $answer['exam_item_id'])->first();
+
+            if (@$examItem != null && @$examItem->correct_choice_id == $answer['exam_item_choice_id']) {
+                $answer['is_correct'] = true;
+                $totalPoints += $examItem->points;
+            }
+
+            $userExam->answers()->create($answer);
+        }
+
+        $userExam->update(['total_score' => $totalPoints]);
+
+        return $userExam;
     }
 
     private function createItems($exam, $items)
