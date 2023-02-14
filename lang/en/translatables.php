@@ -55,7 +55,8 @@ return [
             'create' => 'Exam successfully created',
             'update_status' => 'Exam status successfully updated',
             'delete' => 'Exam successfully deleted',
-            'update' => 'Exam successfully updated'
+            'update' => 'Exam successfully updated',
+            'submit' => 'Exam successfully submitted'
         ]
     ],
     'confirm' => [
@@ -167,6 +168,7 @@ return [
         'admin' => 'Admin',
         'all' => 'All',
         'approve' => 'Approve',
+        'back_to_class' => 'Back to Class',
         'back_to_top' => 'Back to Top Page',
         'cancel' => 'Cancel',
         'category' => 'Category',
@@ -211,6 +213,7 @@ return [
         'message' => 'Message',
         'name' => 'Name',
         'new_password' => 'New Password',
+        'next_question' => 'Next Question',
         'no_records_found' => 'No Records Found',
         'points' => 'Points',
         'points_earned' => 'Points Earned',
@@ -221,6 +224,7 @@ return [
         'question' => 'Question',
         'role' => 'Role',
         'save_changes' => 'Save Changes',
+        'score' => 'Score',
         'search_name' => 'Search for name',
         'search_name_email' => 'Search for name or email',
         'search_name_email_subject' => 'Search for name, email, or subject',
@@ -233,6 +237,7 @@ return [
         'status_information' => 'Status Information',
         'subject' => 'Subject',
         'submit' => 'Submit',
+        'take_exam' => 'Take Exam',
         'teacher' => 'Teacher',
         'teacher_information' => 'Teacher Information',
         'title' => 'Title',
