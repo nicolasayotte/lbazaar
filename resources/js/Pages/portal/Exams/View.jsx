@@ -1,6 +1,6 @@
 import { useForm, usePage } from "@inertiajs/inertia-react"
 import { Button, Container, Divider, Grid, LinearProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { getRoute } from "../../../helpers/routes.helper"
 
 const View = () => {
@@ -166,6 +166,22 @@ const View = () => {
             </TableContainer>
         </Grid>
     )
+
+    useEffect(() => {
+
+        const handleOnUnload = e => {
+            e.returnValue = ''
+            return ''
+        }
+
+        window.addEventListener('beforeunload', handleOnUnload)
+        window.addEventListener('unload', handleOnUnload)
+
+        return () => {
+            window.removeEventListener('beforeunload', handleOnUnload)
+            window.removeEventListener('unload', handleOnUnload)
+        }
+    }, [])
 
     return (
         <>
