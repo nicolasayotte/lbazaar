@@ -1,16 +1,34 @@
+import { usePage } from "@inertiajs/inertia-react"
 import { Close } from "@mui/icons-material"
-import { Alert, Button, IconButton, Snackbar } from "@mui/material"
+import { Alert, IconButton, Snackbar } from "@mui/material"
+import { useEffect } from "react"
 import { useSelector, useDispatch } from 'react-redux'
 import { actions } from '../../store/slices/ToasterSlice'
 
 const Toaster = () => {
+    const dispatch = useDispatch()
+
     const toaster = useSelector(state => state.toaster)
 
-    const dispatch = useDispatch()
+    const { flash } = usePage().props
 
     const handleCloseToaster = () => {
         dispatch(actions.hide())
     }
+
+    useEffect(() => {
+        if (flash.success) {
+            dispatch(actions.success({
+                message: flash.success
+            }))
+        }
+
+        if (flash.error) {
+            dispatch(actions.error({
+                message: flash.error
+            }))
+        }
+    }, [flash])
 
     return (
         <Snackbar

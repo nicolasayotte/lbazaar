@@ -4,9 +4,9 @@ namespace App\Repositories;
 
 use App\Data\ExamData;
 use App\Models\Exam;
-use App\Models\ExamItem;
-use App\Models\ExamItemChoice;
 use App\Models\Status;
+use App\Models\User;
+use App\Models\UserExam;
 use Carbon\Carbon;
 
 class ExamRepository extends BaseRepository
@@ -43,7 +43,7 @@ class ExamRepository extends BaseRepository
 
     public function create($data)
     {
-        $exam = $this->create($data);
+        $exam = $this->model->create($data);
 
         $this->createItems($exam, $data['items']);
     }
@@ -63,6 +63,66 @@ class ExamRepository extends BaseRepository
 
         $exam->published_at = $status === Status::ACTIVE ? Carbon::now() : null;
         $exam->save();
+    }
+
+    public function canUserTakeExam($userID, $scheduleID, $examID)
+    {
+        $user = User::findOrFail($userID);
+        $exam = $this->findOrFail($examID);
+
+        $schedule = @$user->schedules()
+                            ->where('course_schedules.id', $scheduleID)
+                            ->where('start_datetime', '<=', Carbon::now())
+                            ->where('end_datetime', '>', Carbon::now())
+                            ->first();
+
+        $isExamTaken = @$user->exams()
+                                ->where('course_schedule_id', $scheduleID)
+                                ->where('exam_id', $examID)
+                                ->first() != null;
+
+        $canTakeExam = false;
+
+        if (
+            @$exam->published_at != null &&
+            @$schedule &&
+            !$isExamTaken
+        ) {
+            $canTakeExam = true;
+        }
+
+        return $canTakeExam;
+    }
+
+    public function submitAnswers(Exam $exam, $schedule_id, $answers)
+    {
+        $user = auth()->user();
+
+        $userExam = UserExam::create([
+            'exam_id'            => $exam->id,
+            'user_id'            => $user->id,
+            'total_score'        => 0,
+            'course_schedule_id' => $schedule_id,
+        ]);
+
+        $totalPoints = 0;
+
+        foreach ($answers as $answer) {
+            $answer['is_correct'] = false;
+
+            $examItem = $exam->items()->where('id', $answer['exam_item_id'])->first();
+
+            if (@$examItem != null && @$examItem->correct_choice_id == $answer['exam_item_choice_id']) {
+                $answer['is_correct'] = true;
+                $totalPoints += $examItem->points;
+            }
+
+            $userExam->answers()->create($answer);
+        }
+
+        $userExam->update(['total_score' => $totalPoints]);
+
+        return $userExam;
     }
 
     private function createItems($exam, $items)
