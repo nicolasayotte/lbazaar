@@ -7,7 +7,7 @@ const CourseContent = ({ courseSchedule, showDescription = true, showDate = true
     )
 
     const schedule = (
-        showDate && <Typography variant="caption" color="GrayText" children={`Schedule: ${courseSchedule.schedule_datetime}`} />
+        showDate && <Typography variant="caption" color="GrayText" children={`Schedule: ${courseSchedule.start_datetime}`} />
     )
 
     return (

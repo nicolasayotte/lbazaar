@@ -47,6 +47,7 @@
     "portal.authenticate": "\/portal\/authenticate",
     "portal.update.temp.password": "\/portal\/update-temp-password",
     "portal.logout": "\/portal\/logout",
+    "portal.users.view": "\/portal\/users\/{id}",
     "verify.email": "\/email\/verify",
     "verification.verify": "\/email\/verify\/{id}\/{hash}",
     "resend.emailverification.send": "\/email\/resend",
@@ -76,5 +77,8 @@
     "exams.edit": "\/exams\/{id}\/edit",
     "exams.update": "\/exams\/{id}\/update",
     "exams.status.toggle": "\/exams\/{id}\/status\/{status}",
-    "exams.delete": "\/exams\/{id}\/delete"
+    "exams.delete": "\/exams\/{id}\/delete",
+    "course.attend.exams.view": "\/classes\/{course_id}\/attend\/{schedule_id}\/exams\/{id}",
+    "course.attend.exams.submit": "\/classes\/{course_id}\/attend\/{schedule_id}\/exams\/{id}",
+    "course.attend.exams.result": "\/classes\/{course_id}\/attend\/{schedule_id}\/exams\/{id}\/result"
 }

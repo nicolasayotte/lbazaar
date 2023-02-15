@@ -6,9 +6,9 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\CourseSchedule>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\CourseContentSchedule>
  */
-class CourseScheduleFactory extends Factory
+class CourseContentScheduleFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -18,9 +18,7 @@ class CourseScheduleFactory extends Factory
     public function definition()
     {
         return [
-            'start_datetime' => Carbon::now()->addDays(7),
-            'max_participant' => 1000,
-            'end_datetime' => Carbon::now()->addDays(21)
+            //
         ];
     }
 }

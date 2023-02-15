@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\Course;
 use App\Models\CourseHistory;
+use App\Models\CourseSchedule;
 use App\Models\Role;
 use App\Models\User;
 use Carbon\Carbon;
@@ -21,14 +21,17 @@ class CourseHistorySeeder extends Seeder
     public function run()
     {
         $students = User::whereRoleIs(Role::STUDENT)->get();
-        $courses  = Course::all();
+        $coursesSchedules  = CourseSchedule::all();
 
-        foreach ($courses as $course) {
+        foreach ($coursesSchedules as $coursesSchedule) {
+            $course = $coursesSchedule->course()->first();
             foreach ($students as $student) {
                 CourseHistory::factory()
+                            ->count(1)
                             ->state(new Sequence([
                                 'user_id' => $student->id,
                                 'course_id' => $course->id,
+                                'course_schedule_id' => $coursesSchedule->id,
                                 'completed_at' => fake()->randomElement([null, Carbon::now(), null])
                             ]))
                             ->create();

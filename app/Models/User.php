@@ -107,6 +107,26 @@ class User extends Authenticatable implements MustVerifyEmail
         );
     }
 
+    public function createdCourses()
+    {
+        return $this->hasMany(Course::class, 'professor_id', 'id');
+    }
+
+    public function userCertification()
+    {
+        return $this->hasMany(UserCertification::class, 'user_id', 'id');
+    }
+
+    public function userEducation()
+    {
+        return $this->hasMany(UserEducation::class, 'user_id', 'id');
+    }
+
+    public function userWorkHistory()
+    {
+        return $this->hasMany(UserWorkHistory::class, 'user_id', 'id');
+    }
+
     public function isCourseBooked($class_id)
     {
         return $this->courses->where('id', $class_id)->count() > 0;
@@ -120,5 +140,22 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getCreatedAtAttribute($value)
     {
         return Carbon::parse($value)->format('M j, Y');
+    }
+
+    public function exams()
+    {
+        return $this->hasMany(UserExam::class);
+    }
+
+    public function schedules()
+    {
+        return $this->hasManyThrough(
+            CourseSchedule::class,
+            CourseHistory::class,
+            'user_id',
+            'id',
+            'id',
+            'course_schedule_id'
+        );
     }
 }

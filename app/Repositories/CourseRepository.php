@@ -59,7 +59,7 @@ class CourseRepository extends BaseRepository
                     $startDate = date('Y-m-d', strtotime($request->get('month') . '-01'));
                     $endDate   = date('Y-m-t', strtotime($startDate));
 
-                    return $query->whereBetween('schedule_datetime', [
+                    return $query->whereBetween('start_datetime', [
                         $startDate,
                         $endDate
                     ]);
@@ -74,13 +74,13 @@ class CourseRepository extends BaseRepository
 
     public function getMyCourses($filters)
     {
-        $sortFilterArr = explode(':', @$filters['sort'] ?? 'course_schedules.schedule_datetime:desc');
+        $sortFilterArr = explode(':', @$filters['sort'] ?? 'course_schedules.start_datetime:desc');
 
         $sortBy    = $sortFilterArr[0];
         $sortOrder = $sortFilterArr[1];
 
 
-        return $this->model->select('statuses.*', 'courses.*', 'course_schedules.schedule_datetime' )
+        return $this->model->select('statuses.*', 'courses.*', 'course_schedules.start_datetime' )
             ->where('professor_id', Auth::user()->id)
             ->where(function($q) use($filters) {
                 return $q->where('courses.title', 'LIKE', '%'. @$filters['keyword'] .'%');

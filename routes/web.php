@@ -21,6 +21,7 @@ use App\Http\Controllers\Portal\ManageCourseController;
 use App\Http\Controllers\Portal\ProfileController as PortalProfileController;
 use App\Http\Controllers\Portal\RegisterStudentController;
 use App\Http\Controllers\Portal\TopPageController;
+use App\Http\Controllers\Portal\UserController as PortalUserController;
 use Illuminate\Http\Request;
 use Illuminate\Mail\Markdown;
 use Illuminate\Support\Facades\Route;
@@ -163,6 +164,10 @@ Route::prefix('portal')->name('portal.')->group(function() {
         Route::post('/logout', [AuthPortalController::class, 'logout'])->name('logout');
     });
 
+    # Users
+    Route::prefix('users')->name('users.')->group(function() {
+        Route::get('/{id}', [PortalUserController::class, 'view'])->name('view');
+    });
 });
 
 # Email verification
@@ -238,19 +243,33 @@ Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function()
 });
 
 # Exams
-Route::prefix('exams')->middleware(['auth', 'teacher'])->name('exams.')->group(function() {
+Route::prefix('exams')->name('exams.')->group(function() {
 
-    Route::prefix('/{id}')->group(function() {
-        # Create
-        Route::get('/create', [ExamController::class, 'create'])->name('create');
-        Route::post('/', [ExamController::class, 'store'])->name('store');
+    Route::prefix('/{id}')->middleware(['auth'])->group(function() {
 
-        # Edit
-        Route::get('/edit', [ExamController::class, 'edit'])->name('edit');
-        Route::patch('/update', [ExamController::class, 'update'])->name('update');
+        Route::middleware(['teacher'])->group(function() {
+            # Create
+            Route::get('/create', [ExamController::class, 'create'])->name('create');
+            Route::post('/', [ExamController::class, 'store'])->name('store');
 
-        # Update Status / Delete
-        Route::patch('/status/{status}', [ExamController::class, 'toggleStatus'])->name('status.toggle');
-        Route::delete('/delete', [ExamController::class, 'delete'])->name('delete');
+            # Edit
+            Route::get('/edit', [ExamController::class, 'edit'])->name('edit');
+            Route::patch('/update', [ExamController::class, 'update'])->name('update');
+
+            # Update Status / Delete
+            Route::patch('/status/{status}', [ExamController::class, 'toggleStatus'])->name('status.toggle');
+            Route::delete('/delete', [ExamController::class, 'delete'])->name('delete');
+        });
+    });
+});
+
+# Attend Classes
+Route::prefix('classes/{course_id}/attend/{schedule_id}')->middleware(['auth'])->name('course.attend.')->group(function() {
+
+    # Exams
+    Route::prefix('/exams/{id}')->name('exams.')->group(function() {
+        Route::get('/', [ExamController::class, 'view'])->name('view');
+        Route::post('/', [ExamController::class, 'submit'])->name('submit');
+        Route::get('/result', [ExamController::class, 'result'])->name('result');
     });
 });
