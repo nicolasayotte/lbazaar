@@ -19,10 +19,8 @@ class CourseScheduleFactory extends Factory
     {
         return [
             'schedule_datetime' => Carbon::now()->addDays(7),
-            'zoom_link'       => fake()->url(),
-            'is_live'         => true,
             'max_participant' => 1000,
-            'schedule_validity_datetime' => Carbon::now()->addDays(14)
+            'schedule_validity_datetime' => Carbon::now()->addDays(21)
         ];
     }
 }
