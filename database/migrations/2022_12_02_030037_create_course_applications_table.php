@@ -22,6 +22,8 @@ return new class extends Migration
             $table->longtext('description');
             $table->double('price')->nullable();
             $table->string('language')->nullable();
+            $table->string('trailer_link')->nullable();
+            $table->json('course_content_data')->nullable();
             $table->double('points_earned')->nullable();
             $table->integer('max_participant');
             $table->dateTime('approved_at')->nullable();

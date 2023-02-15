@@ -15,6 +15,11 @@ class CourseHistory extends Model
 
     protected $fillable = ['completed_at'];
 
+    public function courseSchedule()
+    {
+        return $this->belongsTo(CourseSchedule::class);
+    }
+
     public function course()
     {
         return $this->belongsTo(Course::class);

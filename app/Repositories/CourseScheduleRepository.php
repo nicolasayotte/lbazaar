@@ -16,7 +16,7 @@ class CourseScheduleRepository extends BaseRepository
 
     public function getUpcomingCourseSchedule($take = self::PERPAGE)
     {
-        return $this->model->where('schedule_datetime', '>=', Carbon::now('Asia/Tokyo'))->take($take)->orderBy('id', 'desc')->with(['course', 'professor', 'courseType', 'courseCategory'])->get();
+        return $this->model->where('start_datetime', '>=', Carbon::now('Asia/Tokyo'))->take($take)->orderBy('id', 'desc')->with(['course', 'professor', 'courseType', 'courseCategory'])->get();
     }
 
     public function search($request)
@@ -52,7 +52,7 @@ class CourseScheduleRepository extends BaseRepository
                     $startDate = date('Y-m-d', strtotime($request->get('month') . '-01'));
                     $endDate   = date('Y-m-t', strtotime($startDate));
 
-                    return $query->whereBetween('schedule_datetime', [
+                    return $query->whereBetween('start_datetime', [
                         $startDate,
                         $endDate
                     ]);
@@ -63,6 +63,6 @@ class CourseScheduleRepository extends BaseRepository
 
     public function findByCourseId($id)
     {
-        return $this->model->where('course_id', $id)->orderBy('schedule_datetime', 'ASC')->with(['course'])->get();
+        return $this->model->where('course_id', $id)->orderBy('start_datetime', 'ASC')->with(['course'])->get();
     }
 }

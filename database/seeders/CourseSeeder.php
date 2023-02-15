@@ -40,6 +40,7 @@ class CourseSeeder extends Seeder
                         'language'              => $application->language,
                         'points_earned'         => $application->points_earned,
                         'max_participant'       => $application->max_participant,
+                        'trailer_link'          => $application->trailer_link,
                     ]))
                     ->create();
         }
