@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('user_id')->unsigned()->index();
             $table->bigInteger('course_id')->unsigned()->index();
+            $table->bigInteger('course_schedule_id')->unsigned()->index();
             $table->timestamp('completed_at')->nullable();
             $table->timestamps();
         });

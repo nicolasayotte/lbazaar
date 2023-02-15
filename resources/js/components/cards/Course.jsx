@@ -37,7 +37,7 @@ const Course = ({ course, showDescription = true, showDate = true, viewDetailId 
         showDate &&
         <Typography
             variant="subtitle1"
-            children={course.schedule_datetime}
+            children={course.start_datetime}
             sx={{
                 display: "-webkit-box",
                 WebkitLineClamp: 2,

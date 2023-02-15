@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('user_exams', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('course_scehdule_id')->unsigned()->index()->nullable();
             $table->bigInteger('exam_id')->unsigned()->index()->nullable();
             $table->bigInteger('user_id')->unsigned()->index()->nullable();
             $table->double('total_score');
