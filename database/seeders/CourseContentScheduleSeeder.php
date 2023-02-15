@@ -22,7 +22,7 @@ class CourseContentScheduleSeeder extends Seeder
 
         foreach ($courseSchedules as $courseSchedule) {
             $course = $courseSchedule->course()->first();
-            $courseScheduleDate =Carbon::parse($courseSchedule->schedule_datetime)->format("Y-m-d H:i:s");
+            $courseScheduleDate =Carbon::parse($courseSchedule->start_datetime)->format("Y-m-d H:i:s");
             $contents = $course->contents()->get();
 
             foreach($contents as $content) {
@@ -31,7 +31,7 @@ class CourseContentScheduleSeeder extends Seeder
                         ->state(new Sequence([
                             'course_schedule_id' => $courseSchedule->id,
                             'course_content_id' => $content->id,
-                            'schedule_datetime' => $courseScheduleDate,
+                            'start_datetime' => $courseScheduleDate,
                             'video_path' => $content->video_path,
                             'video_link' => $content->video_link,
                             'zoom_link' => $content->zoom_link,

@@ -18,9 +18,9 @@ class CourseScheduleFactory extends Factory
     public function definition()
     {
         return [
-            'schedule_datetime' => Carbon::now()->addDays(7),
+            'start_datetime' => Carbon::now()->addDays(7),
             'max_participant' => 1000,
-            'schedule_validity_datetime' => Carbon::now()->addDays(21)
+            'end_datetime' => Carbon::now()->addDays(21)
         ];
     }
 }

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('course_content_id')->unsigned()->index()->nullable();
             $table->bigInteger('course_schedule_id')->unsigned()->index()->nullable();
-            $table->dateTime('schedule_datetime')->nullable();
+            $table->dateTime('start_datetime')->nullable();
             $table->string('video_path')->nullable();
             $table->string('video_link')->nullable();
             $table->string('zoom_link')->nullable();

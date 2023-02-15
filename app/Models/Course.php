@@ -46,6 +46,11 @@ class Course extends Model
         return $this->hasMany(CourseSchedule::class);
     }
 
+    public function contents()
+    {
+        return $this->hasMany(CourseContent::class);
+    }
+
     public function students()
     {
         return $this->hasManyThrough(

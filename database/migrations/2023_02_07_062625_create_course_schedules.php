@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('course_schedules', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('course_id')->unsigned()->index()->nullable();
-            $table->dateTime('schedule_datetime')->nullable();
-            $table->dateTime('schedule_validity_datetime')->nullable();
+            $table->dateTime('start_datetime')->nullable();
+            $table->dateTime('end_datetime')->nullable();
             $table->integer('max_participant');
 
             $table->timestamps();
