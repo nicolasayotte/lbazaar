@@ -141,4 +141,21 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return Carbon::parse($value)->format('M j, Y');
     }
+
+    public function exams()
+    {
+        return $this->hasMany(UserExam::class);
+    }
+
+    public function schedules()
+    {
+        return $this->hasManyThrough(
+            CourseSchedule::class,
+            CourseHistory::class,
+            'user_id',
+            'id',
+            'id',
+            'course_schedule_id'
+        );
+    }
 }

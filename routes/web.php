@@ -260,12 +260,16 @@ Route::prefix('exams')->name('exams.')->group(function() {
             Route::patch('/status/{status}', [ExamController::class, 'toggleStatus'])->name('status.toggle');
             Route::delete('/delete', [ExamController::class, 'delete'])->name('delete');
         });
+    });
+});
 
-        # Take Exam
+# Attend Classes
+Route::prefix('classes/{course_id}/attend/{schedule_id}')->middleware(['auth'])->name('course.attend.')->group(function() {
+
+    # Exams
+    Route::prefix('/exams/{id}')->name('exams.')->group(function() {
         Route::get('/', [ExamController::class, 'view'])->name('view');
-        Route::post('/submit', [ExamController::class, 'submit'])->name('submit');
-
-        # Result
+        Route::post('/', [ExamController::class, 'submit'])->name('submit');
         Route::get('/result', [ExamController::class, 'result'])->name('result');
     });
 });

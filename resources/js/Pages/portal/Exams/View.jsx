@@ -1,11 +1,11 @@
 import { useForm, usePage } from "@inertiajs/inertia-react"
-import { Button, Container, Grid, LinearProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
+import { Button, Container, Divider, Grid, LinearProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
 import { useState } from "react"
 import { getRoute } from "../../../helpers/routes.helper"
 
 const View = () => {
 
-    const { exam, translatables } = usePage().props
+    const { exam, translatables, schedule_id, course_id } = usePage().props
 
     const { items } = exam
 
@@ -56,7 +56,7 @@ const View = () => {
 
         setData('answers', answers)
 
-        post(getRoute('exams.submit', { id: exam.id }))
+        post(getRoute('course.attend.exams.submit', { course_id, schedule_id, id: exam.id }))
     }
 
     const SubmitButton = () => {
@@ -104,6 +104,7 @@ const View = () => {
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <Paper sx={{ p: 2, minHeight: '200px' }}>
+                            <Typography variant="h6" sx={{ mb: 2 }} children={`${items[currentItem].points}pt${items[currentItem].points > 1 ? 's' : ''}`}/>
                             <Typography children={items[currentItem].question} />
                         </Paper>
                     </Grid>

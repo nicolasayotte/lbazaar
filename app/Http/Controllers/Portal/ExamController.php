@@ -96,40 +96,48 @@ class ExamController extends Controller
         return redirect()->back();
     }
 
-    public function view($id)
+    public function view($course_id, $schedule_id, $id)
     {
-        if (!@$this->examRepository->canUserTakeExam(auth()->user()->id, $id)) {
+        if (!@$this->examRepository->canUserTakeExam(auth()->user()->id, $schedule_id, $id)) {
             return abort(401);
         }
 
         $exam = $this->examRepository->with(['items', 'items.choices'])->findOrFail($id);
 
         return Inertia::render('Portal/Exams/View', [
-            'title' => $exam->name,
-            'exam'  => $exam
+            'title'       => $exam->name,
+            'exam'        => $exam,
+            'course_id'   => $course_id,
+            'schedule_id' => $schedule_id
         ])->withViewData([
             'title' => $exam->name
         ]);
     }
 
-    public function submit($id, Request $request)
+    public function submit($course_id, $schedule_id, $id, Request $request)
     {
         $exam = $this->examRepository->findOrFail($id);
 
-        $examResult = $this->examRepository->submitAnswers($exam, $request['answers']);
+        $examResult = $this->examRepository->submitAnswers($exam, $schedule_id, $request['answers']);
 
         session()->flash('success', TranslationRepository::getTranslation('success.exams.submit'));
 
-        return to_route('exams.result', ['id' => $examResult->id]);
+        return to_route('course.attend.exams.result', [
+            'course_id'   => $course_id,
+            'schedule_id' => $schedule_id,
+            'id'          => $examResult->id
+        ]);
     }
 
-    public function result($id)
+    public function result($course_id, $schedule_id, $id)
     {
         $result = UserExam::with('exam')->findOrFail($id);
 
         return Inertia::render('Portal/Exams/Result', [
-            'title'  => $result->exam->name,
-            'result' => $result
+            'title'       => $result->exam->name,
+            'result'      => $result,
+            'course_id'   => $course_id,
+            'schedule_id' => $schedule_id
         ])->withViewData([
             'title'  => $result->exam->name
         ]);

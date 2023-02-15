@@ -78,7 +78,7 @@
     "exams.update": "\/exams\/{id}\/update",
     "exams.status.toggle": "\/exams\/{id}\/status\/{status}",
     "exams.delete": "\/exams\/{id}\/delete",
-    "exams.view": "\/exams\/{id}",
-    "exams.submit": "\/exams\/{id}\/submit",
-    "exams.result": "\/exams\/{id}\/result"
+    "course.attend.exams.view": "\/classes\/{course_id}\/attend\/{schedule_id}\/exams\/{id}",
+    "course.attend.exams.submit": "\/classes\/{course_id}\/attend\/{schedule_id}\/exams\/{id}",
+    "course.attend.exams.result": "\/classes\/{course_id}\/attend\/{schedule_id}\/exams\/{id}\/result"
 }

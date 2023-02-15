@@ -12,6 +12,7 @@ class UserExam extends Model
     protected $fillable = [
         'exam_id',
         'user_id',
+        'course_schedule_id',
         'total_score'
     ];
 
