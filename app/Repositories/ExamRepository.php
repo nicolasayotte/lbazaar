@@ -70,9 +70,16 @@ class ExamRepository extends BaseRepository
         $user = User::findOrFail($userID);
         $exam = $this->findOrFail($examID);
 
-        $schedule = $user->schedules()->where('course_schedules.id', $scheduleID)->first();
+        $schedule = @$user->schedules()
+                            ->where('course_schedules.id', $scheduleID)
+                            ->where('start_datetime', '<=', Carbon::now())
+                            ->where('end_datetime', '>', Carbon::now())
+                            ->first();
 
-        $isExamTaken = @$user->exams()->where('course_schedule_id', $scheduleID)->where('exam_id', $examID)->first() != null;
+        $isExamTaken = @$user->exams()
+                                ->where('course_schedule_id', $scheduleID)
+                                ->where('exam_id', $examID)
+                                ->first() != null;
 
         $canTakeExam = false;
 
