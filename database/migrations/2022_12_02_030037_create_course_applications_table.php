@@ -22,12 +22,14 @@ return new class extends Migration
             $table->longtext('description');
             $table->double('price')->nullable();
             $table->string('language')->nullable();
-            $table->string('trailer_link')->nullable();
-            $table->json('course_content_data')->nullable();
             $table->double('points_earned')->nullable();
+            $table->string('video_path')->nullable();
+            $table->string('video_link')->nullable();
+            $table->string('zoom_link')->nullable();
             $table->integer('max_participant');
             $table->dateTime('approved_at')->nullable();
             $table->dateTime('denied_at')->nullable();
+            $table->boolean('is_live')->nullable();
             $table->timestamps();
             $table->softDeletes();
 

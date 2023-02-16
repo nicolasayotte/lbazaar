@@ -43,7 +43,11 @@ class HandleInertiaRequests extends Middleware
             'isLoggedIn'    => fn () => @$request->user() ? true : false,
             'auth.user'     => fn () => @$request->user() ? @$request->user()->load('roles') : null,
             'translatables' => $translationRepository->getTranslations(),
-            'locale'        => app()->getLocale()
+            'locale'        => app()->getLocale(),
+            'flash' => [
+                'success' => fn () => @$request->session()->get('success'),
+                'error'   => fn () => @$request->session()->get('error')
+            ]
         ]);
     }
 }

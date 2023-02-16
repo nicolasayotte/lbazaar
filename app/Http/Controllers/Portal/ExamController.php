@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Portal;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateExamRequest;
 use App\Models\Exam;
+use App\Models\UserExam;
 use App\Repositories\ExamRepository;
 use App\Repositories\TranslationRepository;
 use Carbon\Carbon;
@@ -61,9 +62,11 @@ class ExamController extends Controller
 
     public function update($id, CreateExamRequest $request)
     {
-        $this->examRepository->update($id, $request->all());
-
         $exam = $this->examRepository->findOrFail($id);
+
+        $exam->update(['name' => $request['name']]);
+
+        $this->examRepository->update($id, $request->all());
 
         return to_route('mypage.course.manage_class.exams', ['id' => $exam->course_id]);
     }
@@ -91,5 +94,52 @@ class ExamController extends Controller
         $this->examRepository->destroy($id);
 
         return redirect()->back();
+    }
+
+    public function view($course_id, $schedule_id, $id)
+    {
+        if (!@$this->examRepository->canUserTakeExam(auth()->user()->id, $schedule_id, $id)) {
+            return abort(401);
+        }
+
+        $exam = $this->examRepository->with(['items', 'items.choices'])->findOrFail($id);
+
+        return Inertia::render('Portal/Exams/View', [
+            'title'       => $exam->name,
+            'exam'        => $exam,
+            'course_id'   => $course_id,
+            'schedule_id' => $schedule_id
+        ])->withViewData([
+            'title' => $exam->name
+        ]);
+    }
+
+    public function submit($course_id, $schedule_id, $id, Request $request)
+    {
+        $exam = $this->examRepository->findOrFail($id);
+
+        $examResult = $this->examRepository->submitAnswers($exam, $schedule_id, $request['answers']);
+
+        session()->flash('success', TranslationRepository::getTranslation('success.exams.submit'));
+
+        return to_route('course.attend.exams.result', [
+            'course_id'   => $course_id,
+            'schedule_id' => $schedule_id,
+            'id'          => $examResult->id
+        ]);
+    }
+
+    public function result($course_id, $schedule_id, $id)
+    {
+        $result = UserExam::with('exam')->findOrFail($id);
+
+        return Inertia::render('Portal/Exams/Result', [
+            'title'       => $result->exam->name,
+            'result'      => $result,
+            'course_id'   => $course_id,
+            'schedule_id' => $schedule_id
+        ])->withViewData([
+            'title'  => $result->exam->name
+        ]);
     }
 }
