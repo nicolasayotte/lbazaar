@@ -30,7 +30,7 @@ return new class extends Migration
             $table->string('video_link')->nullable();
             $table->string('zoom_link')->nullable();
             $table->boolean('is_live');
-            $table->boolean('is_cancellable');
+            $table->boolean('is_cancellable')->nullable();
             $table->integer('days_before_cancellation');
             $table->integer('max_participant');
             $table->timestamps();

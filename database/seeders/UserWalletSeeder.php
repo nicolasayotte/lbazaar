@@ -20,7 +20,7 @@ class UserWalletSeeder extends Seeder
         foreach ($users as $user) {
             UserWallet::create([
                 'user_id' => $user->id,
-                'points' => fake()->numberBetween(0, 100),
+                'points' => fake()->numberBetween(1, 100),
             ]);
         }
     }
