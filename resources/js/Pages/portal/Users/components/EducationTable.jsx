@@ -33,7 +33,7 @@ const EducationTable = ({ data }) => {
             <StyledTableRow key={index}>
                 <StyledTableCell children={row.school}/>
                 <StyledTableCell children={row.degree}/>
-                <StyledTableCell children={`${row.start_date} - ${row.end_date}`}/>
+                <StyledTableCell children={`${row.start_date} — ${row.end_date}`}/>
             </StyledTableRow>
         )
     })

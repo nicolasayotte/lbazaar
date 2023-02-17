@@ -40,13 +40,11 @@ const ClassStudentsTable = ({ data, handleOnComplete, handleOnOngoing }) => {
                 <TableCell children={row.completedAt}/>
                 <TableCell sx={{ whiteSpace: 'nowrap'}} align="center">
                     <Stack direction="row" spacing={1} justifyContent="center">
-                        <Link title="Manage class" href={getRoute('mypage.course.manage_class.details', { id: row.id })}>
+                        <Link title="View Student" href={getRoute('portal.users.view', { id: row.studentId })}>
                             <IconButton size="small" title="View">
                                 <Search fontSize="inherit" />
                             </IconButton>
                         </Link>
-                        {completeButton(row.id, row.isCompleted)}
-                        {ongoingButton(row.id, !row.isCompleted)}
                     </Stack>
                 </TableCell>
             </TableRow>

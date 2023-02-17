@@ -30,10 +30,9 @@ class DatabaseSeeder extends Seeder
             TeacherInformationSeeder::class,
             TranslationSeeder::class,
             CourseScheduleSeeder::class,
-            CourseContentSeeder::class,
-            CourseContentScheduleSeeder::class,
             CourseHistorySeeder::class,
             CourseFeedbackSeeder::class,
+            UserWalletSeeder::class,
         ]);
     }
 }
