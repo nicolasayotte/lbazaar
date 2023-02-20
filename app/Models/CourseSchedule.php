@@ -12,6 +12,12 @@ class CourseSchedule extends Model
 
     const COMING_SOON_COUNT_DISPLAY = 4;
 
+    protected $appends = [
+        'status',
+        'total_bookings',
+        'formatted_start_datetime'
+    ];
+
     public function professor()
     {
         return $this->hasOneThrough(User::class, Course::class, 'id', 'id', 'course_id', 'professor_id');
@@ -32,8 +38,50 @@ class CourseSchedule extends Model
         return $this->belongsTo(Course::class);
     }
 
-    public function getScheduleDatetimeAttribute($value)
+    public function getFormattedStartDatetimeAttribute($value)
     {
-        return Carbon::parse($value)->format('M j, Y \a\t h:i A');
+        return Carbon::parse($value)->format('l M d Y h:i A');
+    }
+
+    public function courseHistories()
+    {
+        return $this->hasMany(CourseHistory::class);
+    }
+
+    public function students()
+    {
+        return $this->hasManyThrough(
+            User::class,
+            CourseHistory::class,
+            'course_schedule_id',
+            'id',
+            'id',
+            'id'
+        );
+    }
+
+    public function getStatusAttribute()
+    {
+        $now = Carbon::now();
+
+        $start = Carbon::parse($this->start_datetime);
+        $end = Carbon::parse($this->end_datetime);
+
+        if ($now->lt($start) && $now->lt($end)) {
+            return ucwords(Status::UPCOMING);
+        }
+
+        if ($now->gte($start) && $now->lte($end)) {
+            return ucwords(Status::ONGOING);
+        }
+
+        if ($now->gt($start) && $now->gt($end)) {
+            return ucwords(Status::DONE);
+        }
+    }
+
+    public function getTotalBookingsAttribute()
+    {
+        return $this->courseHistories()->get()->count();
     }
 }

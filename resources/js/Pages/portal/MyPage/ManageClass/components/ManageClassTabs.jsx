@@ -1,4 +1,4 @@
-import { Tabs, Tab, Paper, Divider } from "@mui/material"
+import { Tabs, Tab, Divider } from "@mui/material"
 import { getRoute } from "../../../../../helpers/routes.helper"
 import { useState } from "react"
 import { Inertia } from "@inertiajs/inertia"
@@ -24,14 +24,12 @@ const ManageClassTabs = ({ tabValue = 'schedules', id }) => {
                 onChange={handleChange}
                 scrollButtons="auto"
                 allowScrollButtonsMobile
-                component={Paper}
-                sx={{ my: 2 }}
             >
                 <Tab label={translatables.title.schedules} value="schedules"/>
                 <Tab label={translatables.title.exams} value="exams" />
                 <Tab label={translatables.title.feedbacks} value="feedbacks" />
             </Tabs>
-            <Divider sx={{ my: 3 }} />
+            <Divider sx={{ mb: 2 }} />
         </>
     )
 }

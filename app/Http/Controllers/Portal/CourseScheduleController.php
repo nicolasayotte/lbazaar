@@ -25,9 +25,10 @@ class CourseScheduleController extends Controller
         return Inertia::render('Portal/MyPage/ManageClass/Schedules', [
             'course'    => $this->courseRepository->findByIdManageClass($id),
             'schedules' => $this->courseScheduleRepository->get($id, $request),
-            'keyword'   => @$request['keyword'] ?? '',
+            'month'     => @$request['month'] ?? '',
             'page'      => @$request['page'] ?? 1,
             'sort'      => @$request['sort'] ?? 'start_datetime:desc',
+            'status'    => @$request['status'] ?? '',
             'title'     => 'Manage Class - Schedules',
             'tabValue'  => 'schedules'
         ])->withViewData([

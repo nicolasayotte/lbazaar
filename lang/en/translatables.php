@@ -145,6 +145,10 @@ return [
         'rating' => [
             'asc' => 'Rating - Lowest',
             'desc' => 'Rating - Highest'
+        ],
+        'bookings' => [
+            'asc' => 'Bookings - Low to High',
+            'desc' => 'Bookings - High to Low'
         ]
     ],
     'certification' => [
@@ -191,6 +195,7 @@ return [
         'create_category' => 'Create Category',
         'create_classification' => 'Create Classification',
         'create_exam' => 'Create Exam',
+        'create_schedule' => 'Create Schedule',
         'current_password' => 'Current Password',
         'deny' => 'Deny',
         'date' => 'Date',

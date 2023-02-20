@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\CourseSchedule;
+use App\Models\Status;
 use Carbon\Carbon;
 
 class CourseScheduleRepository extends BaseRepository
@@ -26,19 +27,39 @@ class CourseScheduleRepository extends BaseRepository
         $sortBy    = $sortFilterArr[0];
         $sortOrder = $sortFilterArr[1];
 
-        return $this->model->with(['professor', 'course'])
+        return $this->model->with(['professor', 'course', 'courseHistories'])
             ->where('course_id', $courseID)
-            ->when($filters->has('month') && !empty($filters->get('month')), function ($q) use ($filters)  {
-                return $q->whereHas('contents', function($query) use ($filters) {
+            ->when(@$filters['month'], function($q) use ($filters) {
 
-                    $startDate = date('Y-m-d', strtotime($filters->get('month') . '-01'));
-                    $endDate   = date('Y-m-t', strtotime($startDate));
+                $startDate = date('Y-m-d', strtotime($filters->get('month') . '-01'));
+                $endDate   = date('Y-m-t', strtotime($startDate));
 
-                    return $query->whereBetween('start_datetime', [
-                        $startDate,
-                        $endDate
-                    ]);
-                });
+                return $q->whereBetween('start_datetime', [
+                    $startDate,
+                    $endDate
+                ]);
+            })
+            ->when(@$filters['status'], function($q) use($filters) {
+
+                $now = Carbon::now();
+
+                // Upcoming
+                if ($filters['status'] == Status::UPCOMING) {
+                    return $q->whereDate('start_datetime', '>', $now)
+                            ->whereDate('end_datetime', '>', $now);
+                }
+
+                // Ongoing
+                if ($filters['status'] == Status::ONGOING) {
+                    return $q->whereDate('start_datetime', '<=', $now)
+                            ->whereDate('end_datetime', '>=', $now);
+                }
+
+                // Done
+                if (@$filters['status'] == Status::DONE) {
+                    return $q->whereDate('start_datetime', '<', $now)
+                            ->whereDate('end_datetime', '<=', $now);
+                }
             })
             ->orderBy($sortBy, $sortOrder)
             ->paginate(self::PER_PAGE)->withQueryString();
