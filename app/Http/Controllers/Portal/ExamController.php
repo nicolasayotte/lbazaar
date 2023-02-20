@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateExamRequest;
 use App\Models\Exam;
 use App\Models\UserExam;
+use App\Repositories\CourseRepository;
 use App\Repositories\ExamRepository;
 use App\Repositories\TranslationRepository;
 use Carbon\Carbon;
@@ -16,14 +17,18 @@ class ExamController extends Controller
 {
     private $examRepository;
 
+    private $courseRepository;
+
     public function __construct()
     {
-        $this->examRepository = new ExamRepository();
+        $this->examRepository   = new ExamRepository();
+        $this->courseRepository = new CourseRepository();
     }
 
     public function index($id, Request $request)
     {
         return Inertia::render('Portal/MyPage/ManageClass/Exams', [
+            'course'   => $this->courseRepository->findByIdManageClass($id),
             'title'    => 'Manage Class - Exams',
             'exams'    => $this->examRepository->searchCourseExams($id, $request->all()),
             'tabValue' => 'exams',

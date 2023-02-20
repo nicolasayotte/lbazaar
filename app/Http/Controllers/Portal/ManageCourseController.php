@@ -36,48 +36,36 @@ class ManageCourseController extends Controller
     public function index(Request $request)
     {
         return Inertia::render('Portal/MyPage/ManageClass/Index', [
-            'courses'            => $this->courseRepository->getMyCourses($request->all()),
-            'categoryOptions'    => $this->courseCategoryRepository->getDropdownData(),
-            'typeOptions'        => $this->courseTypeRepository->getDropdownData(),
-            'keyword'            => @$request['keyword'] ?? '',
-            'course_type'        => @$request['course_type'] ?? '',
-            'category'           => @$request['category'] ?? '',
-            'status'             => @$request['status'] ?? '',
-            'sort'               => @$request['sort'] ?? 'course_schedules.start_datetime:desc',
-            'page'               => @$request['page'] ?? 1,
-            'title'              => 'My Page | Manage Class'
+            'courses'         => $this->courseRepository->getMyCourses($request->all()),
+            'categoryOptions' => $this->courseCategoryRepository->getDropdownData(),
+            'typeOptions'     => $this->courseTypeRepository->getDropdownData(),
+            'keyword'         => @$request['keyword'] ?? '',
+            'course_type'     => @$request['course_type'] ?? '',
+            'category'        => @$request['category'] ?? '',
+            'status'          => @$request['status'] ?? '',
+            'sort'            => @$request['sort'] ?? 'course_schedules.start_datetime:desc',
+            'page'            => @$request['page'] ?? 1,
+            'title'           => 'My Page | Manage Class'
         ])->withViewData([
-            'title'       => 'My Page | Manage Class',
-        ]);
-    }
-
-    public function details($id, Request $request)
-    {
-        $course = $this->courseRepository->findByIdManageClass($id);
-        return Inertia::render('Portal/MyPage/ManageClass/Details', [
-            'course'            => $course,
-            'categoryOptions'   => $this->courseCategoryRepository->getDropdownData(),
-            'typeOptions'       => $this->courseTypeRepository->getDropdownData(),
-            'tabValue'          => 'details',
-            'title'             => 'My Page | Manage Class '
-        ])->withViewData([
-            'title'       => 'My Page | Manage Class - ' . $course["title"],
+            'title'           => 'My Page | Manage Class',
         ]);
     }
 
     public function students($id, Request $request)
     {
         $students = $this->courseHistoryRepository->searchEnrolledStudents($request, $id);
+
         return Inertia::render('Portal/MyPage/ManageClass/Students', [
-            'students'          => $students,
-            'tabValue'          => 'students',
-            'keyword'           => @$request['keyword'] ?? '',
-            'sort'              => @$request['sort'] ?? 'course_histories.created_at:desc',
-            'page'              => @$request['page'] ?? 1,
-            'courseId'          => $id,
-            'title'             => 'My Page | Manage Class '
+            'course'   => $this->courseRepository->findByIdManageClass($id),
+            'students' => $students,
+            'tabValue' => 'students',
+            'keyword'  => @$request['keyword'] ?? '',
+            'sort'     => @$request['sort'] ?? 'course_histories.created_at:desc',
+            'page'     => @$request['page'] ?? 1,
+            'courseId' => $id,
+            'title'    => 'Manage Class - Students List'
         ])->withViewData([
-            'title'       => 'My Page | Manage Class - Students List',
+            'title'    => 'Manage Class - Students List',
         ]);
     }
 
@@ -86,15 +74,16 @@ class ManageCourseController extends Controller
         $feedbacks = $this->courseFeedbackRepository->findByCourseIdAndSearch($id, $request->all());
 
         return Inertia::render('Portal/MyPage/ManageClass/Feedbacks', [
-            'feedbacks'         => $feedbacks,
-            'tabValue'          => 'feedbacks',
-            'keyword'           => @$request['keyword'] ?? '',
-            'sort'              => @$request['sort'] ?? 'created_at:desc',
-            'page'              => @$request['page'] ?? 1,
-            'courseId'          => $id,
-            'title'             => 'My Page | Manage Class '
+            'course'    => $this->courseRepository->findByIdManageClass($id),
+            'feedbacks' => $feedbacks,
+            'tabValue'  => 'feedbacks',
+            'keyword'   => @$request['keyword'] ?? '',
+            'sort'      => @$request['sort'] ?? 'created_at:desc',
+            'page'      => @$request['page'] ?? 1,
+            'courseId'  => $id,
+            'title'     => 'Manage Class - Feedbacks'
         ])->withViewData([
-            'title'       => 'My Page | Manage Class - Feedbacks',
+            'title'     => 'Manage Class - Feedbacks',
         ]);
     }
 

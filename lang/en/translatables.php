@@ -114,7 +114,9 @@ return [
         'login' => 'Login',
         'translations' => 'Translations',
         'settings' => 'Settings',
-        'exams' => 'Exams'
+        'exams' => 'Exams',
+        'feedbacks' => 'Feedbacks',
+        'schedules' => 'Schedules'
     ],
     'filters' => [
         'date' => [
@@ -140,6 +142,10 @@ return [
             'asc' => 'Title A-Z',
             'desc' => 'Title Z-A',
         ],
+        'rating' => [
+            'asc' => 'Rating - Lowest',
+            'desc' => 'Rating - Highest'
+        ]
     ],
     'certification' => [
         'certificate_title' => 'Title',
@@ -168,6 +174,7 @@ return [
         'admin' => 'Admin',
         'all' => 'All',
         'approve' => 'Approve',
+        'back' => 'Back',
         'back_to_class' => 'Back to Class',
         'back_to_top' => 'Back to Top Page',
         'cancel' => 'Cancel',
@@ -198,6 +205,7 @@ return [
         'disable' => 'Disable',
         'edit' => 'Edit',
         'edit_category' => 'Edit Category',
+        'edit_class' => 'Edit Class',
         'edit_classification' => 'Edit Classification',
         'edit_exam' => 'Edit Exam',
         'edit_profile' => 'Edit Profile',
@@ -206,6 +214,7 @@ return [
         'exam_name' => 'Exam Name',
         'filter' => 'Filter',
         'first_name' => 'First Name',
+        'free' => 'Free',
         'general_information' => 'General Information',
         'keyword' => 'Keyword',
         'language' => 'Language',
@@ -222,13 +231,16 @@ return [
         'processing' => 'Processing',
         'profile' => 'Profile',
         'question' => 'Question',
+        'rating' => 'Rating',
         'role' => 'Role',
         'save_changes' => 'Save Changes',
         'score' => 'Score',
         'search_name' => 'Search for name',
         'search_name_email' => 'Search for name or email',
         'search_name_email_subject' => 'Search for name, email, or subject',
+        'search_title' => 'Search for title',
         'search_title_teacher' => 'Search for title or teacher',
+        'seats' => 'Seats',
         'send_reply' => 'Send Reply',
         'sign_in' => 'Sign In',
         'sign_out' => 'Sign Out',

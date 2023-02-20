@@ -14,6 +14,7 @@ use App\Http\Controllers\Portal\CourseApplicationController as PortalClassApplic
 use App\Http\Controllers\Portal\CourseController;
 use App\Http\Controllers\Portal\CourseFeedbackController;
 use App\Http\Controllers\Portal\CourseHistoryController;
+use App\Http\Controllers\Portal\CourseScheduleController;
 use App\Http\Controllers\Portal\ExamController;
 use App\Http\Controllers\Portal\ForgotPasswordController;
 use App\Http\Controllers\Portal\InquiriesController;
@@ -227,14 +228,10 @@ Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function()
 
         # Manage Class Details
         Route::prefix('/{id}')->group(function() {
-            Route::get('/details', [ManageCourseController::class, 'details'])->name('details');
             Route::get('/students', [ManageCourseController::class, 'students'])->name('students');
             Route::get('/feedbacks', [ManageCourseController::class, 'feedbacks'])->name('feedbacks');
-
-            # Exams
-            Route::prefix('exams')->group(function() {
-                Route::get('/', [ExamController::class, 'index'])->name('exams');
-            });
+            Route::get('/exams', [ExamController::class, 'index'])->name('exams');
+            Route::get('/schedules', [CourseScheduleController::class, 'index'])->name('schedules');
         });
 
         Route::post('/update-student-complete/{id}/{status}', [ManageCourseController::class, 'updateCompleted'])->name('students.update.complete.status');

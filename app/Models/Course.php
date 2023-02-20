@@ -21,6 +21,10 @@ class Course extends Model
         "course_category_id"
     ];
 
+    protected $appends = [
+        'overall_rating'
+    ];
+
     public function professor()
     {
         return $this->belongsTo(User::class, 'professor_id');
@@ -72,5 +76,23 @@ class Course extends Model
         if (@$value) {
             return number_format($value, 2);
         }
+    }
+
+    public function getOverallRatingAttribute()
+    {
+        $feedbacks = $this->feedbacks()->get();
+
+        $totalRating = 0;
+        $overallRating = 0;
+
+        if ($feedbacks->count() > 0) {
+            foreach ($feedbacks as $feedback) {
+                $totalRating += floatval($feedback->rating);
+            }
+
+            $overallRating = $totalRating / $feedbacks->count();
+        }
+
+        return $overallRating;
     }
 }

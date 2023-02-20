@@ -7,49 +7,31 @@ use Carbon\Carbon;
 
 class CourseScheduleRepository extends BaseRepository
 {
-    const PERPAGE = 5;
+    const PER_PAGE = 10;
 
     public function __construct()
     {
         parent::__construct(new CourseSchedule());
     }
 
-    public function getUpcomingCourseSchedule($take = self::PERPAGE)
+    public function getUpcomingCourseSchedule($take = self::PER_PAGE)
     {
         return $this->model->where('start_datetime', '>=', Carbon::now('Asia/Tokyo'))->take($take)->orderBy('id', 'desc')->with(['course', 'professor', 'courseType', 'courseCategory'])->get();
     }
 
-    public function search($request)
+    public function get($courseID, $filters)
     {
-        return $this->model->with(['professor', 'course'])
-            ->when($request->has('search_text') && !empty($request->get('search_text')), function ($q) use ($request)  {
-                return $q->where('title', 'like', '%' . $request->get('search_text') . '%')
-                         ->orWhere('description', 'like', '%' . $request->get('search_text') . '%');
-            })
-            ->when($request->has('professor_id') && !empty($request->get('professor_id')), function ($q) use ($request)  {
-                return $q->whereHas('professor', function($query) use ($request) {
-                    return $query->where('professor_id', $request->get('professor_id'));
-                });
-            })
-            ->when($request->has('type_id') && !empty($request->get('type_id')), function ($q) use ($request)  {
-                return $q->whereHas('course', function($query) use ($request) {
-                    return $query->where('course_type_id', $request->get('type_id'));
-                });
-            })
-            ->when($request->has('category_id') && !empty($request->get('category_id')), function ($q) use ($request)  {
-                return $q->whereHas('course', function($query) use ($request) {
-                    return $query->where('course_category_id', $request->get('category_id'));
-                });
-            })
-            ->when($request->has('language') && !empty($request->get('language')), function ($q) use ($request)  {
-                return $q->whereHas('course', function($query) use ($request) {
-                    return $query->where('language', $request->get('language'));
-                });
-            })
-            ->when($request->has('month') && !empty($request->get('month')), function ($q) use ($request)  {
-                return $q->whereHas('contents', function($query) use ($request) {
+        $sortFilterArr = explode(':', @$filters['sort'] ?? 'created_at:desc');
 
-                    $startDate = date('Y-m-d', strtotime($request->get('month') . '-01'));
+        $sortBy    = $sortFilterArr[0];
+        $sortOrder = $sortFilterArr[1];
+
+        return $this->model->with(['professor', 'course'])
+            ->where('course_id', $courseID)
+            ->when($filters->has('month') && !empty($filters->get('month')), function ($q) use ($filters)  {
+                return $q->whereHas('contents', function($query) use ($filters) {
+
+                    $startDate = date('Y-m-d', strtotime($filters->get('month') . '-01'));
                     $endDate   = date('Y-m-t', strtotime($startDate));
 
                     return $query->whereBetween('start_datetime', [
@@ -58,7 +40,8 @@ class CourseScheduleRepository extends BaseRepository
                     ]);
                 });
             })
-            ->paginate(self::PERPAGE)->withQueryString();
+            ->orderBy($sortBy, $sortOrder)
+            ->paginate(self::PER_PAGE)->withQueryString();
     }
 
     public function findByCourseId($id)

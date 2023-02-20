@@ -1,25 +1,32 @@
 import { useForm, usePage } from "@inertiajs/inertia-react"
-import { Button, Card, CardContent, Grid, Box, Pagination } from "@mui/material"
+import { Button, Card, CardContent, Grid, Box, Pagination, Typography } from "@mui/material"
 import Input from "../../../../components/forms/Input"
 import { displaySelectOptions, handleOnChange, handleOnSelectChange } from "../../../../helpers/form.helper"
 import {getRoute} from "../../../../helpers/routes.helper"
-import ManageClassTabs from "./components/ManageClassTabs"
 import Feedback from "../../../../components/cards/Feedback"
+import EmptyCard from "../../../../components/common/EmptyCard"
 
 const Feedbacks = () => {
 
-    const { auth, feedbacks, courseId, tabValue, sort, keyword, page } = usePage().props
+    const { auth, feedbacks, courseId, sort, keyword, page, translatables } = usePage().props
 
     const sortOptions = [
-        { name: 'Rating - Lowest', value: 'rating:asc' },
-        { name: 'Rating - Highest', value: 'rating:desc' },
-        { name: 'Date - Oldest',  value: 'created_at:asc' },
-        { name: 'Date - Newest', value: 'created_at:desc' }
+        { name: translatables.filters.rating.asc, value: 'rating:asc' },
+        { name: translatables.filters.rating.desc, value: 'rating:desc' },
+        { name: translatables.filters.date.asc,  value: 'created_at:asc' },
+        { name: translatables.filters.date.desc, value: 'created_at:desc' }
     ]
 
-    const displayFeedbacks = feedbacks => feedbacks && feedbacks.length > 0 && feedbacks.map(feedback => (
-        <Feedback auth={auth} key={feedback.id} feedback={feedback}/>
-    ))
+    const FeedbackData = () => {
+
+        if (feedbacks && feedbacks.data && feedbacks.data.length <= 0) {
+            return <EmptyCard />
+        }
+
+        return feedbacks && feedbacks.data && feedbacks.data.length > 0 && feedbacks.data.map(feedback => (
+            <Feedback auth={auth} key={feedback.id} feedback={feedback}/>
+        ))
+    }
 
     const { data: filters, setData: setFilters, get, transform, processing } = useForm({
         sort,
@@ -44,26 +51,24 @@ const Feedbacks = () => {
 
     return (
         <>
-            <Grid item md={12} lg={12} xs={12}>
-                <ManageClassTabs tabValue={tabValue} id={courseId}/>
-            </Grid>
-            <Grid item md={12} xs={12}>
-                <Card sx={{mb: 2}}>
-                    <CardContent >
+            <Typography variant="h5" children={translatables.title.feedbacks} />
+            <Card sx={{ my: 2 }}>
+                <CardContent >
+                    <form onSubmit={handleFilterSubmit}>
                         <Grid container justifyContent="flex-end" spacing={2}>
-                            <Grid item xs={12} md={6}>
+                            <Grid item xs={12} md={8}>
                                 <Input
-                                    label="Keyword"
-                                    placeholder="Search for name or email"
+                                    label={translatables.texts.keyword}
+                                    placeholder={translatables.texts.search_name}
                                     name="keyword"
                                     value={filters.keyword}
                                     onChange={e => handleOnChange(e, setFilters)}
                                 />
                             </Grid>
-                            <Grid item xs={12} sm={4} justifyContent="flex-end">
+                            <Grid item xs={12} sm={2} justifyContent="flex-end">
                                 <Input
                                     select
-                                    label="Sort"
+                                    label={translatables.texts.sort}
                                     InputLabelProps={{
                                         shrink: true
                                     }}
@@ -76,27 +81,25 @@ const Feedbacks = () => {
                             </Grid>
                             <Grid item xs={12} md={2} textAlign="right">
                                 <Button
-                                    children="Filter"
+                                    children={translatables.texts.filter}
                                     variant="contained"
                                     fullWidth
                                     onClick={handleFilterSubmit}
                                 />
                             </Grid>
                         </Grid>
-                    </CardContent>
-                </Card>
-                {displayFeedbacks(feedbacks.data)}
-            </Grid>
-            <Grid item xs={12} md={12}>
-                <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
-                    <Pagination
-                        onChange={handleOnPaginate}
-                        count={feedbacks.last_page}
-                        page={feedbacks.current_page}
-                        color="primary"
-                    />
-                </Box>
-            </Grid>
+                    </form>
+                </CardContent>
+            </Card>
+            <FeedbackData />
+            <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+                <Pagination
+                    onChange={handleOnPaginate}
+                    count={feedbacks.last_page}
+                    page={feedbacks.current_page}
+                    color="primary"
+                />
+            </Box>
         </>
     )
 }
