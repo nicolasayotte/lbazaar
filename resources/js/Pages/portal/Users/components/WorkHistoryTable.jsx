@@ -34,10 +34,12 @@ const WorkHistoryTable = ({ data }) => {
                 <StyledTableCell children={row.company}/>
                 <StyledTableCell children={row.position}/>
                 <StyledTableCell children={row.description}/>
-                <StyledTableCell children={`${row.start_date} - ${row.end_date}`}/>
+                <StyledTableCell children={`${row.start_date} — ${row.end_date}`}/>
             </StyledTableRow>
         )
     })
+
+
     return (
         <>
             <TableContainer component={Paper}>
@@ -46,7 +48,7 @@ const WorkHistoryTable = ({ data }) => {
                         <TableRow>
                             <StyledTableCell children={translatables.work.company} />
                             <StyledTableCell children={translatables.work.position} />
-                            <StyledTableCell children={translatables.work.description} />
+                            <StyledTableCell width="40%" children={translatables.work.description} />
                             <StyledTableCell children={translatables.work.date} />
                         </TableRow>
                     </TableHead>

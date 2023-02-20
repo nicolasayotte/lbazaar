@@ -30,7 +30,7 @@ const ClassInformationView = ({ course, viewEditCourse }) => {
                     <Grid item xs={12} sm={6}>
                         <Typography variant="h5" children="General Information"></Typography>
                     </Grid>
-                    <Grid item xs={12} sm={6} sx={generalInformationButtonStyle}>
+                    {/* <Grid item xs={12} sm={6} sx={generalInformationButtonStyle}>
                         <Button
                             children="Edit Information"
                             variant="contained"
@@ -38,7 +38,7 @@ const ClassInformationView = ({ course, viewEditCourse }) => {
                             size="small"
                             onClick={viewEditCourse}
                         />
-                    </Grid>
+                    </Grid> */}
 
                 </Grid>
             <Grid container spacing={2}>
@@ -115,7 +115,7 @@ const ClassInformationView = ({ course, viewEditCourse }) => {
                     <Typography variant="subtitle" children="Description"></Typography>
                 </Grid>
                 <Grid item xs={12} sm={10}>
-                    <div dangerouslySetInnerHTML={{ __html: course.description }} />
+                    <div style={{ lineHeight: 1.8 }} dangerouslySetInnerHTML={{ __html: course.description }} />
                 </Grid>
             </Grid>
         </Box>
