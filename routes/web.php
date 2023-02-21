@@ -242,21 +242,31 @@ Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function()
 # Exams
 Route::prefix('exams')->name('exams.')->group(function() {
 
-    Route::prefix('/{id}')->middleware(['auth'])->group(function() {
+    Route::prefix('/{id}')->middleware(['auth', 'teacher'])->group(function() {
+        # Create
+        Route::get('/create', [ExamController::class, 'create'])->name('create');
+        Route::post('/', [ExamController::class, 'store'])->name('store');
 
-        Route::middleware(['teacher'])->group(function() {
-            # Create
-            Route::get('/create', [ExamController::class, 'create'])->name('create');
-            Route::post('/', [ExamController::class, 'store'])->name('store');
+        # Edit
+        Route::get('/edit', [ExamController::class, 'edit'])->name('edit');
+        Route::patch('/update', [ExamController::class, 'update'])->name('update');
 
-            # Edit
-            Route::get('/edit', [ExamController::class, 'edit'])->name('edit');
-            Route::patch('/update', [ExamController::class, 'update'])->name('update');
+        # Update Status / Delete
+        Route::patch('/status/{status}', [ExamController::class, 'toggleStatus'])->name('status.toggle');
+        Route::delete('/delete', [ExamController::class, 'delete'])->name('delete');
+    });
+});
 
-            # Update Status / Delete
-            Route::patch('/status/{status}', [ExamController::class, 'toggleStatus'])->name('status.toggle');
-            Route::delete('/delete', [ExamController::class, 'delete'])->name('delete');
-        });
+# Schedules
+Route::prefix('schedules')->name('schedules.')->group(function() {
+
+    Route::prefix('/{id}')->middleware(['auth', 'teacher'])->group(function() {
+        # Create
+        Route::get('/create', [CourseScheduleController::class, 'create'])->name('create');
+        Route::post('/', [CourseScheduleController::class, 'store'])->name('store');
+
+        # Delete
+        Route::delete('/delete', [CourseScheduleController::class, 'delete'])->name('delete');
     });
 });
 

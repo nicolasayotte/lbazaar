@@ -3,8 +3,14 @@
 namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CourseScheduleRequest;
+use App\Models\CourseSchedule;
+use App\Models\Role;
 use App\Repositories\CourseRepository;
 use App\Repositories\CourseScheduleRepository;
+use App\Repositories\TranslationRepository;
+use Carbon\Carbon;
+use DateTime;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -27,12 +33,44 @@ class CourseScheduleController extends Controller
             'schedules' => $this->courseScheduleRepository->get($id, $request),
             'month'     => @$request['month'] ?? '',
             'page'      => @$request['page'] ?? 1,
-            'sort'      => @$request['sort'] ?? 'start_datetime:desc',
+            'sort'      => @$request['sort'] ?? 'start_datetime:asc',
             'status'    => @$request['status'] ?? '',
             'title'     => 'Manage Class - Schedules',
             'tabValue'  => 'schedules'
         ])->withViewData([
             'title'     => 'Manage Class - Schedules'
         ]);
+    }
+
+    public function create($id)
+    {
+        return Inertia::render('Portal/CourseSchedules/Create', [
+            'course' => $this->courseRepository->findByIdManageClass($id),
+            'title'  => 'Manage Class - Create Schedule',
+        ])->withViewData(([
+            'title'  => 'Manage Class - Create Schedule'
+        ]));
+    }
+
+    public function store($id, CourseScheduleRequest $request)
+    {
+        $course = $this->courseRepository->findOrFail($id);
+
+        $inputs = $request->all();
+
+        $inputs['end_datetime'] = Carbon::parse($inputs['start_datetime'])->addDays(7);
+
+        $course->schedules()->create($inputs);
+
+        return to_route('mypage.course.manage_class.schedules', ['id' => $id])->with('success', TranslationRepository::getTranslation('success.schedules.create'));
+    }
+
+    public function delete($id)
+    {
+        $courseSchedule = $this->courseScheduleRepository->findOrFail($id);
+
+        $courseSchedule->delete();
+
+        return redirect()->back()->with('success', TranslationRepository::getTranslation('success.schedules.delete'));
     }
 }

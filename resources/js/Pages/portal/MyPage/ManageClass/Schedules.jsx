@@ -1,11 +1,14 @@
 import { Link, useForm, usePage } from "@inertiajs/inertia-react"
-import { Add } from "@mui/icons-material"
+import { Add, TramSharp } from "@mui/icons-material"
 import { Box, Button, Card, CardContent, Grid, Pagination, Typography } from "@mui/material"
+import { useEffect, useState } from "react"
 import TableLoader from "../../../../components/common/TableLoader"
 import Input from "../../../../components/forms/Input"
 import { displaySelectOptions, handleOnSelectChange } from "../../../../helpers/form.helper"
 import { getRoute } from "../../../../helpers/routes.helper"
 import ScheduleTable from "./components/ScheduleTable"
+import ConfirmationDialog from "../../../../components/common/ConfirmationDialog"
+import { Inertia } from "@inertiajs/inertia"
 
 const Schedules = () => {
 
@@ -19,15 +22,22 @@ const Schedules = () => {
     ]
 
     const sortOptions = [
-        { name: translatables.filters.date.asc, value: 'start_datetime:asc' },
-        { name: translatables.filters.date.desc, value: 'start_datetime:desc' }
+        { name: translatables.filters.schedule.asc, value: 'start_datetime:asc' },
+        { name: translatables.filters.schedule.desc, value: 'start_datetime:desc' }
     ]
 
-    const { data: filters, setData: setFilters, get, processing, transform } = useForm({
+    const { data: filters, get, processing, transform } = useForm({
         month,
         status,
         sort,
         page
+    })
+
+    const [dialog, setDialog] = useState({
+        open: false,
+        title: translatables.texts.delete_schedule,
+        text: translatables.confirm.schedules.delete,
+        submitUrl: ''
     })
 
     const handleOnFilterSubmit = e => {
@@ -45,14 +55,40 @@ const Schedules = () => {
         handleOnFilterSubmit(e)
     }
 
+    const handleOnDelete = id => {
+        setDialog(dialog => ({
+            ...dialog,
+            open: true,
+            submitUrl: getRoute('schedules.delete', { id: id })
+        }))
+    }
+
+    const handleOnDialogClose = () => {
+        setDialog(dialog => ({
+            ...dialog,
+            open: false
+        }))
+    }
+
+    const handleOnDialogConfirm = () => {
+        Inertia.delete(dialog.submitUrl)
+
+        handleOnDialogClose()
+    }
+
     return (
         <>
+            <ConfirmationDialog
+                {...dialog}
+                handleClose={handleOnDialogClose}
+                handleConfirm={handleOnDialogConfirm}
+            />
             <Grid container spacing={2} justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
                 <Grid item xs={12} md="auto">
                     <Typography variant="h5" children={translatables.title.schedules} />
                 </Grid>
                 <Grid item xs={12} md="auto">
-                    <Link href={getRoute('exams.create', { id: course.id })}>
+                    <Link href={getRoute('schedules.create', { id: course.id })}>
                         <Button
                             variant="contained"
                             children={translatables.texts.create_schedule}
@@ -114,7 +150,7 @@ const Schedules = () => {
             {
                 processing
                 ? <TableLoader />
-                : <ScheduleTable data={schedules.data} />
+                : <ScheduleTable data={schedules.data} handleOnDelete={handleOnDelete} />
             }
             <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
                 <Pagination

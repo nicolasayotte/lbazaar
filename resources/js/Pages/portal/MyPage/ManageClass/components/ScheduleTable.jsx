@@ -3,7 +3,7 @@ import { Delete, Search } from "@mui/icons-material"
 import { Box, Chip, IconButton, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
 import EmptyCard from "../../../../../components/common/EmptyCard"
 
-const ScheduleTable = ({ data }) => {
+const ScheduleTable = ({ data, handleOnDelete }) => {
 
     const { translatables } = usePage().props
 
@@ -41,8 +41,13 @@ const ScheduleTable = ({ data }) => {
                         <IconButton size="small" title={translatables.texts.view}>
                             <Search fontSize="inherit" />
                         </IconButton>
-                        <IconButton size="small" title={translatables.texts.delete}>
-                            <Delete fontSize="inherit" color="error" />
+                        <IconButton
+                            disabled={!schedule.is_deletable}
+                            size="small"
+                            title={translatables.texts.delete}
+                            onClick={() => handleOnDelete(schedule.id)}
+                        >
+                            <Delete fontSize="inherit" color={!schedule.is_deletable ? 'disabled' : 'error'} />
                         </IconButton>
                     </Stack>
                 </TableCell>

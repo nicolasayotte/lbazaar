@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use DateTime;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,10 +13,17 @@ class CourseSchedule extends Model
 
     const COMING_SOON_COUNT_DISPLAY = 4;
 
+    protected $fillable = [
+        'start_datetime',
+        'end_datetime',
+        'max_participant'
+    ];
+
     protected $appends = [
         'status',
         'total_bookings',
-        'formatted_start_datetime'
+        'formatted_start_datetime',
+        'is_deletable'
     ];
 
     public function professor()
@@ -38,9 +46,9 @@ class CourseSchedule extends Model
         return $this->belongsTo(Course::class);
     }
 
-    public function getFormattedStartDatetimeAttribute($value)
+    public function getFormattedStartDatetimeAttribute()
     {
-        return Carbon::parse($value)->format('l M d Y h:i A');
+        return Carbon::parse($this->start_datetime)->format('l M d Y h:i A');
     }
 
     public function courseHistories()
@@ -62,26 +70,26 @@ class CourseSchedule extends Model
 
     public function getStatusAttribute()
     {
-        $now = Carbon::now();
+        $now = Carbon::now(date_default_timezone_get());
 
         $start = Carbon::parse($this->start_datetime);
+
         $end = Carbon::parse($this->end_datetime);
 
-        if ($now->lt($start) && $now->lt($end)) {
-            return ucwords(Status::UPCOMING);
-        }
+        if ($now > $start && $now < $end) return ucwords(Status::ONGOING);
 
-        if ($now->gte($start) && $now->lte($end)) {
-            return ucwords(Status::ONGOING);
-        }
+        if ($now > $end) return ucwords(Status::DONE);
 
-        if ($now->gt($start) && $now->gt($end)) {
-            return ucwords(Status::DONE);
-        }
+        if ($now < $start) return ucwords(Status::UPCOMING);
     }
 
     public function getTotalBookingsAttribute()
     {
         return $this->courseHistories()->get()->count();
+    }
+
+    public function getIsDeletableAttribute()
+    {
+        return $this->status == ucwords(Status::UPCOMING) && $this->getTotalBookingsAttribute() <= 0;
     }
 }

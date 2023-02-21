@@ -57,6 +57,10 @@ return [
             'delete' => 'Exam successfully deleted',
             'update' => 'Exam successfully updated',
             'submit' => 'Exam successfully submitted'
+        ],
+        'schedules' => [
+            'create' => 'Schedule successfully created',
+            'delete' => 'Schedule successfully deleted'
         ]
     ],
     'confirm' => [
@@ -84,6 +88,9 @@ return [
         ],
         'exams' => [
             'delete' => 'Are you sure you want to delete this exam?'
+        ],
+        'schedules' => [
+            'delete' => 'Are you sure you want to delete this schedule?'
         ]
     ],
     'title' => [
@@ -149,6 +156,10 @@ return [
         'bookings' => [
             'asc' => 'Bookings - Low to High',
             'desc' => 'Bookings - High to Low'
+        ],
+        'schedule' => [
+            'asc' => 'Date - ASC',
+            'desc' => 'Date - DESC'
         ]
     ],
     'certification' => [
@@ -207,6 +218,7 @@ return [
         'delete' => 'Delete',
         'delete_category' => 'Delete Category',
         'delete_classification' => 'Delete Classification',
+        'delete_schedule' => 'Delete Schedule',
         'disable' => 'Disable',
         'edit' => 'Edit',
         'edit_category' => 'Edit Category',

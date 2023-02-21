@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\CourseSchedule;
 use App\Models\Status;
 use Carbon\Carbon;
+use DateTime;
 
 class CourseScheduleRepository extends BaseRepository
 {
@@ -22,12 +23,12 @@ class CourseScheduleRepository extends BaseRepository
 
     public function get($courseID, $filters)
     {
-        $sortFilterArr = explode(':', @$filters['sort'] ?? 'created_at:desc');
+        $sortFilterArr = explode(':', @$filters['sort'] ?? 'start_datetime:asc');
 
         $sortBy    = $sortFilterArr[0];
         $sortOrder = $sortFilterArr[1];
 
-        return $this->model->with(['professor', 'course', 'courseHistories'])
+        return $this->model->with(['course'])
             ->where('course_id', $courseID)
             ->when(@$filters['month'], function($q) use ($filters) {
 
@@ -41,24 +42,20 @@ class CourseScheduleRepository extends BaseRepository
             })
             ->when(@$filters['status'], function($q) use($filters) {
 
-                $now = Carbon::now();
-
                 // Upcoming
                 if ($filters['status'] == Status::UPCOMING) {
-                    return $q->whereDate('start_datetime', '>', $now)
-                            ->whereDate('end_datetime', '>', $now);
-                }
-
-                // Ongoing
-                if ($filters['status'] == Status::ONGOING) {
-                    return $q->whereDate('start_datetime', '<=', $now)
-                            ->whereDate('end_datetime', '>=', $now);
+                    return $q->whereDate('start_datetime', '>', new DateTime());
                 }
 
                 // Done
                 if (@$filters['status'] == Status::DONE) {
-                    return $q->whereDate('start_datetime', '<', $now)
-                            ->whereDate('end_datetime', '<=', $now);
+                    return $q->whereDate('end_datetime', '<', new DateTime());
+                }
+
+                // Ongoing
+                if ($filters['status'] == Status::ONGOING) {
+                    return $q->whereDate('start_datetime', '<=', new DateTime())
+                            ->whereDate('end_datetime', '>=', new DateTime());
                 }
             })
             ->orderBy($sortBy, $sortOrder)
@@ -68,5 +65,20 @@ class CourseScheduleRepository extends BaseRepository
     public function findByCourseId($id)
     {
         return $this->model->where('course_id', $id)->orderBy('start_datetime', 'ASC')->with(['course'])->get();
+    }
+
+    public function getScheduledDates($id)
+    {
+        $courseSchedules = $this->model->where('course_id', $id)->get();
+
+        $scheduledDates = [];
+
+        if ($courseSchedules->count() > 0) {
+            foreach ($courseSchedules as $schedule) {
+                $scheduledDates[] = Carbon::parse($schedule->start_datetime)->format('Y-m-d');
+            }
+        }
+
+        return $scheduledDates;
     }
 }
