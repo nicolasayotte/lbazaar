@@ -1,0 +1,11 @@
+# ignore files that doesn't need to be in a Docker context
+# git, package, and output directories
+.git
+.vagrant
+.vscode
+node_modules
+public/build
+vendor
+
+# files
+*.md
