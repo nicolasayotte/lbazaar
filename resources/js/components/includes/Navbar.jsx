@@ -1,12 +1,13 @@
 import { Link, usePage } from "@inertiajs/inertia-react";
 import { Menu as MenuIcon } from "@mui/icons-material"
-import { AppBar, Box, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemText, Stack, Toolbar, Typography } from "@mui/material"
+import { AppBar, Box, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemText, Stack, Toolbar, Typography, Grid, Tooltip } from "@mui/material"
 import { useState } from "react"
 import routes from "../../helpers/routes.helper"
+import PointsIcon from '@mui/icons-material/WorkspacePremium'
 
 const Navbar = () => {
 
-    const { isLoggedIn, auth, window } = usePage().props
+    const { isLoggedIn, auth, window, translatables } = usePage().props
 
     const [showDrawer, setShowDrawer] = useState(false);
 
@@ -97,7 +98,28 @@ const Navbar = () => {
                 />
             </Toolbar>
             <Divider />
+
             <List>
+                { isLoggedIn && (
+                    <ListItem disablePadding>
+                        <ListItemButton>
+                        <Tooltip title={`${translatables.texts.points}`}>
+                            <Grid container spacing={0} alignItems={'center'}>
+                                <Grid item >
+                                    <PointsIcon sx={{ color: '#FF6B09' }}/>
+                                </Grid>
+                                <Grid item>
+                                    <Typography
+                                        sx={{ color: '#FF6B09' }}
+                                        variant="subtitle2"
+                                        children={`${auth.user.user_wallet.points}`}
+                                    />
+                                </Grid>
+                            </Grid>
+                        </Tooltip>
+                        </ListItemButton>
+                    </ListItem>
+                 )}
                 {navItems.map(item => (
                     <ListItem key={item.name} disablePadding>
                         <Link href={item.link} style={{ width: '100%' }}>
@@ -148,6 +170,21 @@ const Navbar = () => {
                         <MenuIcon />
                     </IconButton>
                     <Stack display={{ xs: 'none', md: 'flex' }} direction="row" spacing={1}>
+                        { isLoggedIn && (
+                            <Tooltip title={`${translatables.texts.points}`}>
+                                <Grid container spacing={1} alignItems={'center'}>
+                                    <Grid item >
+                                        <PointsIcon/>
+                                    </Grid>
+                                    <Grid item>
+                                        <Typography
+                                            variant="subtitle2"
+                                            children={`${auth.user.user_wallet.points}`}
+                                        />
+                                    </Grid>
+                                </Grid>
+                            </Tooltip>
+                        )}
                         { authButtons(isLoggedIn) }
                     </Stack>
                 </Toolbar>

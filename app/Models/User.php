@@ -26,6 +26,11 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public const RANDOM_PASSWORD_STRING_LENGTH = 8;
 
+    public const COMMISSION = [
+        ROLE::ADMIN => 20,
+        ROLE::TEACHER => 80,
+      ];
+
     protected $appends = ['fullname'];
 
     /**
@@ -127,9 +132,19 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(UserWorkHistory::class, 'user_id', 'id');
     }
 
+    public function userWallet()
+    {
+        return $this->hasOne(UserWallet::class, 'user_id', 'id');
+    }
+
     public function isCourseBooked($class_id)
     {
         return $this->courses->where('id', $class_id)->count() > 0;
+    }
+
+    public function isCourseScheduleBooked($class_schedule_id)
+    {
+        return $this->schedules->where('id', $class_schedule_id)->count() > 0;
     }
 
     public function hasFeedback($class_id)

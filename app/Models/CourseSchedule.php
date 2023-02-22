@@ -49,6 +49,11 @@ class CourseSchedule extends Model
         return $this->belongsTo(Course::class);
     }
 
+    public function courseHistory()
+    {
+        return $this->hasMany(CourseHistory::class);
+    }
+
     public function getFormattedStartDatetimeAttribute()
     {
         return Carbon::parse($this->start_datetime, 'Asia/Tokyo')->format('l M d Y h:i A');
