@@ -13,13 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('course_histories', function (Blueprint $table) {
+        Schema::create('wallet_transaction_histories', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('user_id')->unsigned()->index();
-            $table->bigInteger('course_id')->unsigned()->index();
-            $table->bigInteger('course_schedule_id')->unsigned()->index();
-            $table->boolean('is_cancelled')->nullable();
-            $table->timestamp('completed_at')->nullable();
+            $table->bigInteger('user_wallet_id');
+            $table->bigInteger('course_history_id')->nullable();
+            $table->string('type'); //enum feed, exchange, book, refund, earn
+            $table->integer('points_before');
+            $table->integer('points_after');
             $table->timestamps();
         });
     }
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('course_histories');
+        Schema::dropIfExists('wallet_transaction_histories');
     }
 };

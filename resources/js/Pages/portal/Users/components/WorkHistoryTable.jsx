@@ -49,7 +49,7 @@ const WorkHistoryTable = ({ data }) => {
                             <StyledTableCell children={translatables.work.company} />
                             <StyledTableCell children={translatables.work.position} />
                             <StyledTableCell width="40%" children={translatables.work.description} />
-                            <StyledTableCell children={translatables.work.date} />
+                            <StyledTableCell children={translatables.texts.date} />
                         </TableRow>
                     </TableHead>
                     <TableBody>

@@ -13,7 +13,13 @@ class CourseHistory extends Model
 
     const COMPLETED = "Completed";
 
-    protected $fillable = ['completed_at'];
+    protected $fillable = [
+        'user_id',
+        'course_id',
+        'course_schedule_id',
+        'completed_at',
+        'is_cancelled'
+    ];
 
     public function courseSchedule()
     {

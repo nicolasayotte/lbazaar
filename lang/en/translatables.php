@@ -36,6 +36,10 @@ return [
             ],
             'types' => [
                 'update' => 'Class types successfully updated'
+            ],
+            'booking' => [
+                'booked' => 'Class successfully booked',
+                'cancelled' => 'Class successfully cancelled'
             ]
         ],
         'category' => [
@@ -67,6 +71,10 @@ return [
             ],
             'types' => [
                 'update' => 'Are you sure you want to update these class types?'
+            ],
+            'schedules' => [
+                'book' => 'Are you sure you want to book this class?',
+                'cancel' => 'Are you sure you want to cancel booking of this class?'
             ]
         ],
         'user' => [
@@ -149,17 +157,20 @@ return [
     'education' => [
         'school' => 'School',
         'degree' => 'Degree',
-        'date' => 'Date',
     ],
     'work' => [
         'company' => 'Company',
         'position' => 'Position',
         'description' => 'Description',
-        'date' => 'Date',
     ],
     'user' => [
         'about' => 'About',
         'specialty' => 'Specialization',
+    ],
+    'class_schedule' => [
+        'start_date' => 'Start Date',
+        'number_users_booked' => 'Users Booked',
+        'class_style' => 'On Demand/Live',
     ],
     'texts' => [
         'actions' => 'Actions',
@@ -256,5 +267,14 @@ return [
         'certification' => 'Certification',
         'education' => 'Education',
         'work' => 'Work',
+        'live' => 'Live',
+        'on_demand' => 'On demand',
+        'book_class' => 'Book Class',
+        'cancel_class_booking' => 'Cancel Class Booking',
+        'attend_class' => 'Attend Class',
+        'check_schedules' => 'Check Schedule',
+        'book' => 'Book',
+        'attend' => 'Attend',
+        'add_points' => 'Add Points',
     ]
 ];

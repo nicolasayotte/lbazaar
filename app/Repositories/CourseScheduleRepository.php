@@ -63,6 +63,6 @@ class CourseScheduleRepository extends BaseRepository
 
     public function findByCourseId($id)
     {
-        return $this->model->where('course_id', $id)->orderBy('start_datetime', 'ASC')->with(['course'])->get();
+        return $this->model->where('course_id', $id)->orderBy('start_datetime', 'ASC')->with(['course', 'courseHistory'])->get();
     }
 }

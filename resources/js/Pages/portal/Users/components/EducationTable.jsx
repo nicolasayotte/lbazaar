@@ -45,7 +45,7 @@ const EducationTable = ({ data }) => {
                         <TableRow>
                             <StyledTableCell children={translatables.education.school} />
                             <StyledTableCell children={translatables.education.degree} />
-                            <StyledTableCell children={translatables.education.date} />
+                            <StyledTableCell children={translatables.texts.date} />
                         </TableRow>
                     </TableHead>
                     <TableBody>
