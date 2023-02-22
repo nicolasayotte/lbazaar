@@ -10,7 +10,7 @@ const Create = () => {
 
     const disabledDates = new Date().toISOString().slice(0, 16)
 
-    const { data, setData, post, errors, processing } = useForm({
+    const { data, setData, post, errors } = useForm({
         start_datetime: '',
         max_participant: course.max_participant
     })
@@ -64,7 +64,7 @@ const Create = () => {
                                 name="start_datetime"
                                 value={data.start_datetime}
                                 onChange={e => handleOnChange(e, setData)}
-                                error={errors && errors.start_datetime}
+                                error={errors && errors.start_datetime != undefined}
                             />
                         </Paper>
                         { errors && errors.start_datetime && <ErrorText error={errors.start_datetime} /> }

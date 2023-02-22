@@ -26,7 +26,7 @@ class CourseScheduleRequest extends FormRequest
     public function rules()
     {
         return [
-            'start_datetime' => ['required', new ValidSchedule($this->id)]
+            'start_datetime' => ['required', 'after:yesterday', new ValidSchedule($this->id)]
         ];
     }
 }
