@@ -64,6 +64,10 @@ const ClassInformationHeader = () => {
                         <Chip color={typeColors[course.course_type.type]} size="small" label={course.course_type && course.course_type.name} />
                     </Box>
                     <Box width={{ xs: '50%', md: 'auto' }}>
+                        <Typography variant="span" mr={1} children={translatables.texts.format} />
+                        <Chip size="small" label={course.is_live ? 'Live' : 'On-Demand'} />
+                    </Box>
+                    <Box width={{ xs: '50%', md: 'auto' }}>
                         <Typography variant="span" mr={1} children={translatables.texts.category} />
                         <Chip size="small" label={course.course_category && course.course_category.name} />
                     </Box>

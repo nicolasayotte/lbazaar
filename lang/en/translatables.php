@@ -236,6 +236,7 @@ return [
         'exam_name' => 'Exam Name',
         'filter' => 'Filter',
         'first_name' => 'First Name',
+        'format' => 'Format',
         'free' => 'Free',
         'general_information' => 'General Information',
         'keyword' => 'Keyword',
