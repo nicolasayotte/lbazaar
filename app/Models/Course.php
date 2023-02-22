@@ -72,6 +72,11 @@ class Course extends Model
         return $this->hasMany(CourseFeedback::class)->orderBy('created_at', 'desc');
     }
 
+    public function exams()
+    {
+        return $this->hasMany(Exam::class, 'course_id');
+    }
+
     public function getPriceAttribute($value) {
         if (@$value) {
             return number_format($value, 2);

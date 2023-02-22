@@ -29,13 +29,13 @@ const Create = () => {
                         <Typography variant="h5" children={translatables.texts.create_schedule} />
                         <Breadcrumbs>
                             <Link href={routes["mypage.course.manage_class.index"]} children={translatables.title.class.manage.index} />
-                            <Link href={getRoute('mypage.course.manage_class.schedules', { id: course.id})} children={translatables.title.schedules} />
+                            <Link href={getRoute('mypage.course.manage_class.schedules', { id: course.id })} children={translatables.title.schedules} />
                             <Typography color="text.primary" children={translatables.texts.create_schedule} />
                         </Breadcrumbs>
                     </Grid>
                     <Grid item container xs={12} md={3} alignItems="center" spacing={2}>
                         <Grid item xs={12} md={6} order={{ xs: 1, md: 0 }}>
-                            <Link href={getRoute('mypage.course.manage_class.schedules', { id: course.id})}>
+                            <Link href={getRoute('mypage.course.manage_class.schedules', { id: course.id })}>
                                 <Button
                                     variant="outlined"
                                     children={translatables.texts.cancel}

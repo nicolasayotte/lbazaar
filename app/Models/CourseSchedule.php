@@ -23,6 +23,7 @@ class CourseSchedule extends Model
         'status',
         'total_bookings',
         'formatted_start_datetime',
+        'simple_start_datetime',
         'is_deletable'
     ];
 
@@ -49,6 +50,11 @@ class CourseSchedule extends Model
     public function getFormattedStartDatetimeAttribute()
     {
         return Carbon::parse($this->start_datetime)->format('l M d Y h:i A');
+    }
+
+    public function getSimpleStartDatetimeAttribute()
+    {
+        return Carbon::parse($this->start_datetime)->format('M d, Y \a\t\ h:i A');
     }
 
     public function courseHistories()

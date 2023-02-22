@@ -1,7 +1,8 @@
-import { usePage } from "@inertiajs/inertia-react"
+import { Link, usePage } from "@inertiajs/inertia-react"
 import { Delete, Search } from "@mui/icons-material"
 import { Box, Chip, IconButton, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
 import EmptyCard from "../../../../../components/common/EmptyCard"
+import { getRoute } from "../../../../../helpers/routes.helper"
 
 const ScheduleTable = ({ data, handleOnDelete }) => {
 
@@ -38,9 +39,11 @@ const ScheduleTable = ({ data, handleOnDelete }) => {
                 </TableCell>
                 <TableCell>
                     <Stack direction="row" spacing={2} justifyContent="center">
-                        <IconButton size="small" title={translatables.texts.view}>
-                            <Search fontSize="inherit" />
-                        </IconButton>
+                        <Link href={getRoute('schedules.view', { id: schedule.id })}>
+                            <IconButton size="small" title={translatables.texts.view}>
+                                <Search fontSize="inherit" />
+                            </IconButton>
+                        </Link>
                         <IconButton
                             disabled={!schedule.is_deletable}
                             size="small"

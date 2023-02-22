@@ -261,6 +261,9 @@ Route::prefix('exams')->name('exams.')->group(function() {
 Route::prefix('schedules')->name('schedules.')->group(function() {
 
     Route::prefix('/{id}')->middleware(['auth', 'teacher'])->group(function() {
+        # View
+        Route::get('/', [CourseScheduleController::class, 'view'])->name('view');
+
         # Create
         Route::get('/create', [CourseScheduleController::class, 'create'])->name('create');
         Route::post('/', [CourseScheduleController::class, 'store'])->name('store');

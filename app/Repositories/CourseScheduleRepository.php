@@ -2,10 +2,12 @@
 
 namespace App\Repositories;
 
+use App\Models\CourseHistory;
 use App\Models\CourseSchedule;
 use App\Models\Status;
 use Carbon\Carbon;
 use DateTime;
+use Illuminate\Support\Facades\DB;
 
 class CourseScheduleRepository extends BaseRepository
 {
@@ -60,6 +62,36 @@ class CourseScheduleRepository extends BaseRepository
             })
             ->orderBy($sortBy, $sortOrder)
             ->paginate(self::PER_PAGE)->withQueryString();
+    }
+
+    public function getStudents($scheduleID, $filters)
+    {
+        $sortFilterArr = explode(':', @$filters['sort'] ?? 'fullname:asc');
+
+        $sortBy    = $sortFilterArr[0];
+        $sortOrder = $sortFilterArr[1];
+
+        return CourseHistory::with(['user.exams', 'user.feedbacks'])
+                    ->select([
+                        'users.id',
+                        'users.id as user_id',
+                        'users.first_name',
+                        'users.last_name',
+                        'users.email',
+                        'course_histories.created_at',
+                        DB::raw('CONCAT(users.first_name, " ", users.last_name) as fullname')
+                    ])
+                    ->join('users', 'users.id', '=', 'course_histories.user_id')
+                    ->whereHas('courseSchedule', function($q) use($scheduleID) {
+                        return $q->where('course_schedules.id', $scheduleID);
+                    })
+                    ->when(@$filters['keyword'], function($q) use($filters) {
+                        return $q->whereRaw("CONCAT(`first_name`, ' ', `last_name`) LIKE ?", ['%'. @$filters['keyword'] .'%'])
+                        ->orWhere('email', 'LIKE', '%'. @$filters['keyword'] .'%');
+                    })
+                    ->where('course_histories.course_schedule_id', $scheduleID)
+                    ->orderBy($sortBy, $sortOrder)
+                    ->paginate(self::PER_PAGE);
     }
 
     public function findByCourseId($id)

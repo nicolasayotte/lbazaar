@@ -42,6 +42,23 @@ class CourseScheduleController extends Controller
         ]);
     }
 
+    public function view($id, Request $request)
+    {
+        $courseSchedule = $this->courseScheduleRepository->with(['course', 'course.exams'])->findOrFail($id);
+
+        return Inertia::render('Portal/CourseSchedules/View', [
+            'course'   => @$courseSchedule->course,
+            'schedule' => @$courseSchedule,
+            'students' => $this->courseScheduleRepository->getStudents($id, $request->all()),
+            'page'     => @$request['page'] ?? 1,
+            'sort'     => @$request['sort'] ?? 'fullname:asc',
+            'keyword'  => @$request['keyword'] ?? '',
+            'title'    => 'Manage Class - View Schedule'
+        ])->withViewData([
+            'title'    => 'Manage Class - View Schedule'
+        ]);
+    }
+
     public function create($id)
     {
         return Inertia::render('Portal/CourseSchedules/Create', [
