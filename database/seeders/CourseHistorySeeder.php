@@ -47,18 +47,21 @@ class CourseHistorySeeder extends Seeder
                     ]);
                     if ($course->courseType->name != CourseType::FREE) {
 
+
+
                         $newUserPoints =  $userWallet->points - $course->price;
                         $this->updateWalletHistory($userWallet, WalletTransactionHistory::BOOK, $newUserPoints, $courseHistory);
                         $this->updateWallet($userWallet, $newUserPoints);
 
-                        $adminCommission = (int)($course->price / 100 * User::COMMISSION[Role::ADMIN]);
-                        $newAdminPoints =  $adminWallet->points + ($course->price / 100 * User::COMMISSION[Role::ADMIN]);
-                        $this->updateWalletHistory($adminWallet, WalletTransactionHistory::COMMISsION, $newAdminPoints, $courseHistory);
-                        $this->updateWallet($adminWallet, $newAdminPoints);
-
-                        $newTeacherPoints = $teacherWallet->points + ($course->price - $adminCommission);
-                        $this->updateWalletHistory($teacherWallet, WalletTransactionHistory::COMMISsION, $newTeacherPoints, $courseHistory);
+                        $teacherCommission = (int)($course->price / 100 * ($course->professor()->first()->commission_rate));
+                        $newTeacherPoints = $teacherWallet->points + $teacherCommission;
+                        $this->updateWalletHistory($teacherWallet, WalletTransactionHistory::COMMISSION, $newTeacherPoints, $courseHistory);
                         $this->updateWallet($teacherWallet, $newTeacherPoints);
+
+                        $adminCommission = $course->price - $teacherCommission;
+                        $newAdminPoints =  $adminWallet->points + $adminCommission;
+                        $this->updateWalletHistory($adminWallet, WalletTransactionHistory::COMMISSION, $newAdminPoints, $courseHistory);
+                        $this->updateWallet($adminWallet, $newAdminPoints);
 
                     }
 

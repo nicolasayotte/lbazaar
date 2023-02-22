@@ -99,9 +99,10 @@ class CourseController extends Controller
 
     public function book($schedule_id)
     {
+        //TODO ongoing cannot booked
+        $schedule = CourseSchedule::find($schedule_id)->load('course');
         $isBooked = count($this->courseHistoryRepository->findByUserAndCourseScheduleID(auth()->user()->id, $schedule_id)) > 0;
         $isFullyBooked = count($this->courseHistoryRepository->findByCourseScheduleID($schedule_id)) == $schedule->max_participant;
-        $schedule = CourseSchedule::find($schedule_id)->load('course');
         $userWallet = auth()->user()->userWallet()->first();
         $adminWallet = $this->userRepository->getAdmin()->userWallet()->first();
         $teacherWallet = $schedule->course->professor()->first()->userWallet()->first();
@@ -118,14 +119,15 @@ class CourseController extends Controller
                 $this->updateWalletHistory($userWallet, WalletTransactionHistory::BOOK, $newUserPoints, $courseHistory);
                 $this->updateWallet($userWallet, $newUserPoints);
 
-                $adminCommission = (int)($schedule->course->price / 100 * User::COMMISSION[Role::ADMIN]);
-                $newAdminPoints =  $adminWallet->points + ($schedule->course->price / 100 * User::COMMISSION[Role::ADMIN]);
-                $this->updateWalletHistory($adminWallet, WalletTransactionHistory::COMMISsION, $newAdminPoints, $courseHistory);
-                $this->updateWallet($adminWallet, $newAdminPoints);
-
-                $newTeacherPoints = $teacherWallet->points + ($schedule->course->price - $adminCommission);
-                $this->updateWalletHistory($teacherWallet, WalletTransactionHistory::COMMISsION, $newTeacherPoints, $courseHistory);
+                $teacherCommission = (int)($schedule->course->price / 100 * ($schedule->course->professor()->first()->commission_rate));
+                $newTeacherPoints = $teacherWallet->points + $teacherCommission;
+                $this->updateWalletHistory($teacherWallet, WalletTransactionHistory::COMMISSION, $newTeacherPoints, $courseHistory);
                 $this->updateWallet($teacherWallet, $newTeacherPoints);
+
+                $adminCommission = $schedule->course->price - $teacherCommission;
+                $newAdminPoints =  $adminWallet->points + $adminCommission;
+                $this->updateWalletHistory($adminWallet, WalletTransactionHistory::COMMISSION, $newAdminPoints, $courseHistory);
+                $this->updateWallet($adminWallet, $newAdminPoints);
 
             }
 
@@ -140,7 +142,7 @@ class CourseController extends Controller
 
     public function cancel($schedule_id)
     {
-        $courseHistory = $this->courseHistoryRepository->findByUserAndCourseScheduleID(auth()->user()->id, $schedule_id);
+        $courseHistory = $this->courseHistoryRepository->findByUserAndCourseScheduleID(auth()->user()->id, $schedule_id)->first();
         $schedule = CourseSchedule::find($schedule_id)->load('course');
         $course = $schedule->course;
         $isCancellable = $course->is_cancellable;
@@ -151,26 +153,26 @@ class CourseController extends Controller
         $adminWallet = $this->userRepository->getAdmin()->userWallet()->first();
         $teacherWallet = $schedule->course->professor()->first()->userWallet()->first();
 
-        if(isset($courseHistory[0]) && $isCancellable && $dateDiff >= $course->days_before_cancellation) {
+        if(isset($courseHistory->id) && $isCancellable && $dateDiff >= $course->days_before_cancellation) {
             if ($schedule->course->courseType->name != CourseType::FREE) {
 
-                $userWalletTransaction = $this->walletTransactionHistoryRepository->findByUserWalletAndCourseHistoryID($userWallet->id, $courseHistory[0]->id);
+                $userWalletTransaction = $this->walletTransactionHistoryRepository->findByUserWalletAndCourseHistoryID($userWallet->id, $courseHistory->id);
                 $newUserPoints = $userWallet->points + abs($userWalletTransaction->points_before - $userWalletTransaction->points_after);
-                $this->updateWalletHistory($userWallet, WalletTransactionHistory::REFUND, $newUserPoints, $courseHistory[0]);
+                $this->updateWalletHistory($userWallet, WalletTransactionHistory::REFUND, $newUserPoints, $courseHistory);
                 $this->updateWallet($userWallet, $newUserPoints);
 
-                $adminWalletTransaction = $this->walletTransactionHistoryRepository->findByUserWalletAndCourseHistoryID($adminWallet->id, $courseHistory[0]->id);
+                $adminWalletTransaction = $this->walletTransactionHistoryRepository->findByUserWalletAndCourseHistoryID($adminWallet->id, $courseHistory->id);
                 $newAdminPoints = $adminWallet->points - abs($adminWalletTransaction->points_before - $adminWalletTransaction->points_after);
-                $this->updateWalletHistory($adminWallet, WalletTransactionHistory::REFUND, $newAdminPoints, $courseHistory[0]);
+                $this->updateWalletHistory($adminWallet, WalletTransactionHistory::REFUND, $newAdminPoints, $courseHistory);
                 $this->updateWallet($adminWallet, $newAdminPoints);
 
-                $teacherWalletTransaction = $this->walletTransactionHistoryRepository->findByUserWalletAndCourseHistoryID($teacherWallet->id, $courseHistory[0]->id);
+                $teacherWalletTransaction = $this->walletTransactionHistoryRepository->findByUserWalletAndCourseHistoryID($teacherWallet->id, $courseHistory->id);
                 $newTeacherPoints = $teacherWallet->points - abs($teacherWalletTransaction->points_before - $teacherWalletTransaction->points_after);
-                $this->updateWalletHistory($teacherWallet, WalletTransactionHistory::REFUND, $newTeacherPoints, $courseHistory[0]);
+                $this->updateWalletHistory($teacherWallet, WalletTransactionHistory::REFUND, $newTeacherPoints, $courseHistory);
                 $this->updateWallet($teacherWallet, $newTeacherPoints);
             }
 
-            $courseHistory[0]->update([
+            $courseHistory->update([
                 'is_cancelled' => true,
             ]);
 

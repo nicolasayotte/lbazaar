@@ -27,6 +27,8 @@ return new class extends Migration
             $table->boolean('is_temp_password')->nullable();
             $table->boolean('is_enabled')->nullable();
             $table->bigInteger('classification_id')->unsigned()->index()->nullable();
+            $table->bigInteger('commission_rate')->nullable();
+            $table->bigInteger('commission_earn_rate')->nullable();
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
