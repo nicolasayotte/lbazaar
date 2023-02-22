@@ -9,8 +9,7 @@ services:
             - /var/.secrets/.env.staging:/app/.env:ro
             - ./nginx/vhost.conf:/opt/docker/etc/nginx/vhost.conf
             - /var/log/app:/app/storage/logs
-            - /var/log/nginx/access.log:/var/log/nginx/access.log
-            - /var/log/nginx/error.log:/var/log/nginx/error.log
+            - /var/log/nginx/:/var/log/nginx
         environment:
-            LOG_STDOUT: '/var/log/nginx/access.log'
-            LOG_STDERR: '/var/log/nginx/error.log'
+            LOG_STDOUT: '/var/log/nginx'
+            LOG_STDERR: '/var/log/nginx'
