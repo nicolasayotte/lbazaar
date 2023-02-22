@@ -22,14 +22,11 @@ class CourseScheduleController extends Controller
 
     private $courseScheduleRepository;
 
-    private $userRepository;
-
     private $baseTitle;
 
     public function __construct()
     {
         $this->courseRepository         = new CourseRepository();
-        $this->userRepository           = new UserRepository();
         $this->courseScheduleRepository = new CourseScheduleRepository();
 
         $this->baseTitle = TranslationRepository::getTranslation('title.class.manage.view') . ' - ';
@@ -117,5 +114,14 @@ class CourseScheduleController extends Controller
         $courseSchedule->delete();
 
         return redirect()->back()->with('success', TranslationRepository::getTranslation('success.schedules.delete'));
+    }
+
+    public function updateStatus($id)
+    {
+        $courseSchedule = $this->courseScheduleRepository->findOrFail($id);
+
+        $courseSchedule->update(['is_completed' => true]);
+
+        return redirect()->back()->with('success', getTranslation('success.schedules.update'));
     }
 }

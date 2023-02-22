@@ -17,7 +17,8 @@ class CourseSchedule extends Model
     protected $fillable = [
         'start_datetime',
         'end_datetime',
-        'max_participant'
+        'max_participant',
+        'is_completed'
     ];
 
     protected $appends = [
@@ -87,7 +88,7 @@ class CourseSchedule extends Model
 
         if ($now->gt($start) && $now->lt($end)) return ucwords(Status::ONGOING);
 
-        if ($now->gt($end)) return ucwords(Status::DONE);
+        if ($now->gt($end) || $this->is_completed) return ucwords(Status::DONE);
 
         if ($now->lt($start)) return ucwords(Status::UPCOMING);
     }

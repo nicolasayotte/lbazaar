@@ -4,7 +4,11 @@ namespace App\Http\Requests;
 
 use App\Models\Role;
 use App\Rules\ValidSchedule;
+use Carbon\Carbon;
+use DateTime;
+use DateTimeZone;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class CourseScheduleRequest extends FormRequest
 {
@@ -25,8 +29,13 @@ class CourseScheduleRequest extends FormRequest
      */
     public function rules()
     {
+        $now = Carbon::parse(new DateTime('now', new DateTimeZone(env('APP_TIMEZONE'))))->format('Y-m-d h:i A');
+
         return [
-            'start_datetime' => ['required', 'after:yesterday', new ValidSchedule($this->id)]
+            'start_datetime' => [
+                'required',
+                'after_or_equal:' . $now,
+                new ValidSchedule($this->id)]
         ];
     }
 }

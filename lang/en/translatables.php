@@ -60,7 +60,8 @@ return [
         ],
         'schedules' => [
             'create' => 'Schedule successfully created',
-            'delete' => 'Schedule successfully deleted'
+            'delete' => 'Schedule successfully deleted',
+            'update' => 'Schedule successfully updated'
         ]
     ],
     'confirm' => [
@@ -90,7 +91,8 @@ return [
             'delete' => 'Are you sure you want to delete this exam?'
         ],
         'schedules' => [
-            'delete' => 'Are you sure you want to delete this schedule?'
+            'delete' => 'Are you sure you want to delete this schedule?',
+            'update' => 'Are you sure you want to update this schedule?'
         ]
     ],
     'title' => [
@@ -239,6 +241,7 @@ return [
         'keyword' => 'Keyword',
         'language' => 'Language',
         'last_name' => 'Last Name',
+        'mark_done' => 'Mark as Done',
         'message' => 'Message',
         'name' => 'Name',
         'new_password' => 'New Password',

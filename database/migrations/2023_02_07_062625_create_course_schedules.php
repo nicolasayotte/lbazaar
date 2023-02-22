@@ -19,6 +19,7 @@ return new class extends Migration
             $table->dateTime('start_datetime')->nullable();
             $table->dateTime('end_datetime')->nullable();
             $table->integer('max_participant');
+            $table->boolean('is_completed')->default(false);
 
             $table->timestamps();
             $table->softDeletes();

@@ -268,6 +268,9 @@ Route::prefix('schedules')->name('schedules.')->group(function() {
         Route::get('/create', [CourseScheduleController::class, 'create'])->name('create');
         Route::post('/', [CourseScheduleController::class, 'store'])->name('store');
 
+        # Update Status
+        Route::patch('/status/update', [CourseScheduleController::class, 'updateStatus'])->name('status.update');
+
         # Delete
         Route::delete('/delete', [CourseScheduleController::class, 'delete'])->name('delete');
 
