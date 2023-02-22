@@ -135,10 +135,16 @@ Route::prefix('classes')->name('course.')->group(function() {
         Route::get('/{id}/feedback', [CourseFeedbackController::class, 'index'])->name('feedback.index');
         Route::post('/{id}/feedback', [CourseFeedbackController::class, 'store'])->name('feedback.store');
 
+        # Course Booking
+        Route::post('/{schedule_id}/book', [CourseController::class, 'book'])->name('book');
+        Route::post('/{schedule_id}/cancel', [CourseController::class, 'cancel'])->name('cancel');
+
         Route::middleware(['auth', 'teacher'])->group(function() {
             # Create Course
             Route::get('/{id}/create', [CourseController::class, 'create'])->name('create');
         });
+
+
     });
 });
 

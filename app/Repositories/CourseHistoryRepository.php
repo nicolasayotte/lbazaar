@@ -97,4 +97,16 @@ class CourseHistoryRepository extends BaseRepository
     {
         return $this->model->where('course_id', $course_id)->where('user_id', $user_id)->exists();
     }
+
+    public function findByUserAndCourseScheduleID($user_id, $course_schedule_id)
+    {
+        $courseHistory = $this->model->where('user_id', $user_id)->where('course_schedule_id', $course_schedule_id)->where('is_cancelled', null)->get();
+        return $courseHistory != null ?  $courseHistory : [];
+    }
+
+    public function findByCourseScheduleID($course_schedule_id)
+    {
+        $courseHistory = $this->model->where('course_schedule_id', $course_schedule_id)->where('is_cancelled', false)->get();
+        return $courseHistory != null ?  $courseHistory : [];
+    }
 }

@@ -32,6 +32,11 @@ class CourseSchedule extends Model
         return $this->belongsTo(Course::class);
     }
 
+    public function courseHistory()
+    {
+        return $this->hasMany(CourseHistory::class);
+    }
+
     public function getScheduleDatetimeAttribute($value)
     {
         return Carbon::parse($value)->format('M j, Y \a\t h:i A');
