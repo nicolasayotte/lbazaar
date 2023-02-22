@@ -94,6 +94,25 @@ class CourseScheduleRepository extends BaseRepository
                     ->paginate(self::PER_PAGE);
     }
 
+    public function findStudentBySchedule($scheduleID, $studentID)
+    {
+        $courseHistory = CourseHistory::with([
+                                            'user',
+                                            'user.courses',
+                                            'user.createdCourses',
+                                            'user.userEducation',
+                                            'user.userCertification',
+                                            'user.userWorkHistory',
+                                            'user.roles',
+                                            'user.country'
+                                        ])
+                                        ->where('course_schedule_id', $scheduleID)
+                                        ->where('user_id', $studentID)
+                                        ->firstOrFail();
+
+        return $courseHistory->user;
+    }
+
     public function findByCourseId($id)
     {
         return $this->model->where('course_id', $id)->orderBy('start_datetime', 'ASC')->with(['course'])->get();

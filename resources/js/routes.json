@@ -82,6 +82,7 @@
     "schedules.create": "\/schedules\/{id}\/create",
     "schedules.store": "\/schedules\/{id}",
     "schedules.delete": "\/schedules\/{id}\/delete",
+    "schedules.student.view": "\/schedules\/{id}\/students\/{student_id}",
     "course.attend.exams.view": "\/classes\/{course_id}\/attend\/{schedule_id}\/exams\/{id}",
     "course.attend.exams.submit": "\/classes\/{course_id}\/attend\/{schedule_id}\/exams\/{id}",
     "course.attend.exams.result": "\/classes\/{course_id}\/attend\/{schedule_id}\/exams\/{id}\/result"

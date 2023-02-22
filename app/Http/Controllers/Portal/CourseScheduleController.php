@@ -9,6 +9,7 @@ use App\Models\Role;
 use App\Repositories\CourseRepository;
 use App\Repositories\CourseScheduleRepository;
 use App\Repositories\TranslationRepository;
+use App\Repositories\UserRepository;
 use Carbon\Carbon;
 use DateTime;
 use DateTimeZone;
@@ -21,11 +22,14 @@ class CourseScheduleController extends Controller
 
     private $courseScheduleRepository;
 
+    private $userRepository;
+
     private $baseTitle;
 
     public function __construct()
     {
         $this->courseRepository         = new CourseRepository();
+        $this->userRepository           = new UserRepository();
         $this->courseScheduleRepository = new CourseScheduleRepository();
 
         $this->baseTitle = TranslationRepository::getTranslation('title.class.manage.view') . ' - ';
@@ -61,6 +65,22 @@ class CourseScheduleController extends Controller
             'title'    => $this->baseTitle . getTranslation('title.schedules.view')
         ])->withViewData([
             'title'    => $this->baseTitle . getTranslation('title.schedules.view')
+        ]);
+    }
+
+    public function viewStudent($id, $student_id)
+    {
+        $user = $this->courseScheduleRepository->findStudentBySchedule($id, $student_id);
+
+        $title = TranslationRepository::getTranslation('title.users.view');
+
+        return Inertia::render('Portal/Users/View', [
+            'user' => $user,
+            'title' => $title,
+            'is_teacher' => $user->hasRole(Role::TEACHER)
+        ])
+        ->withViewData([
+            'title' => $title
         ]);
     }
 

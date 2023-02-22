@@ -1,9 +1,10 @@
-import { usePage } from "@inertiajs/inertia-react"
-import { CheckCircle, RadioButtonCheckedOutlined, RadioButtonUnchecked, TaskAlt } from "@mui/icons-material"
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
+import { Link, usePage } from "@inertiajs/inertia-react"
+import { RadioButtonUnchecked, Search, TaskAlt } from "@mui/icons-material"
+import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
 import EmptyCard from "../../../../components/common/EmptyCard"
+import { getRoute } from "../../../../helpers/routes.helper"
 
-const StudentsTable = ({ data, exams, course }) => {
+const StudentsTable = ({ data, exams, course, schedule }) => {
 
     const { translatables } = usePage().props
 
@@ -23,8 +24,8 @@ const StudentsTable = ({ data, exams, course }) => {
                     <TableCell align="center" key={index}>
                         {
                             hasUserExam
-                            ? <TaskAlt color="success" />
-                            : <RadioButtonUnchecked color="disabled" />
+                            ? <TaskAlt fontSize="small" color="success" />
+                            : <RadioButtonUnchecked fontSize="small" color="disabled" />
                         }
                     </TableCell>
                 )
@@ -40,8 +41,8 @@ const StudentsTable = ({ data, exams, course }) => {
                 <TableCell align="center">
                     {
                         hasCourseFeedback
-                        ? <TaskAlt color="success" />
-                        : <RadioButtonUnchecked color="disabled" />
+                        ? <TaskAlt fontSize="small" color="success" />
+                        : <RadioButtonUnchecked fontSize="small" color="disabled" />
                     }
                 </TableCell>
             )
@@ -54,6 +55,13 @@ const StudentsTable = ({ data, exams, course }) => {
                 <TableCell children={student.created_at} />
                 { displayUserExams() }
                 { displayUserFeedback() }
+                <TableCell align="center">
+                    <Link href={getRoute('schedules.student.view', { id: schedule.id, student_id: student.id })}>
+                        <IconButton title={translatables.texts.view}>
+                            <Search fontSize="small" />
+                        </IconButton>
+                    </Link>
+                </TableCell>
             </TableRow>
         )
     })
@@ -71,7 +79,8 @@ const StudentsTable = ({ data, exams, course }) => {
                         <TableCell children={translatables.texts.email} />
                         <TableCell children={translatables.texts.date} />
                         { displayCourseExams() }
-                        <TableCell align="center" children={'Feedback'} />
+                        <TableCell align="center" children={translatables.title.feedbacks} />
+                        <TableCell align="center" children={translatables.texts.actions} />
                     </TableRow>
                 </TableHead>
                 <TableBody>

@@ -120,7 +120,7 @@ const View = () => {
                     {
                         processing
                         ? <TableLoader />
-                        : <StudentsTable data={students.data} exams={course.exams} course={course} />
+                        : <StudentsTable data={students.data} exams={course.exams} course={course} schedule={schedule} />
                     }
                 </Grid>
                 <Grid item xs={12}>

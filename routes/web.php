@@ -270,6 +270,9 @@ Route::prefix('schedules')->name('schedules.')->group(function() {
 
         # Delete
         Route::delete('/delete', [CourseScheduleController::class, 'delete'])->name('delete');
+
+        # Student View
+        Route::get('/students/{student_id}', [CourseScheduleController::class, 'viewStudent'])->name('student.view');
     });
 });
 
