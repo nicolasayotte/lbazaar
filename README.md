@@ -42,6 +42,10 @@ alias sail='[ -f sail ] && sh sail || sh vendor/bin/sail'
 ```
 
 5. Access local URL: http://localhost:8080
+    - admin:
+        - http://localhost:8080/admin/login
+        - email: `admin@lebazaar.com`
+        - password: `test1234`
 
 6. Start the development! :)
 
@@ -81,3 +85,15 @@ To end:
 (host) $ sail --help
 ```
 or check official [docs](https://laravel.com/docs/9.x/sail)
+
+## Staging Deployment
+- First, create a Github token [here](https://github.com/settings/tokens). (One time only)
+    - Tokens(Classic)
+    - Make sure expiration is long enough or no expiration at all
+- SSH into the server (Ask Admin for pem file)
+    - `ssh -i test-lebazaar-key.pem ubuntu@18.178.42.141`
+- Go to project docker-build directory:
+    - `cd /var/www/groundfloor/docker-build`
+- Execute build script. It will as for Github username and token (generated from step 1)
+    - `./staging.sh`
+- Check https://stage.l-e-bazaar.com/ to make sure changes have been applied
