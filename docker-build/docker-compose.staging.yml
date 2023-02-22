@@ -11,5 +11,5 @@ services:
             - /var/log/app:/app/storage/logs
             - /var/log/nginx/:/var/log/nginx
         environment:
-            LOG_STDOUT: '/var/log/nginx'
-            LOG_STDERR: '/var/log/nginx'
+            LOG_STDOUT: '/var/log/nginx/access.log'
+            LOG_STDERR: '/var/log/nginx/error.log'
