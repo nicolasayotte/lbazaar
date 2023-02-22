@@ -85,9 +85,6 @@ const Details = () => {
     })
 
     const handleBook = schedule_id => {
-        // setAction('book')
-        // setDisplayData('Are you sure you want to book this course?')
-        // setIsOpen(true)
         setDialog(dialog => ({
             ...dialog,
             open: true,
