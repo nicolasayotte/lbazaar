@@ -26,11 +26,14 @@ const Create = () => {
             <Container sx={{ py: 5, minHeight: '100vh' }}>
                 <Grid container spacing={2} alignItems="center">
                     <Grid item xs={12} md={9}>
-                        <Typography variant="h5" children={translatables.texts.create_schedule} />
+                        <Typography variant="h5" children={translatables.title.schedules.create} />
                         <Breadcrumbs>
                             <Link href={routes["mypage.course.manage_class.index"]} children={translatables.title.class.manage.index} />
-                            <Link href={getRoute('mypage.course.manage_class.schedules', { id: course.id })} children={translatables.title.schedules} />
-                            <Typography color="text.primary" children={translatables.texts.create_schedule} />
+                            <Link
+                                href={getRoute('mypage.course.manage_class.schedules', { id: course.id })}
+                                children={`${translatables.title.class.manage.view} - ${translatables.title.schedules.index}`}
+                            />
+                            <Typography color="text.primary" children={translatables.title.schedules.create} />
                         </Breadcrumbs>
                     </Grid>
                     <Grid item container xs={12} md={3} alignItems="center" spacing={2}>

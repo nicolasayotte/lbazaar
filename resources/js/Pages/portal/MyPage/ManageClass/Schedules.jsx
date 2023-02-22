@@ -85,13 +85,13 @@ const Schedules = () => {
             />
             <Grid container spacing={2} justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
                 <Grid item xs={12} md="auto">
-                    <Typography variant="h5" children={translatables.title.schedules} />
+                    <Typography variant="h5" children={translatables.title.schedules.index} />
                 </Grid>
                 <Grid item xs={12} md="auto">
                     <Link href={getRoute('schedules.create', { id: course.id })}>
                         <Button
                             variant="contained"
-                            children={translatables.texts.create_schedule}
+                            children={translatables.title.schedules.create}
                             color="success"
                             sx={{ width: { xs: '100%', md: 'auto' } }}
                             startIcon={<Add />}

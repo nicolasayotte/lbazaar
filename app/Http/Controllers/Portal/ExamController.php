@@ -4,12 +4,9 @@ namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateExamRequest;
-use App\Models\Exam;
 use App\Models\UserExam;
 use App\Repositories\CourseRepository;
 use App\Repositories\ExamRepository;
-use App\Repositories\TranslationRepository;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -19,36 +16,40 @@ class ExamController extends Controller
 
     private $courseRepository;
 
+    private $baseTitle;
+
     public function __construct()
     {
         $this->examRepository   = new ExamRepository();
         $this->courseRepository = new CourseRepository();
+
+        $this->baseTitle = getTranslation('title.class.manage.view') . ' - ';
     }
 
     public function index($id, Request $request)
     {
         return Inertia::render('Portal/MyPage/ManageClass/Exams', [
             'course'   => $this->courseRepository->findByIdManageClass($id),
-            'title'    => 'Manage Class - Exams',
             'exams'    => $this->examRepository->searchCourseExams($id, $request->all()),
             'tabValue' => 'exams',
             'courseId' => $id,
             'keyword'  => @$request['keyword'] ?? '',
             'status'   => @$request['status'] ?? '',
             'sort'     => @$request['sort'] ?? 'created_at:desc',
-            'page'     => @$request['page'] ?? 1
+            'page'     => @$request['page'] ?? 1,
+            'title'    => $this->baseTitle . getTranslation('title.exams'),
         ])->withViewData([
-            'title' => 'Manage Class - Exams'
+            'title'    => $this->baseTitle . getTranslation('title.exams')
         ]);
     }
 
     public function create($id)
     {
         return Inertia::render('Portal/Exams/Create', [
-            'title'    => TranslationRepository::getTranslation('texts.create_exam'),
+            'title'    => $this->baseTitle . getTranslation('texts.create_exam'),
             'courseId' => $id
         ])->withViewData([
-            'title' => TranslationRepository::getTranslation('texts.create_exam')
+            'title'    => $this->baseTitle . getTranslation('texts.create_exam')
         ]);
     }
 
@@ -57,11 +58,11 @@ class ExamController extends Controller
         $exam = $this->examRepository->with(['items', 'items.choices'])->findOrFail($id);
 
         return Inertia::render('Portal/Exams/Create', [
-            'title'    => TranslationRepository::getTranslation('texts.edit_exam'),
+            'title'    => $this->baseTitle . getTranslation('texts.edit_exam'),
             'exam'     => $exam,
             'courseId' => $exam->course_id
         ])->withViewData([
-            'title' => TranslationRepository::getTranslation('texts.edit_exam'),
+            'title'    => $this->baseTitle . getTranslation('texts.edit_exam'),
         ]);
     }
 
@@ -125,7 +126,7 @@ class ExamController extends Controller
 
         $examResult = $this->examRepository->submitAnswers($exam, $schedule_id, $request['answers']);
 
-        session()->flash('success', TranslationRepository::getTranslation('success.exams.submit'));
+        session()->flash('success', getTranslation('success.exams.submit'));
 
         return to_route('course.attend.exams.result', [
             'course_id'   => $course_id,

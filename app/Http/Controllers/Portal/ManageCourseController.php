@@ -22,6 +22,7 @@ class ManageCourseController extends Controller
     public $courseHistoryRepository;
     public $courseFeedbackRepository;
     public $userRepository;
+    public $baseTitle;
 
     public function __construct()
     {
@@ -31,6 +32,8 @@ class ManageCourseController extends Controller
         $this->courseHistoryRepository = new CourseHistoryRepository();
         $this->courseFeedbackRepository = new CourseFeedbackRepository();
         $this->userRepository = new UserRepository();
+
+        $this->baseTitle = getTranslation('title.class.manage.view') . ' - ';
     }
 
     public function index(Request $request)
@@ -45,9 +48,9 @@ class ManageCourseController extends Controller
             'status'          => @$request['status'] ?? '',
             'sort'            => @$request['sort'] ?? 'course_schedules.start_datetime:desc',
             'page'            => @$request['page'] ?? 1,
-            'title'           => 'My Page | Manage Class'
+            'title'           => $this->baseTitle
         ])->withViewData([
-            'title'           => 'My Page | Manage Class',
+            'title'           => $this->baseTitle,
         ]);
     }
 
@@ -81,9 +84,9 @@ class ManageCourseController extends Controller
             'sort'      => @$request['sort'] ?? 'created_at:desc',
             'page'      => @$request['page'] ?? 1,
             'courseId'  => $id,
-            'title'     => 'Manage Class - Feedbacks'
+            'title'     => $this->baseTitle . getTranslation('title.feedbacks')
         ])->withViewData([
-            'title'     => 'Manage Class - Feedbacks',
+            'title'     => $this->baseTitle . getTranslation('title.feedbacks'),
         ]);
     }
 

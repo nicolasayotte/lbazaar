@@ -123,7 +123,11 @@ return [
         'settings' => 'Settings',
         'exams' => 'Exams',
         'feedbacks' => 'Feedbacks',
-        'schedules' => 'Schedules'
+        'schedules' => [
+            'index'  => 'Schedules',
+            'view'   => 'View Schedule',
+            'create' => 'Create Schedule'
+        ]
     ],
     'filters' => [
         'date' => [
@@ -206,7 +210,6 @@ return [
         'create_category' => 'Create Category',
         'create_classification' => 'Create Classification',
         'create_exam' => 'Create Exam',
-        'create_schedule' => 'Create Schedule',
         'current_password' => 'Current Password',
         'deny' => 'Deny',
         'date' => 'Date',

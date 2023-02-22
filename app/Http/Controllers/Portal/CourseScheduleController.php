@@ -21,10 +21,14 @@ class CourseScheduleController extends Controller
 
     private $courseScheduleRepository;
 
+    private $baseTitle;
+
     public function __construct()
     {
         $this->courseRepository         = new CourseRepository();
         $this->courseScheduleRepository = new CourseScheduleRepository();
+
+        $this->baseTitle = TranslationRepository::getTranslation('title.class.manage.view') . ' - ';
     }
 
     public function index($id, Request $request)
@@ -36,10 +40,10 @@ class CourseScheduleController extends Controller
             'page'      => @$request['page'] ?? 1,
             'sort'      => @$request['sort'] ?? 'start_datetime:asc',
             'status'    => @$request['status'] ?? '',
-            'title'     => 'Manage Class - Schedules',
+            'title'     => $this->baseTitle . getTranslation('title.schedules.index'),
             'tabValue'  => 'schedules'
         ])->withViewData([
-            'title'     => 'Manage Class - Schedules'
+            'title'     => $this->baseTitle . getTranslation('title.schedules.index')
         ]);
     }
 
@@ -54,20 +58,22 @@ class CourseScheduleController extends Controller
             'page'     => @$request['page'] ?? 1,
             'sort'     => @$request['sort'] ?? 'fullname:asc',
             'keyword'  => @$request['keyword'] ?? '',
-            'title'    => 'Manage Class - View Schedule'
+            'title'    => $this->baseTitle . getTranslation('title.schedules.view')
         ])->withViewData([
-            'title'    => 'Manage Class - View Schedule'
+            'title'    => $this->baseTitle . getTranslation('title.schedules.view')
         ]);
     }
 
     public function create($id)
     {
+        $title = $this->baseTitle .= TranslationRepository::getTranslation('title.schedules.create');
+
         return Inertia::render('Portal/CourseSchedules/Create', [
             'course'       => $this->courseRepository->findByIdManageClass($id),
-            'title'        => 'Manage Class - Create Schedule',
-            'current_date' => Carbon::parse(new DateTime('now', new DateTimeZone(env('APP_TIMEZONE'))))
+            'current_date' => Carbon::parse(new DateTime('now', new DateTimeZone(env('APP_TIMEZONE')))),
+            'title'        => $this->baseTitle . getTranslation('title.schedules.create')
         ])->withViewData(([
-            'title'        => 'Manage Class - Create Schedule'
+            'title'        => $this->baseTitle . getTranslation('title.schedules.create')
         ]));
     }
 

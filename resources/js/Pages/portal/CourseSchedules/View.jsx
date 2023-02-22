@@ -43,11 +43,14 @@ const View = () => {
         <Container sx={{ py: 5, minHeight: '100vh' }}>
             <Grid container spacing={2} alignItems="center">
                 <Grid item xs={12}>
-                    <Typography variant="h5" children="View Schedule" gutterBottom />
+                    <Typography variant="h5" children={translatables.title.schedules.view} gutterBottom />
                     <Breadcrumbs>
                         <Link href={routes["mypage.course.manage_class.index"]} children={translatables.title.class.manage.index} />
-                        <Link href={getRoute('mypage.course.manage_class.schedules', { id: course.id })} children={translatables.title.schedules} />
-                        <Typography color="text.primary" children="View Schedule" />
+                        <Link
+                            href={getRoute('mypage.course.manage_class.schedules', { id: course.id })}
+                            children={`${translatables.title.class.manage.view} - ${translatables.title.schedules.index}`}
+                        />
+                        <Typography color="text.primary" children={translatables.title.schedules.view} />
                     </Breadcrumbs>
                 </Grid>
                 <Grid item xs={12} md={4}>

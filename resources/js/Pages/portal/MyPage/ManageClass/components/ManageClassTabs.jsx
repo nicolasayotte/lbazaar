@@ -25,7 +25,7 @@ const ManageClassTabs = ({ tabValue = 'schedules', id }) => {
                 scrollButtons="auto"
                 allowScrollButtonsMobile
             >
-                <Tab label={translatables.title.schedules} value="schedules"/>
+                <Tab label={translatables.title.schedules.index} value="schedules"/>
                 <Tab label={translatables.title.exams} value="exams" />
                 <Tab label={translatables.title.feedbacks} value="feedbacks" />
             </Tabs>
