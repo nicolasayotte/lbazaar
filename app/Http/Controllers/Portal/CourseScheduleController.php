@@ -11,6 +11,7 @@ use App\Repositories\CourseScheduleRepository;
 use App\Repositories\TranslationRepository;
 use Carbon\Carbon;
 use DateTime;
+use DateTimeZone;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -62,10 +63,11 @@ class CourseScheduleController extends Controller
     public function create($id)
     {
         return Inertia::render('Portal/CourseSchedules/Create', [
-            'course' => $this->courseRepository->findByIdManageClass($id),
-            'title'  => 'Manage Class - Create Schedule',
+            'course'       => $this->courseRepository->findByIdManageClass($id),
+            'title'        => 'Manage Class - Create Schedule',
+            'current_date' => Carbon::parse(new DateTime('now', new DateTimeZone(env('APP_TIMEZONE'))))
         ])->withViewData(([
-            'title'  => 'Manage Class - Create Schedule'
+            'title'        => 'Manage Class - Create Schedule'
         ]));
     }
 

@@ -6,12 +6,12 @@ import routes, { getRoute } from "../../../helpers/routes.helper"
 
 const Create = () => {
 
-    const { translatables, course } = usePage().props
+    const { translatables, course, current_date } = usePage().props
 
-    const disabledDates = new Date().toISOString().slice(0, 16)
+    const minDate = current_date.slice(0, 16)
 
     const { data, setData, post, errors } = useForm({
-        start_datetime: '',
+        start_datetime: minDate,
         max_participant: course.max_participant
     })
 
@@ -59,7 +59,7 @@ const Create = () => {
                                 type="datetime-local"
                                 fullWidth
                                 inputProps={{
-                                    min: disabledDates
+                                    min: minDate
                                 }}
                                 name="start_datetime"
                                 value={data.start_datetime}

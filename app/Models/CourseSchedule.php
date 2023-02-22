@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use DateTime;
+use DateTimeZone;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -49,7 +50,7 @@ class CourseSchedule extends Model
 
     public function getFormattedStartDatetimeAttribute()
     {
-        return Carbon::parse($this->start_datetime)->format('l M d Y h:i A');
+        return Carbon::parse($this->start_datetime, 'Asia/Tokyo')->format('l M d Y h:i A');
     }
 
     public function getSimpleStartDatetimeAttribute()
@@ -76,17 +77,19 @@ class CourseSchedule extends Model
 
     public function getStatusAttribute()
     {
-        $now = Carbon::now(date_default_timezone_get());
+        $timezone = new DateTimeZone(env('APP_TIMEZONE'));
 
-        $start = Carbon::parse($this->start_datetime);
+        $now = Carbon::parse(new DateTime('now', $timezone));
 
-        $end = Carbon::parse($this->end_datetime);
+        $start = Carbon::parse(new DateTime($this->start_datetime, $timezone));
 
-        if ($now > $start && $now < $end) return ucwords(Status::ONGOING);
+        $end = Carbon::parse(new DateTime($this->end_datetime, $timezone));
 
-        if ($now > $end) return ucwords(Status::DONE);
+        if ($now->gt($start) && $now->lt($end)) return ucwords(Status::ONGOING);
 
-        if ($now < $start) return ucwords(Status::UPCOMING);
+        if ($now->gt($end)) return ucwords(Status::DONE);
+
+        if ($now->lt($start)) return ucwords(Status::UPCOMING);
     }
 
     public function getTotalBookingsAttribute()
