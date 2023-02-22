@@ -100,7 +100,6 @@ class CourseController extends Controller
     public function book($schedule_id)
     {
         $isBooked = count($this->courseHistoryRepository->findByUserAndCourseScheduleID(auth()->user()->id, $schedule_id)) > 0;
-        $schedule = CourseSchedule::find($schedule_id)->load('course', 'courseHistory');
         $isFullyBooked = count($this->courseHistoryRepository->findByCourseScheduleID($schedule_id)) == $schedule->max_participant;
         $schedule = CourseSchedule::find($schedule_id)->load('course');
         $userWallet = auth()->user()->userWallet()->first();
