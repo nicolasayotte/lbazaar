@@ -1,9 +1,12 @@
-import { Box, Tabs, Tab, Paper } from "@mui/material"
+import { Tabs, Tab, Divider } from "@mui/material"
 import { getRoute } from "../../../../../helpers/routes.helper"
 import { useState } from "react"
 import { Inertia } from "@inertiajs/inertia"
+import { usePage } from "@inertiajs/inertia-react"
 
-const ManageClassTabs = ({ tabValue, id }) => {
+const ManageClassTabs = ({ tabValue = 'schedules', id }) => {
+
+    const { translatables } = usePage().props
 
     const [tab, setTab] = useState(tabValue);
 
@@ -14,7 +17,7 @@ const ManageClassTabs = ({ tabValue, id }) => {
     };
 
     return (
-        <Paper sx={{ mb: 2 }}>
+        <>
             <Tabs
                 variant="scrollable"
                 value={tab}
@@ -22,12 +25,12 @@ const ManageClassTabs = ({ tabValue, id }) => {
                 scrollButtons="auto"
                 allowScrollButtonsMobile
             >
-                <Tab label="Class Information" value="details"/>
-                <Tab label="Student List" value="students"/>
-                <Tab label="Feedbacks" value="feedbacks" />
-                <Tab label="Exams" value="exams" />
+                <Tab label={translatables.title.schedules.index} value="schedules"/>
+                <Tab label={translatables.title.exams} value="exams" />
+                <Tab label={translatables.title.feedbacks} value="feedbacks" />
             </Tabs>
-        </Paper>
+            <Divider sx={{ mb: 2 }} />
+        </>
     )
 }
 

@@ -14,6 +14,7 @@ use App\Http\Controllers\Portal\CourseApplicationController as PortalClassApplic
 use App\Http\Controllers\Portal\CourseController;
 use App\Http\Controllers\Portal\CourseFeedbackController;
 use App\Http\Controllers\Portal\CourseHistoryController;
+use App\Http\Controllers\Portal\CourseScheduleController;
 use App\Http\Controllers\Portal\ExamController;
 use App\Http\Controllers\Portal\ForgotPasswordController;
 use App\Http\Controllers\Portal\InquiriesController;
@@ -233,39 +234,50 @@ Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function()
 
         # Manage Class Details
         Route::prefix('/{id}')->group(function() {
-            Route::get('/details', [ManageCourseController::class, 'details'])->name('details');
-            Route::get('/students', [ManageCourseController::class, 'students'])->name('students');
             Route::get('/feedbacks', [ManageCourseController::class, 'feedbacks'])->name('feedbacks');
-
-            # Exams
-            Route::prefix('exams')->group(function() {
-                Route::get('/', [ExamController::class, 'index'])->name('exams');
-            });
+            Route::get('/exams', [ExamController::class, 'index'])->name('exams');
+            Route::get('/schedules', [CourseScheduleController::class, 'index'])->name('schedules');
         });
-
-        Route::post('/update-student-complete/{id}/{status}', [ManageCourseController::class, 'updateCompleted'])->name('students.update.complete.status');
-        Route::post('/course/update', [ManageCourseController::class, 'updateCourse'])->name('course.update');
     });
 });
 
 # Exams
 Route::prefix('exams')->name('exams.')->group(function() {
 
-    Route::prefix('/{id}')->middleware(['auth'])->group(function() {
+    Route::prefix('/{id}')->middleware(['auth', 'teacher'])->group(function() {
+        # Create
+        Route::get('/create', [ExamController::class, 'create'])->name('create');
+        Route::post('/', [ExamController::class, 'store'])->name('store');
 
-        Route::middleware(['teacher'])->group(function() {
-            # Create
-            Route::get('/create', [ExamController::class, 'create'])->name('create');
-            Route::post('/', [ExamController::class, 'store'])->name('store');
+        # Edit
+        Route::get('/edit', [ExamController::class, 'edit'])->name('edit');
+        Route::patch('/update', [ExamController::class, 'update'])->name('update');
 
-            # Edit
-            Route::get('/edit', [ExamController::class, 'edit'])->name('edit');
-            Route::patch('/update', [ExamController::class, 'update'])->name('update');
+        # Update Status / Delete
+        Route::patch('/status/{status}', [ExamController::class, 'toggleStatus'])->name('status.toggle');
+        Route::delete('/delete', [ExamController::class, 'delete'])->name('delete');
+    });
+});
 
-            # Update Status / Delete
-            Route::patch('/status/{status}', [ExamController::class, 'toggleStatus'])->name('status.toggle');
-            Route::delete('/delete', [ExamController::class, 'delete'])->name('delete');
-        });
+# Schedules
+Route::prefix('schedules')->name('schedules.')->group(function() {
+
+    Route::prefix('/{id}')->middleware(['auth', 'teacher'])->group(function() {
+        # View
+        Route::get('/', [CourseScheduleController::class, 'view'])->name('view');
+
+        # Create
+        Route::get('/create', [CourseScheduleController::class, 'create'])->name('create');
+        Route::post('/', [CourseScheduleController::class, 'store'])->name('store');
+
+        # Update Status
+        Route::patch('/status/update', [CourseScheduleController::class, 'updateStatus'])->name('status.update');
+
+        # Delete
+        Route::delete('/delete', [CourseScheduleController::class, 'delete'])->name('delete');
+
+        # Student View
+        Route::get('/students/{student_id}', [CourseScheduleController::class, 'viewStudent'])->name('student.view');
     });
 });
 

@@ -1,10 +1,12 @@
-import { Link } from "@inertiajs/inertia-react"
-import { Block, RoomPreferences, Search } from "@mui/icons-material"
-import { Chip, IconButton, Paper, Tooltip, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
+import { Link, usePage } from "@inertiajs/inertia-react"
+import { Settings } from "@mui/icons-material"
+import { Chip, IconButton, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
 import EmptyCard from "../../../../../components/common/EmptyCard"
 import { getRoute } from "../../../../../helpers/routes.helper"
 
 const ClassManageTable = ({ data }) => {
+
+    const { translatables } = usePage().props
 
     const displayTableData = rows => rows.map((row, index) => {
 
@@ -13,7 +15,6 @@ const ClassManageTable = ({ data }) => {
             'Published': 'primary',
             'Completed'  : 'success'
         }
-
 
         return (
             <TableRow key={index}>
@@ -26,9 +27,9 @@ const ClassManageTable = ({ data }) => {
                 </TableCell>
                 <TableCell sx={{ whiteSpace: 'nowrap'}} align="center">
                     <Stack direction="row" spacing={1} justifyContent="center">
-                        <Link title="Manage class" href={getRoute('mypage.course.manage_class.details', { id: row.id })}>
-                            <IconButton size="small" color="success">
-                                <RoomPreferences fontSize="inherit"/>
+                        <Link title={translatables.title.class.manage.view} href={getRoute('mypage.course.manage_class.schedules', { id: row.id })}>
+                            <IconButton size="small">
+                                <Settings fontSize="inherit"/>
                             </IconButton>
                         </Link>
                     </Stack>

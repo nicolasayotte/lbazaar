@@ -13,7 +13,9 @@ const Create = () => {
 
     const dispatch = useDispatch()
 
-    const { translatables, courseId, exam, title } = usePage().props
+    const { translatables, courseId, exam } = usePage().props
+
+    const action = exam !== undefined ? 'edit' : 'create'
 
     const choiceBlueprint = {
         value: ''
@@ -330,11 +332,14 @@ const Create = () => {
             <Container sx={{ pt: 4, minHeight: '100vh' }}>
                 <Grid container spacing={2} alignItems="center" sx={{ mb: 2 }}>
                     <Grid item xs={12} md={9}>
-                        <Typography variant="h5" children={title} />
+                        <Typography variant="h5" children={translatables.texts[action + '_exam']} />
                         <Breadcrumbs>
                             <Link href={routes["mypage.course.manage_class.index"]} children={translatables.title.class.manage.index} />
-                            <Link href={getRoute('mypage.course.manage_class.exams', { id: courseId })} children={translatables.title.class.manage.view} />
-                            <Typography color="text.primary" children={title} />
+                            <Link
+                                href={getRoute('mypage.course.manage_class.exams', { id: courseId })}
+                                children={`${translatables.title.class.manage.view} - ${translatables.title.exams}`}
+                            />
+                            <Typography color="text.primary" children={translatables.texts[action + '_exam']} />
                         </Breadcrumbs>
                     </Grid>
                     <Grid item xs={12} md={3} textAlign="right">

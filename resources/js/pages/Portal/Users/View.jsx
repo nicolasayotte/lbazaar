@@ -10,7 +10,7 @@ import { Email } from "@mui/icons-material"
 
 const View  = () => {
 
-    const { user, is_teacher, translatables, students, teachers } = usePage().props
+    const { user, is_teacher, translatables } = usePage().props
     const name = (
         <Typography
             color = {'grey'}
@@ -44,22 +44,6 @@ const View  = () => {
             variant="subtitle2"
             children={user.country.name}
             ml={1}
-        />
-    )
-
-    const student_count = (
-        <Typography
-            color = {'grey'}
-            variant="subtitle2"
-            children={`${students.length} ${translatables.texts.students}`}
-        />
-    )
-
-    const teacher_count = (
-        <Typography
-            color = {'grey'}
-            variant="subtitle2"
-            children={`${teachers.length} ${translatables.texts.teachers}`}
         />
     )
 

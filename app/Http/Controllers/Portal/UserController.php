@@ -31,16 +31,16 @@ class UserController extends Controller
 
     public function view($id)
     {
-        $title = TranslationRepository::getTranslation('title.users.view');
         $user = $this->userRepository->getOne($id);
-        $students = $user->hasRole(Role::TEACHER) ? $this->userRepository->getStudents($id) : "";
-        $teachers = $user->hasRole(Role::STUDENT) ? $this->userRepository->getTeachers($id) : "";
+
+        if (!$user->hasRole(Role::TEACHER)) return abort(401);
+
+        $title = TranslationRepository::getTranslation('title.users.view');
+
         return Inertia::render('Portal/Users/View', [
             'user' => $user,
             'title' => $title,
-            'is_teacher' => $user->hasRole(Role::TEACHER),
-            'students' => $students,
-            'teachers' => $teachers,
+            'is_teacher' => $user->hasRole(Role::TEACHER)
         ])
         ->withViewData([
             'title' => $title
