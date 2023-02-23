@@ -234,14 +234,10 @@ Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function()
 
         # Manage Class Details
         Route::prefix('/{id}')->group(function() {
-            Route::get('/students', [ManageCourseController::class, 'students'])->name('students');
             Route::get('/feedbacks', [ManageCourseController::class, 'feedbacks'])->name('feedbacks');
             Route::get('/exams', [ExamController::class, 'index'])->name('exams');
             Route::get('/schedules', [CourseScheduleController::class, 'index'])->name('schedules');
         });
-
-        Route::post('/update-student-complete/{id}/{status}', [ManageCourseController::class, 'updateCompleted'])->name('students.update.complete.status');
-        Route::post('/course/update', [ManageCourseController::class, 'updateCourse'])->name('course.update');
     });
 });
 

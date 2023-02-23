@@ -54,24 +54,6 @@ class ManageCourseController extends Controller
         ]);
     }
 
-    public function students($id, Request $request)
-    {
-        $students = $this->courseHistoryRepository->searchEnrolledStudents($request, $id);
-
-        return Inertia::render('Portal/MyPage/ManageClass/Students', [
-            'course'   => $this->courseRepository->findByIdManageClass($id),
-            'students' => $students,
-            'tabValue' => 'students',
-            'keyword'  => @$request['keyword'] ?? '',
-            'sort'     => @$request['sort'] ?? 'course_histories.created_at:desc',
-            'page'     => @$request['page'] ?? 1,
-            'courseId' => $id,
-            'title'    => 'Manage Class - Students List'
-        ])->withViewData([
-            'title'    => 'Manage Class - Students List',
-        ]);
-    }
-
     public function feedbacks($id, Request $request)
     {
         $feedbacks = $this->courseFeedbackRepository->findByCourseIdAndSearch($id, $request->all());
@@ -88,19 +70,5 @@ class ManageCourseController extends Controller
         ])->withViewData([
             'title'     => $this->baseTitle . getTranslation('title.feedbacks'),
         ]);
-    }
-
-    public function updateCompleted($id, $status)
-    {
-        $courseHistory = $this->courseHistoryRepository->findOrFail($id);
-
-        $courseHistory->update(['completed_at' => $status == CourseHistory::COMPLETED ? new \DateTime() : null]);
-
-        return redirect()->back();
-    }
-
-    public function updateCourse(CourseUpdateRequest $request)
-    {
-       return $this->courseRepository->courseUpdate($request);
     }
 }
