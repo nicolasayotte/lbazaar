@@ -90,6 +90,7 @@ class CourseApplicationRepository extends BaseRepository
                     }
                 })
                 ->where('professor_id', Auth::user()->id)
+                ->whereDoesntHave('course')
                 ->orderBy($sortBy, $sortOrder)
                 ->paginate(CourseApplication::PER_PAGE)
                 ->through(function($item) {

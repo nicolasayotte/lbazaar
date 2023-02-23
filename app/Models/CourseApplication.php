@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -51,5 +52,10 @@ class CourseApplication extends Model
         if (!is_null($this->approved_at)) return self::APPROVED;
 
         if (!is_null($this->denied_at)) return self::DENIED;
+    }
+
+    public function getCreatedAtAttribute($value)
+    {
+        return Carbon::parse($value)->format('M j, Y');
     }
 }
