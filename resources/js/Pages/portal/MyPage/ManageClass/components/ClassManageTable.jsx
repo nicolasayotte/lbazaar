@@ -28,7 +28,7 @@ const ClassManageTable = ({ data }) => {
                 </TableCell>
                 <TableCell sx={{ whiteSpace: 'nowrap'}} align="center">
                     <Stack direction="row" spacing={1} justifyContent="center">
-                        <Link title={translatables.title.class.manage.view} href={getRoute('mypage.course.manage_class.exams', { id: row.id })}>
+                        <Link title={translatables.title.class.manage.view} href={getRoute('mypage.course.manage_class.schedules', { id: row.id })}>
                             <IconButton size="small">
                                 <Settings fontSize="inherit"/>
                             </IconButton>

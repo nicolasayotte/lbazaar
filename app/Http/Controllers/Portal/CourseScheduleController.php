@@ -29,7 +29,7 @@ class CourseScheduleController extends Controller
         $this->courseRepository         = new CourseRepository();
         $this->courseScheduleRepository = new CourseScheduleRepository();
 
-        $this->baseTitle = TranslationRepository::getTranslation('title.class.manage.view') . ' - ';
+        $this->baseTitle = getTranslation('title.class.manage.view') . ' - ';
     }
 
     public function index($id, Request $request)
@@ -69,7 +69,7 @@ class CourseScheduleController extends Controller
     {
         $user = $this->courseScheduleRepository->findStudentBySchedule($id, $student_id);
 
-        $title = TranslationRepository::getTranslation('title.users.view');
+        $title = getTranslation('title.users.view');
 
         return Inertia::render('Portal/Users/View', [
             'user' => $user,
@@ -83,7 +83,7 @@ class CourseScheduleController extends Controller
 
     public function create($id)
     {
-        $title = $this->baseTitle .= TranslationRepository::getTranslation('title.schedules.create');
+        $title = $this->baseTitle .= getTranslation('title.schedules.create');
 
         return Inertia::render('Portal/CourseSchedules/Create', [
             'course'       => $this->courseRepository->findByIdManageClass($id),
@@ -104,7 +104,7 @@ class CourseScheduleController extends Controller
 
         $course->schedules()->create($inputs);
 
-        return to_route('mypage.course.manage_class.schedules', ['id' => $id])->with('success', TranslationRepository::getTranslation('success.schedules.create'));
+        return to_route('mypage.course.manage_class.schedules', ['id' => $id])->with('success', getTranslation('success.schedules.create'));
     }
 
     public function delete($id)
@@ -113,7 +113,7 @@ class CourseScheduleController extends Controller
 
         $courseSchedule->delete();
 
-        return redirect()->back()->with('success', TranslationRepository::getTranslation('success.schedules.delete'));
+        return redirect()->back()->with('success', getTranslation('success.schedules.delete'));
     }
 
     public function updateStatus($id)
