@@ -51,7 +51,7 @@ class UserRepository extends BaseRepository
 
     public function getOne(int $id)
     {
-        return $this->model->with('courses', 'createdCourses', 'userEducation', 'userCertification', 'userWorkHistory', 'roles', 'country')->findOrFail($id);
+        return $this->model->with('courses', 'createdCourses', 'userEducation', 'userCertification', 'userWorkHistory', 'roles', 'country', 'userWallet')->findOrFail($id);
     }
 
     public function getStudents(int $id)
@@ -85,6 +85,11 @@ class UserRepository extends BaseRepository
     public function getFeaturedTeachers($take = self::PER_PAGE)
     {
         return $this->model->take($take)->whereRoleIs([Role::TEACHER])->orderBy('id', 'desc')->get();
+    }
+
+    public function getAdmin()
+    {
+        return $this->model->with('userWallet')->whereRoleIs([Role::ADMIN])->orderBy('id', 'desc')->first();
     }
 
     public function getAllTeachers()

@@ -35,7 +35,9 @@ class UserFactory extends Factory
             'is_enabled'        => true,
             'remember_token'    => null,
             'created_at'        => fake()->dateTime(),
-            'classification_id' => null
+            'classification_id' => null,
+            'commission_rate'   => fake()->numberBetween(10, 90),
+            'commission_earn_rate' => fake()->numberBetween(10, 90)
         ];
     }
 

@@ -31,9 +31,10 @@ class CourseApplicationFactory extends Factory
             'description'        => fake()->paragraphs(4, true),
             'price'              => fake()->numberBetween(10, 100),
             'language'           => fake()->randomElement(['English', 'Japanese']),
-            'trailer_link'       => 'https://www.youtube.com/embed/'.self::YOUTUBE_CODES[fake()->numberBetween(0, count(self::YOUTUBE_CODES)-1)],
-            'course_content_data'=> json_encode($this->createCourseContentJsonData()),
-            'points_earned'      => null,
+            'points_earned'      => fake()->numberBetween(10, 100),
+            'video_path'         => 'https://www.youtube.com/embed/'.self::YOUTUBE_CODES[fake()->numberBetween(0, count(self::YOUTUBE_CODES)-1)],
+            'video_link'         => 'https://www.youtube.com/embed/'.self::YOUTUBE_CODES[fake()->numberBetween(0, count(self::YOUTUBE_CODES)-1)],
+            'zoom_link'          => fake()->url(),
             'approved_at'        => null,
             'denied_at'          => null,
             'created_at'         => fake()->dateTime(),
@@ -93,28 +94,5 @@ class CourseApplicationFactory extends Factory
         $type = CourseType::where('name', $type)->first();
 
         return @$type ? @$type->id : null;
-    }
-
-    private function createCourseContentJsonData()
-    {
-        return
-        ['course_content' =>
-            [
-                'title' => fake()->title(),
-                'description' => fake()->paragraph(),
-                'video_path' => 'https://www.youtube.com/embed/'.self::YOUTUBE_CODES[fake()->numberBetween(0, count(self::YOUTUBE_CODES)-1)],
-                'video_link' => 'https://www.youtube.com/embed/'.self::YOUTUBE_CODES[fake()->numberBetween(0, count(self::YOUTUBE_CODES)-1)],
-                'zoom_link' => fake()->url(),
-                'is_live' => false,
-            ],
-            [
-                'title' => fake()->sentence(),
-                'description' => fake()->paragraph(),
-                'video_path' => 'https://www.youtube.com/embed/'.self::YOUTUBE_CODES[fake()->numberBetween(0, count(self::YOUTUBE_CODES)-1)],
-                'video_link' => 'https://www.youtube.com/embed/'.self::YOUTUBE_CODES[fake()->numberBetween(0, count(self::YOUTUBE_CODES)-1)],
-                'zoom_link' => fake()->url(),
-                'is_live' => false,
-            ],
-        ];
     }
 }

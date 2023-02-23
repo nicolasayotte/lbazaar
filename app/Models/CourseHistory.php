@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -13,7 +14,13 @@ class CourseHistory extends Model
 
     const COMPLETED = "Completed";
 
-    protected $fillable = ['completed_at'];
+    protected $fillable = [
+        'user_id',
+        'course_id',
+        'course_schedule_id',
+        'completed_at',
+        'is_cancelled'
+    ];
 
     public function courseSchedule()
     {
@@ -28,5 +35,10 @@ class CourseHistory extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function getCreatedAtAttribute($value)
+    {
+        return Carbon::parse($value)->format('M j, Y');
     }
 }

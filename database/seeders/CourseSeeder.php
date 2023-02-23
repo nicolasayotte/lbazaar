@@ -40,7 +40,12 @@ class CourseSeeder extends Seeder
                         'language'              => $application->language,
                         'points_earned'         => $application->points_earned,
                         'max_participant'       => $application->max_participant,
-                        'trailer_link'          => $application->trailer_link,
+                        'is_live'               => fake()->randomElement([true, false]),
+                        'is_cancellable'        => fake()->randomElement([true, false]),
+                        'days_before_cancellation'  => fake()->numberBetween(0, 10),
+                        'video_path'            => $application->video_path,
+                        'video_link'            => $application->video_link,
+                        'zoom_link'             => $application->zoom_link,
                     ]))
                     ->create();
         }

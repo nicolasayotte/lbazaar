@@ -7,6 +7,7 @@ import { Provider } from "react-redux";
 import store from "./store"
 import Admin from "./layouts/Admin";
 import MyPage from "./layouts/MyPage";
+import ManageClass from "./layouts/ManageClass"
 import { InertiaProgress } from "@inertiajs/progress";
 
 createInertiaApp({
@@ -18,6 +19,8 @@ createInertiaApp({
 
         if (name.startsWith('Admin')) {
             page.default.layout = p => <Admin children={p} />
+        } else if (name.startsWith('Portal/MyPage/ManageClass') && !name.endsWith('Index')) {
+            page.default.layout = p => <ManageClass children={p} />
         } else if (name.startsWith('Portal/MyPage')) {
             page.default.layout = p => <MyPage children={p} />
         } else {

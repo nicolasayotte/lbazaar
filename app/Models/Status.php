@@ -24,4 +24,10 @@ class Status extends Model
     public const ACTIVE    = 'active';
 
     public const DISABLED  = 'disabled';
+
+    public const UPCOMING = 'upcoming';
+
+    public const ONGOING = 'ongoing';
+
+    public const DONE = 'done';
 }

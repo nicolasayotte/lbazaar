@@ -32,8 +32,7 @@ class CourseFeedbackRepository extends BaseRepository
         ->where('course_id', $id)
         ->when(@$filters['keyword'], function ($q) use ($filters)  {
             return $q->whereHas('user', function($query) use ($filters) {
-                return ($query->where('first_name', 'like', '%' . $filters['keyword'] . '%')
-                ->orWhere('last_name', 'like', '%' . $filters['keyword'] . '%'));
+                return $query->whereRaw("CONCAT(`first_name`, ' ', `last_name`) LIKE ?", ['%'. @$filters['keyword'] .'%']);
             });
 
         })
