@@ -31,7 +31,7 @@ class CourseApplicationFactory extends Factory
             'description'        => fake()->paragraphs(4, true),
             'price'              => fake()->numberBetween(10, 100),
             'language'           => fake()->randomElement(['English', 'Japanese']),
-            'points_earned'      => fake()->numberBetween(10, 100),
+            'points_earned'      => 0,
             'video_path'         => 'https://www.youtube.com/embed/'.self::YOUTUBE_CODES[fake()->numberBetween(0, count(self::YOUTUBE_CODES)-1)],
             'video_link'         => 'https://www.youtube.com/embed/'.self::YOUTUBE_CODES[fake()->numberBetween(0, count(self::YOUTUBE_CODES)-1)],
             'zoom_link'          => fake()->url(),
@@ -41,14 +41,15 @@ class CourseApplicationFactory extends Factory
             'course_type_id'     => $this->getCourseType(CourseType::GENERAL),
             'professor_id'       => $user->id,
             'course_category_id' => $category->id,
-            'max_participant'    => 1000
+            'max_participant'    => 1000,
+            'is_live'            => fake()->randomElement([true, false])
         ];
     }
 
     public function free()
     {
         return $this->state(fn (array $attributes) => [
-            'price'          => null,
+            'price'          => 0,
             'course_type_id' => $this->getCourseType(CourseType::FREE)
         ]);
     }
@@ -56,6 +57,7 @@ class CourseApplicationFactory extends Factory
     public function earn()
     {
         return $this->state(fn (array $attributes) => [
+            'price'          => 0,
             'points_earned'  => fake()->numberBetween(1, 20),
             'course_type_id' => $this->getCourseType(CourseType::EARN)
         ]);
