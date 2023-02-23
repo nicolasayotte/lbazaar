@@ -90,6 +90,10 @@ class CourseScheduleRepository extends BaseRepository
                         ->orWhere('email', 'LIKE', '%'. @$filters['keyword'] .'%');
                     })
                     ->where('course_histories.course_schedule_id', $scheduleID)
+                    ->where(function($q) {
+                        return $q->where('is_cancelled', null)
+                                ->orWhere('is_cancelled', 0);
+                    })
                     ->orderBy($sortBy, $sortOrder)
                     ->paginate(self::PER_PAGE);
     }

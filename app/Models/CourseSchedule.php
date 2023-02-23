@@ -100,7 +100,11 @@ class CourseSchedule extends Model
 
     public function getTotalBookingsAttribute()
     {
-        return $this->courseHistories()->get()->count();
+        return $this->courseHistories()
+                    ->where('is_cancelled', null)
+                    ->orWhere('is_cancelled', 0)
+                    ->get()
+                    ->count();
     }
 
     public function getIsDeletableAttribute()
