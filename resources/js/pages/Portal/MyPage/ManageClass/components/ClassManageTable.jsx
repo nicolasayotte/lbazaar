@@ -1,5 +1,5 @@
 import { Link, usePage } from "@inertiajs/inertia-react"
-import { RoomPreferences, Settings } from "@mui/icons-material"
+import { Settings } from "@mui/icons-material"
 import { Chip, IconButton, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
 import EmptyCard from "../../../../../components/common/EmptyCard"
 import { getRoute } from "../../../../../helpers/routes.helper"
@@ -15,7 +15,6 @@ const ClassManageTable = ({ data }) => {
             'Published': 'primary',
             'Completed'  : 'success'
         }
-
 
         return (
             <TableRow key={index}>
