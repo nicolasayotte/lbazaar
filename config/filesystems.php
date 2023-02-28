@@ -15,7 +15,7 @@ return [
     | based disks are available to your application. Just store away!
     |
     */
-    'default' => env('FILESYSTEM_DISK', $environment == EnvironmentEnum::PRODUCTION || $environment == EnvironmentEnum::STAGING ? 's3' : 'local'),
+    'default' => env('FILESYSTEM_DISK', $environment == EnvironmentEnum::PRODUCTION || $environment == EnvironmentEnum::STAGING ? 's3' : 'uploads'),
 
     /*
     |--------------------------------------------------------------------------
@@ -55,7 +55,7 @@ return [
             'url' => env('AWS_URL'),
             'endpoint' => env('AWS_ENDPOINT'),
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
-            'throw' => false,
+            'throw' => true,
         ],
 
         'thumbnail' => [
@@ -64,8 +64,15 @@ return [
             'url' => env('APP_URL') . '/thumbnail',
             'visibility' => 'public',
             'throw' => false
-        ]
+        ],
 
+        'uploads' => [
+            'driver'     => 'local',
+            'root'       => storage_path('app/public/uploads'),
+            'url'        => env('APP_URL') . '/uploads',
+            'visibility' => 'public',
+            'throw'      => false
+        ]
     ],
 
     /*
@@ -81,6 +88,7 @@ return [
 
     'links' => [
         public_path('storage') => storage_path('app/public'),
+        public_path('uploads') => storage_path('app/public/uploads')
     ],
 
 ];
