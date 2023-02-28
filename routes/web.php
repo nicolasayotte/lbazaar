@@ -143,6 +143,7 @@ Route::prefix('classes')->name('course.')->group(function() {
         Route::middleware(['auth', 'teacher'])->group(function() {
             # Create Course
             Route::get('/{id}/create', [CourseController::class, 'create'])->name('create');
+            Route::post('/{id}', [CourseController::class, 'store'])->name('store');
         });
 
 

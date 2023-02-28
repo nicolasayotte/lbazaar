@@ -3,13 +3,12 @@
 namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CourseRequest;
 use App\Http\Requests\SearchClassRequest;
 use App\Models\CourseHistory;
 use App\Models\CourseSchedule;
 use App\Models\WalletTransactionHistory;
 use App\Models\CourseType;
-use App\Models\Role;
-use App\Models\User;
 use App\Repositories\CourseApplicationRepository;
 use App\Repositories\CourseCategoryRepository;
 use App\Repositories\CourseScheduleRepository;
@@ -21,6 +20,7 @@ use App\Repositories\TranslationRepository;
 use App\Repositories\UserRepository;
 use Inertia\Inertia;
 use Carbon\Carbon;
+
 class CourseController extends Controller
 {
     public $courseTypeRepository;
@@ -197,6 +197,14 @@ class CourseController extends Controller
         ])->withViewData([
             'title'             => TranslationRepository::getTranslation('title.class.create')
         ]);
+    }
+
+    public function store($id, CourseRequest $request)
+    {
+        $courseApplication = $this->courseApplicationRepository->findOrFail($id);
+        $course = $this->courseRepository->register($courseApplication, $request);
+
+        return to_route('mypage.course.manage_class.schedules', ['id' => $course->id])->with('success', getTranslation('success.class.create'));
     }
 
     public function updateWalletHistory($userWallet, $transactionType, $newUserPoints, $courseHistory) {

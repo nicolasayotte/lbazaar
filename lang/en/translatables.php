@@ -40,7 +40,8 @@ return [
             'booking' => [
                 'booked' => 'Class successfully booked',
                 'cancelled' => 'Class successfully cancelled'
-            ]
+            ],
+            'create' => 'Class successfully created'
         ],
         'category' => [
             'update' => 'Category successfully updated',
@@ -211,9 +212,11 @@ return [
         'back_to_class' => 'Back to Class',
         'back_to_top' => 'Back to Top Page',
         'cancel' => 'Cancel',
+        'cancellable' => 'Cancellable',
         'category' => 'Category',
         'choice' => 'Choice',
         'class_type' => 'Class Type',
+        'class_image' => 'Class Image',
         'class_information' => 'Class Information',
         'classification' => 'Classification',
         'commission_rate' => 'Commission Rate',
@@ -226,6 +229,8 @@ return [
         'create_classification' => 'Create Classification',
         'create_exam' => 'Create Exam',
         'current_password' => 'Current Password',
+        'days' => 'Days',
+        'days_before_cancellation' => 'Days before cancellation',
         'deny' => 'Deny',
         'date' => 'Date',
         'date_applied' => 'Date Applied',
@@ -260,6 +265,7 @@ return [
         'name' => 'Name',
         'new_password' => 'New Password',
         'next_question' => 'Next Question',
+        'no_file_selected' => 'No file selected',
         'no_records_found' => 'No Records Found',
         'points' => 'Points',
         'points_earned' => 'Points Earned',
@@ -269,6 +275,7 @@ return [
         'profile' => 'Profile',
         'question' => 'Question',
         'rating' => 'Rating',
+        'recommended_size' => 'Recommended size',
         'role' => 'Role',
         'save_changes' => 'Save Changes',
         'score' => 'Score',
@@ -297,7 +304,9 @@ return [
         'update_password_help' => 'Enter your current password for verification',
         'update_password_notice' => 'You will be signed out when your password is updated',
         'update_profile' => 'Update Profile',
+        'upload' => 'Upload',
         'view' => 'View',
+        'video' => 'Video',
         'classes' => 'Classes',
         'classes_booked' => 'Classes Booked',
         'students' => 'Students',
@@ -314,5 +323,6 @@ return [
         'book' => 'Book',
         'attend' => 'Attend',
         'add_points' => 'Add Points',
+        'zoom_link' => 'Zoom Link'
     ]
 ];
