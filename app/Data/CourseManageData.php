@@ -125,9 +125,8 @@ class CourseManageData
         $courseManageData->setTitle($course->title);
         $courseManageData->setDescription($course->description);
         $courseManageData->setType($course->courseType->name);
-        $courseManageData->setPublishedDate(Carbon::parse($course->schedules()->first()->start_datetime)->format('M j, Y'));
+        $courseManageData->setPublishedDate(Carbon::parse($course->created_at)->format('M j, Y'));
         $courseManageData->setCategory($course->courseCategory->name);
-        $courseManageData->setStatus(ucwords($course->status->name));
 
         return $courseManageData->getProperties();
     }

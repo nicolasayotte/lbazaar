@@ -10,21 +10,12 @@ const ClassManageTable = ({ data }) => {
 
     const displayTableData = rows => rows.map((row, index) => {
 
-        const statusColors = {
-            'Draft' : 'default',
-            'Published': 'primary',
-            'Completed'  : 'success'
-        }
-
         return (
             <TableRow key={index}>
                 <TableCell children={row.title}/>
-                <TableCell children={row.type}/>
-                <TableCell children={row.category}/>
+                <TableCell align="center" children={row.type}/>
+                <TableCell align="center" children={row.category}/>
                 <TableCell sx={{ whiteSpace: 'nowrap'}} align="center" children={row.publishedDate}/>
-                <TableCell  align="center">
-                    <Chip size="small" label={row.status} color={statusColors[row.status]}/>
-                </TableCell>
                 <TableCell sx={{ whiteSpace: 'nowrap'}} align="center">
                     <Stack direction="row" spacing={1} justifyContent="center">
                         <Link title={translatables.title.class.manage.view} href={getRoute('mypage.course.manage_class.schedules', { id: row.id })}>
@@ -49,10 +40,9 @@ const ClassManageTable = ({ data }) => {
                     <TableHead>
                         <TableRow>
                             <TableCell children="Title"/>
-                            <TableCell children="Type"/>
-                            <TableCell children="Category"/>
-                            <TableCell children="Published"/>
-                            <TableCell children="Status"/>
+                            <TableCell align="center" children="Type"/>
+                            <TableCell align="center" children="Category"/>
+                            <TableCell align="center" children="Published"/>
                             <TableCell align="center" children="Actions"/>
                         </TableRow>
                     </TableHead>

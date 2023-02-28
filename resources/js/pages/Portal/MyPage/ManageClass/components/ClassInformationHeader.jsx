@@ -2,6 +2,7 @@ import { Link, usePage } from "@inertiajs/inertia-react"
 import { Box, Button, Chip, Container, Grid, Stack, Typography } from "@mui/material"
 import Header from "../../../../../components/common/Header"
 import routes from "../../../../../helpers/routes.helper"
+import placeholderImg from "../../../../../../img/placeholder.png"
 
 const ClassInformationHeader = () => {
 
@@ -10,7 +11,7 @@ const ClassInformationHeader = () => {
     const isEarn = course.course_type.type == 'Earn'
     const isFree = course.course_type.type == 'Free'
 
-    const price = (isEarn || isFree) ? translatables.texts.free : course.price.toFixed(2)
+    const price = (isEarn || isFree) ? translatables.texts.free : course.price
 
     const typeColors = {
         'Free': 'success',
@@ -19,11 +20,13 @@ const ClassInformationHeader = () => {
         'Special': 'warning'
     }
 
+    console.log(course)
+
     return (
         <>
             <Header
                 minHeight="250px"
-                backgroundImageURL={course.image_thumbnail}
+                backgroundImageURL={course.image_thumbnail ?? placeholderImg}
             />
             <Container>
                 <Grid container spacing={2} alignItems="center">

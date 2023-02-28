@@ -17,12 +17,6 @@ const Index = () => {
         { name: translatables.filters.date.desc, value: 'course_schedules.start_datetime:desc' }
     ]
 
-    const statusOptions = [
-        { name: 'Draft', value: 'draft' },
-        { name: 'Published', value: 'published' },
-        { name: 'Completed', value: 'completed' },
-    ]
-
     const { data: filters, setData: setFilters, get, transform, processing } = useForm({
         keyword,
         course_type,
@@ -53,7 +47,7 @@ const Index = () => {
                 <CardContent>
                     <form onSubmit={handleFilterSubmit}>
                         <Grid container spacing={2}>
-                            <Grid item xs={12} md={10}>
+                            <Grid item xs={12} md={4}>
                                 <Input
                                     label={translatables.texts.keyword}
                                     placeholder={translatables.texts.search_title}
@@ -62,15 +56,7 @@ const Index = () => {
                                     onChange={e => handleOnChange(e, setFilters)}
                                 />
                             </Grid>
-                            <Grid item xs={12} md={2} textAlign="right">
-                                <Button
-                                    children={translatables.texts.filter}
-                                    variant="contained"
-                                    fullWidth
-                                    onClick={handleFilterSubmit}
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={3}>
+                            <Grid item xs={12} md={2}>
                                 <Input
                                     select
                                     label={translatables.texts.type}
@@ -85,7 +71,7 @@ const Index = () => {
                                     {displaySelectOptions(typeOptions)}
                                 </Input>
                             </Grid>
-                            <Grid item xs={12} md={3}>
+                            <Grid item xs={12} md={2}>
                                 <Input
                                     select
                                     label={translatables.texts.category}
@@ -100,22 +86,7 @@ const Index = () => {
                                     {displaySelectOptions(categoryOptions)}
                                 </Input>
                             </Grid>
-                            <Grid item xs={12} md={3}>
-                                <Input
-                                    select
-                                    label={translatables.texts.status}
-                                    InputLabelProps={{
-                                        shrink: true
-                                    }}
-                                    name="status"
-                                    value={filters.status}
-                                    onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
-                                >
-                                    <option value="">All</option>
-                                    {displaySelectOptions(statusOptions, 'value')}
-                                </Input>
-                            </Grid>
-                            <Grid item xs={12} md={3}>
+                            <Grid item xs={12} md={2}>
                                 <Input
                                     select
                                     label={translatables.texts.sort}
@@ -128,6 +99,14 @@ const Index = () => {
                                 >
                                     {displaySelectOptions(sortOptions, 'value')}
                                 </Input>
+                            </Grid>
+                            <Grid item xs={12} md={2} textAlign="right">
+                                <Button
+                                    children={translatables.texts.filter}
+                                    variant="contained"
+                                    fullWidth
+                                    onClick={handleFilterSubmit}
+                                />
                             </Grid>
                         </Grid>
                     </form>
