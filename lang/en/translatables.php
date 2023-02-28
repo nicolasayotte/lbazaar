@@ -31,8 +31,9 @@ return [
         'class' => [
             'applications' => [
                 'status' => [
-                    'update' => 'Class application status successfully updated'
-                ]
+                    'update' => 'Class application status successfully updated',
+                ],
+                'create' => 'Class application successfully created'
             ],
             'types' => [
                 'update' => 'Class types successfully updated'
@@ -66,7 +67,14 @@ return [
             'create' => 'Schedule successfully created',
             'delete' => 'Schedule successfully deleted',
             'update' => 'Schedule successfully updated'
-        ]
+        ],
+        'wallet' => [
+            'feed' => 'Points successfully added',
+            'exchange' => 'Points successfully exchanged to NFT',
+        ],
+        'api' => [
+            'get' => 'Successfully retrieved data'
+        ],
     ],
     'confirm' => [
         'class' => [
