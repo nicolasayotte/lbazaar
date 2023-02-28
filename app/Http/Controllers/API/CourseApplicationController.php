@@ -23,7 +23,7 @@ class CourseApplicationController extends Controller
     }
 
     /**
-     * Login The User
+     * create course application
      * @param CourseApplicationRequest $request
      * @return \Illuminate\Http\JsonResponse
      */

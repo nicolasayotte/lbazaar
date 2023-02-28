@@ -49,7 +49,7 @@ class UserWalletController extends Controller
     }
 
     /**
-     * Login The User
+     * exchange user points to nft
      * @param UserWalletRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
