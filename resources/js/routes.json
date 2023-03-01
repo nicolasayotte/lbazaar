@@ -46,6 +46,7 @@
     "course.create": "\/classes\/{id}\/create",
     "course.store": "\/classes\/{id}\/store",
     "course.package.create": "\/classes\/package\/create",
+    "course.delete": "\/classes\/{id}\/delete",
     "register.index": "\/register\/student",
     "register.store": "\/register\/student",
     "portal.": "\/portal",

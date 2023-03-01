@@ -6,6 +6,9 @@ use App\Data\CourseManageData;
 use App\Facades\Asset;
 use App\Http\Requests\CourseUpdateRequest;
 use App\Models\Course;
+use Carbon\Carbon;
+use DateTime;
+use DateTimeZone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -101,6 +104,8 @@ class CourseRepository extends BaseRepository
             ->orderBy($sortBy, $sortOrder)
             ->paginate(self::PER_PAGE)->withQueryString()
             ->through(function($histories) {
+                $histories->active_schedules = $this->getActiveSchedules($histories->id);
+
                 return CourseManageData::fromModel($histories);
             });
     }
@@ -149,6 +154,19 @@ class CourseRepository extends BaseRepository
         }
 
         return redirect()->back();
+    }
+
+    public function getActiveSchedules($id)
+    {
+        $course = $this->findOrFail($id);
+
+        $timezone = new DateTimeZone(env('APP_TIMEZONE'));
+        $now = Carbon::parse(new DateTime('now', $timezone));
+
+        return $course
+                ->schedules()
+                ->where('is_completed', 0)
+                ->get();
     }
 
     public function register($courseApplication, $request)

@@ -4,7 +4,7 @@ import { Chip, IconButton, Paper, Stack, Table, TableBody, TableCell, TableConta
 import EmptyCard from "../../../../../components/common/EmptyCard"
 import { getRoute } from "../../../../../helpers/routes.helper"
 
-const ClassManageTable = ({ data }) => {
+const ClassManageTable = ({ data, handleOnDelete }) => {
 
     const { translatables } = usePage().props
 
@@ -24,8 +24,13 @@ const ClassManageTable = ({ data }) => {
                                 <Settings fontSize="inherit"/>
                             </IconButton>
                         </Link>
-                        <IconButton size="small">
-                            <Delete fontSize="inherit" color="error"/>
+                        <IconButton
+                            disabled={!row.isDeletable}
+                            onClick={() => handleOnDelete(row.id)}
+                            size="small"
+                            title={translatables.texts.delete}
+                        >
+                            <Delete fontSize="inherit" color={row.isDeletable ? 'error' : 'disabled'}/>
                         </IconButton>
                     </Stack>
                 </TableCell>

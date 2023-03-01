@@ -5,10 +5,11 @@ namespace App\Models;
 use App\Facades\Asset;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Course extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     const FEATURED_CLASS_COUNT_DISPLAY = 8;
 

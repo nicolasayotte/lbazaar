@@ -151,6 +151,9 @@ Route::prefix('classes')->name('course.')->group(function() {
 
             # Create Package
             Route::post('/package/create', [CourseController::class, 'createPackage'])->name('package.create');
+
+            # Delete
+            Route::delete('/{id}/delete', [CourseController::class, 'delete'])->name('delete');
         });
     });
 });

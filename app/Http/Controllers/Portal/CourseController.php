@@ -215,6 +215,8 @@ class CourseController extends Controller
             $this->coursePackageRepository->addCourseToPackage($request->get('course_package_id'), $course->id);
         }
 
+        $courseApplication->delete();
+
         return to_route('mypage.course.manage_class.schedules', ['id' => $course->id])->with('success', getTranslation('success.class.create'));
     }
 
@@ -251,6 +253,15 @@ class CourseController extends Controller
         ]);
 
         return redirect()->back()->with('success', getTranslation('success.packages.create'));
+    }
+
+    public function delete($id)
+    {
+        $course = $this->courseRepository->findOrFail($id);
+
+        $course->delete();
+
+        return redirect()->back()->with('success', getTranslation('success.class.delete'));
     }
 
     public function updateWalletHistory($userWallet, $transactionType, $newUserPoints, $courseHistory) {

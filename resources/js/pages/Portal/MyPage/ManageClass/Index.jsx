@@ -3,8 +3,11 @@ import { Box, Button, Card, CardContent, Grid, Pagination } from "@mui/material"
 import Input from "../../../../components/forms/Input"
 import { displaySelectOptions, handleOnChange, handleOnSelectChange } from "../../../../helpers/form.helper"
 import ClassManageTable from "./components/ClassManageTable"
-import routes from "../../../../helpers/routes.helper"
+import routes, { getRoute } from "../../../../helpers/routes.helper"
 import TableLoader from "../../../../components/common/TableLoader"
+import { useState } from "react"
+import ConfirmationDialog from "../../../../components/common/ConfirmationDialog"
+import { Inertia } from "@inertiajs/inertia"
 
 const Index = () => {
 
@@ -32,6 +35,13 @@ const Index = () => {
         page
     })
 
+    const [dialog, setDialog] = useState({
+        open: false,
+        title: translatables.texts.delete_class,
+        text: translatables.confirm.class.delete,
+        submitUrl: ''
+    })
+
     const handleFilterSubmit = (e) => {
         e.preventDefault()
 
@@ -47,8 +57,34 @@ const Index = () => {
         handleFilterSubmit(e)
     }
 
+    const handleOnDelete = id => {
+        setDialog(dialog => ({
+            ...dialog,
+            open: true,
+            submitUrl: getRoute('course.delete', { id })
+        }))
+    }
+
+    const handleOnDialogClose = () => setDialog(dialog => ({
+        ...dialog,
+        open: false
+    }))
+
+    const handleOnDialogConfirm = e => {
+        e.preventDefault()
+
+        Inertia.delete(dialog.submitUrl, {
+            onSuccess: () => setDialog(dialog => ({ ...dialog, open: false }))
+        })
+    }
+
     return (
         <>
+            <ConfirmationDialog
+                {...dialog}
+                handleClose={handleOnDialogClose}
+                handleConfirm={handleOnDialogConfirm}
+            />
             <Card sx={{ mb: 2 }}>
                 <CardContent>
                     <form onSubmit={handleFilterSubmit}>
@@ -135,7 +171,7 @@ const Index = () => {
             {
                 processing
                 ? <TableLoader />
-                : <ClassManageTable data={courses.data}/>
+                : <ClassManageTable data={courses.data} handleOnDelete={handleOnDelete}/>
             }
              <Grid item xs={12} md={12}>
                 <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>

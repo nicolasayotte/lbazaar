@@ -42,7 +42,8 @@ return [
                 'cancelled' => 'Class successfully cancelled'
             ],
             'create' => 'Class successfully created',
-            'update' => 'Class successfully updated'
+            'update' => 'Class successfully updated',
+            'delete' => 'Class successfully deleted'
         ],
         'category' => [
             'update' => 'Category successfully updated',
@@ -85,7 +86,8 @@ return [
             'schedules' => [
                 'book' => 'Are you sure you want to book this class?',
                 'cancel' => 'Are you sure you want to cancel booking of this class?'
-            ]
+            ],
+            'delete' => 'Are you sure you want to delete this class?'
         ],
         'user' => [
             'enable' => 'Are you sure you want to enable this user?',
@@ -245,6 +247,7 @@ return [
         'date_joined' => 'Date Joined',
         'delete' => 'Delete',
         'delete_category' => 'Delete Category',
+        'delete_class' => 'Delete Class',
         'delete_classification' => 'Delete Classification',
         'delete_schedule' => 'Delete Schedule',
         'disable' => 'Disable',

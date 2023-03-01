@@ -25,6 +25,8 @@ class CourseManageData
 
     private $format;
 
+    private $isDeletable;
+
     // Setters
     public function setId($id)
     {
@@ -80,6 +82,12 @@ class CourseManageData
         return $this;
     }
 
+    public function setIsDeletable($isDeletable)
+    {
+        $this->isDeletable = $isDeletable;
+        return $this;
+    }
+
     // Getters
     public function getId()
     {
@@ -126,6 +134,11 @@ class CourseManageData
         return $this->format;
     }
 
+    public function getIsDeletable()
+    {
+        return $this->isDeletable;
+    }
+
     public function getProperties()
     {
         return get_object_vars($this);
@@ -141,6 +154,7 @@ class CourseManageData
         $courseManageData->setPublishedDate(Carbon::parse($course->created_at)->format('M j, Y'));
         $courseManageData->setCategory($course->courseCategory->name);
         $courseManageData->setFormat(ucwords($course->is_live ? Course::LIVE : Course::ON_DEMAND, '-'));
+        $courseManageData->setIsDeletable($course->active_schedules->count() <= 0);
 
         return $courseManageData->getProperties();
     }
