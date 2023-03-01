@@ -1,6 +1,7 @@
 import { Link } from "@inertiajs/inertia-react";
 import { Grid, Card, CardContent, Button, Typography, CardMedia, Box, Chip} from "@mui/material"
 import { getRoute } from "../../helpers/routes.helper"
+import placeholderImg from "../../../img/placeholder.png"
 
 const Course = ({ course, showDescription = true, showDate = true, viewDetailId = "id", imagePosition = "left" }) => {
 
@@ -61,7 +62,7 @@ const Course = ({ course, showDescription = true, showDate = true, viewDetailId 
             >
                 <CardMedia
                     component="img"
-                    image={course.image_thumbnail ? course.image_thumbnail : course.course.image_thumbnail}
+                    image={course.image_thumbnail ?? placeholderImg}
                     sx={{
                         width: {
                             xs: '100%',

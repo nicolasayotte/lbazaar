@@ -1,30 +1,22 @@
 import { Link, usePage } from "@inertiajs/inertia-react"
-import { Settings } from "@mui/icons-material"
+import { Delete, Settings } from "@mui/icons-material"
 import { Chip, IconButton, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
 import EmptyCard from "../../../../../components/common/EmptyCard"
 import { getRoute } from "../../../../../helpers/routes.helper"
 
-const ClassManageTable = ({ data }) => {
+const ClassManageTable = ({ data, handleOnDelete }) => {
 
     const { translatables } = usePage().props
 
     const displayTableData = rows => rows.map((row, index) => {
 
-        const statusColors = {
-            'Draft' : 'default',
-            'Published': 'primary',
-            'Completed'  : 'success'
-        }
-
         return (
             <TableRow key={index}>
                 <TableCell children={row.title}/>
-                <TableCell children={row.type}/>
-                <TableCell children={row.category}/>
+                <TableCell align="center" children={row.type}/>
+                <TableCell align="center" children={row.format}/>
+                <TableCell align="center" children={row.category}/>
                 <TableCell sx={{ whiteSpace: 'nowrap'}} align="center" children={row.publishedDate}/>
-                <TableCell  align="center">
-                    <Chip size="small" label={row.status} color={statusColors[row.status]}/>
-                </TableCell>
                 <TableCell sx={{ whiteSpace: 'nowrap'}} align="center">
                     <Stack direction="row" spacing={1} justifyContent="center">
                         <Link title={translatables.title.class.manage.view} href={getRoute('mypage.course.manage_class.schedules', { id: row.id })}>
@@ -32,6 +24,14 @@ const ClassManageTable = ({ data }) => {
                                 <Settings fontSize="inherit"/>
                             </IconButton>
                         </Link>
+                        <IconButton
+                            disabled={!row.isDeletable}
+                            onClick={() => handleOnDelete(row.id)}
+                            size="small"
+                            title={translatables.texts.delete}
+                        >
+                            <Delete fontSize="inherit" color={row.isDeletable ? 'error' : 'disabled'}/>
+                        </IconButton>
                     </Stack>
                 </TableCell>
             </TableRow>
@@ -49,11 +49,11 @@ const ClassManageTable = ({ data }) => {
                     <TableHead>
                         <TableRow>
                             <TableCell children="Title"/>
-                            <TableCell children="Type"/>
-                            <TableCell children="Category"/>
-                            <TableCell children="Published"/>
-                            <TableCell children="Status"/>
-                            <TableCell align="center" children="Actions"/>
+                            <TableCell align="center" children={translatables.texts.type} />
+                            <TableCell align="center" children={translatables.texts.format} />
+                            <TableCell align="center" children={translatables.texts.category} />
+                            <TableCell align="center" children={translatables.texts.date_created} />
+                            <TableCell align="center" children={translatables.texts.actions} />
                         </TableRow>
                     </TableHead>
                     <TableBody>

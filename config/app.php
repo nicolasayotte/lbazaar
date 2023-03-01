@@ -195,7 +195,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-
+        App\Providers\AssetServiceProvider::class
     ],
 
     /*
@@ -212,6 +212,7 @@ return [
     'aliases' => Facade::defaultAliases()->merge([
         // 'ExampleClass' => App\Example\ExampleClass::class,
         'Countries' => Monarobase\CountryList\CountryListFacade::class,
+        'Asset' => App\Facades\Asset::class
     ])->toArray(),
 
 ];

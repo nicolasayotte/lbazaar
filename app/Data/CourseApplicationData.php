@@ -250,14 +250,14 @@ class CourseApplicationData
         $courseData->setProfessorName($courseApplication->professor->fullname);
         $courseData->setProfessorEmail($courseApplication->professor->email);
         $courseData->setProfessorClassification($courseApplication->professor->classification->name);
-        $courseData->setProfessorCreatedAt(Carbon::parse($courseApplication->professor->created_at)->format('Y-m-d'));
+        $courseData->setProfessorCreatedAt(Carbon::parse($courseApplication->professor->created_at)->format('M j, Y'));
 
         $courseData->setPrice($courseApplication->price == 0 ? 'Free' : number_format($courseApplication->price, 2));
         $courseData->setPointsEarned($courseApplication->points_earned == 0 ? "N/A" : number_format($courseApplication->points_earned, 2));
 
-        $courseData->setCreatedAt(Carbon::parse($courseApplication->created_at)->format('Y-m-d'));
-        $courseData->setDeniedAt(@$courseApplication->denied_at ? Carbon::parse($courseApplication->denied_at)->format('Y-m-d') : NULL);
-        $courseData->setApprovedAt(@$courseApplication->approved_at ? Carbon::parse($courseApplication->approved_at)->format('Y-m-d') : NULL);
+        $courseData->setCreatedAt(Carbon::parse($courseApplication->created_at)->format('M j, Y'));
+        $courseData->setDeniedAt(@$courseApplication->denied_at ? Carbon::parse($courseApplication->denied_at)->format('M j, Y') : NULL);
+        $courseData->setApprovedAt(@$courseApplication->approved_at ? Carbon::parse($courseApplication->approved_at)->format('M j, Y') : NULL);
 
         $courseData->setIsCourseCreated(!empty($courseApplication->course) ? true : false);
 

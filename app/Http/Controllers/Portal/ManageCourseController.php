@@ -45,8 +45,8 @@ class ManageCourseController extends Controller
             'keyword'         => @$request['keyword'] ?? '',
             'course_type'     => @$request['course_type'] ?? '',
             'category'        => @$request['category'] ?? '',
-            'status'          => @$request['status'] ?? '',
-            'sort'            => @$request['sort'] ?? 'course_schedules.start_datetime:desc',
+            'format'          => @$request['format'] ?? '',
+            'sort'            => @$request['sort'] ?? 'courses.created_at:desc',
             'page'            => @$request['page'] ?? 1,
             'title'           => $this->baseTitle
         ])->withViewData([

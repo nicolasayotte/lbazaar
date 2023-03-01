@@ -1,7 +1,7 @@
 import { usePage } from "@inertiajs/inertia-react"
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material"
 
-const FormDialog = ({ open, title, processing, handleClose, handleSubmit, confirmButtonText = '', cancelButtonText='', children }) => {
+const FormDialog = ({ open, title, processing, handleClose, handleSubmit, confirmButtonText = '', cancelButtonText='', disableSubmit = false, children }) => {
 
     const { translatables } = usePage().props
 
@@ -30,7 +30,7 @@ const FormDialog = ({ open, title, processing, handleClose, handleSubmit, confir
                     <Button
                         type="submit"
                         variant="contained"
-                        disabled={processing}
+                        disabled={processing || disableSubmit}
                         children={confirmButtonText}
                         onClick={handleSubmit}
                     />
