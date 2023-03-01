@@ -32,7 +32,9 @@ class Course extends Model
         "points_earned",
         "professor_id",
         "course_application_id",
-        "max_participant"
+        "max_participant",
+        "is_cancellable",
+        "days_before_cancellation"
     ];
 
     protected $appends = [
@@ -122,6 +124,11 @@ class Course extends Model
 
     public function getImageThumbnailAttribute($path)
     {
-        return Asset::get($path);
+        return @$path ? Asset::get($path) : null;
+    }
+
+    public function getVideoPathAttribute($path)
+    {
+        return @$path ? Asset::get($path) : null;
     }
 }

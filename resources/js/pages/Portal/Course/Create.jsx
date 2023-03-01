@@ -10,25 +10,33 @@ import { useState } from "react"
 
 const Create = () => {
 
-    const { courseApplication, translatables, categories } = usePage().props
+    const { courseApplication, translatables, categories, course } = usePage().props
 
     const formatOptions = [
         { name: 'Live', value: 'live' },
         { name: 'On-Demand', value: 'on-demand' }
     ]
 
-    const { data, setData, post, errors } = useForm('CreateClassForm', {
-        ...courseApplication,
-        format: 'on-demand',
-        image_thumbnail: '',
-        video_path: '',
-        is_cancellable: false,
-        days_before_cancellation: 1
+    const initialData = course || courseApplication
+
+    const title = course ? translatables.texts.edit_class : translatables.title.class.create
+
+    const { data, setData, post, errors } = useForm(course ? `EditClassForm:${course.id}` : 'CreateClassForm', {
+        ...initialData,
+        format: (course && course.is_live !== undefined) ? (course.is_live ? 'live' : 'on-demand') : 'on-demand',
+        image_thumbnail: course && course.image_thumbnail ? course.image_thumbnail : '',
+        video_path: course && course.video_path ? course.video_path : '',
+        is_cancellable: course && course.is_cancellable && course.is_cancellable > 0 ? true : false,
+        days_before_cancellation: course && course.days_before_cancellation ? course.days_before_cancellation : 1,
     })
 
-    const [imgPreview, setImgPreview] = useState(null)
+    const [imgPreview, setImgPreview] = useState(course && course.image_thumbnail ? course.image_thumbnail : null)
 
-    const [videoPreview, setVideoPreview] = useState(null)
+    const [videoPreview, setVideoPreview] = useState(course && course.video_path ? course.video_path : null)
+
+    const cancelRoute = course !== undefined
+    ? getRoute('mypage.course.manage_class.schedules', { id: course.id })
+    : routes["mypage.course.applications.index"]
 
     const handleOnCancellableChange = e => {
         setData(data => ({
@@ -42,14 +50,21 @@ const Create = () => {
 
         if (uploadedFile) {
             setPreviewMethod(URL.createObjectURL(uploadedFile))
-            setData(e.target.name, uploadedFile)
+            setData(data => ({
+                ...data,
+                [e.target.name]: uploadedFile
+            }))
         }
     }
 
     const handleOnFormSubmit = e => {
         e.preventDefault()
 
-        post(getRoute('course.store', { id: courseApplication.id }))
+        const submitUrl = course
+        ? getRoute('course.update', { id: course.id })
+        : getRoute('course.store', { id: courseApplication.id })
+
+        post(submitUrl)
     }
 
     return (
@@ -58,15 +73,15 @@ const Create = () => {
                 <Grid container spacing={2}>
                     <Grid item container xs={12} alignItems="center" spacing={2}>
                         <Grid item xs={12} md={8}>
-                            <Typography variant="h4" children={translatables.title.class.create} />
+                            <Typography variant="h4" children={title} />
                             <Breadcrumbs>
                                 <Link href={routes["mypage.course.applications.index"]} children={translatables.title.class.applications.index} />
-                                <Typography color="text.primary" children={translatables.title.class.create} />
+                                <Typography color="text.primary" children={title} />
                             </Breadcrumbs>
                         </Grid>
                         <Grid item xs={12} md={4}>
                             <Stack direction={{ xs: 'column-reverse', md: 'row' }} spacing={2} justifyContent="end">
-                                <Link href={routes["mypage.course.applications.index"]} style={{ width: '100%' }}>
+                                <Link href={cancelRoute} style={{ width: '100%' }}>
                                     <Button
                                         variant="outlined"
                                         size="large"
@@ -194,7 +209,7 @@ const Create = () => {
                                             control={
                                                 <Switch
                                                     name="is_cancellable"
-                                                    checked={data && data.is_cancellable}
+                                                    checked={is_cancellable}
                                                     onChange={handleOnCancellableChange}
                                                     sx={{ ml: 'auto' }}
                                                 />
@@ -234,15 +249,17 @@ const Create = () => {
                                     <Grid item xs={12}>
                                         <Input
                                             label={translatables.texts.price}
-                                            value={data.price.toFixed(2)}
+                                            value={data.price ? data.price.toFixed(2) : '0.00'}
                                             inputProps={{ readOnly: true }}
+                                            InputLabelProps={{ shrink: true }}
                                         />
                                     </Grid>
                                     <Grid item xs={12}>
                                         <Input
                                             label={translatables.texts.points_earned}
-                                            value={data.points_earned.toFixed(2)}
+                                            value={data.points_earned ? data.points_earned.toFixed(2) : '0.00'}
                                             inputProps={{ readOnly: true }}
+                                            InputLabelProps={{ shrink: true }}
                                         />
                                     </Grid>
                                 </Grid>

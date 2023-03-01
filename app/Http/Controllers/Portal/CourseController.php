@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CourseRequest;
+use App\Http\Requests\CreateCourseRequest;
 use App\Http\Requests\SearchClassRequest;
 use App\Models\CourseHistory;
 use App\Models\CourseSchedule;
@@ -193,9 +194,9 @@ class CourseController extends Controller
         return Inertia::render('Portal/Course/Create', [
             'courseApplication' => $courseApplication,
             'categories'        => $this->courseCategoryRepository->getDropdownData(),
-            'title'             => TranslationRepository::getTranslation('title.class.create')
+            'title'             => getTranslation('title.class.create')
         ])->withViewData([
-            'title'             => TranslationRepository::getTranslation('title.class.create')
+            'title'             => getTranslation('title.class.create')
         ]);
     }
 
@@ -205,6 +206,26 @@ class CourseController extends Controller
         $course = $this->courseRepository->register($courseApplication, $request);
 
         return to_route('mypage.course.manage_class.schedules', ['id' => $course->id])->with('success', getTranslation('success.class.create'));
+    }
+
+    public function edit($id)
+    {
+        $course = $this->courseRepository->with('courseType', 'courseCategory')->findOrFail($id);
+
+        return Inertia::render('Portal/Course/Create', [
+            'course'     => $course,
+            'categories' => $this->courseCategoryRepository->getDropdownData(),
+            'title'      => getTranslation('texts.edit_class')
+        ])->withViewData([
+            'title'      => getTranslation('texts.edit_class')
+        ]);
+    }
+
+    public function update($id, CourseRequest $request)
+    {
+        $course = $this->courseRepository->update($id, $request);
+
+        return to_route('mypage.course.manage_class.schedules', ['id' => $course->id])->with('success', getTranslation('success.class.update'));
     }
 
     public function updateWalletHistory($userWallet, $transactionType, $newUserPoints, $courseHistory) {

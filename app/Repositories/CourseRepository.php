@@ -9,6 +9,7 @@ use App\Http\Requests\CourseUpdateRequest;
 use App\Models\Course;
 use Carbon\Carbon;
 use DateTime;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -168,6 +169,40 @@ class CourseRepository extends BaseRepository
         }
 
         $course = $this->create($inputs);
+
+        return $course;
+    }
+
+    public function update($id, Request $request)
+    {
+        $course = $this->findOrFail($id);
+
+        $inputs = $request->all();
+
+        $isLive = $inputs['format'] == Course::LIVE ? true : false;
+
+        $inputs['is_live'] = $isLive;
+
+        if ($request->hasFile('image_thumbnail')) {
+            $inputs['image_thumbnail'] = Asset::upload($request->files->get('image_thumbnail'));
+        } else {
+            unset($inputs['image_thumbnail']);
+        }
+
+        if (!$isLive) {
+            $inputs['zoom_link'] = null;
+
+            if ($request->hasFile('video_path')) {
+                $inputs['video_path'] = Asset::upload($request->files->get('video_path'));
+            } else {
+                unset($inputs['video_path']);
+            }
+        } else {
+            $inputs['video_path'] = null;
+            $inputs['video_link'] = null;
+        }
+
+        $course->update($inputs);
 
         return $course;
     }

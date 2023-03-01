@@ -141,12 +141,14 @@ Route::prefix('classes')->name('course.')->group(function() {
         Route::post('/{schedule_id}/cancel', [CourseController::class, 'cancel'])->name('cancel');
 
         Route::middleware(['auth', 'teacher'])->group(function() {
+            # Edit Course
+            Route::get('/{id}/edit', [CourseController::class, 'edit'])->name('edit');
+            Route::post('/{id}/update', [CourseController::class, 'update'])->name('update');
+
             # Create Course
             Route::get('/{id}/create', [CourseController::class, 'create'])->name('create');
-            Route::post('/{id}', [CourseController::class, 'store'])->name('store');
+            Route::post('/{id}/store', [CourseController::class, 'store'])->name('store');
         });
-
-
     });
 });
 

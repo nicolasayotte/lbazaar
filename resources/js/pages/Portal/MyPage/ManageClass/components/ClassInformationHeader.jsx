@@ -1,7 +1,7 @@
 import { Link, usePage } from "@inertiajs/inertia-react"
 import { Box, Button, Chip, Container, Grid, Stack, Typography } from "@mui/material"
 import Header from "../../../../../components/common/Header"
-import routes from "../../../../../helpers/routes.helper"
+import routes, { getRoute } from "../../../../../helpers/routes.helper"
 import placeholderImg from "../../../../../../img/placeholder.png"
 
 const ClassInformationHeader = () => {
@@ -19,8 +19,6 @@ const ClassInformationHeader = () => {
         'Earn': 'info',
         'Special': 'warning'
     }
-
-    console.log(course)
 
     return (
         <>
@@ -45,11 +43,13 @@ const ClassInformationHeader = () => {
                                 </Link>
                             </Grid>
                             <Grid item xs={12} md={6}>
-                                <Button
-                                    variant="contained"
-                                    children={translatables.texts.edit_class}
-                                    fullWidth
-                                />
+                                <Link href={getRoute('course.edit', { id: course.id })}>
+                                    <Button
+                                        variant="contained"
+                                        children={translatables.texts.edit_class}
+                                        fullWidth
+                                    />
+                                </Link>
                             </Grid>
                         </Grid>
                     </Grid>

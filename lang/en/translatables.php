@@ -41,7 +41,8 @@ return [
                 'booked' => 'Class successfully booked',
                 'cancelled' => 'Class successfully cancelled'
             ],
-            'create' => 'Class successfully created'
+            'create' => 'Class successfully created',
+            'update' => 'Class successfully updated'
         ],
         'category' => [
             'update' => 'Category successfully updated',
