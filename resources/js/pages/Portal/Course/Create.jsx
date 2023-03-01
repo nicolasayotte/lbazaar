@@ -139,17 +139,14 @@ const Create = () => {
                                         <Link href={routes["mypage.course.applications.index"]} children={translatables.title.class.applications.index} />
                                     }
                                     {
-                                        course &&
-                                        <Link href={routes["mypage.course.manage_class.index"]} children={translatables.title.class.manage.index} />
-                                    }
-                                    {
-                                        course &&
-                                        <>
+                                        course && [
+                                            <Link key={'manage-classes'} href={routes["mypage.course.manage_class.index"]} children={translatables.title.class.manage.index} />,
                                             <Link
+                                                key={'manage-class'}
                                                 href={getRoute('mypage.course.manage_class.schedules', { id: course.id })}
                                                 children={translatables.title.class.manage.view + ' - ' + translatables.title.schedules.index}
                                             />
-                                        </>
+                                        ]
                                     }
                                     <Typography color="text.primary" children={title} />
                                 </Breadcrumbs>
