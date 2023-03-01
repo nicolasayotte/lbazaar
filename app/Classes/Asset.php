@@ -18,7 +18,7 @@ class Asset
 
     public function __construct()
     {
-        $this->disk = env('APP_ENV') == 'local' ? 's3' : 's3';
+        $this->disk = env('APP_ENV') == 'local' ? 'uploads' : 's3';
         $this->storage = Storage::disk($this->disk);
     }
 
