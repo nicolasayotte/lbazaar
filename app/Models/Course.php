@@ -61,6 +61,18 @@ class Course extends Model
         return $this->belongsTo(CourseCategory::class)->withTrashed();
     }
 
+    public function coursePackage()
+    {
+        return $this->hasOneThrough(
+            CoursePackage::class,
+            CoursePackageCourse::class,
+            'course_id',
+            'id',
+            'id',
+            'id'
+        );
+    }
+
     public function status()
     {
         return $this->belongsTo(Status::class);

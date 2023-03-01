@@ -25,7 +25,7 @@ class CourseRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules(Request $request)
+    public function rules()
     {
         $rules = [
             'title' => 'required',
@@ -36,16 +36,10 @@ class CourseRequest extends FormRequest
             'format' => 'required',
             'zoom_link' => 'required_if:format,' . Course::LIVE,
             'is_cancellable' => 'boolean',
-            'days_before_cancellation' => 'required_if:is_cancellable,true'
+            'days_before_cancellation' => 'required_if:is_cancellable,true',
+            'image_thumbnail' => 'required',
+            'video_path' => 'required_if:format,' . Course::ON_DEMAND
         ];
-
-        if ($request->hasFile('image_thumbnail') || $request->routeIs('course.create')) {
-            $rules['image_thumbnail'] = 'required|file|image|dimensions:min_width=800,min_height:600';
-        }
-
-        if ($request->hasFile('video_path') || $request->routeIs('course.create')) {
-            $rules['video_path'] = 'required_if:format,' . Course::ON_DEMAND;
-        }
 
         return $rules;
     }

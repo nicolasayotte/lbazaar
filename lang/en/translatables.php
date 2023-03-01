@@ -68,6 +68,9 @@ return [
             'create' => 'Schedule successfully created',
             'delete' => 'Schedule successfully deleted',
             'update' => 'Schedule successfully updated'
+        ],
+        'packages' => [
+            'create' => 'Package successfully created'
         ]
     ],
     'confirm' => [
@@ -229,6 +232,7 @@ return [
         'create_category' => 'Create Category',
         'create_classification' => 'Create Classification',
         'create_exam' => 'Create Exam',
+        'create_package' => 'Create Package',
         'current_password' => 'Current Password',
         'days' => 'Days',
         'days_before_cancellation' => 'Days before cancellation',
@@ -268,6 +272,8 @@ return [
         'next_question' => 'Next Question',
         'no_file_selected' => 'No file selected',
         'no_records_found' => 'No Records Found',
+        'package' => 'Package',
+        'package_information' => 'Package Information',
         'points' => 'Points',
         'points_earned' => 'Points Earned',
         'price' => 'Price',

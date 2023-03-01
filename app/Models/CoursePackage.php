@@ -11,6 +11,12 @@ class CoursePackage extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'name'
+        'name',
+        'user_id'
     ];
+
+    public function packageItems()
+    {
+        return $this->hasMany(CoursePackageCourse::class);
+    }
 }

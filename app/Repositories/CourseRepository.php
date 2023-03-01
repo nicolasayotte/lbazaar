@@ -2,16 +2,12 @@
 
 namespace App\Repositories;
 
-use App\Data\CourseData;
 use App\Data\CourseManageData;
 use App\Facades\Asset;
 use App\Http\Requests\CourseUpdateRequest;
 use App\Models\Course;
-use Carbon\Carbon;
-use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class CourseRepository extends BaseRepository

@@ -14,6 +14,7 @@ use App\Repositories\CourseApplicationRepository;
 use App\Repositories\CourseCategoryRepository;
 use App\Repositories\CourseScheduleRepository;
 use App\Repositories\CourseHistoryRepository;
+use App\Repositories\CoursePackageRepository;
 use App\Repositories\WalletTransactionHistoryRepository;
 use App\Repositories\CourseRepository;
 use App\Repositories\CourseTypeRepository;
@@ -21,6 +22,7 @@ use App\Repositories\TranslationRepository;
 use App\Repositories\UserRepository;
 use Inertia\Inertia;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class CourseController extends Controller
 {
@@ -40,6 +42,8 @@ class CourseController extends Controller
 
     public $walletTransactionHistoryRepository;
 
+    public $coursePackageRepository;
+
     public function __construct()
     {
         $this->courseTypeRepository = new CourseTypeRepository();
@@ -50,6 +54,7 @@ class CourseController extends Controller
         $this->courseApplicationRepository = new CourseApplicationRepository();
         $this->courseHistoryRepository = new CourseHistoryRepository();
         $this->walletTransactionHistoryRepository = new WalletTransactionHistoryRepository();
+        $this->coursePackageRepository = new CoursePackageRepository();
     }
 
     public function index(SearchClassRequest $request)
@@ -194,7 +199,8 @@ class CourseController extends Controller
         return Inertia::render('Portal/Course/Create', [
             'courseApplication' => $courseApplication,
             'categories'        => $this->courseCategoryRepository->getDropdownData(),
-            'title'             => getTranslation('title.class.create')
+            'title'             => getTranslation('title.class.create'),
+            'packages'          => $this->coursePackageRepository->getByUserId(auth()->user()->id)
         ])->withViewData([
             'title'             => getTranslation('title.class.create')
         ]);
@@ -205,17 +211,22 @@ class CourseController extends Controller
         $courseApplication = $this->courseApplicationRepository->findOrFail($id);
         $course = $this->courseRepository->register($courseApplication, $request);
 
+        if (!is_null(@$request->get('course_package_id'))) {
+            $this->coursePackageRepository->addCourseToPackage($request->get('course_package_id'), $course->id);
+        }
+
         return to_route('mypage.course.manage_class.schedules', ['id' => $course->id])->with('success', getTranslation('success.class.create'));
     }
 
     public function edit($id)
     {
-        $course = $this->courseRepository->with('courseType', 'courseCategory')->findOrFail($id);
+        $course = $this->courseRepository->with(['courseType', 'courseCategory', 'coursePackage'])->findOrFail($id);
 
         return Inertia::render('Portal/Course/Create', [
             'course'     => $course,
             'categories' => $this->courseCategoryRepository->getDropdownData(),
-            'title'      => getTranslation('texts.edit_class')
+            'title'      => getTranslation('texts.edit_class'),
+            'packages'   => $this->coursePackageRepository->getByUserId(auth()->user()->id)
         ])->withViewData([
             'title'      => getTranslation('texts.edit_class')
         ]);
@@ -225,7 +236,21 @@ class CourseController extends Controller
     {
         $course = $this->courseRepository->update($id, $request);
 
+        if (!is_null(@$request->get('course_package_id'))) {
+            $this->coursePackageRepository->addCourseToPackage($request->get('course_package_id'), $course->id);
+        }
+
         return to_route('mypage.course.manage_class.schedules', ['id' => $course->id])->with('success', getTranslation('success.class.update'));
+    }
+
+    public function createPackage(Request $request)
+    {
+        $this->coursePackageRepository->create([
+            'name' => @$request->name,
+            'user_id' => auth()->user()->id
+        ]);
+
+        return redirect()->back()->with('success', getTranslation('success.packages.create'));
     }
 
     public function updateWalletHistory($userWallet, $transactionType, $newUserPoints, $courseHistory) {
@@ -237,7 +262,6 @@ class CourseController extends Controller
             'points_after' => $newUserPoints,
         ]);
     }
-
 
     public function updateWallet($userWallet, $newUserPoints) {
         $userWallet->update([

@@ -148,6 +148,9 @@ Route::prefix('classes')->name('course.')->group(function() {
             # Create Course
             Route::get('/{id}/create', [CourseController::class, 'create'])->name('create');
             Route::post('/{id}/store', [CourseController::class, 'store'])->name('store');
+
+            # Create Package
+            Route::post('/package/create', [CourseController::class, 'createPackage'])->name('package.create');
         });
     });
 });
