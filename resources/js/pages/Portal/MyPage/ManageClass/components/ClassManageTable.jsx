@@ -1,5 +1,5 @@
 import { Link, usePage } from "@inertiajs/inertia-react"
-import { Settings } from "@mui/icons-material"
+import { Delete, Settings } from "@mui/icons-material"
 import { Chip, IconButton, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
 import EmptyCard from "../../../../../components/common/EmptyCard"
 import { getRoute } from "../../../../../helpers/routes.helper"
@@ -14,6 +14,7 @@ const ClassManageTable = ({ data }) => {
             <TableRow key={index}>
                 <TableCell children={row.title}/>
                 <TableCell align="center" children={row.type}/>
+                <TableCell align="center" children={row.format}/>
                 <TableCell align="center" children={row.category}/>
                 <TableCell sx={{ whiteSpace: 'nowrap'}} align="center" children={row.publishedDate}/>
                 <TableCell sx={{ whiteSpace: 'nowrap'}} align="center">
@@ -23,6 +24,9 @@ const ClassManageTable = ({ data }) => {
                                 <Settings fontSize="inherit"/>
                             </IconButton>
                         </Link>
+                        <IconButton size="small">
+                            <Delete fontSize="inherit" color="error"/>
+                        </IconButton>
                     </Stack>
                 </TableCell>
             </TableRow>
@@ -40,10 +44,11 @@ const ClassManageTable = ({ data }) => {
                     <TableHead>
                         <TableRow>
                             <TableCell children="Title"/>
-                            <TableCell align="center" children="Type"/>
-                            <TableCell align="center" children="Category"/>
-                            <TableCell align="center" children="Published"/>
-                            <TableCell align="center" children="Actions"/>
+                            <TableCell align="center" children={translatables.texts.type} />
+                            <TableCell align="center" children={translatables.texts.format} />
+                            <TableCell align="center" children={translatables.texts.category} />
+                            <TableCell align="center" children={translatables.texts.date_created} />
+                            <TableCell align="center" children={translatables.texts.actions} />
                         </TableRow>
                     </TableHead>
                     <TableBody>

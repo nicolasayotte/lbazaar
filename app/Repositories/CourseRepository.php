@@ -95,6 +95,12 @@ class CourseRepository extends BaseRepository
             ->when(@$filters['status'], function($q) use($filters) {
                 return $q->where('statuses.name', $filters['status']);
             })
+            ->when(@$filters['format'], function($q) use($filters) {
+
+                $format = @$filters['format'] == Course::LIVE ? 1 : 0;
+
+                return $q->where('courses.is_live', $format);
+            })
             ->where('professor_id', Auth::user()->id)
             ->orderBy($sortBy, $sortOrder)
             ->paginate(self::PER_PAGE)->withQueryString()

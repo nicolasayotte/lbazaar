@@ -8,7 +8,7 @@ import TableLoader from "../../../../components/common/TableLoader"
 
 const Index = () => {
 
-    const { courses, categoryOptions, typeOptions, keyword, course_type, category, status, sort, page, translatables } = usePage().props
+    const { courses, categoryOptions, typeOptions, keyword, course_type, category, format, sort, page, translatables } = usePage().props
 
     const sortOptions = [
         { name: translatables.filters.title.asc, value: 'courses.title:asc' },
@@ -17,11 +17,17 @@ const Index = () => {
         { name: translatables.filters.date.desc, value: 'course_schedules.start_datetime:desc' }
     ]
 
+    const formatOptions = [
+        { name: 'All', value: '' },
+        { name: 'Live', value: 'live' },
+        { name: 'On-Demand', value: 'on-demand' }
+    ]
+
     const { data: filters, setData: setFilters, get, transform, processing } = useForm({
         keyword,
         course_type,
         category,
-        status,
+        format,
         sort,
         page
     })
@@ -47,7 +53,7 @@ const Index = () => {
                 <CardContent>
                     <form onSubmit={handleFilterSubmit}>
                         <Grid container spacing={2}>
-                            <Grid item xs={12} md={4}>
+                            <Grid item xs={12} md={10}>
                                 <Input
                                     label={translatables.texts.keyword}
                                     placeholder={translatables.texts.search_title}
@@ -56,7 +62,15 @@ const Index = () => {
                                     onChange={e => handleOnChange(e, setFilters)}
                                 />
                             </Grid>
-                            <Grid item xs={12} md={2}>
+                            <Grid item xs={12} md={2} textAlign="right">
+                                <Button
+                                    children={translatables.texts.filter}
+                                    variant="contained"
+                                    fullWidth
+                                    onClick={handleFilterSubmit}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={3}>
                                 <Input
                                     select
                                     label={translatables.texts.type}
@@ -71,7 +85,21 @@ const Index = () => {
                                     {displaySelectOptions(typeOptions)}
                                 </Input>
                             </Grid>
-                            <Grid item xs={12} md={2}>
+                            <Grid item xs={12} md={3}>
+                                <Input
+                                    select
+                                    label={translatables.texts.format}
+                                    InputLabelProps={{
+                                        shrink: true
+                                    }}
+                                    name="format"
+                                    value={filters.format}
+                                    onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
+                                >
+                                    {displaySelectOptions(formatOptions, 'value')}
+                                </Input>
+                            </Grid>
+                            <Grid item xs={12} md={3}>
                                 <Input
                                     select
                                     label={translatables.texts.category}
@@ -86,7 +114,7 @@ const Index = () => {
                                     {displaySelectOptions(categoryOptions)}
                                 </Input>
                             </Grid>
-                            <Grid item xs={12} md={2}>
+                            <Grid item xs={12} md={3}>
                                 <Input
                                     select
                                     label={translatables.texts.sort}
@@ -99,14 +127,6 @@ const Index = () => {
                                 >
                                     {displaySelectOptions(sortOptions, 'value')}
                                 </Input>
-                            </Grid>
-                            <Grid item xs={12} md={2} textAlign="right">
-                                <Button
-                                    children={translatables.texts.filter}
-                                    variant="contained"
-                                    fullWidth
-                                    onClick={handleFilterSubmit}
-                                />
                             </Grid>
                         </Grid>
                     </form>
