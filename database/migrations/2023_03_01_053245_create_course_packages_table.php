@@ -15,7 +15,9 @@ return new class extends Migration
     {
         Schema::create('course_packages', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('user_id')->unsigned()->index();
             $table->string('name');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

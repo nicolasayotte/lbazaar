@@ -15,8 +15,9 @@ return new class extends Migration
     {
         Schema::create('course_package_courses', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('course_package_id')->unsigned()->index()->nullable();
-            $table->bigInteger('course_id')->unsigned()->index()->nullable();
+            $table->bigInteger('course_package_id')->unsigned()->index();
+            $table->bigInteger('course_id')->unsigned()->index();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
