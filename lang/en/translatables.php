@@ -31,8 +31,9 @@ return [
         'class' => [
             'applications' => [
                 'status' => [
-                    'update' => 'Class application status successfully updated'
-                ]
+                    'update' => 'Class application status successfully updated',
+                ],
+                'create' => 'Class application successfully created'
             ],
             'types' => [
                 'update' => 'Class types successfully updated'
@@ -69,6 +70,14 @@ return [
             'create' => 'Schedule successfully created',
             'delete' => 'Schedule successfully deleted',
             'update' => 'Schedule successfully updated'
+        ],
+        'wallet' => [
+            'feed' => 'Points successfully added',
+            'exchange' => 'Points successfully exchanged to NFT',
+            'request_exchange' => 'Points successfully requested to exchanged to NFT',
+        ],
+        'api' => [
+            'get' => 'Successfully retrieved data'
         ],
         'packages' => [
             'create' => 'Package successfully created'
@@ -332,6 +341,8 @@ return [
         'check_schedules' => 'Check Schedule',
         'book' => 'Book',
         'attend' => 'Attend',
+        'exchange_points' => 'Exchange Points',
+        'points_to_convert_to_nft' => 'Points to convert to NFT',
         'add_points' => 'Add Points',
         'zoom_link' => 'Zoom Link'
     ]

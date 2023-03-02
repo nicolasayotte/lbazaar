@@ -10,6 +10,14 @@ class UserWorkHistory extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'company',
+        'position',
+        'description',
+        'start_date',
+        'end_date',
+        'user_id'
+    ];
     public function getStartDateAttribute($value)
     {
         return Carbon::parse($value)->format('M j, Y');

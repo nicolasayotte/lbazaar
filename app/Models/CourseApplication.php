@@ -25,6 +25,23 @@ class CourseApplication extends Model
 
     protected $appends = ['status'];
 
+    protected $fillable = [
+        'professor_id',
+        'course_category_id',
+        'course_type_id',
+        'price',
+        'points_earned',
+        'title',
+        'description',
+        'max_participant',
+        'language',
+        'is_live',
+        'video_link',
+        'zoom_link',
+        'approved_at',
+    ];
+
+
     public function professor()
     {
         return $this->belongsTo(User::class);

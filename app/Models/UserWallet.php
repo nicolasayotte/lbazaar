@@ -10,6 +10,7 @@ class UserWallet extends Model
     use HasFactory;
 
     protected $fillable = [
-        'points'
+        'user_id',
+        'points',
     ];
 }
