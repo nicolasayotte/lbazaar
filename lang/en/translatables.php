@@ -71,7 +71,6 @@ return [
             'delete' => 'Schedule successfully deleted',
             'update' => 'Schedule successfully updated'
         ],
-<<<<<<< HEAD
         'wallet' => [
             'feed' => 'Points successfully added',
             'exchange' => 'Points successfully exchanged to NFT',
@@ -80,11 +79,9 @@ return [
         'api' => [
             'get' => 'Successfully retrieved data'
         ],
-=======
         'packages' => [
             'create' => 'Package successfully created'
         ]
->>>>>>> develop
     ],
     'confirm' => [
         'class' => [
