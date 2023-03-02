@@ -23,8 +23,8 @@ const TopPage = () => {
     const displayCourses = (courses, showDescription = true, detailId = 'id', imagePosition = 'left') => courses && courses.length > 0 && courses.map(course => (
         <Course
             key={course.id}
-            course={course}
-            showDate={true}
+            course={course && course.course ? course.course : course}
+            schedule={course && course.simple_start_datetime}
             viewDetailId={detailId}
             showDescription={showDescription}
             imagePosition={imagePosition}
@@ -102,7 +102,7 @@ const TopPage = () => {
                     </Grid>
                     <Grid item xs={12} md={4}>
                         <Typography variant="h5" gutterBottom children="Coming Soon" />
-                        { displayCourses(upcomingCourses, false, 'course_id', 'top') }
+                        { displayCourses(upcomingCourses, false, 'id', 'top') }
                         <Typography variant="h5" gutterBottom children="Featured Teachers" />
                         { displayTeachers(teachers) }
                     </Grid>

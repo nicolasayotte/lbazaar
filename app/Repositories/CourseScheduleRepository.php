@@ -20,7 +20,12 @@ class CourseScheduleRepository extends BaseRepository
 
     public function getUpcomingCourseSchedule($take = self::PER_PAGE)
     {
-        return $this->model->where('start_datetime', '>=', Carbon::now('Asia/Tokyo'))->take($take)->orderBy('id', 'desc')->with(['course', 'professor', 'courseType', 'courseCategory'])->get();
+        return $this->model
+                    ->with(['course', 'course.professor', 'course.courseType', 'course.courseCategory'])
+                    ->where('start_datetime', '>=', Carbon::now('Asia/Tokyo'))
+                    ->take($take)
+                    ->orderBy('id', 'desc')
+                    ->get();
     }
 
     public function get($courseID, $filters)
