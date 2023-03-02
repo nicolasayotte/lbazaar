@@ -13,15 +13,14 @@ const TextEditorInput = (props) => {
     return (
         <Box>
             <ReactQuill
-                    theme="snow"
-                    {...props}
-                    modules={modules}
-                    className={props.errors && props.errors[props.name] ? "ql-error" : null}
-                    />
-                <Typography variant="subtitle1" sx={{mt:5}}>
-                    {props.errors && props.errors[props.name] && <ErrorText error={props.errors[props.name]} />}
-                </Typography>
-
+                theme="snow"
+                {...props}
+                modules={modules}
+                className={props.errors && props.errors[props.name] ? "ql-error" : null}
+            />
+            <Typography variant="subtitle1">
+                {props.errors && props.errors[props.name] && <ErrorText error={props.errors[props.name]} />}
+            </Typography>
         </Box>
     )
 }

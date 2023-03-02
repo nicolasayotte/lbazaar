@@ -19,9 +19,13 @@ class CourseManageData
 
     private $category;
 
+    private $createdDate;
+
     private $publishedDate;
 
-    private $createdDate;
+    private $format;
+
+    private $isDeletable;
 
     // Setters
     public function setId($id)
@@ -72,6 +76,18 @@ class CourseManageData
         return $this;
     }
 
+    public function setFormat($format)
+    {
+        $this->format = $format;
+        return $this;
+    }
+
+    public function setIsDeletable($isDeletable)
+    {
+        $this->isDeletable = $isDeletable;
+        return $this;
+    }
+
     // Getters
     public function getId()
     {
@@ -113,6 +129,16 @@ class CourseManageData
         return $this->publishedDate;
     }
 
+    public function getFormat()
+    {
+        return $this->format;
+    }
+
+    public function getIsDeletable()
+    {
+        return $this->isDeletable;
+    }
+
     public function getProperties()
     {
         return get_object_vars($this);
@@ -125,9 +151,10 @@ class CourseManageData
         $courseManageData->setTitle($course->title);
         $courseManageData->setDescription($course->description);
         $courseManageData->setType($course->courseType->name);
-        $courseManageData->setPublishedDate(Carbon::parse($course->schedules()->first()->start_datetime)->format('M j, Y'));
+        $courseManageData->setPublishedDate(Carbon::parse($course->created_at)->format('M j, Y'));
         $courseManageData->setCategory($course->courseCategory->name);
-        $courseManageData->setStatus(ucwords($course->status->name));
+        $courseManageData->setFormat(ucwords($course->is_live ? Course::LIVE : Course::ON_DEMAND, '-'));
+        $courseManageData->setIsDeletable($course->active_schedules->count() <= 0);
 
         return $courseManageData->getProperties();
     }

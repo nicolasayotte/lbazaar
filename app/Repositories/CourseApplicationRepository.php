@@ -90,6 +90,7 @@ class CourseApplicationRepository extends BaseRepository
                     }
                 })
                 ->where('professor_id', Auth::user()->id)
+                ->whereDoesntHave('course')
                 ->orderBy($sortBy, $sortOrder)
                 ->paginate(CourseApplication::PER_PAGE)
                 ->through(function($item) {
@@ -120,8 +121,9 @@ class CourseApplicationRepository extends BaseRepository
     public function findOneApproved($id)
     {
         return $this->model
+                    ->with('courseType', 'courseCategory', 'course')
                     ->where('approved_at', '!=', NULL)
-                    ->where('created_at', '!=', NULL)
+                    ->whereDoesntHave('course')
                     ->where('id', $id)
                     ->firstOrFail();
     }

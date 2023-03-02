@@ -1,9 +1,13 @@
 import { Upload } from "@mui/icons-material"
-import { Box, Button, Grid } from "@mui/material"
+import { Box, Button, CardMedia, FormHelperText, Grid } from "@mui/material"
 import ErrorText from "../common/ErrorText"
 import Input from "./Input"
+import placeholderImg from "../../../img/placeholder.png"
+import { usePage } from "@inertiajs/inertia-react"
 
-const CustomFileInput = ({ name, value = '', handleOnChange = () => {}, errors, buttonPosition = 'start', accepts = "image" }) => {
+const CustomFileInput = ({ name, src = '', value, onChange = () => {}, errors, helperText = '', buttonPosition = 'start', accepts = "image", placeholderImageHeight = '200px' }) => {
+
+    const { translatables } = usePage().props
 
     const buttonStyles = buttonPosition === 'start'
     ? { borderTopRightRadius: 0, borderBottomRightRadius: 0 }
@@ -17,51 +21,95 @@ const CustomFileInput = ({ name, value = '', handleOnChange = () => {}, errors, 
         document.getElementById(`file-input-button-${name}`).click()
     }
 
-    return (
-        <Box>
-            <Grid container flexDirection={(buttonPosition === 'start') ? 'row' : 'row-reverse'}>
-                <Grid item xs={6} md={3}>
-                    <Button
-                        component="label"
-                        startIcon={<Upload />}
-                        fullWidth
-                        variant="contained"
-                        disableElevation
+    const acceptTypes = {
+        image: 'image/*',
+        video: "video/*"
+    }
+
+    const PreviewComponent = () => {
+
+        if (accepts === 'image' || (accepts === 'video' && src == null)) {
+            return (
+                <Box mb={2} onClick={showInputDialog}>
+                    <CardMedia
+                        image={src || placeholderImg}
                         sx={{
-                            ...buttonStyles,
-                            height: '100%'
+                            minHeight: placeholderImageHeight,
+                            backgroundSize: 'cover',
+                            cursor: 'pointer'
                         }}
-                        id={`file-input-button-${name}`}
-                    >
-                        Upload
-                        <Input
-                            name={name}
-                            type="file"
-                            label="Class Image"
-                            value={value}
-                            InputProps={{
-                                accepts: `${accepts}/*`
-                            }}
-                            sx={{
-                                display: 'none'
-                            }}
-                            onChange={handleOnChange}
-                        />
-                    </Button>
-                </Grid>
-                <Grid item xs={6} md={9}>
-                    <Input
-                        placeholder="No file selected"
-                        InputProps={{
-                            readOnly: true,
-                            sx: inputStyles
-                        }}
-                        onClick={showInputDialog}
                     />
+                    { helperText && <FormHelperText children={helperText} /> }
+                </Box>
+            )
+        }
+
+        if (accepts === 'video') {
+            return (
+                <Box mb={2} onClick={showInputDialog}>
+                    <video
+                        src={src}
+                        controls
+                        style={{
+                            minHeight: placeholderImageHeight,
+                            width: '100%'
+                        }}
+                    />
+                    { helperText && <FormHelperText children={helperText} /> }
+                </Box>
+            )
+        }
+    }
+
+    return (
+        <>
+            <PreviewComponent />
+            <Box>
+                <Grid container flexDirection={(buttonPosition === 'start') ? 'row' : 'row-reverse'}>
+                    <Grid item xs={4} md={4}>
+                        <Button
+                            component="label"
+                            startIcon={<Upload />}
+                            fullWidth
+                            variant="contained"
+                            disableElevation
+                            sx={{
+                                ...buttonStyles,
+                                height: '100%'
+                            }}
+                            id={`file-input-button-${name}`}
+                        >
+                            Upload
+                            <Input
+                                name={name}
+                                type="file"
+                                inputProps={{
+                                    accepts: acceptTypes[accepts],
+                                    accept: acceptTypes[accepts]
+                                }}
+                                sx={{
+                                    display: 'none'
+                                }}
+                                onChange={onChange}
+                            />
+                        </Button>
+                    </Grid>
+                    <Grid item xs={8} md={8}>
+                        <Input
+                            placeholder={translatables.texts.no_file_selected}
+                            InputProps={{
+                                readOnly: true,
+                                sx: inputStyles
+                            }}
+                            value={value && value.name || ''}
+                            onClick={showInputDialog}
+                        />
+                    </Grid>
                 </Grid>
-            </Grid>
-            { errors && errors[name] && <ErrorText error={errors[name]} /> }
-        </Box>
+                { (accepts !== 'image' && accepts !== 'video') && helperText && <FormHelperText children={helperText} /> }
+                { errors && errors[name] && <ErrorText error={errors[name]} /> }
+            </Box>
+        </>
     )
 }
 

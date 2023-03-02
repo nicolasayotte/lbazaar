@@ -8,13 +8,24 @@ import TableLoader from "../../../../components/common/TableLoader"
 
 const Index = () => {
 
-    const { courseApplications, categoryOptions, typeOptions, keyword, course_type, category, status, sort, page } = usePage().props
+    const {
+        courseApplications,
+        categoryOptions,
+        typeOptions,
+        keyword,
+        course_type,
+        category,
+        status,
+        sort,
+        page,
+        translatables
+    } = usePage().props
 
     const sortOptions = [
-        { name: 'Title A-Z', value: 'title:asc' },
-        { name: 'Title Z-A', value: 'title:desc' },
-        { name: 'Date - Oldest', value: 'created_at:asc' },
-        { name: 'Date - Newest', value: 'created_at:desc' }
+        { name: translatables.filters.title.asc, value: 'title:asc' },
+        { name: translatables.filters.title.desc, value: 'title:desc' },
+        { name: translatables.filters.date.asc, value: 'created_at:asc' },
+        { name: translatables.filters.date.desc, value: 'created_at:desc' }
     ]
 
     const statusOptions = [
@@ -53,19 +64,27 @@ const Index = () => {
                 <CardContent>
                     <form onSubmit={handleFilterSubmit}>
                         <Grid container spacing={2}>
-                            <Grid item xs={12} md={12}>
+                            <Grid item xs={12} md={10}>
                                 <Input
-                                    label="Keyword"
-                                    placeholder="Search for title or teacher"
+                                    label={translatables.texts.keyword}
+                                    placeholder={translatables.texts.search_title}
                                     name="keyword"
                                     value={filters.keyword}
                                     onChange={e => handleOnChange(e, setFilters)}
                                 />
                             </Grid>
-                            <Grid item xs={12} md={2}>
+                            <Grid item xs={12} md={2} textAlign="right">
+                                <Button
+                                    children={translatables.texts.filter}
+                                    variant="contained"
+                                    fullWidth
+                                    onClick={handleFilterSubmit}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={3}>
                                 <Input
                                     select
-                                    label="Type"
+                                    label={translatables.texts.type}
                                     InputLabelProps={{
                                         shrink: true
                                     }}
@@ -77,10 +96,10 @@ const Index = () => {
                                     {displaySelectOptions(typeOptions)}
                                 </Input>
                             </Grid>
-                            <Grid item xs={12} md={2}>
+                            <Grid item xs={12} md={3}>
                                 <Input
                                     select
-                                    label="Category"
+                                    label={translatables.texts.category}
                                     InputLabelProps={{
                                         shrink: true
                                     }}
@@ -92,10 +111,10 @@ const Index = () => {
                                     {displaySelectOptions(categoryOptions)}
                                 </Input>
                             </Grid>
-                            <Grid item xs={12} md={2}>
+                            <Grid item xs={12} md={3}>
                                 <Input
                                     select
-                                    label="Status"
+                                    label={translatables.texts.status}
                                     InputLabelProps={{
                                         shrink: true
                                     }}
@@ -107,10 +126,10 @@ const Index = () => {
                                     {displaySelectOptions(statusOptions, 'value')}
                                 </Input>
                             </Grid>
-                            <Grid item xs={12} md={4}>
+                            <Grid item xs={12} md={3}>
                                 <Input
                                     select
-                                    label="Sort"
+                                    label={translatables.texts.sort}
                                     InputLabelProps={{
                                         shrink: true
                                     }}
@@ -120,14 +139,6 @@ const Index = () => {
                                 >
                                     {displaySelectOptions(sortOptions, 'value')}
                                 </Input>
-                            </Grid>
-                            <Grid item xs={12} md={2} textAlign="right">
-                                <Button
-                                    children="Filter"
-                                    variant="contained"
-                                    fullWidth
-                                    onClick={handleFilterSubmit}
-                                />
                             </Grid>
                         </Grid>
                     </form>

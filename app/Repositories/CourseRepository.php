@@ -2,14 +2,15 @@
 
 namespace App\Repositories;
 
-use App\Data\CourseData;
 use App\Data\CourseManageData;
+use App\Facades\Asset;
 use App\Http\Requests\CourseUpdateRequest;
 use App\Models\Course;
 use Carbon\Carbon;
 use DateTime;
+use DateTimeZone;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class CourseRepository extends BaseRepository
@@ -74,14 +75,13 @@ class CourseRepository extends BaseRepository
 
     public function getMyCourses($filters)
     {
-        $sortFilterArr = explode(':', @$filters['sort'] ?? 'course_schedules.start_datetime:desc');
+        $sortFilterArr = explode(':', @$filters['sort'] ?? 'courses.created_at:desc');
 
         $sortBy    = $sortFilterArr[0];
         $sortOrder = $sortFilterArr[1];
 
 
-        return $this->model->select('statuses.*', 'courses.*', 'course_schedules.start_datetime' )
-            ->where('professor_id', Auth::user()->id)
+        return $this->model->select('courses.*')
             ->where(function($q) use($filters) {
                 return $q->where('courses.title', 'LIKE', '%'. @$filters['keyword'] .'%');
             })
@@ -94,13 +94,18 @@ class CourseRepository extends BaseRepository
             ->when(@$filters['status'], function($q) use($filters) {
                 return $q->where('statuses.name', $filters['status']);
             })
-            ->join('statuses', 'statuses.id', '=', 'courses.status_id')
-            ->join('course_schedules', function ($join) {
-                $join->on('course_schedules.id', '=', DB::raw('(SELECT id FROM course_schedules WHERE course_schedules.course_id = courses.id LIMIT 1)'));
+            ->when(@$filters['format'], function($q) use($filters) {
+
+                $format = @$filters['format'] == Course::LIVE ? 1 : 0;
+
+                return $q->where('courses.is_live', $format);
             })
+            ->where('professor_id', Auth::user()->id)
             ->orderBy($sortBy, $sortOrder)
             ->paginate(self::PER_PAGE)->withQueryString()
             ->through(function($histories) {
+                $histories->active_schedules = $this->getActiveSchedules($histories->id);
+
                 return CourseManageData::fromModel($histories);
             });
     }
@@ -151,4 +156,74 @@ class CourseRepository extends BaseRepository
         return redirect()->back();
     }
 
+    public function getActiveSchedules($id)
+    {
+        $course = $this->findOrFail($id);
+
+        $timezone = new DateTimeZone(env('APP_TIMEZONE'));
+        $now = Carbon::parse(new DateTime('now', $timezone));
+
+        return $course
+                ->schedules()
+                ->where('is_completed', 0)
+                ->get();
+    }
+
+    public function register($courseApplication, $request)
+    {
+        $inputs = $request->all();
+
+        $isLive = $inputs['format'] == Course::LIVE ? true : false;
+
+        $inputs['course_application_id'] = $courseApplication->id;
+        $inputs['professor_id'] = auth()->user()->id;
+        $inputs['is_live'] = $isLive;
+        $inputs['image_thumbnail'] = Asset::upload($request->files->get('image_thumbnail'));
+
+        if (!$isLive) {
+            $inputs['zoom_link'] = null;
+            $inputs['video_path'] = Asset::upload($request->files->get('video_path'));
+        } else {
+            $inputs['video_path'] = null;
+            $inputs['video_link'] = null;
+        }
+
+        $course = $this->create($inputs);
+
+        return $course;
+    }
+
+    public function update($id, Request $request)
+    {
+        $course = $this->findOrFail($id);
+
+        $inputs = $request->all();
+
+        $isLive = $inputs['format'] == Course::LIVE ? true : false;
+
+        $inputs['is_live'] = $isLive;
+
+        if ($request->hasFile('image_thumbnail')) {
+            $inputs['image_thumbnail'] = Asset::upload($request->files->get('image_thumbnail'));
+        } else {
+            unset($inputs['image_thumbnail']);
+        }
+
+        if (!$isLive) {
+            $inputs['zoom_link'] = null;
+
+            if ($request->hasFile('video_path')) {
+                $inputs['video_path'] = Asset::upload($request->files->get('video_path'));
+            } else {
+                unset($inputs['video_path']);
+            }
+        } else {
+            $inputs['video_path'] = null;
+            $inputs['video_link'] = null;
+        }
+
+        $course->update($inputs);
+
+        return $course;
+    }
 }

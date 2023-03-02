@@ -41,7 +41,10 @@ return [
             'booking' => [
                 'booked' => 'Class successfully booked',
                 'cancelled' => 'Class successfully cancelled'
-            ]
+            ],
+            'create' => 'Class successfully created',
+            'update' => 'Class successfully updated',
+            'delete' => 'Class successfully deleted'
         ],
         'category' => [
             'update' => 'Category successfully updated',
@@ -68,6 +71,7 @@ return [
             'delete' => 'Schedule successfully deleted',
             'update' => 'Schedule successfully updated'
         ],
+<<<<<<< HEAD
         'wallet' => [
             'feed' => 'Points successfully added',
             'exchange' => 'Points successfully exchanged to NFT',
@@ -76,6 +80,11 @@ return [
         'api' => [
             'get' => 'Successfully retrieved data'
         ],
+=======
+        'packages' => [
+            'create' => 'Package successfully created'
+        ]
+>>>>>>> develop
     ],
     'confirm' => [
         'class' => [
@@ -89,7 +98,8 @@ return [
             'schedules' => [
                 'book' => 'Are you sure you want to book this class?',
                 'cancel' => 'Are you sure you want to cancel booking of this class?'
-            ]
+            ],
+            'delete' => 'Are you sure you want to delete this class?'
         ],
         'user' => [
             'enable' => 'Are you sure you want to enable this user?',
@@ -122,7 +132,8 @@ return [
             'manage' => [
                 'index' => 'Manage Classes',
                 'view' => 'Manage Class'
-            ]
+            ],
+            'create' => 'Create Class'
         ],
         'users' => [
             'index' => 'Manage Users',
@@ -219,9 +230,12 @@ return [
         'back_to_class' => 'Back to Class',
         'back_to_top' => 'Back to Top Page',
         'cancel' => 'Cancel',
+        'cancellable' => 'Cancellable',
         'category' => 'Category',
         'choice' => 'Choice',
         'class_type' => 'Class Type',
+        'class_image' => 'Class Image',
+        'class_information' => 'Class Information',
         'classification' => 'Classification',
         'commission_rate' => 'Commission Rate',
         'confirm' => 'Confirm',
@@ -232,7 +246,10 @@ return [
         'create_category' => 'Create Category',
         'create_classification' => 'Create Classification',
         'create_exam' => 'Create Exam',
+        'create_package' => 'Create Package',
         'current_password' => 'Current Password',
+        'days' => 'Days',
+        'days_before_cancellation' => 'Days before cancellation',
         'deny' => 'Deny',
         'date' => 'Date',
         'date_applied' => 'Date Applied',
@@ -242,6 +259,7 @@ return [
         'date_joined' => 'Date Joined',
         'delete' => 'Delete',
         'delete_category' => 'Delete Category',
+        'delete_class' => 'Delete Class',
         'delete_classification' => 'Delete Classification',
         'delete_schedule' => 'Delete Schedule',
         'disable' => 'Disable',
@@ -267,7 +285,10 @@ return [
         'name' => 'Name',
         'new_password' => 'New Password',
         'next_question' => 'Next Question',
+        'no_file_selected' => 'No file selected',
         'no_records_found' => 'No Records Found',
+        'package' => 'Package',
+        'package_information' => 'Package Information',
         'points' => 'Points',
         'points_earned' => 'Points Earned',
         'price' => 'Price',
@@ -276,6 +297,7 @@ return [
         'profile' => 'Profile',
         'question' => 'Question',
         'rating' => 'Rating',
+        'recommended_size' => 'Recommended size',
         'role' => 'Role',
         'save_changes' => 'Save Changes',
         'score' => 'Score',
@@ -304,7 +326,9 @@ return [
         'update_password_help' => 'Enter your current password for verification',
         'update_password_notice' => 'You will be signed out when your password is updated',
         'update_profile' => 'Update Profile',
+        'upload' => 'Upload',
         'view' => 'View',
+        'video' => 'Video',
         'classes' => 'Classes',
         'classes_booked' => 'Classes Booked',
         'students' => 'Students',
@@ -320,7 +344,12 @@ return [
         'check_schedules' => 'Check Schedule',
         'book' => 'Book',
         'attend' => 'Attend',
+<<<<<<< HEAD
         'exchange_points' => 'Exchange Points',
         'points_to_convert_to_nft' => 'Points to convert to NFT',
+=======
+        'add_points' => 'Add Points',
+        'zoom_link' => 'Zoom Link'
+>>>>>>> develop
     ]
 ];

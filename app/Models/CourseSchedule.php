@@ -91,9 +91,9 @@ class CourseSchedule extends Model
 
         $end = Carbon::parse(new DateTime($this->end_datetime, $timezone));
 
-        if ($now->gt($start) && $now->lt($end)) return ucwords(Status::ONGOING);
-
         if ($now->gt($end) || $this->is_completed) return ucwords(Status::DONE);
+
+        if ($now->gt($start) && $now->lt($end)) return ucwords(Status::ONGOING);
 
         if ($now->lt($start)) return ucwords(Status::UPCOMING);
     }

@@ -1,10 +1,12 @@
-import { Link } from "@inertiajs/inertia-react"
+import { Link, usePage } from "@inertiajs/inertia-react"
 import { NoteAdd, Search } from "@mui/icons-material"
 import { Chip, IconButton, Paper, Tooltip, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
 import EmptyCard from "../../../../../components/common/EmptyCard"
 import routes, { getRoute } from "../../../../../helpers/routes.helper"
 
 const ClassApplicationTable = ({ data }) => {
+
+    const { translatables } = usePage().props
 
     const displayTableData = rows => rows.map((row, index) => {
 
@@ -14,21 +16,13 @@ const ClassApplicationTable = ({ data }) => {
             'Denied'  : 'error'
         }
 
-        const title = {
-            'Pending' : 'Currently for approval',
-            'Approved' : 'Create Class',
-            'Denied'  : 'Application denied'
-        }
-
         const displayCreateClass = (id, status, isCourseCreated) => {
             return (
-                <Tooltip title={isCourseCreated ? 'Class already created' : title[status]}>
-                    <IconButton size="small" color="success" disabled={(status != 'Approved' || isCourseCreated)}>
-                        <Link href={getRoute('course.create', { id })}>
-                            <NoteAdd fontSize="inherit"/>
-                        </Link>
-                    </IconButton>
-                </Tooltip>
+                <IconButton title={translatables.title.class.create} size="small" color="success" disabled={(status != 'Approved' || isCourseCreated)}>
+                    <Link href={getRoute('course.create', { id })}>
+                        <NoteAdd fontSize="inherit"/>
+                    </Link>
+                </IconButton>
             )
         }
 
@@ -44,7 +38,7 @@ const ClassApplicationTable = ({ data }) => {
                 <TableCell  sx={{ whiteSpace: 'nowrap'}} align="center">
                     <Stack direction="row" spacing={1} justifyContent="center">
                         <Link href={getRoute('mypage.course.applications.view', { id: row.id }, {returnUrl : routes["mypage.course.applications.index"]})}>
-                            <IconButton size="small">
+                            <IconButton title={translatables.texts.view} size="small">
                                 <Search fontSize="inherit"/>
                             </IconButton>
                         </Link>
