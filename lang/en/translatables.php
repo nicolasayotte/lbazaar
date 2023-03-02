@@ -341,12 +341,9 @@ return [
         'check_schedules' => 'Check Schedule',
         'book' => 'Book',
         'attend' => 'Attend',
-<<<<<<< HEAD
         'exchange_points' => 'Exchange Points',
         'points_to_convert_to_nft' => 'Points to convert to NFT',
-=======
         'add_points' => 'Add Points',
         'zoom_link' => 'Zoom Link'
->>>>>>> develop
     ]
 ];
