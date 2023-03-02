@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Http;
 
 class ProfileController extends Controller
 {
@@ -67,4 +68,18 @@ class ProfileController extends Controller
 
         return to_route('top');
     }
+
+    public function exchangeToNFTRequest($exchange_amount)
+    {
+        $response = Http::post(env('API_EXCHANGE_NFT_URL'), [
+            'email' => auth()->user()->email,
+            'points' => $exchange_amount,
+        ]);
+        if (!$response->successful()) {
+            return redirect()->back()->withErrors(['error' => getTranslation('error')]);
+        }
+        return redirect()->back();
+
+    }
+
 }

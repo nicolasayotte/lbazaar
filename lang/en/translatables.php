@@ -71,6 +71,7 @@ return [
         'wallet' => [
             'feed' => 'Points successfully added',
             'exchange' => 'Points successfully exchanged to NFT',
+            'request_exchange' => 'Points successfully requested to exchanged to NFT',
         ],
         'api' => [
             'get' => 'Successfully retrieved data'
@@ -319,6 +320,7 @@ return [
         'check_schedules' => 'Check Schedule',
         'book' => 'Book',
         'attend' => 'Attend',
-        'add_points' => 'Add Points',
+        'exchange_points' => 'Exchange Points',
+        'points_to_convert_to_nft' => 'Points to convert to NFT',
     ]
 ];
