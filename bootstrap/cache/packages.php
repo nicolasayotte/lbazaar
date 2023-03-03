@@ -6,6 +6,34 @@
       0 => 'Inertia\\ServiceProvider',
     ),
   ),
+  'laravel-lang/attributes' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'LaravelLang\\Attributes\\ServiceProvider',
+    ),
+  ),
+  'laravel-lang/http-statuses' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'LaravelLang\\HttpStatuses\\ServiceProvider',
+    ),
+  ),
+  'laravel-lang/lang' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'LaravelLang\\Lang\\ServiceProvider',
+    ),
+  ),
+  'laravel-lang/publisher' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'LaravelLang\\Publisher\\ServiceProvider',
+    ),
+  ),
   'laravel/sail' => 
   array (
     'providers' => 
