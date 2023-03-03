@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Auth;
 class WalletTransactionHistoryRepository extends BaseRepository
 {
 
+    const PER_PAGE = 10;
+
     public function __construct()
     {
         parent::__construct(new WalletTransactionHistory());

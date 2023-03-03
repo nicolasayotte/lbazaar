@@ -8,6 +8,7 @@ import { Link, usePage } from "@inertiajs/inertia-react"
 const MyPage = ({ page }) => {
 
     const { component } = usePage()
+    const { translatables } = usePage().props
 
     const container = page.props.window !== undefined ? () => window().document.body : undefined;
 
@@ -23,31 +24,38 @@ const MyPage = ({ page }) => {
 
     const navItems = [
         {
-            name: 'Profile',
+            name: `${translatables.texts.profile}`,
             link: routes["mypage.profile.index"],
             roles: ['student', 'teacher'],
             active: component.startsWith('Portal/MyPage/Profile'),
             icon: <ManageAccounts />
         },
         {
-            name: 'Class Application',
+            name: `${translatables.title.class.applications.view}`,
             link: routes["mypage.course.applications.index"],
             roles: ['teacher'],
             active: component.startsWith('Portal/MyPage/ClassApplication'),
             icon: <Article />,
         },
         {
-            name: 'Manage Classes',
+            name: `${translatables.title.class.manage.view}`,
             link: routes["mypage.course.manage_class.index"],
             roles: ['teacher'],
             active: component.startsWith('Portal/MyPage/ManageClass'),
             icon: <MenuBook />,
         },
         {
-            name: 'Class History',
+            name: `${translatables.texts.class_history}`,
             link: routes["mypage.course.history.index"],
             roles: ['student', 'teacher'],
             active: component.startsWith('Portal/MyPage/CourseHistory'),
+            icon: <History />,
+        },
+        {
+            name: `${translatables.texts.wallet_history}`,
+            link: routes["mypage.wallet.history.index"],
+            roles: ['student', 'teacher'],
+            active: component.startsWith('Portal/MyPage/WalletHistory'),
             icon: <History />,
         }
     ]
@@ -84,7 +92,7 @@ const MyPage = ({ page }) => {
                 as="span"
                 method="post"
                 href={routes["admin.logout"]}
-                children="Sign Out"
+                children={translatables.texts.sign_out}
             />
         </ListItemButton>
     )
@@ -115,7 +123,7 @@ const MyPage = ({ page }) => {
                 }}
             >
                 <Toolbar>
-                    <Typography variant="h5" py={3} children="My Page" />
+                    <Typography variant="h5" py={3} children={translatables.texts.mypage} />
                 </Toolbar>
                 <Divider />
                 {sidebarLink}

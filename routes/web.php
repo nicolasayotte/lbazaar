@@ -18,6 +18,7 @@ use App\Http\Controllers\Portal\CourseScheduleController;
 use App\Http\Controllers\Portal\ExamController;
 use App\Http\Controllers\Portal\ForgotPasswordController;
 use App\Http\Controllers\Portal\InquiriesController;
+use App\Http\Controllers\Portal\WalletTransactionHistoryController;
 use App\Http\Controllers\Portal\ManageCourseController;
 use App\Http\Controllers\Portal\ProfileController as PortalProfileController;
 use App\Http\Controllers\Portal\RegisterStudentController;
@@ -217,13 +218,16 @@ Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function()
 
     # Profile
     Route::get('/profile', [PortalProfileController::class, 'index'])->name('profile.index');
-    Route::patch('/profile', [PortalProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile', [PortalProfileController::class, 'update'])->name('profile.update');
     Route::patch('/password/update', [PortalProfileController::class, 'updatePassword'])->name('profile.password.update');
     Route::patch('/base-password/update', [PortalProfileController::class, 'updateBasePassword'])->name('profile.base.password.update');
     Route::post('/profile/exchange-points/{exchange_amount}', [PortalProfileController::class, 'exchangeToNFTRequest'])->name('profile.exchange.points');
 
     # Class History
     Route::get('/class-history', [CourseHistoryController::class, 'index'])->name('course.history.index');
+
+    # Wallet Transactions
+    Route::get('/wallet-history', [WalletTransactionHistoryController::class, 'index'])->name('wallet.history.index');
 
     # Class Applications
     Route::prefix('/class-application')->middleware(['teacher'])->name('course.applications.')->group(function() {

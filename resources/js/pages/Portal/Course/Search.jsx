@@ -10,7 +10,7 @@ import EmptyCard from "../../../components/common/EmptyCard"
 
 const SearchCourse = () => {
 
-    const { search_text, type_id, category_id, language, professor_id, month, page, courses, course_types, course_categories, teachers, languages, messages} = usePage().props
+    const { search_text, type_id, category_id, language, professor_id, month, page, courses, course_types, course_categories, teachers, languages, messages, translatables} = usePage().props
 
     const { data: filters, setData: setFilters, get, errors, processing, transform } = useForm({
         search_text,
@@ -65,7 +65,7 @@ const SearchCourse = () => {
         <>
             <Header>
                 <Container sx={{ position: 'relative', zIndex: 500 }}>
-                    <Typography variant="h4" children="Browse Classes" textAlign="center" />
+                    <Typography variant="h4" children={translatables.texts.browse_classes} textAlign="center" />
                 </Container>
             </Header>
             <Container sx={{ mt: 2 }}>

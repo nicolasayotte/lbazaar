@@ -48,10 +48,10 @@ const ForgotPassword = () => {
                     <Card>
                         <CardContent sx={{ p: 3 }}>
                             <form method="POST" onSubmit={handleSubmit}>
-                                <Typography variant="h5" textAlign='center' sx={{ mb: 2 }}>Forgot Password</Typography>
+                                <Typography variant="h5" textAlign='center' sx={{ mb: 2 }}>{translatables.texts.forgot_password}</Typography>
                                 <Box sx={{ my: 2 }}>
                                     <Input
-                                        label="Email"
+                                        label={translatables.texts.email}
                                         type="email"
                                         fullWidth
                                         name="email"
@@ -67,12 +67,12 @@ const ForgotPassword = () => {
                                     type="submit"
                                     onClick={handleSubmit}
                                     disabled={processing}
-                                >Submit</Button>
+                                >{translatables.texts.send_request}</Button>
                             </form>
                         </CardContent>
                     </Card>
                     <Box sx={{ textAlign: 'center', mt: 3 }}>
-                        <Link href={routes["portal.login"]}><Button>Back to sign in</Button></Link>
+                        <Link href={routes["portal.login"]}><Button>{translatables.texts.back_to_sign_in}</Button></Link>
                     </Box>
                 </Grid>
             </Grid>

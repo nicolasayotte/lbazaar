@@ -3,8 +3,11 @@ import { Grid, Card, CardContent, Button, Typography, CardMedia, Box, Chip} from
 import { getRoute } from "../../helpers/routes.helper"
 import placeholderImg from "../../../img/placeholder.png"
 import { CalendarMonth } from "@mui/icons-material";
+import { usePage } from "@inertiajs/inertia-react"
 
 const Course = ({ course, schedule = null, showDescription = true, viewDetailId = "id", imagePosition = "left" }) => {
+
+    const { translatables } = usePage().props
 
     const Description = () => (
         showDescription &&
@@ -95,7 +98,7 @@ const Course = ({ course, schedule = null, showDescription = true, viewDetailId 
                                     <Button
                                         size="small"
                                         variant="contained"
-                                        children="View More"
+                                        children={translatables.texts.view_more}
                                     />
                                 </Link>
                             </Box>

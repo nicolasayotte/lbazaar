@@ -1,9 +1,11 @@
 
 import {Card, CardContent, Button, Typography, Box} from "@mui/material"
-import { Link } from "@inertiajs/inertia-react"
+import { Link, usePage } from "@inertiajs/inertia-react"
 import { getRoute } from "../../helpers/routes.helper"
 
 const User = ({ user }) => {
+    const { translatables } = usePage().props
+
     return (
         <Card sx={{ minWidth: 275, mb: 2, position: 'relative' }}>
             <CardContent>
@@ -16,7 +18,7 @@ const User = ({ user }) => {
                         <Button
                             size="small"
                             variant="contained"
-                            children="View Profile"
+                            children={translatables.texts.view_profile}
                         />
                     </Link>
 
