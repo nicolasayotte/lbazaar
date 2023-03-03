@@ -179,4 +179,9 @@ class User extends Authenticatable implements MustVerifyEmail
             'course_schedule_id'
         );
     }
+
+    public function badges()
+    {
+        return $this->hasMany(UserBadge::class);
+    }
 }

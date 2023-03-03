@@ -321,7 +321,7 @@ const Create = () => {
                                         <Grid item xs={12}>
                                             <Input
                                                 label={translatables.texts.price}
-                                                value={data.price ? data.price.toFixed(2) : '0.00'}
+                                                value={data.price ? data.price : '0.00'}
                                                 inputProps={{ readOnly: true }}
                                                 InputLabelProps={{ shrink: true }}
                                             />
@@ -329,7 +329,7 @@ const Create = () => {
                                         <Grid item xs={12}>
                                             <Input
                                                 label={translatables.texts.points_earned}
-                                                value={data.points_earned ? data.points_earned.toFixed(2) : '0.00'}
+                                                value={data.points_earned ? data.points_earned : '0.00'}
                                                 inputProps={{ readOnly: true }}
                                                 InputLabelProps={{ shrink: true }}
                                             />

@@ -2,6 +2,8 @@ import Footer from "../components/includes/Footer";
 import Navbar from "../components/includes/Navbar";
 import Toaster from "../components/includes/Toaster";
 import { Head, usePage } from "@inertiajs/inertia-react"
+import { ThemeProvider } from "@emotion/react";
+import PortalTheme from "../themes/portal.theme";
 
 const Layout = ({ children }) => {
 
@@ -10,10 +12,12 @@ const Layout = ({ children }) => {
     return (
         <>
             <Head title={title} />
-            <Navbar />
-            <>{ children }</>
-            <Toaster />
-            <Footer />
+            <ThemeProvider theme={PortalTheme}>
+                <Navbar />
+                <>{ children }</>
+                <Toaster />
+                <Footer />
+            </ThemeProvider>
         </>
     )
 }

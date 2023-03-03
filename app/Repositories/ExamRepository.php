@@ -70,11 +70,7 @@ class ExamRepository extends BaseRepository
         $user = User::findOrFail($userID);
         $exam = $this->findOrFail($examID);
 
-        $schedule = @$user->schedules()
-                            ->where('course_schedules.id', $scheduleID)
-                            ->where('start_datetime', '<=', Carbon::now())
-                            ->where('end_datetime', '>', Carbon::now())
-                            ->first();
+        $schedule = @$user->schedules()->where('course_schedules.id', $scheduleID)->first();
 
         $isExamTaken = @$user->exams()
                                 ->where('course_schedule_id', $scheduleID)
@@ -86,6 +82,7 @@ class ExamRepository extends BaseRepository
         if (
             @$exam->published_at != null &&
             @$schedule &&
+            @$schedule->status == ucwords(Status::ONGOING) &&
             !$isExamTaken
         ) {
             $canTakeExam = true;

@@ -2,12 +2,14 @@ import { Link } from "@inertiajs/inertia-react";
 import { Grid, Card, CardContent, Button, Typography, CardMedia, Box, Chip} from "@mui/material"
 import { getRoute } from "../../helpers/routes.helper"
 import placeholderImg from "../../../img/placeholder.png"
+import { CalendarMonth } from "@mui/icons-material";
 import { usePage } from "@inertiajs/inertia-react"
 
-const Course = ({ course, showDescription = true, showDate = true, viewDetailId = "id", imagePosition = "left" }) => {
+const Course = ({ course, schedule = null, showDescription = true, viewDetailId = "id", imagePosition = "left" }) => {
 
     const { translatables } = usePage().props
-    const description = (
+
+    const Description = () => (
         showDescription &&
         <Typography
             variant="subtitle1"
@@ -29,39 +31,42 @@ const Course = ({ course, showDescription = true, showDate = true, viewDetailId 
         'Special': 'warning'
     }
 
-    const price = (
+    const Price = () => (
         course.course_type && course.course_type.name == 'General' && course.price
         ? <Typography children={course.price} variant="h6" />
         : <span />
     )
 
 
-    const scheduleDate = (
-        showDate &&
-        <Typography
-            variant="subtitle1"
-            children={course.start_datetime}
+    const Schedule = () => (
+        schedule &&
+        <Chip
+            color="primary"
+            icon={<CalendarMonth />}
+            label={schedule}
+            size="small"
             sx={{
-                display: "-webkit-box",
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: "vertical",
-                overflow: 'hidden'
+                position: 'absolute',
+                top: 5,
+                right: 5,
+                opacity: 1
             }}
         />
     )
     return (
         <Grid mt={2}>
-            { scheduleDate }
             <Card
                 sx={{
                     mb: 2,
                     display: 'flex',
+                    position: 'relative',
                     flexDirection: {
                         xs: 'column',
                         md: (imagePosition == 'left' || imagePosition == 'right') ? 'row' : 'column'
                     }
                 }}
             >
+                <Schedule />
                 <CardMedia
                     component="img"
                     image={course.image_thumbnail ?? placeholderImg}
@@ -84,11 +89,11 @@ const Course = ({ course, showDescription = true, showDate = true, viewDetailId 
                             </Box>
                             <Typography variant="h6" children={course.title} />
                             <Typography variant="subtitle2" color="GrayText" gutterBottom children={`By ${course.professor.fullname}`} />
-                            { description }
+                            <Description />
                         </Grid>
                         <Grid item xs={12}>
                             <Box display="flex" justifyContent="space-between" alignItems="center">
-                                { price }
+                                <Price />
                                 <Link href={getRoute('course.details', {id : course[viewDetailId]})}>
                                     <Button
                                         size="small"

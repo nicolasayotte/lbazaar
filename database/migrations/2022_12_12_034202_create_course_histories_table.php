@@ -19,6 +19,7 @@ return new class extends Migration
             $table->bigInteger('course_id')->unsigned()->index();
             $table->bigInteger('course_schedule_id')->unsigned()->index();
             $table->boolean('is_cancelled')->nullable();
+            $table->boolean('is_watched')->default(0);
             $table->timestamp('completed_at')->nullable();
             $table->timestamps();
         });

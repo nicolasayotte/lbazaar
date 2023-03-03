@@ -133,10 +133,6 @@ Route::prefix('classes')->name('course.')->group(function() {
     Route::get('/{id}', [CourseController::class, 'details'])->name('details');
 
     Route::middleware('auth')->group(function() {
-        # Course Feedback
-        Route::get('/{id}/feedback', [CourseFeedbackController::class, 'index'])->name('feedback.index');
-        Route::post('/{id}/feedback', [CourseFeedbackController::class, 'store'])->name('feedback.store');
-
         # Course Booking
         Route::post('/{schedule_id}/book', [CourseController::class, 'book'])->name('book');
         Route::post('/{schedule_id}/cancel', [CourseController::class, 'cancel'])->name('cancel');
@@ -298,10 +294,24 @@ Route::prefix('schedules')->name('schedules.')->group(function() {
 # Attend Classes
 Route::prefix('classes/{course_id}/attend/{schedule_id}')->middleware(['auth'])->name('course.attend.')->group(function() {
 
+    # Attend
+    Route::get('/', [CourseController::class, 'attend'])->name('index');
+
+    # Watch
+    Route::get('/watch', [CourseController::class, 'watch'])->name('watch');
+    Route::post('watch/done', [CourseController::class, 'doneWatching'])->name('watch.done');
+
     # Exams
     Route::prefix('/exams/{id}')->name('exams.')->group(function() {
         Route::get('/', [ExamController::class, 'view'])->name('view');
         Route::post('/', [ExamController::class, 'submit'])->name('submit');
         Route::get('/result', [ExamController::class, 'result'])->name('result');
     });
+
+    # Course Feedback
+    Route::get('/feedback', [CourseFeedbackController::class, 'index'])->name('feedback.create');
+    Route::post('/feedback', [CourseFeedbackController::class, 'store'])->name('feedback.store');
+
+    # Complete
+    Route::post('/complete', [CourseController::class, 'complete'])->name('complete');
 });

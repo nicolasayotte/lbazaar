@@ -1,5 +1,6 @@
-import { usePage } from "@inertiajs/inertia-react";
+import { Link, usePage } from "@inertiajs/inertia-react";
 import { Box, Button, Card, CardContent, Container, Grid, Typography } from "@mui/material";
+import { getRoute } from "../../../helpers/routes.helper";
 
 const Result = () => {
 
@@ -19,11 +20,13 @@ const Result = () => {
                                     textAlign="center"
                                 />
                             </Box>
-                            <Button
-                                fullWidth
-                                variant="contained"
-                                children={translatables.texts.back_to_class}
-                            />
+                            <Link href={getRoute('course.attend.index', { course_id: result.exam.course_id, schedule_id: result.course_schedule_id })}>
+                                <Button
+                                    fullWidth
+                                    variant="contained"
+                                    children={translatables.texts.back_to_class}
+                                />
+                            </Link>
                         </CardContent>
                     </Card>
                 </Grid>

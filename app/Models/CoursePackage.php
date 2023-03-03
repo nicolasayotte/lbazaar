@@ -19,4 +19,16 @@ class CoursePackage extends Model
     {
         return $this->hasMany(CoursePackageCourse::class);
     }
+
+    public function courses()
+    {
+        return $this->hasManyThrough(
+            Course::class,
+            CoursePackageCourse::class,
+            'course_package_id',
+            'id',
+            'id',
+            'course_id'
+        );
+    }
 }

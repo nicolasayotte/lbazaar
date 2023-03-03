@@ -1,77 +1,20 @@
-import { Box, Grid, Typography, Card, CardContent, Container, Divider, Chip, Paper, Button, CardMedia } from "@mui/material";
+import { Box, Grid, Typography, Card, CardContent, Container, Divider, Chip, Paper, CircularProgress, Stack } from "@mui/material";
 import Feedback from "../../../components/cards/Feedback";
-import CourseScheduleTable from "./components/CourseScheduleTable";
 import { usePage } from "@inertiajs/inertia-react"
 import ConfirmationDialog from "../../../components/common/ConfirmationDialog"
 import { useState } from "react"
 import { useDispatch } from "react-redux"
-import routes, { getRoute } from "../../../helpers/routes.helper"
+import { getRoute } from "../../../helpers/routes.helper"
 import { Inertia } from "@inertiajs/inertia"
 import { actions } from "../../../store/slices/ToasterSlice"
+import CourseScheduleList from "./components/CourseScheduleList";
+import { grey } from "@mui/material/colors";
 
 const Details = () => {
 
     const dispatch = useDispatch()
+
     const { auth, course, schedules, translatables } = usePage().props
-
-    const displayFeedbacks = feedbacks => feedbacks && feedbacks.length > 0 && feedbacks.map(feedback => (
-        <Feedback auth={auth} key={feedback.id} feedback={feedback}/>
-    ))
-
-    const handleClickScroll = () => {
-        const schedule_table = document.getElementById('course_schedule_table');
-        if (schedule_table) {
-            schedule_table.scrollIntoView({ behavior: 'smooth' });
-        }
-      };
-
-    const courseImage = (
-        <Box sx={{ backgroundColor: '#333', width: '100%' }}>
-            <Container>
-                <Box
-                    sx={{
-                        minHeight: {
-                            xs: '250px',
-                            md: '400px'
-                        },
-                        width: '100%',
-                        backgroundImage: `url(${course.image_thumbnail})`,
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat',
-                        mb: 2
-                    }}
-                />
-            </Container>
-        </Box>
-    )
-
-    const BookPrice = (
-        <Typography
-            variant="contained"
-            children={`Book for ${(course.course_type.name == 'General') ? course.price : 'Free' }`}
-            size="large"
-            sx={{ mb: 2 }}
-        />
-    )
-
-    const checkSchedButton = (
-        <Button
-            fullWidth
-            variant="contained"
-            children={translatables.texts.check_schedules}
-            size="large"
-            sx={{ mb: 2 }}
-            onClick={handleClickScroll}
-        />
-    )
-
-    const courseTypeColors = {
-        'General': 'default',
-        'Earn': 'primary',
-        'Free': 'success',
-        'Special': 'warning'
-    }
 
     const [dialog, setDialog] = useState({
         open: false,
@@ -130,54 +73,140 @@ const Details = () => {
         })
     }
 
+    const Feedbacks = () => course.top_feedbacks && course.top_feedbacks.length > 0 && course.top_feedbacks.map(feedback => (
+        <Feedback auth={auth} key={feedback.id} feedback={feedback}/>
+    ))
+
+    const CourseImage = () => (
+        <Box sx={{ backgroundColor: '#333', width: '100%' }}>
+            <Container>
+                <Box
+                    sx={{
+                        minHeight: {
+                            xs: '250px',
+                            md: '400px'
+                        },
+                        width: '100%',
+                        backgroundImage: `url(${course.image_thumbnail})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat',
+                        mb: 2
+                    }}
+                />
+            </Container>
+        </Box>
+    )
+
+    const Rating = () => {
+        return (
+            <Paper sx={{ p: 2, mb: 2 }}>
+                <Stack direction="row" spacing={2} alignItems="center">
+                    <Box position="relative" display="inline-flex">
+                        <CircularProgress
+                            variant="determinate"
+                            value={course.overall_rating}
+                            size={80}
+                            thickness={5}
+                            sx={{
+                                position: 'relative',
+                                zIndex: 2
+                            }}
+                        />
+                        <Box
+                            sx={{
+                                top: 0,
+                                left: 0,
+                                bottom: 0,
+                                right: 0,
+                                position: 'absolute',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                border: `9px solid ${grey['300']}`,
+                                borderRadius: '100%',
+                                zIndex: 1
+                            }}
+                        >
+                            <Typography variant="h5" component="div" color="text.secondary" children={Math.round(course.overall_rating)} />
+                        </Box>
+                    </Box>
+                    <Box>
+                        <Typography variant="h5" textAlign="center" children={translatables.texts.overall_rating} />
+                        <Typography
+                            variant="caption"
+                            display="block"
+                            color="GrayText"
+                            children={`${course.feedbacks.length} ${translatables.title.feedbacks.toLowerCase()}`}
+                        />
+                    </Box>
+                </Stack>
+            </Paper>
+        )
+    }
+
+    const ClassInformation = () => {
+
+        const classInfos = [
+            { type: translatables.texts.type, value: course.course_type.type },
+            { type: translatables.texts.format, value: course.format }
+        ]
+
+        const dynamicInfos = {
+            'General': { type: translatables.texts.price, value: course.price },
+            'Free': { type: translatables.texts.price, value: 'Free' },
+            'Earn': { type: translatables.texts.points_earned, value: course.points_earned }
+        }
+
+        classInfos.push(dynamicInfos[course.course_type.type])
+
+        return (
+            <Grid container spacing={2} sx={{ mb: 2 }}>
+                {
+                    classInfos.map((info, index) => (
+                        <Grid item xs={12} md={4} key={index}>
+                            <Paper sx={{ p: 2 }}>
+                                <Typography
+                                    variant="button"
+                                    textAlign="center"
+                                    display="block"
+                                    children={info.value}
+                                />
+                                <Typography
+                                    variant="caption"
+                                    textAlign="center"
+                                    display="block"
+                                    color="GrayText"
+                                    children={info.type}
+                                />
+                            </Paper>
+                        </Grid>
+                    ))
+                }
+            </Grid>
+        )
+    }
+
     return (
         <Box>
-            {courseImage}
+            <CourseImage />
             <Container>
-                <Box display={{
-                    xs: 'block',
-                    md: 'none'
-                }}>
-                    {checkSchedButton}
-                </Box>
                 <Grid container spacing={2}>
                     <Grid item xs={12} md={8}>
+                        <ClassInformation />
                         <Card sx={{ mb: 2 }}>
                             <CardContent>
-                                <Box>
-                                    <Chip size="small" label={course.course_category.name} />
-                                    <Chip
-                                        color={courseTypeColors[course.course_type.name]}
-                                        variant="outlined"
-                                        size="small"
-                                        label={course.course_type.name}
-                                        sx={{ ml: 1 }}
-                                    />
-                                </Box>
-
                                 <Typography variant="h4" children={course.title} sx={{ my: 1 }} />
                                 <Typography variant="subtitle2" children={`By ${course.professor.fullname}`} />
                                 <Divider sx={{ my: 2 }} />
                                 <div dangerouslySetInnerHTML={{ __html: course.description }} style={{ lineHeight: 1.8 }} />
                             </CardContent>
                         </Card>
-                        <CourseScheduleTable
-                            id={'course_schedule_table'}
-                            data={schedules}
-                            handleOnCancelBook={handleCancelBooking}
-                            handleOnBook={handleBook}
-                        />
+                        <CourseScheduleList data={schedules} handleOnBook={handleBook} handleOnCancelBook={handleCancelBooking} />
                     </Grid>
                     <Grid item xs={12} md={4}>
-                        <Box display={{
-                            xs: 'none',
-                            md: 'block'
-                        }}>
-                            {BookPrice}
-                            {checkSchedButton}
-                        </Box>
-                        <Typography variant="h6" children="Class Feedbacks" gutterBottom />
-                        {displayFeedbacks(course.feedbacks)}
+                        <Rating />
+                        <Feedbacks />
                     </Grid>
                 </Grid>
             </Container>

@@ -10,8 +10,10 @@ use App\Models\CourseHistory;
 use App\Models\CourseSchedule;
 use App\Models\WalletTransactionHistory;
 use App\Models\CourseType;
+use App\Models\Status;
 use App\Repositories\CourseApplicationRepository;
 use App\Repositories\CourseCategoryRepository;
+use App\Repositories\CourseFeedbackRepository;
 use App\Repositories\CourseScheduleRepository;
 use App\Repositories\CourseHistoryRepository;
 use App\Repositories\CoursePackageRepository;
@@ -22,6 +24,8 @@ use App\Repositories\TranslationRepository;
 use App\Repositories\UserRepository;
 use Inertia\Inertia;
 use Carbon\Carbon;
+use DateTime;
+use DateTimeZone;
 use Illuminate\Http\Request;
 
 class CourseController extends Controller
@@ -44,6 +48,8 @@ class CourseController extends Controller
 
     public $coursePackageRepository;
 
+    public $courseFeedbackRepository;
+
     public function __construct()
     {
         $this->courseTypeRepository = new CourseTypeRepository();
@@ -55,6 +61,7 @@ class CourseController extends Controller
         $this->courseHistoryRepository = new CourseHistoryRepository();
         $this->walletTransactionHistoryRepository = new WalletTransactionHistoryRepository();
         $this->coursePackageRepository = new CoursePackageRepository();
+        $this->courseFeedbackRepository = new CourseFeedbackRepository();
     }
 
     public function index(SearchClassRequest $request)
@@ -97,9 +104,9 @@ class CourseController extends Controller
             'schedules'         => $schedules,
             'isBooked'          => auth()->user() && auth()->user()->isCourseBooked($id),
             'hasFeedback'       => auth()->user() && auth()->user()->hasFeedback($id),
-            'title'             => 'Course - ' . $course->title,
+            'title'             => $course->title,
         ])->withViewData([
-            'title'       => 'Course - ' . $course->title,
+            'title'       => $course->title,
             'description' => 'Course Details'
         ]);
     }
@@ -110,6 +117,7 @@ class CourseController extends Controller
         $schedule = CourseSchedule::find($schedule_id)->load('course');
         $isBooked = count($this->courseHistoryRepository->findByUserAndCourseScheduleID(auth()->user()->id, $schedule_id)) > 0;
         $isFullyBooked = count($this->courseHistoryRepository->findByCourseScheduleID($schedule_id)) == $schedule->max_participant;
+
         $userWallet = auth()->user()->userWallet()->first();
         $adminWallet = $this->userRepository->getAdmin()->userWallet()->first();
         $teacherWallet = $schedule->course->professor()->first()->userWallet()->first();
@@ -120,7 +128,7 @@ class CourseController extends Controller
                 'course_id'          => $schedule->course->id,
                 'user_id'            => auth()->user()->id,
             ]);
-            if ($schedule->course->courseType->name != CourseType::FREE) {
+            if ($schedule->course->courseType->type != CourseType::FREE) {
 
                 $newUserPoints =  $userWallet->points - $schedule->course->price;
                 $this->updateWalletHistory($userWallet, WalletTransactionHistory::BOOK, $newUserPoints, $courseHistory);
@@ -151,16 +159,11 @@ class CourseController extends Controller
     {
         $courseHistory = $this->courseHistoryRepository->findByUserAndCourseScheduleID(auth()->user()->id, $schedule_id)->first();
         $schedule = CourseSchedule::find($schedule_id)->load('course');
-        $course = $schedule->course;
-        $isCancellable = $course->is_cancellable;
-        $date = Carbon::parse($schedule->start_datetime);
-        $now = Carbon::now();
-        $dateDiff = $date->diffInDays($now);
         $userWallet = auth()->user()->userWallet()->first();
         $adminWallet = $this->userRepository->getAdmin()->userWallet()->first();
         $teacherWallet = $schedule->course->professor()->first()->userWallet()->first();
 
-        if(isset($courseHistory->id) && $isCancellable && $dateDiff >= $course->days_before_cancellation) {
+        if(@$courseHistory && $schedule->is_cancellable) {
             if ($schedule->course->courseType->name != CourseType::FREE) {
 
                 $userWalletTransaction = $this->walletTransactionHistoryRepository->findByUserWalletAndCourseHistoryID($userWallet->id, $courseHistory->id);
@@ -278,5 +281,158 @@ class CourseController extends Controller
         $userWallet->update([
             'points' => $newUserPoints
         ]);
+    }
+
+    public function attend($course_id, $schedule_id)
+    {
+        $course = $this->courseRepository->with(['professor', 'courseType', 'coursePackage', 'coursePackage.courses', 'courseCategory', 'exams'])->findOrFail($course_id);
+        $schedule = $this->courseScheduleRepository->findOrFail($schedule_id);
+
+        $isBooked = $schedule->students()->where('users.id', auth()->user()->id)->first();
+
+        if (!$isBooked && @$schedule->status != ucwords(Status::ONGOING)) {
+            return abort(401);
+        }
+
+        if ($isBooked && $isBooked->completed_at != null) {
+            return abort(401);
+        }
+
+        $activeStep = 0;
+
+        // Check if user already attended zoom class or watched video
+        $booking = auth()->user()->courseHistories()
+                        ->where('course_id', $course_id)
+                        ->where('course_schedule_id', $schedule_id)
+                        ->first();
+
+        if ($booking->is_watched && $activeStep == 0) $activeStep++;
+
+        // Check if user already taken exams
+        $examTaken = auth()->user()->exams()->where('course_schedule_id', $schedule_id)->get();
+
+        if ($examTaken && $examTaken->count() > 0 && $activeStep > 0) {
+            foreach ($examTaken as $exam) {
+                $activeStep++;
+            }
+        }
+
+        // Check if user already given a feedback
+        $feedbackGiven = $this->courseFeedbackRepository->isUserHasFeedback(auth()->user()->id, $course_id);
+
+        if (@$feedbackGiven && $activeStep == $course->exams->count() + 1) $activeStep++;
+
+        return Inertia::render('Portal/Course/Attend', [
+            'course'      => $course,
+            'schedule'    => $schedule,
+            'title'       => $course->title,
+            'active_step' => $activeStep,
+            'booking'     => $booking
+        ])->withViewData([
+            'title'       => $course->title
+        ]);
+    }
+
+    public function watch($course_id, $schedule_id)
+    {
+        $course = $this->courseRepository->with(['professor', 'courseType', 'coursePackage', 'courseCategory', 'exams'])->findOrFail($course_id);
+        $schedule = $this->courseScheduleRepository->findOrFail($schedule_id);
+
+        $booking = auth()->user()->courseHistories()
+                        ->where('course_id', $course_id)
+                        ->where('course_schedule_id', $schedule_id)
+                        ->first();
+
+        if (!@$booking) return abort(401);
+
+        return Inertia::render('Portal/Course/Watch', [
+            'course'   => $course,
+            'schedule' => $schedule,
+            'booking'  => $booking,
+            'title'    => $course->title
+        ])->withViewData([
+            'title'    => $course->title
+        ]);
+    }
+
+    public function doneWatching($course_id, $schedule_id)
+    {
+        $course = $this->courseRepository->findOrFail($course_id);
+
+        $booking = auth()->user()->courseHistories()
+                        ->where('course_id', $course_id)
+                        ->where('course_schedule_id', $schedule_id)
+                        ->first();
+
+        if (!@$booking) return abort(401);
+
+        $booking->update(['is_watched' => true]);
+
+        return to_route('course.attend.index', ['course_id' => $course_id, 'schedule_id' => $schedule_id])->with(
+            'success',
+            $course->is_live ? getTranslation('success.live_class.attended') : getTranslation('success.video.watched')
+        );
+    }
+
+    public function complete($course_id, $schedule_id)
+    {
+        $booking = auth()->user()->courseHistories()
+                        ->where('course_id', $course_id)
+                        ->where('course_schedule_id', $schedule_id)
+                        ->first();
+
+        if (!@$booking) return abort(401);
+
+        $booking->update(['completed_at' => Carbon::now()]);
+
+        $isBadgeReceived = $this->courseHistoryRepository->feedBadge($booking->id);
+        $earnedPoints = $this->giveRewards($course_id, $schedule_id);
+
+        $successMessage = '';
+
+        if ($isBadgeReceived) $successMessage .= getTranslation('success.badge.earn');
+
+        if ($earnedPoints > 0) $successMessage .= ' ' . getTranslation('sucess.points.earn') . $earnedPoints;
+
+        return to_route('course.details', ['id' => $course_id])->with(
+            'success',
+            $isBadgeReceived ? $successMessage : getTranslation('success.class.compelted')
+        );
+    }
+
+    private function giveRewards($course_id, $schedule_id)
+    {
+        $course = $this->courseRepository->with(['courseType', 'professor'])->findOrFail($course_id);
+
+        $courseHistory = auth()->user()->courseHistories()
+                        ->where('course_id', $course_id)
+                        ->where('course_schedule_id', $schedule_id)
+                        ->first();
+
+        if ($course->courseType->type != CourseType::EARN) return 0;
+
+        $userWallet = auth()->user()->userWallet()->first();
+        $adminWallet = $this->userRepository->getAdmin()->userWallet()->first();
+        $teacherWallet = $course->professor()->first()->userWallet()->first();
+
+        $pointsToGive = $course->points_earned;
+        $teacherCommission = (int)($course->points_earned / 100 * ($course->professor()->first()->commission_earn_rate));
+
+        $pointsToGive = $pointsToGive - $teacherCommission;
+
+        // Update admin points
+        $newUserPoints =  $userWallet->points + $pointsToGive;
+        $this->updateWalletHistory($userWallet, WalletTransactionHistory::EARN, $newUserPoints, $courseHistory);
+        $this->updateWallet($userWallet, $newUserPoints);
+
+        $newTeacherPoints = $teacherWallet->points + $teacherCommission;
+        $this->updateWalletHistory($teacherWallet, WalletTransactionHistory::COMMISSION, $newTeacherPoints, $courseHistory);
+        $this->updateWallet($teacherWallet, $newTeacherPoints);
+
+        $newAdminPoints =  $adminWallet->points - $course->points_earned;
+        $this->updateWalletHistory($adminWallet, WalletTransactionHistory::DEDUCT, $newAdminPoints, $courseHistory);
+        $this->updateWallet($adminWallet, $newAdminPoints);
+
+        return $pointsToGive;
     }
 }
