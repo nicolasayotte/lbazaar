@@ -8,6 +8,7 @@ use App\Mail\EmailNotification;
 use App\Models\Country;
 use App\Models\Role;
 use App\Models\User;
+use App\Models\UserWallet;
 use Exception;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -59,7 +60,10 @@ class RegisterStudentController extends Controller
 
         $user = User::create([...$request->all(), 'is_enabled' => true]);
         $user->attachRole(Role::STUDENT);
-
+        UserWallet::create([
+            'user_id' => $user->id,
+            'points' => 0,
+        ]);
         event(new Registered($user));
 
         if (Auth::attempt([
