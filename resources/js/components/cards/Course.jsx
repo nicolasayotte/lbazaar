@@ -2,9 +2,11 @@ import { Link } from "@inertiajs/inertia-react";
 import { Grid, Card, CardContent, Button, Typography, CardMedia, Box, Chip} from "@mui/material"
 import { getRoute } from "../../helpers/routes.helper"
 import placeholderImg from "../../../img/placeholder.png"
+import { usePage } from "@inertiajs/inertia-react"
 
 const Course = ({ course, showDescription = true, showDate = true, viewDetailId = "id", imagePosition = "left" }) => {
 
+    const { translatables } = usePage().props
     const description = (
         showDescription &&
         <Typography
@@ -91,7 +93,7 @@ const Course = ({ course, showDescription = true, showDate = true, viewDetailId 
                                     <Button
                                         size="small"
                                         variant="contained"
-                                        children="View More"
+                                        children={translatables.texts.view_more}
                                     />
                                 </Link>
                             </Box>

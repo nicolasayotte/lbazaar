@@ -6,7 +6,7 @@ import BasePasswordForm from "../../components/common/forms/BasePasswordForm"
 const UpdateTempPassword  = ({ errors, translatables }) => {
 
     const notification = (
-        <Typography variant="h5">Password Temporary</Typography>
+        <Typography variant="h5">{translatables.texts.password_temporary}</Typography>
     )
 
     return (
@@ -18,7 +18,7 @@ const UpdateTempPassword  = ({ errors, translatables }) => {
                             <CardContent sx={{ p: 3 }}>
                                 { notification }
                                     <Divider sx={{ my: 2 }} />
-                                    <Typography variant="h8">Your password is still the temporary. For security purposes, please update your password </Typography>
+                                    <Typography variant="h8">{translatables.texts.temporary_password_notice}</Typography>
                             <BasePasswordForm
                                 errors={errors.passwords}
                                 messages={translatables}

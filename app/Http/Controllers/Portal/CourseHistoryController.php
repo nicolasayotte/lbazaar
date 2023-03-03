@@ -56,9 +56,9 @@ class CourseHistoryController extends Controller
             'status'                => @$request['status'] ?? '',
             'language'              => @$request['language'] ?? '',
             'sort'                  => @$request['sort'] ?? 'course_histories.created_at:desc',
-            'title'                 => 'My Page | Class Histories'
+            'title'                 => getTranslation('texts.mypage').' | '.getTranslation('texts.class_history')
         ])->withViewData([
-            'title'                 => 'My Page | Class Histories'
+            'title'                 => getTranslation('texts.mypage').' | '.getTranslation('texts.class_history')
         ]);
     }
 }

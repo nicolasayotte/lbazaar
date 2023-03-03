@@ -4,10 +4,11 @@ import { AppBar, Box, Divider, Drawer, IconButton, List, ListItem, ListItemButto
 import { useState } from "react"
 import routes from "../../helpers/routes.helper"
 import PointsIcon from '@mui/icons-material/WorkspacePremium'
+import LanguageNavbar from "./LanguageNavbar"
 
 const Navbar = () => {
 
-    const { isLoggedIn, auth, window, translatables } = usePage().props
+    const { isLoggedIn, auth, window, translatables, locale } = usePage().props
 
     const [showDrawer, setShowDrawer] = useState(false);
 
@@ -21,37 +22,37 @@ const Navbar = () => {
 
     const navItems = [
         {
-            name: 'Home',
+            name: `${translatables.texts.home}`,
             link: '/'
         },
         {
-            name: 'Browse Classes',
+            name: `${translatables.texts.browse_classes}`,
             link: routes["course.index"]
         },
         {
-            name: 'Inquiries',
+            name: `${translatables.title.inquiries.index}`,
             link: routes["inquiries.index"]
         }
     ]
 
     const authNavItems = [
         {
-            name: 'Sign Up',
+            name: `${translatables.texts.sign_up}`,
             link: routes["register.index"],
             auth: false
         },
         {
-            name: 'Sign In',
+            name: `${translatables.texts.sign_in}`,
             link: routes["portal.login"],
             auth: false
         },
         {
-            name: 'Profile',
+            name: `${translatables.texts.profile}`,
             link: routes["mypage.profile.index"],
             auth: true
         },
         {
-            name: 'Sign Out',
+            name: `${translatables.texts.sign_out}`,
             link: routes["portal.logout"],
             auth: true,
             method: 'POST'
@@ -154,6 +155,7 @@ const Navbar = () => {
     return (
         <>
             <AppBar position="fixed" color="primary" id="appNavbar">
+                <LanguageNavbar locale={locale} />
                 <Toolbar>
                     <Typography variant="h6" sx={{ my: 3, mr: 4 }}>L-Earning Bazaar</Typography>
                     <Box sx={{ flexGrow: 1, display: { xs: "none", sm: "flex" } }}>

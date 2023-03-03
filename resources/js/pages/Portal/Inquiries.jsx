@@ -45,7 +45,7 @@ const Inquiries = () => {
         <Box sx={{ minHeight: '100vh' }}>
             <Header>
                 <Container sx={{ position: 'relative', zIndex: 500 }}>
-                    <Typography variant="h4" children="Inquiry" textAlign="center" />
+                    <Typography variant="h4" children={translatables.title.inquiries.view} textAlign="center" />
                 </Container>
             </Header>
             <Container>
@@ -56,7 +56,7 @@ const Inquiries = () => {
                                 <Grid container spacing={2}>
                                     <Grid item xs={12} sm={6}>
                                         <Input
-                                            label="Name"
+                                            label={translatables.texts.name}
                                             name="name"
                                             value={data.name}
                                             onChange={handleOnChange}
@@ -65,7 +65,7 @@ const Inquiries = () => {
                                     </Grid>
                                     <Grid item xs={12} sm={6} >
                                         <Input
-                                            label="Email Address"
+                                            label={translatables.texts.email}
                                             type="email"
                                             name="email"
                                             value={data.email}
@@ -75,7 +75,7 @@ const Inquiries = () => {
                                     </Grid>
                                     <Grid item xs={12}>
                                         <Input
-                                            label="Subject"
+                                            label={translatables.texts.subject}
                                             name="subject"
                                             value={data.subject}
                                             onChange={handleOnChange}
@@ -84,11 +84,11 @@ const Inquiries = () => {
                                     </Grid>
                                     <Grid item xs={12}>
                                         <Input
-                                            label="Message"
+                                            label={translatables.texts.message}
                                             multiline
                                             minRows={9}
                                             name="message"
-                                            helperText="Must be less than 200 characters"
+                                            helperText={translatables.texts.inquiry_help}
                                             value={data.message}
                                             onChange={handleOnChange}
                                             errors={errors}
@@ -99,7 +99,7 @@ const Inquiries = () => {
                                             onClick={handleSubmit}
                                             variant="contained"
                                             disabled={processing}
-                                        >Submit</Button>
+                                        >{translatables.texts.submit}</Button>
                                     </Grid>
                                 </Grid>
                             </CardContent>
