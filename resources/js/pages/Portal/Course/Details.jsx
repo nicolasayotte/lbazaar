@@ -16,6 +16,8 @@ const Details = () => {
 
     const { auth, course, schedules, translatables } = usePage().props
 
+    console.log(course)
+
     const [dialog, setDialog] = useState({
         open: false,
         title: '',
@@ -73,7 +75,7 @@ const Details = () => {
         })
     }
 
-    const Feedbacks = () => course.feedbacks && course.feedbacks.length > 0 && course.feedbacks.map(feedback => (
+    const Feedbacks = () => course.top_feedbacks && course.top_feedbacks.length > 0 && course.top_feedbacks.map(feedback => (
         <Feedback auth={auth} key={feedback.id} feedback={feedback}/>
     ))
 

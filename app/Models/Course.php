@@ -13,6 +13,8 @@ class Course extends Model
 
     const FEATURED_CLASS_COUNT_DISPLAY = 8;
 
+    const TOP_FEEDBACKS_DISPLAY_COUNT = 5;
+
     const PER_PAGE = 10;
 
     const LIVE = 'live';
@@ -40,7 +42,8 @@ class Course extends Model
 
     protected $appends = [
         'overall_rating',
-        'format'
+        'format',
+        'top_feedbacks'
     ];
 
     protected $casts = [
@@ -149,5 +152,15 @@ class Course extends Model
     public function getFormatAttribute()
     {
         return ucwords($this->is_live ? self::LIVE : self::ON_DEMAND , '-');
+    }
+
+    public function getTopFeedbacksAttribute()
+    {
+        return $this->feedbacks()
+                    ->with('user')
+                    ->limit(self::TOP_FEEDBACKS_DISPLAY_COUNT)
+                    ->orderBy('rating', 'desc')
+                    ->orderBy('created_at', 'desc')
+                    ->get();
     }
 }
