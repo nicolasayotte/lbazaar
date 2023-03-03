@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Mail\ResetPassword;
+use App\Models\Role;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -27,8 +28,8 @@ class User extends Authenticatable implements MustVerifyEmail
     public const RANDOM_PASSWORD_STRING_LENGTH = 8;
 
     public const COMMISSION = [
-        ROLE::ADMIN => 20,
-        ROLE::TEACHER => 80,
+        Role::ADMIN => 20,
+        Role::TEACHER => 80,
       ];
 
     protected $appends = ['fullname'];
