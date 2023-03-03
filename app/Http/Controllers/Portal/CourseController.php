@@ -10,6 +10,7 @@ use App\Models\CourseHistory;
 use App\Models\CourseSchedule;
 use App\Models\WalletTransactionHistory;
 use App\Models\CourseType;
+use App\Models\Status;
 use App\Repositories\CourseApplicationRepository;
 use App\Repositories\CourseCategoryRepository;
 use App\Repositories\CourseScheduleRepository;
@@ -22,6 +23,8 @@ use App\Repositories\TranslationRepository;
 use App\Repositories\UserRepository;
 use Inertia\Inertia;
 use Carbon\Carbon;
+use DateTime;
+use DateTimeZone;
 use Illuminate\Http\Request;
 
 class CourseController extends Controller
@@ -151,16 +154,11 @@ class CourseController extends Controller
     {
         $courseHistory = $this->courseHistoryRepository->findByUserAndCourseScheduleID(auth()->user()->id, $schedule_id)->first();
         $schedule = CourseSchedule::find($schedule_id)->load('course');
-        $course = $schedule->course;
-        $isCancellable = $course->is_cancellable;
-        $date = Carbon::parse($schedule->start_datetime);
-        $now = Carbon::now();
-        $dateDiff = $date->diffInDays($now);
         $userWallet = auth()->user()->userWallet()->first();
         $adminWallet = $this->userRepository->getAdmin()->userWallet()->first();
         $teacherWallet = $schedule->course->professor()->first()->userWallet()->first();
 
-        if(isset($courseHistory->id) && $isCancellable && $dateDiff >= $course->days_before_cancellation) {
+        if(@$courseHistory && $schedule->is_cancellable) {
             if ($schedule->course->courseType->name != CourseType::FREE) {
 
                 $userWalletTransaction = $this->walletTransactionHistoryRepository->findByUserWalletAndCourseHistoryID($userWallet->id, $courseHistory->id);
@@ -277,6 +275,26 @@ class CourseController extends Controller
     public function updateWallet($userWallet, $newUserPoints) {
         $userWallet->update([
             'points' => $newUserPoints
+        ]);
+    }
+
+    public function attend($course_id, $schedule_id)
+    {
+        $course = $this->courseRepository->findOrFail($course_id);
+        $schedule = $this->courseScheduleRepository->findOrFail($schedule_id);
+
+        $isBooked = $schedule->students()->where('users.id', auth()->user()->id)->first();
+
+        if (!$isBooked && @$schedule->status != ucwords(Status::ONGOING)) {
+            return abort(401);
+        }
+
+        return Inertia::render('Portal/Course/Attend', [
+            'course'   => $course,
+            'schedule' => $schedule,
+            'title'    => $course->title
+        ])->withViewData([
+            'title'    => $course->title
         ]);
     }
 }

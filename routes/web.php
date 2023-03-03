@@ -294,6 +294,9 @@ Route::prefix('schedules')->name('schedules.')->group(function() {
 # Attend Classes
 Route::prefix('classes/{course_id}/attend/{schedule_id}')->middleware(['auth'])->name('course.attend.')->group(function() {
 
+    # Attend
+    Route::get('/', [CourseController::class, 'attend'])->name('index');
+
     # Exams
     Route::prefix('/exams/{id}')->name('exams.')->group(function() {
         Route::get('/', [ExamController::class, 'view'])->name('view');
