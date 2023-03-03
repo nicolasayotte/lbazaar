@@ -12,25 +12,13 @@ const CourseScheduleTable = ({ id, data, handleOnCancelBook, handleOnBook }) => 
         return booking.is_cancelled != true;
     }
 
-    function displayisLiveOrOnDemand(schedule) {
-        return (
-            <Grid container spacing={1} alignItems={'center'}>
-                <Grid item>
-                    { schedule.course.is_live  ? <Live sx={{ color: '#dc143c' }}/> : <OnDemand color="primary"/> }
-                </Grid>
-                <Grid item>
-                    <Typography
-                        color = {'grey'}
-                        variant="subtitle2"
-                        children={schedule.course.is_live ? translatables.texts.live : translatables.texts.on_demand}
-                    />
-                </Grid>
-            </Grid>
-        );
-    }
+    const displayTableData = rows => rows.map((row, index) => {
 
-    function displayParticipants(schedule) {
-        return (
+        let userBookedCourses = isLoggedIn ? auth.user.course_histories.filter(filterCancelledBookings) : []
+        let isBooked = userBookedCourses.filter(booking => booking.course_schedule_id === row.id).length > 0
+        let isFullyBooked = row.course_history.filter(filterCancelledBookings).length == row.max_participant
+
+        const Participants = () => (
             <Grid container spacing={1} alignItems={'center'}>
                 <Grid item >
                     <PeopleAlt />
@@ -39,24 +27,32 @@ const CourseScheduleTable = ({ id, data, handleOnCancelBook, handleOnBook }) => 
                     <Typography
                         color = {'grey'}
                         variant="subtitle2"
-                        children={`${schedule.course_history.filter(filterCancelledBookings).length} / ${schedule.max_participant}`}
+                        children={`${row.course_history.filter(filterCancelledBookings).length} / ${row.max_participant}`}
                     />
                 </Grid>
             </Grid>
-        );
-    }
+        )
 
-    const displayTableData = rows => rows.map((row, index) => {
-
-        let userBookedCourses = isLoggedIn ? auth.user.course_histories.filter(filterCancelledBookings) : []
-        let isBooked = userBookedCourses.filter(booking => booking.course_schedule_id === row.id).length > 0
-        let isFullyBooked = row.course_history.filter(filterCancelledBookings).length == row.max_participant
+        const Format = () => (
+            <Grid container spacing={1} alignItems={'center'}>
+                <Grid item>
+                    { row.course.is_live  ? <Live sx={{ color: '#dc143c' }}/> : <OnDemand color="primary"/> }
+                </Grid>
+                <Grid item>
+                    <Typography
+                        color = {'grey'}
+                        variant="subtitle2"
+                        children={row.course.is_live ? translatables.texts.live : translatables.texts.on_demand}
+                    />
+                </Grid>
+            </Grid>
+        )
 
         return (
             <TableRow variant="striped" key={index}>
-                <TableCell children={row.start_datetime}/>
-                <TableCell align="center" children={displayParticipants(row)} />
-                <TableCell align="center" children={displayisLiveOrOnDemand(row)} />
+                <TableCell children={row.simple_start_datetime}/>
+                <TableCell align="center" children={<Participants />} />
+                <TableCell align="center" children={<Format />} />
                 <TableCell align="center">
                     <Stack direction="row" spacing={1} justifyContent="center">
                         { isBooked && (
