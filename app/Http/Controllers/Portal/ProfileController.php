@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Http;
+use App\Facades\Asset;
 
 class ProfileController extends Controller
 {
@@ -30,17 +31,19 @@ class ProfileController extends Controller
 
         return Inertia::render('Portal/MyPage/Profile/Index', [
             'countries' => $countries,
-            'title' => 'My Page | Profile'
+            'title' => getTranslation('texts.mypage').' | '.getTranslation('texts.profile')
         ])->withViewData([
-            'title' => 'My Page | Profile'
+            'title' => getTranslation('texts.mypage').' | '.getTranslation('texts.profile')
         ]);
     }
 
     public function update(ProfileRequest $request)
     {
         $user = $this->userRepository->findOrFail(auth()->user()->id);
+        $inputs= $request->all();
 
-        $user->update($request->all());
+        $inputs['image'] = Asset::upload($request->files->get('image'));
+        $user->update($inputs);
 
         return redirect()->route('mypage.profile.index');
     }

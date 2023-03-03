@@ -4,22 +4,28 @@ import { useDispatch } from "react-redux"
 import Input from "../../../../../components/forms/Input"
 import { displaySelectOptions, handleOnChange } from "../../../../../helpers/form.helper"
 import { actions } from "../../../../../store/slices/ToasterSlice"
+import { usePage } from '@inertiajs/inertia-react'
+import FileInput from "../../../../../components/forms/CustomFileInput"
+import { useState } from "react"
 
 const ProfileForm = ({ errors, auth, countries, messages, routes }) => {
 
     const dispatch = useDispatch()
+    const { translatables } = usePage().props
 
-    const { data, setData, patch, processing } = useForm('ProfileForm', {
+    const { data, setData, post, processing } = useForm('ProfileForm', {
         first_name: auth.user.first_name,
         last_name: auth.user.last_name,
+        image: auth.user.image,
         email: auth.user.email,
         country_id: auth.user.country_id
     })
+    const [imgPreview, setImgPreview] = useState(data && data.image ? data.image : null)
 
     const handleSubmit = e => {
         e.preventDefault()
 
-        patch(routes["mypage.profile.update"], {
+        post(routes["mypage.profile.update"], {
             preserveScroll: true,
             errorBag: 'profile',
             onSuccess: () => dispatch(actions.success({
@@ -31,15 +37,37 @@ const ProfileForm = ({ errors, auth, countries, messages, routes }) => {
         })
     }
 
+    const handleOnFileUpload = (e, setPreviewMethod) => {
+        const uploadedFile = e.target.files[0]
+
+        if (uploadedFile) {
+            setPreviewMethod(URL.createObjectURL(uploadedFile))
+            setData(data => ({
+                ...data,
+                [e.target.name]: uploadedFile
+            }))
+        }
+    }
+
     return (
         <Card key="Profile Form Card">
             <form onSubmit={handleSubmit}>
                 <CardContent sx={{ p: 4 }}>
-                    <Typography fontFamily="inherit" variant="h5" component="div" sx={{ mb: 4 }}>Edit Profile</Typography>
+                    <Typography fontFamily="inherit" variant="h5" component="div" sx={{ mb: 4 }}>{translatables.texts.edit_profile}</Typography>
                     <Grid container spacing={3}>
+                        <Grid item xs={12} md={12}>
+                            <FileInput
+                                name="image"
+                                value={data.image}
+                                helperText={`${translatables.texts.recommended_size}: 400x400`}
+                                onChange={e => handleOnFileUpload(e, setImgPreview)}
+                                src={imgPreview}
+                                errors={errors}
+                            />
+                        </Grid>
                         <Grid item xs={12} md={6}>
                             <Input
-                                label="First Name"
+                                label={translatables.texts.first_name}
                                 name="first_name"
                                 value={data.first_name}
                                 onChange={e => handleOnChange(e, setData)}
@@ -48,7 +76,7 @@ const ProfileForm = ({ errors, auth, countries, messages, routes }) => {
                         </Grid>
                         <Grid item xs={12} md={6}>
                             <Input
-                                label="Last Name"
+                                label={translatables.texts.last_name}
                                 name="last_name"
                                 value={data.last_name}
                                 onChange={e => handleOnChange(e, setData)}
@@ -57,7 +85,7 @@ const ProfileForm = ({ errors, auth, countries, messages, routes }) => {
                         </Grid>
                         <Grid item xs={12}>
                             <Input
-                                label="Email"
+                                label={translatables.texts.email}
                                 disabled
                                 name="email"
                                 value={data.email}
@@ -66,7 +94,7 @@ const ProfileForm = ({ errors, auth, countries, messages, routes }) => {
                         </Grid>
                         <Grid item xs={12}>
                             <Input
-                                label="Country"
+                                label={translatables.texts.country}
                                 select
                                 name="country_id"
                                 value={data.country_id}
@@ -82,7 +110,7 @@ const ProfileForm = ({ errors, auth, countries, messages, routes }) => {
                                 variant="contained"
                                 onClick={handleSubmit}
                                 disabled={processing}
-                            >Update</Button>
+                            >{translatables.texts.update_profile}</Button>
                         </Grid>
                     </Grid>
                 </CardContent>

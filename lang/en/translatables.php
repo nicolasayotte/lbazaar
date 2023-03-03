@@ -216,6 +216,13 @@ return [
         'number_users_booked' => 'Users Booked',
         'class_style' => 'On Demand/Live',
     ],
+    'wallet_history' => [
+        'type' => 'Transaction Type',
+        'id' => 'Transaction ID',
+    ],
+    'top_page' => [
+        'description' => 'learning bazaar welcome description',
+    ],
     'texts' => [
         'actions' => 'Actions',
         'add_choice' => 'Add Choice',
@@ -344,6 +351,28 @@ return [
         'exchange_points' => 'Exchange Points',
         'points_to_convert_to_nft' => 'Points to convert to NFT',
         'add_points' => 'Add Points',
-        'zoom_link' => 'Zoom Link'
+        'zoom_link' => 'Zoom Link',
+        'home' => 'Home',
+        'browse_classes' => 'Browse Classes',
+        'sign_up' => 'Sign up',
+        'search' => 'Search',
+        'search_class_name' => 'Search for class name',
+        'view_more' => 'View more',
+        'view_profile' => 'View Profile',
+        'back_to_sign_in' => 'Back to sign in',
+        'forgot_password' => 'Forgot Password',
+        'send_request' => 'Send Request',
+        'password' => 'Password',
+        'create_account' => 'Create Account',
+        'password_temporary' => 'Password Temporary',
+        'temporary_password_notice' => 'Your password is still the temporary. For security purposes, please update your password',
+        'class_history' => 'Class History',
+        'featured_classes' => 'Featured Classes',
+        'coming_soon' => 'Coming Soon',
+        'inquiry_help' => 'Must be less than 200 characters',
+        'mypage' => 'My Page',
+        'wallet_history' => 'Wallet History',
+        'from' => 'From',
+        'to' => 'To',
     ]
 ];

@@ -13,4 +13,9 @@ class UserWallet extends Model
         'user_id',
         'points',
     ];
+
+    public function userWalletTransactions()
+    {
+        return $this->hasMany(WalletTransactionHistory::class, 'user_wallet_id', 'id');
+    }
 }

@@ -4,11 +4,12 @@ import { actions } from '../../store/slices/ToasterSlice'
 import { useDispatch } from "react-redux"
 import Input from "../../components/forms/Input"
 import routes from "../../helpers/routes.helper"
+import { usePage } from '@inertiajs/inertia-react'
 
 const Login = () => {
 
     const dispatch = useDispatch()
-
+    const { translatables } = usePage().props
     const { data, processing, setData, post, errors } = useForm({
         email: '',
         password: ''
@@ -43,10 +44,10 @@ const Login = () => {
                     <Card>
                         <CardContent sx={{ p: 3 }}>
                             <form method="POST" onSubmit={handleSubmit}>
-                                <Typography variant="h5" textAlign='center' sx={{ mb: 2 }}>SIGN IN</Typography>
+                                <Typography variant="h5" textAlign='center' sx={{ mb: 2 }}>{translatables.texts.sign_in}</Typography>
                                 <Box>
                                     <Input
-                                        label="Email"
+                                        label={translatables.texts.email}
                                         type="email"
                                         fullWidth
                                         name="email"
@@ -57,7 +58,7 @@ const Login = () => {
                                 </Box>
                                 <Box sx={{ my: 2 }}>
                                     <Input
-                                        label="Password"
+                                        label={translatables.texts.password}
                                         type="password"
                                         fullWidth
                                         name="password"
@@ -67,7 +68,7 @@ const Login = () => {
                                     />
                                 </Box>
                                 <Typography color="primary" mb={2} variant="caption" display="block">
-                                    <Link href={routes["forgot.password.index"]}>Forgot Password?</Link>
+                                    <Link href={routes["forgot.password.index"]}>{translatables.texts.forgot_password}?</Link>
                                 </Typography>
                                 <Button
                                     variant="contained"
@@ -75,12 +76,12 @@ const Login = () => {
                                     type="submit"
                                     onClick={handleSubmit}
                                     disabled={processing}
-                                >SIGN IN</Button>
+                                >{translatables.texts.sign_in}</Button>
                             </form>
                         </CardContent>
                     </Card>
                     <Box sx={{ textAlign: 'center', mt: 3 }}>
-                        <Link href={routes["register.index"]}><Button>Create account</Button></Link>
+                        <Link href={routes["register.index"]}><Button>{translatables.texts.create_account}</Button></Link>
                     </Box>
                 </Grid>
             </Grid>

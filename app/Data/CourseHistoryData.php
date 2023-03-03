@@ -151,7 +151,7 @@ class CourseHistoryData
         $courseHistoryData->setCategory($courseHistory->course->courseCategory->name);
         $courseHistoryData->setLanguage($courseHistory->course->language);
         $courseHistoryData->setStatus($courseHistory->completed_at != null ? CourseHistory::COMPLETED : CourseHistory::ONGOING);
-        $courseHistoryData->setBookedDate($courseHistory->created_at->format('Y-m-d H:i'));
+        $courseHistoryData->setBookedDate($courseHistory->created_at);
         $courseHistoryData->setHasFeedback(Auth::user()->hasFeedback($courseHistory->course->id));
 
         return $courseHistoryData->getProperties();

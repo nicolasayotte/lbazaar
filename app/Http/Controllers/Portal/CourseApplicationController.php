@@ -42,9 +42,9 @@ class CourseApplicationController extends Controller
             'status'             => @$request['status'] ?? '',
             'sort'               => @$request['sort'] ?? 'created_at:desc',
             'page'               => @$request['page'] ?? 1,
-            'title'              => 'My Page | Class Application'
+            'title'              => getTranslation('texts.mypage').' | '.getTranslation('title.class.applications.view')
         ])->withViewData([
-            'title'              => 'My Page | Class Application'
+            'title'              => getTranslation('texts.mypage').' | '.getTranslation('title.class.applications.view')
         ]);
     }
 
@@ -53,7 +53,7 @@ class CourseApplicationController extends Controller
         return Inertia::render('Portal/MyPage/ClassApplications/Form', [
             'categoryOptions'    => $this->courseCategoryRepository->getDropdownData(),
             'typeOptions'        => $this->courseTypeRepository->getDropdownData(),
-            'title'              => 'My Page | Class Application',
+            'title'              => getTranslation('texts.mypage').' | '.getTranslation('title.class.applications.view'),
             'command'            => Session::get('command')
         ])->withViewData([
             'title'              => Session::has('command') ? Session::get("command") : ''
@@ -70,9 +70,9 @@ class CourseApplicationController extends Controller
     {
         return Inertia::render('Portal/MyPage/ClassApplications/View',[
             'courseApplication'     => CourseApplicationData::fromModel($this->courseApplicationRepository->with(['professor.classification'])->findOrFail($id)),
-            'title'                 => 'My Page | Class Application'
+            'title'                 => getTranslation('texts.mypage').' | '.getTranslation('title.class.applications.view')
         ])->withViewData([
-            'title'                 => 'My Page | Class Application'
+            'title'                 => getTranslation('texts.mypage').' | '.getTranslation('title.class.applications.view')
         ]);
     }
 

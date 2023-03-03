@@ -8,7 +8,7 @@ import Header from "../../components/common/Header";
 
 const TopPage = () => {
 
-    const { courses, teachers, upcomingCourses } = usePage().props
+    const { courses, teachers, upcomingCourses, translatables } = usePage().props
 
     const { data, setData, get } = useForm({
         search_text: ''
@@ -41,7 +41,7 @@ const TopPage = () => {
                 <Container>
                     <Box sx={{ color: "white" }}>
                         <Typography variant="h4" align="center" gutterBottom children="Welcome to LE Bazaar" />
-                        <Typography variant="subtitle1" align="center" gutterBottom>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</Typography>
+                        <Typography variant="subtitle1" align="center" gutterBottom>{ translatables.top_page.description }</Typography>
                     </Box>
                     <form onSubmit={handleFormSubmit}>
                         <Grid
@@ -61,7 +61,7 @@ const TopPage = () => {
                                     fullWidth
                                     size="small"
                                     variant="outlined"
-                                    placeholder="Search for class name"
+                                    placeholder={translatables.texts.search_class_name}
                                     inputProps={{
                                         style: {
                                             backgroundColor: 'white',
@@ -77,7 +77,7 @@ const TopPage = () => {
                                 <Button
                                     type="submit"
                                     onClick={handleFormSubmit}
-                                    children="Search"
+                                    children={translatables.texts.search}
                                     variant="contained"
                                     sx={{ height: '100%' }}
                                     fullWidth
@@ -90,18 +90,18 @@ const TopPage = () => {
             <Container>
                 <Grid container spacing={2}>
                     <Grid item xs={12} md={8}>
-                        <Typography variant="h5" gutterBottom children="Featured Classes" />
+                        <Typography variant="h5" gutterBottom children={translatables.texts.featured_classes} />
                         { displayCourses(courses) }
                         <Box textAlign="center">
                             <Link href={routes["course.index"]}>
                                 <Button sx={{mt: 2, mb: 2}} variant="contained" disableElevation>
-                                    Browse Classes
+                                   { translatables.texts.browse_classes }
                                 </Button>
                             </Link>
                         </Box>
                     </Grid>
                     <Grid item xs={12} md={4}>
-                        <Typography variant="h5" gutterBottom children="Coming Soon" />
+                        <Typography variant="h5" gutterBottom children={translatables.texts.coming_soon} />
                         { displayCourses(upcomingCourses, false, 'course_id', 'top') }
                         <Typography variant="h5" gutterBottom children="Featured Teachers" />
                         { displayTeachers(teachers) }
