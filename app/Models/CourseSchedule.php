@@ -26,7 +26,8 @@ class CourseSchedule extends Model
         'total_bookings',
         'formatted_start_datetime',
         'simple_start_datetime',
-        'is_deletable'
+        'is_deletable',
+        'is_cancellable'
     ];
 
     public function professor()
@@ -110,5 +111,20 @@ class CourseSchedule extends Model
     public function getIsDeletableAttribute()
     {
         return $this->status == ucwords(Status::UPCOMING) && $this->getTotalBookingsAttribute() <= 0;
+    }
+
+    public function getIsCancellableAttribute()
+    {
+        $course = $this->course()->first();
+
+        $timezone = new DateTimeZone(env('APP_TIMEZONE'));
+
+        $now = Carbon::parse(new DateTime('now', $timezone));
+
+        $start = Carbon::parse(new DateTime($this->start_datetime, $timezone));
+
+        if (!$course->is_cancellable) return false;
+
+        return $now->addDays($course->days_before_cancellation)->gt($start) ? false : true;
     }
 }

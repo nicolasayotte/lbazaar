@@ -39,7 +39,8 @@ class Course extends Model
     ];
 
     protected $appends = [
-        'overall_rating'
+        'overall_rating',
+        'format'
     ];
 
     protected $casts = [
@@ -143,5 +144,10 @@ class Course extends Model
     public function getVideoPathAttribute($path)
     {
         return @$path ? Asset::get($path) : null;
+    }
+
+    public function getFormatAttribute()
+    {
+        return ucwords($this->is_live ? self::LIVE : self::ON_DEMAND , '-');
     }
 }
