@@ -16,8 +16,6 @@ const Details = () => {
 
     const { auth, course, schedules, translatables } = usePage().props
 
-    console.log(course)
-
     const [dialog, setDialog] = useState({
         open: false,
         title: '',

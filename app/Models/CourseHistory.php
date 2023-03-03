@@ -19,7 +19,8 @@ class CourseHistory extends Model
         'course_id',
         'course_schedule_id',
         'completed_at',
-        'is_cancelled'
+        'is_cancelled',
+        'is_watched'
     ];
 
     public function courseSchedule()

@@ -13,23 +13,17 @@ const CourseFeedback = () => {
 
     const dispatch = useDispatch()
 
-    const { translatables, course, feedback, errors } = usePage().props;
+    const { translatables, course, schedule, feedback, errors } = usePage().props;
 
     const { data, setData, post, processing, reset, clearErrors } = useForm({
-        rating: feedback.rating,
-        comments: feedback.comments
+        rating: feedback.rating ?? 0,
+        comments: feedback.comments ?? ''
     })
 
     const handleSubmit = (e) => {
         e.preventDefault()
 
-        post(getRoute('course.feedback.store', { id: course.id }), {
-            onSuccess: () => {
-                clearErrors()
-                dispatch(actions.success({
-                    message: translatables.success.feedback
-                }))
-            },
+        post(getRoute('course.attend.feedback.store', { course_id: course.id, schedule_id: schedule.id }), {
             onError: () => dispatch(actions.error({
                 message: translatables.error
             }))

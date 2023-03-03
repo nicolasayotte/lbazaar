@@ -44,7 +44,8 @@ return [
             ],
             'create' => 'Class successfully created',
             'update' => 'Class successfully updated',
-            'delete' => 'Class successfully deleted'
+            'delete' => 'Class successfully deleted',
+            'completed' => 'Class successfully completed'
         ],
         'category' => [
             'update' => 'Category successfully updated',
@@ -81,6 +82,18 @@ return [
         ],
         'packages' => [
             'create' => 'Package successfully created'
+        ],
+        'badge' => [
+            'earn' => 'You have successfully received a badge'
+        ],
+        'points' => [
+            'earn' => 'You have successfully earned points: '
+        ],
+        'video' => [
+            'watched' => 'You have successfully watched the class video'
+        ],
+        'live_class' => [
+            'attended' => 'You have successfully attended a live class'
         ]
     ],
     'confirm' => [
@@ -238,6 +251,11 @@ return [
         'confirm' => 'Confirm',
         'confirm_password' => 'Confirm Password',
         'content_information' => 'Content Information',
+        'complete' => 'Complete',
+        'complete_class' => 'Complete Class',
+        'complete_class_description' => 'Congratulations! You have successfully completed this class',
+        'complete_class_earn_badge' => 'Complete this class to earn a badge',
+        'complete_classes_earn_badge' => 'Complete these classes to earn a badge',
         'correct_value' => 'Correct Value',
         'country' => 'Country',
         'create_category' => 'Create Category',
@@ -259,7 +277,9 @@ return [
         'delete_class' => 'Delete Class',
         'delete_classification' => 'Delete Classification',
         'delete_schedule' => 'Delete Schedule',
+        'description' => 'Description',
         'disable' => 'Disable',
+        'done_watching' => 'Done Watching',
         'edit' => 'Edit',
         'edit_category' => 'Edit Category',
         'edit_class' => 'Edit Class',
@@ -275,9 +295,13 @@ return [
         'free' => 'Free',
         'fully_booked' => 'Fully Booked',
         'general_information' => 'General Information',
+        'give_feedback' => 'Give Feedback',
+        'give_feedback_description' => 'Let us know what you think of this class',
         'keyword' => 'Keyword',
         'language' => 'Language',
         'last_name' => 'Last Name',
+        'live_class' => 'Live Class',
+        'live_class_description' => 'Attend the live Zoom class together with the teacher and fellow attendees',
         'mark_done' => 'Mark as Done',
         'message' => 'Message',
         'name' => 'Name',
@@ -297,6 +321,7 @@ return [
         'question' => 'Question',
         'rating' => 'Rating',
         'recommended_size' => 'Recommended size',
+        'redirect_to_zoom' => 'Redirect to Zoom',
         'role' => 'Role',
         'save_changes' => 'Save Changes',
         'score' => 'Score',
@@ -316,6 +341,7 @@ return [
         'subject' => 'Subject',
         'submit' => 'Submit',
         'take_exam' => 'Take Exam',
+        'take_exam_description' => 'Take exam to gauge what you learned in this class',
         'teacher' => 'Teacher',
         'teacher_information' => 'Teacher Information',
         'title' => 'Title',
@@ -348,6 +374,9 @@ return [
         'exchange_points' => 'Exchange Points',
         'points_to_convert_to_nft' => 'Points to convert to NFT',
         'add_points' => 'Add Points',
-        'zoom_link' => 'Zoom Link'
+        'zoom_link' => 'Zoom Link',
+        'watch_video' => 'Watch Video',
+        'watch_video_description' => 'Watch the video to learn the contents of the class',
+        'welcome' => 'Welcome'
     ]
 ];

@@ -5,15 +5,15 @@ import { Link } from "@inertiajs/inertia-react"
 
 const Feedback = ({ auth, feedback }) => {
 
-    const editButton = (
-        auth.user && auth.user.id && auth.user.id == feedback.user.id && (
-            <Link title="Edit Feedback" href={getRoute('course.feedback.index', {id : feedback.course_id}, {returnUrl : getRoute('course.details', {id : feedback.course_id})})}>
-                <IconButton size="small" color="white">
-                    <EditIcon fontSize="inherit" color="inherit" />
-                </IconButton>
-            </Link>
-        )
-    )
+    // const editButton = (
+    //     auth.user && auth.user.id && auth.user.id == feedback.user.id && (
+    //         <Link title="Edit Feedback" href={getRoute('course.feedback.index', {id : feedback.course_id}, {returnUrl : getRoute('course.details', {id : feedback.course_id})})}>
+    //             <IconButton size="small" color="white">
+    //                 <EditIcon fontSize="inherit" color="inherit" />
+    //             </IconButton>
+    //         </Link>
+    //     )
+    // )
 
     return (
         <Card sx={{ minWidth: 275, mb: 2, position: 'relative' }}>
@@ -26,7 +26,6 @@ const Feedback = ({ auth, feedback }) => {
                             <Typography variant="caption" color="GrayText" children={`Posted on ${feedback.created_at}`} />
                         </Box>
                     </Box>
-                    { editButton }
                 </Box>
                 <Box sx={{ mt: 2 }}>
                     <Typography variant="body2">

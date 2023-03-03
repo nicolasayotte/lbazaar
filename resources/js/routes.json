@@ -41,8 +41,6 @@
     "admin.settings.translations.update": "\/admin\/settings\/translations",
     "course.index": "\/classes",
     "course.details": "\/classes\/{id}",
-    "course.feedback.index": "\/classes\/{id}\/feedback",
-    "course.feedback.store": "\/classes\/{id}\/feedback",
     "course.book": "\/classes\/{schedule_id}\/book",
     "course.cancel": "\/classes\/{schedule_id}\/cancel",
     "course.edit": "\/classes\/{id}\/edit",
@@ -94,7 +92,12 @@
     "schedules.delete": "\/schedules\/{id}\/delete",
     "schedules.student.view": "\/schedules\/{id}\/students\/{student_id}",
     "course.attend.index": "\/classes\/{course_id}\/attend\/{schedule_id}",
+    "course.attend.watch": "\/classes\/{course_id}\/attend\/{schedule_id}\/watch",
+    "course.attend.watch.done": "\/classes\/{course_id}\/attend\/{schedule_id}\/watch\/done",
     "course.attend.exams.view": "\/classes\/{course_id}\/attend\/{schedule_id}\/exams\/{id}",
     "course.attend.exams.submit": "\/classes\/{course_id}\/attend\/{schedule_id}\/exams\/{id}",
-    "course.attend.exams.result": "\/classes\/{course_id}\/attend\/{schedule_id}\/exams\/{id}\/result"
+    "course.attend.exams.result": "\/classes\/{course_id}\/attend\/{schedule_id}\/exams\/{id}\/result",
+    "course.attend.feedback.create": "\/classes\/{course_id}\/attend\/{schedule_id}\/feedback",
+    "course.attend.feedback.store": "\/classes\/{course_id}\/attend\/{schedule_id}\/feedback",
+    "course.attend.complete": "\/classes\/{course_id}\/attend\/{schedule_id}\/complete"
 }

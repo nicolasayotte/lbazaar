@@ -9,7 +9,7 @@ class WalletTransactionHistory extends Model
 {
     use HasFactory;
 
-
+    public const DEDUCT = 'deduct';
     public const FEED = 'feed';
     public const EXCHANGE = 'exchange';
     public const EARN = 'earn';

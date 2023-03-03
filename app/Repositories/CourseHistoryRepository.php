@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Data\CourseHistoryData;
 use App\Data\CourseManageStudentData;
+use App\Models\Badge;
 use App\Models\CourseHistory;
 use Illuminate\Support\Facades\Auth;
 
@@ -108,5 +109,61 @@ class CourseHistoryRepository extends BaseRepository
     {
         $courseHistory = $this->model->where('course_schedule_id', $course_schedule_id)->where('is_cancelled', false)->get();
         return $courseHistory != null ?  $courseHistory : [];
+    }
+
+    public function findByCourseId($courseId)
+    {
+        return $this->model
+                    ->where('user_id', auth()->user()->id)
+                    ->where('course_id', $courseId)
+                    ->first();
+    }
+
+    public function feedBadge($courseHistoryId)
+    {
+        $courseHistory = $this->with(['course', 'course.coursePackage', 'course.coursePackage.courses'])->findOrFail($courseHistoryId);
+
+        if (!@$courseHistory->course->coursePackage) {
+
+            $badge = Badge::create([
+                'name' => Badge::COMPLETION . ' - ' . $courseHistory->course->title,
+                'type' => 'student'
+            ]);
+
+            auth()->user()->badges()->create(['badge_id' => $badge->id]);
+
+            return true;
+        }
+
+        if (
+            $courseHistory->course->coursePackage &&
+            $courseHistory->course->coursePackage->courses &&
+            $courseHistory->course->coursePackage->courses->count() > 0
+        ) {
+
+            $packageCoursesCompleted = 0;
+
+            foreach ($courseHistory->course->coursePackage->courses as $course) {
+
+                $booking = $this->findByCourseId($course->id);
+
+                if (@$booking && @$booking->completed_at != null) {
+                    $packageCoursesCompleted++;
+                }
+            }
+
+            // Check if completed all package courses
+            if ($packageCoursesCompleted == $courseHistory->course->coursePackage->courses->count()) {
+
+                $badge = Badge::create([
+                    'name' => Badge::COMPLETION . ' - ' . $courseHistory->course->coursePackage->name,
+                    'type' => 'student'
+                ]);
+
+                auth()->user()->badges()->create(['badge_id' => $badge->id]);
+            }
+        }
+
+        return false;
     }
 }

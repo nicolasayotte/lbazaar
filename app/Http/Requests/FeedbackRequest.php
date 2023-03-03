@@ -16,10 +16,8 @@ class FeedbackRequest extends FormRequest
      */
     public function authorize()
     {
-        $course_id = $this->route('id');
-
         $courseHistoryRepository = new CourseHistoryRepository;
-        return  $courseHistoryRepository->isUserBookedCourse(Auth::id(), $course_id);
+        return  $courseHistoryRepository->findByUserAndCourseScheduleID(Auth::id(), $this->schedule_id);
     }
 
     /**

@@ -30,11 +30,6 @@ const CourseHistoryTable = ({ data }) => {
                                 <Search fontSize="inherit" />
                             </IconButton>
                         </Link>
-                        <Link href={getRoute('course.feedback.index', {id : row.id}, {returnUrl : route['mypage.course.history.index']})}>
-                            <IconButton title={!row.hasFeedback ? "Give Feedback" : "Edit Feedback"} variant="text" size="small">
-                                <InsertComment fontSize="inherit" color="primary"/>
-                            </IconButton>
-                        </Link>
                     </Stack>
                 </TableCell>
             </TableRow>

@@ -7,6 +7,7 @@ use App\Http\Requests\FeedbackRequest;
 use App\Models\CourseFeedback;
 use App\Repositories\CourseFeedbackRepository;
 use App\Repositories\CourseRepository;
+use App\Repositories\CourseScheduleRepository;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -18,13 +19,16 @@ class CourseFeedbackController extends Controller
 
     private $courseRepository;
 
+    private $courseScheduleRepository;
+
     public function __construct()
     {
         $this->courseFeedbackRepository = new CourseFeedbackRepository;
         $this->courseRepository = new CourseRepository;
+        $this->courseScheduleRepository = new CourseScheduleRepository;
     }
 
-    public function index($course_id)
+    public function index($course_id, $schedule_id)
     {
         if (!Auth::user()->isCourseBooked($course_id))
         {
@@ -33,6 +37,7 @@ class CourseFeedbackController extends Controller
 
         return Inertia::render('Portal/CourseFeedback', [
             'course'    => $this->courseRepository->findOrFail($course_id)->load('professor'),
+            'schedule'  => $this->courseScheduleRepository->findOrFail($schedule_id),
             'feedback'  => $this->courseFeedbackRepository->findByUserAndCourseID(Auth::user()->id, $course_id),
             'title'     => 'Class Feedback'
         ])->withViewData([
@@ -40,7 +45,7 @@ class CourseFeedbackController extends Controller
         ]);
     }
 
-    public function store($course_id, FeedbackRequest $request)
+    public function store($course_id, $schedule_id, FeedbackRequest $request)
     {
         try {
             $this->courseFeedbackRepository->updateOrCreate(Auth::user()->id, $course_id, $request->all());
@@ -52,6 +57,9 @@ class CourseFeedbackController extends Controller
             ]);
         }
 
-        return redirect()->back();
+        return to_route('course.attend.index', ['course_id' => $course_id, 'schedule_id' => $schedule_id])->with([
+            'success',
+            getTranslation('success.feedback')
+        ]);
     }
 }
