@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Mail\ResetPassword;
+use App\Models\Role;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
