@@ -167,7 +167,8 @@ return [
             'index'  => 'Schedules',
             'view'   => 'View Schedule',
             'create' => 'Create Schedule'
-        ]
+        ],
+        'top_page' => 'Welcome to LE Bazaar'
     ],
     'filters' => [
         'date' => [
@@ -407,6 +408,6 @@ return [
         'mypage' => 'My Page',
         'wallet_history' => 'Wallet History',
         'from' => 'From',
-        'to' => 'To',
+        'to' => 'To'
     ]
 ];
