@@ -167,7 +167,8 @@ return [
             'index'  => 'Schedules',
             'view'   => 'View Schedule',
             'create' => 'Create Schedule'
-        ]
+        ],
+        'top_page' => 'Welcome to',
     ],
     'filters' => [
         'date' => [

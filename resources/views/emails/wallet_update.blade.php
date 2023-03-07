@@ -4,7 +4,7 @@
 <br>
 <p>Hi {{ $user->first_name }},</p>
 
-This is to inform you that your wallet has been updated, from **"{{ $walletTransactionHistory->points_before }}"** to **{{ $walletTransactionHistory->points_after }}**.
+This is to inform you that your wallet has been updated, from **{{ $walletTransactionHistory->points_before }}** to **{{ $walletTransactionHistory->points_after }}**.
 
 <x-mail::panel>
 <x-mail::table>
