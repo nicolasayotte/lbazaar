@@ -25,6 +25,7 @@ class EmailNotification extends Mailable
 
     public $url;
 
+    public $settingsRepository;
     /**
      * Create a new message instance.
      *
@@ -32,6 +33,7 @@ class EmailNotification extends Mailable
      */
     public function __construct($user, $url)
     {
+        $this->settingsRepository = new SettingRepository();
         $this->user = $user;
         $this->url = $url;
     }
@@ -47,7 +49,7 @@ class EmailNotification extends Mailable
 
         return new Envelope(
             subject: 'Verify Email Address',
-            from: 'admin@lebazaar.com',
+            from: new Address($this->settingsRepository->getSetting('no-reply-email')),
             to: [$this->user->email]
         );
     }
