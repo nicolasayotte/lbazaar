@@ -74,7 +74,7 @@ class Course extends Model
             'course_id',
             'id',
             'id',
-            'id'
+            'course_package_id'
         );
     }
 

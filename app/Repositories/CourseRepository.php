@@ -31,7 +31,7 @@ class CourseRepository extends BaseRepository
 
     public function getUpcomingClasses($take = self::PER_PAGE)
     {
-        return $this->model->take($take)->orderBy('id', 'desc')->with(['professor', 'courseType', 'courseCategory'])->get();
+        return $this->model->take($take)->orderBy('id', 'desc')->with(['professor', 'courseType', 'courseCategory', 'coursePackage'])->get();
     }
 
     public function getLanguages()
@@ -41,7 +41,7 @@ class CourseRepository extends BaseRepository
 
     public function search($request)
     {
-        return $this->model->with(['professor', 'schedules', 'courseCategory', 'courseType'])
+        return $this->model->with(['professor', 'schedules', 'courseCategory', 'courseType', 'coursePackage'])
             ->when($request->has('professor_id') && !empty($request->get('professor_id')), function ($q) use ($request)  {
                 return $q->where('professor_id', $request->get('professor_id'));
             })

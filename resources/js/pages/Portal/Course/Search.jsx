@@ -1,4 +1,4 @@
-import { Box, Button, Pagination, Skeleton, Stack, Grid, Typography, Container, Card, CardContent } from "@mui/material";
+import { Box, Button, Pagination, Grid, Typography, Container, Card, CardContent } from "@mui/material";
 import { useForm, usePage } from '@inertiajs/inertia-react'
 import Course from "../../../components/cards/Course";
 import Input from "../../../components/forms/Input";
@@ -22,6 +22,7 @@ const SearchCourse = () => {
         page,
     })
 
+    console.log(courses)
 
     const handleFilterSubmit = (e) => {
         e.preventDefault()
@@ -41,9 +42,7 @@ const SearchCourse = () => {
     const displayCourses = (courses, showDescription = true) => {
 
         if (courses && courses.data && courses.data.length <= 0) {
-            return (
-                <Typography variant="h4" children="No records found" textAlign="center" sx={{ p: 4 }} />
-            )
+            return <EmptyCard />
         }
 
         return courses.data.map(course => (
@@ -131,22 +130,6 @@ const SearchCourse = () => {
                                             >
                                                 <option value="">All</option>
                                                 {displaySelectOptions(teachers, 'id', 'fullname')}
-                                            </Input>
-                                        </Grid>
-                                        <Grid item xs={12} sm={12}>
-                                            <Input
-                                                label="Languages"
-                                                select
-                                                name="language"
-                                                value={filters.language}
-                                                onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
-                                                errors={errors}
-                                                InputLabelProps={{
-                                                    shrink: true
-                                                }}
-                                            >
-                                                <option value="">All</option>
-                                                {displaySelectOptions(languages, 'language', 'language')}
                                             </Input>
                                         </Grid>
                                         <Grid item xs={12} sm={12}>
