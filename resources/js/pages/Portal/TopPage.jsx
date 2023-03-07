@@ -29,7 +29,7 @@ const TopPage = () => {
             <Header minHeight="350px">
                 <Container>
                     <Box sx={{ color: "white" }}>
-                        <Typography variant="h4" align="center" gutterBottom children={`${translatables.texts.welcome} ${translatables.texts.to} LE Bazaar`} />
+                        <Typography variant="h4" align="center" gutterBottom children={`${translatables.title.top_page} LE Bazaar`} />
                         <Typography variant="subtitle1" align="center" gutterBottom>{ translatables.top_page.description }</Typography>
                     </Box>
                     <Grid
@@ -48,7 +48,7 @@ const TopPage = () => {
                         <Grid item xs={12} md={12}>
                             <Link href={routes["course.index"]}>
                                 <Button
-                                    children={translatables.texts.search}
+                                    children={translatables.texts.browse_classes}
                                     variant="contained"
                                     sx={{ height: '100%' }}
                                     fullWidth
