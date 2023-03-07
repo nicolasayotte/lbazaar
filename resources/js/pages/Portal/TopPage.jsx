@@ -1,7 +1,11 @@
+<<<<<<< HEAD
 import { Box, Button, Grid, Typography, Container } from "@mui/material";
+=======
+import { Box,  Button, Grid, Typography, Container } from "@mui/material";
+>>>>>>> develop
 import Course from "../../components/cards/Course";
 import User from "../../components/cards/User";
-import { Link, useForm, usePage } from "@inertiajs/inertia-react";
+import { Link, usePage } from "@inertiajs/inertia-react";
 import routes from "../../helpers/routes.helper";
 import Header from "../../components/common/Header";
 
@@ -32,6 +36,30 @@ const TopPage = () => {
                         <Typography variant="h4" align="center" gutterBottom children={translatables.title.top_page} />
                         <Typography variant="subtitle1" align="center" gutterBottom>{ translatables.top_page.description }</Typography>
                     </Box>
+                    <Grid
+                        container
+                        spacing={1}
+                        sx={{
+                            maxWidth: {
+                                xs: "100%",
+                                md: "60%"
+                            },
+                            marginX: 'auto',
+                            mt: 3
+                        }}
+                        alignItems={'center'}
+                    >
+                        <Grid item xs={12} md={12}>
+                            <Link href={routes["course.index"]}>
+                                <Button
+                                    children={translatables.texts.browse_classes}
+                                    variant="contained"
+                                    sx={{ height: '100%' }}
+                                    fullWidth
+                                />
+                            </Link>
+                        </Grid>
+                    </Grid>
                 </Container>
             </Header>
             <Container>

@@ -168,7 +168,7 @@ return [
             'view'   => 'View Schedule',
             'create' => 'Create Schedule'
         ],
-        'top_page' => 'Welcome to LE Bazaar'
+        'top_page' => 'Welcome to LE Bazaar',
     ],
     'filters' => [
         'date' => [
