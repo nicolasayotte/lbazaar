@@ -54,6 +54,16 @@ class CourseRepository extends BaseRepository
             ->when($request->has('language') && !empty($request->get('language')), function ($q) use ($request)  {
                 return $q->where('language', $request->get('language'));
             })
+            ->when(@$request['from'], function($q) use($request) {
+                return $q->whereHas('schedules', function($query) use($request) {
+                    return $query->whereDate('start_datetime', '>=', $request['from']);
+                });
+            })
+            ->when(@$request['to'], function($q) use($request) {
+                return $q->whereHas('schedules', function($query) use($request) {
+                    return $query->whereDate('start_datetime', '<=', $request['to']);
+                });
+            })
             ->when($request->has('month') && !empty($request->get('month')), function ($q) use ($request)  {
                 return $q->whereHas('schedules', function($query) use ($request) {
 
