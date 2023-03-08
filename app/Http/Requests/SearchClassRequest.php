@@ -24,13 +24,12 @@ class SearchClassRequest extends FormRequest
     public function rules()
     {
         return [
-            'search_text'       => 'nullable',
-            'type_id'           => 'integer|nullable',
-            'category_id'       => 'integer|nullable',
-            'language'          => 'nullable',
-            'professor_id'      => 'integer|nullable',
-            'year'              => 'digits:4|nullable',
-            'month'             => 'min:0|max:11|nullable'
+            'search_text'   => 'nullable',
+            'type_id'       => 'integer|nullable',
+            'category_id'   => 'integer|nullable',
+            'language'      => 'nullable',
+            'professor_id'  => 'integer|nullable',
+            'year'          => 'digits:4|nullable'
         ];
     }
 }

@@ -1,4 +1,4 @@
-import { Box, Button, Pagination, Skeleton, Stack, Grid, Typography, Container, Card, CardContent } from "@mui/material";
+import { Box, Button, Pagination, Grid, Typography, Container, Card, CardContent } from "@mui/material";
 import { useForm, usePage } from '@inertiajs/inertia-react'
 import Course from "../../../components/cards/Course";
 import Input from "../../../components/forms/Input";
@@ -10,7 +10,21 @@ import EmptyCard from "../../../components/common/EmptyCard"
 
 const SearchCourse = () => {
 
-    const { search_text, type_id, category_id, language, professor_id, month, page, courses, course_types, course_categories, teachers, languages, messages, translatables} = usePage().props
+    const {
+        search_text,
+        type_id,
+        category_id,
+        language,
+        professor_id,
+        page,
+        from,
+        to,
+        courses,
+        course_types,
+        course_categories,
+        teachers,
+        translatables
+    } = usePage().props
 
     const { data: filters, setData: setFilters, get, errors, processing, transform } = useForm({
         search_text,
@@ -18,10 +32,10 @@ const SearchCourse = () => {
         category_id,
         language,
         professor_id,
-        month,
+        from,
+        to,
         page,
     })
-
 
     const handleFilterSubmit = (e) => {
         e.preventDefault()
@@ -41,9 +55,7 @@ const SearchCourse = () => {
     const displayCourses = (courses, showDescription = true) => {
 
         if (courses && courses.data && courses.data.length <= 0) {
-            return (
-                <Typography variant="h4" children="No records found" textAlign="center" sx={{ p: 4 }} />
-            )
+            return <EmptyCard />
         }
 
         return courses.data.map(course => (
@@ -74,11 +86,11 @@ const SearchCourse = () => {
                         <Card>
                             <CardContent>
                                 <form onSubmit={handleFilterSubmit}>
-                                    <Typography variant="h6" sx={{ mb: 2 }} children="Filters" />
+                                    <Typography variant="h6" sx={{ mb: 2 }} children={translatables.texts.filter} />
                                     <Grid container spacing={2}>
                                         <Grid item xs={12} sm={12}>
                                             <Input
-                                                placeholder="Search for classes"
+                                                placeholder={translatables.texts.search_title}
                                                 name="search_text"
                                                 value={filters.search_text}
                                                 onChange={e => handleOnChange(e, setFilters)}
@@ -87,7 +99,7 @@ const SearchCourse = () => {
                                         </Grid>
                                         <Grid item  xs={12} sm={12}>
                                             <Input
-                                                label="Type"
+                                                label={translatables.texts.type}
                                                 select
                                                 name="type_id"
                                                 value={filters.type_id}
@@ -103,7 +115,7 @@ const SearchCourse = () => {
                                         </Grid>
                                         <Grid item xs={12} sm={12}>
                                             <Input
-                                                label="Category"
+                                                label={translatables.texts.category}
                                                 select
                                                 name="category_id"
                                                 value={filters.category_id}
@@ -119,7 +131,7 @@ const SearchCourse = () => {
                                         </Grid>
                                         <Grid item xs={12} sm={12}>
                                             <Input
-                                                label="Teachers"
+                                                label={translatables.texts.teacher}
                                                 select
                                                 name="professor_id"
                                                 value={filters.professor_id}
@@ -135,39 +147,36 @@ const SearchCourse = () => {
                                         </Grid>
                                         <Grid item xs={12} sm={12}>
                                             <Input
-                                                label="Languages"
-                                                select
-                                                name="language"
-                                                value={filters.language}
+                                                label={translatables.texts.from}
+                                                type="date"
+                                                name="from"
+                                                value={filters.from}
                                                 onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
+                                                InputLabelProps={{ shrink: true }}
                                                 errors={errors}
-                                                InputLabelProps={{
-                                                    shrink: true
-                                                }}
-                                            >
-                                                <option value="">All</option>
-                                                {displaySelectOptions(languages, 'language', 'language')}
-                                            </Input>
+                                            />
                                         </Grid>
                                         <Grid item xs={12} sm={12}>
                                             <Input
-                                                type="month"
-                                                name="month"
-                                                value={filters.month}
+                                                label={translatables.texts.to}
+                                                type="date"
+                                                name="to"
+                                                value={filters.to}
                                                 onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
+                                                InputLabelProps={{ shrink: true }}
+                                                inputProps={{ min: filters.from }}
                                                 errors={errors}
                                             />
                                         </Grid>
                                         <Grid item xs={12} sm={12}>
                                             <Grid display="flex" justifyContent="center" alignItems="center">
                                                 <Button
-                                                variant="contained"
-                                                type="submit"
-                                                onClick={handleFilterSubmit}
-                                                fullWidth
-                                                >
-                                                    Filter
-                                                </Button>
+                                                    variant="contained"
+                                                    type="submit"
+                                                    onClick={handleFilterSubmit}
+                                                    fullWidth
+                                                    children={translatables.texts.filter}
+                                                />
                                             </Grid>
                                         </Grid>
                                     </Grid>

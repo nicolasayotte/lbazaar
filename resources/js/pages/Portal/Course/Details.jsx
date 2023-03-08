@@ -1,4 +1,4 @@
-import { Box, Grid, Typography, Card, CardContent, Container, Divider, Chip, Paper, CircularProgress, Stack } from "@mui/material";
+import { Box, Grid, Typography, Card, CardContent, Container, Divider, Chip, Paper, CircularProgress, Stack, Button } from "@mui/material";
 import Feedback from "../../../components/cards/Feedback";
 import { usePage } from "@inertiajs/inertia-react"
 import ConfirmationDialog from "../../../components/common/ConfirmationDialog"
@@ -9,12 +9,13 @@ import { Inertia } from "@inertiajs/inertia"
 import { actions } from "../../../store/slices/ToasterSlice"
 import CourseScheduleList from "./components/CourseScheduleList";
 import { grey } from "@mui/material/colors";
+import Course from "../../../components/cards/Course";
 
 const Details = () => {
 
     const dispatch = useDispatch()
 
-    const { auth, course, schedules, translatables } = usePage().props
+    const { auth, course, schedules, feedbacks, translatables, feedbackCount, feedbacksPerPage } = usePage().props
 
     const [dialog, setDialog] = useState({
         open: false,
@@ -73,9 +74,43 @@ const Details = () => {
         })
     }
 
-    const Feedbacks = () => course.top_feedbacks && course.top_feedbacks.length > 0 && course.top_feedbacks.map(feedback => (
-        <Feedback auth={auth} key={feedback.id} feedback={feedback}/>
-    ))
+    const handleOnFeedbacksLoad = () => {
+        Inertia.visit(getRoute('course.details', { id: course.id }), {
+            data: {feedback_count: parseInt(feedbackCount) + parseInt(feedbacksPerPage)},
+            only: [
+                'feedbacks',
+                'feedbackCount'
+            ],
+            preserveScroll: true
+        })
+    }
+
+    const Feedbacks = () => {
+
+        const CourseFeedbacks = () => feedbacks && feedbacks.length > 0 && feedbacks.map(feedback => (
+            <Feedback
+                key={feedback.id}
+                showUser={auth && auth.user && auth.user.id == course.professor_id}
+                feedback={feedback}
+            />
+        ))
+
+        return (
+            <>
+                <CourseFeedbacks />
+                {
+                    feedbacks.length < course.feedbacks.length &&
+                    <Box textAlign="center">
+                        <Button
+                            variant="outlined"
+                            children={translatables.texts.load_more}
+                            onClick={handleOnFeedbacksLoad}
+                        />
+                    </Box>
+                }
+            </>
+        )
+    }
 
     const CourseImage = () => (
         <Box sx={{ backgroundColor: '#333', width: '100%' }}>
@@ -187,6 +222,23 @@ const Details = () => {
         )
     }
 
+    const PackageInformation = () => {
+
+        const packageCourses = course.course_package && course.course_package.courses && course.course_package.courses.length > 0
+                               ? course.course_package.courses.filter(packageCourse => packageCourse.id != course.id)
+                               : []
+
+        const PackageCourses = () => packageCourses.map(packageCourse => <Course key={packageCourse.id} course={packageCourse} />)
+
+        return packageCourses.length > 0 && (
+            <>
+                <Typography variant="h5" children={course.course_package && course.course_package.name} />
+                <Typography variant="caption" color="GrayText" children={translatables.texts.complete_classes_earn_badge} />
+                <PackageCourses />
+            </>
+        )
+    }
+
     return (
         <Box>
             <CourseImage />
@@ -203,6 +255,7 @@ const Details = () => {
                             </CardContent>
                         </Card>
                         <CourseScheduleList data={schedules} handleOnBook={handleBook} handleOnCancelBook={handleCancelBooking} />
+                        <PackageInformation />
                     </Grid>
                     <Grid item xs={12} md={4}>
                         <Rating />

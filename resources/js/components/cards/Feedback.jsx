@@ -3,7 +3,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import { getRoute } from "../../helpers/routes.helper"
 import { Link } from "@inertiajs/inertia-react"
 
-const Feedback = ({ auth, feedback }) => {
+const Feedback = ({ auth, feedback, showUser = false }) => {
 
     // const editButton = (
     //     auth.user && auth.user.id && auth.user.id == feedback.user.id && (
@@ -20,7 +20,10 @@ const Feedback = ({ auth, feedback }) => {
             <CardContent>
                 <Box display="flex" justifyContent="space-between">
                     <Box>
-                        <Typography inline="true" align="left" variant="subtitle1" children={feedback.user.fullname} />
+                        {
+                            showUser &&
+                            <Typography inline="true" align="left" variant="subtitle1" children={feedback.user.fullname} />
+                        }
                         <Box display="flex" alignItems="center">
                             <Typography color="primary" variant="caption" children={`${feedback.rating}/100`} sx={{ mr: 1 }} />
                             <Typography variant="caption" color="GrayText" children={`Posted on ${feedback.created_at}`} />
