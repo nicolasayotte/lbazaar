@@ -3,7 +3,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import { getRoute } from "../../helpers/routes.helper"
 import { Link } from "@inertiajs/inertia-react"
 
-const Feedback = ({ auth, feedback, showUser = true }) => {
+const Feedback = ({ auth, feedback, showUser = false }) => {
 
     // const editButton = (
     //     auth.user && auth.user.id && auth.user.id == feedback.user.id && (

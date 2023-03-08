@@ -88,7 +88,11 @@ const Details = () => {
     const Feedbacks = () => {
 
         const CourseFeedbacks = () => feedbacks && feedbacks.length > 0 && feedbacks.map(feedback => (
-            <Feedback auth={auth} key={feedback.id} feedback={feedback}/>
+            <Feedback
+                key={feedback.id}
+                showUser={auth && auth.user && auth.user.id == course.professor_id}
+                feedback={feedback}
+            />
         ))
 
         return (
