@@ -1,5 +1,5 @@
 import { Link } from "@inertiajs/inertia-react";
-import { Grid, Card, CardContent, Button, Typography, CardMedia, Box, Chip} from "@mui/material"
+import { Grid, Card, CardContent, Button, Typography, CardMedia, Box, Chip, Stack} from "@mui/material"
 import { getRoute } from "../../helpers/routes.helper"
 import placeholderImg from "../../../img/placeholder.png"
 import { CalendarMonth } from "@mui/icons-material";
@@ -37,7 +37,6 @@ const Course = ({ course, schedule = null, showDescription = true, viewDetailId 
         : <span />
     )
 
-
     const Schedule = () => (
         schedule &&
         <Chip
@@ -53,6 +52,12 @@ const Course = ({ course, schedule = null, showDescription = true, viewDetailId 
             }}
         />
     )
+
+    const Package = () => (
+        course.course_package && course.course_package.id &&
+        <Chip color="default" label={translatables.texts.package} size="small" variant="outlined" />
+    )
+
     return (
         <Grid mt={2}>
             <Card
@@ -85,7 +90,10 @@ const Course = ({ course, schedule = null, showDescription = true, viewDetailId 
                         <Grid item xs={12}>
                             <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
                                 <Chip label={course.course_category.name} size="small" />
-                                <Chip color={courseTypeColors[course.course_type.name]} label={course.course_type.name} size="small" variant="outlined" />
+                                <Stack direction="row" spacing={1}>
+                                    <Package />
+                                    <Chip color={courseTypeColors[course.course_type.name]} label={course.course_type.name} size="small" variant="outlined" />
+                                </Stack>
                             </Box>
                             <Typography variant="h6" children={course.title} />
                             <Typography variant="subtitle2" color="GrayText" gutterBottom children={`By ${course.professor.fullname}`} />

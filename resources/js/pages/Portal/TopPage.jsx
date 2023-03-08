@@ -29,7 +29,7 @@ const TopPage = () => {
             <Header minHeight="350px">
                 <Container>
                     <Box sx={{ color: "white" }}>
-                        <Typography variant="h4" align="center" gutterBottom children={`${translatables.title.top_page} LE Bazaar`} />
+                        <Typography variant="h4" align="center" gutterBottom children={translatables.title.top_page} />
                         <Typography variant="subtitle1" align="center" gutterBottom>{ translatables.top_page.description }</Typography>
                     </Box>
                     <Grid

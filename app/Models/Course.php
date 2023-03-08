@@ -51,6 +51,14 @@ class Course extends Model
         'points_earned' => 'float'
     ];
 
+    protected $with = [
+        'professor',
+        'courseType',
+        'courseCategory',
+        'coursePackage',
+        'schedules'
+    ];
+
     public function professor()
     {
         return $this->belongsTo(User::class, 'professor_id');
@@ -74,7 +82,7 @@ class Course extends Model
             'course_id',
             'id',
             'id',
-            'id'
+            'course_package_id'
         );
     }
 

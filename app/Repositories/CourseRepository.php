@@ -31,7 +31,7 @@ class CourseRepository extends BaseRepository
 
     public function getUpcomingClasses($take = self::PER_PAGE)
     {
-        return $this->model->take($take)->orderBy('id', 'desc')->with(['professor', 'courseType', 'courseCategory'])->get();
+        return $this->model->take($take)->orderBy('id', 'desc')->with(['professor', 'courseType', 'courseCategory', 'coursePackage'])->get();
     }
 
     public function getLanguages()
@@ -41,7 +41,7 @@ class CourseRepository extends BaseRepository
 
     public function search($request)
     {
-        return $this->model->with(['professor', 'schedules', 'courseCategory', 'courseType'])
+        return $this->model->with(['professor', 'schedules', 'courseCategory', 'courseType', 'coursePackage'])
             ->when($request->has('professor_id') && !empty($request->get('professor_id')), function ($q) use ($request)  {
                 return $q->where('professor_id', $request->get('professor_id'));
             })
@@ -53,6 +53,16 @@ class CourseRepository extends BaseRepository
             })
             ->when($request->has('language') && !empty($request->get('language')), function ($q) use ($request)  {
                 return $q->where('language', $request->get('language'));
+            })
+            ->when(@$request['from'], function($q) use($request) {
+                return $q->whereHas('schedules', function($query) use($request) {
+                    return $query->whereDate('start_datetime', '>=', $request['from']);
+                });
+            })
+            ->when(@$request['to'], function($q) use($request) {
+                return $q->whereHas('schedules', function($query) use($request) {
+                    return $query->whereDate('start_datetime', '<=', $request['to']);
+                });
             })
             ->when($request->has('month') && !empty($request->get('month')), function ($q) use ($request)  {
                 return $q->whereHas('schedules', function($query) use ($request) {
@@ -112,7 +122,18 @@ class CourseRepository extends BaseRepository
 
     public function findById($id)
     {
-        return $this->model->with(['professor', 'courseType', 'schedules', 'courseCategory', 'feedbacks', 'feedbacks.user'])->findOrFail($id);
+        return $this->model
+                    ->with([
+                        'professor',
+                        'courseType',
+                        'schedules',
+                        'courseCategory',
+                        'feedbacks',
+                        'feedbacks.user',
+                        'coursePackage',
+                        'coursePackage.courses'
+                    ])
+                    ->findOrFail($id);
     }
 
     public function findByIdManageClass($id)

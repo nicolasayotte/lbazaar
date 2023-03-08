@@ -18,7 +18,18 @@ class CourseFeedbackRepository extends BaseRepository
 
     public function findByCourseId($id)
     {
-        return $this->model->with(['user'])->where('course_id', $id)->orderBy('id', 'DESC')->paginate();
+        return $this->model->with(['user'])->where('course_id', $id)->orderBy('id', 'DESC')->paginate(self::PER_PAGE);
+    }
+
+    public function loadByCourseId($id, $take)
+    {
+        return $this->model
+                    ->with(['user'])
+                    ->take($take)
+                    ->where('course_id', $id)
+                    ->orderBy('rating', 'DESC')
+                    ->orderBy('created_at', "DESC")
+                    ->get();
     }
 
     public function findByCourseIdAndSearch($id, $filters)
