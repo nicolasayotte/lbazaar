@@ -372,6 +372,7 @@ return [
         'education' => 'Education',
         'work' => 'Work',
         'live' => 'Live',
+        'load_more' => 'Load More',
         'on_demand' => 'On demand',
         'overall_rating' => 'Overall Rating',
         'book_class' => 'Book for',

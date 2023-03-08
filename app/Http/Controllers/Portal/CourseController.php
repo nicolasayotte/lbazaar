@@ -94,20 +94,26 @@ class CourseController extends Controller
             ]);
     }
 
-    public function details($id)
+    public function details($id, Request $request)
     {
+        $feedbackCount = @$request['feedback_count'] ?? CourseFeedbackRepository::PER_PAGE;
+
         $course = $this->courseRepository->findById($id);
         $schedules = $this->courseScheduleRepository->findByCourseId($course->id);
+        $feedbacks = $this->courseFeedbackRepository->loadByCourseId($id, $feedbackCount);
 
         return Inertia::render('Portal/Course/Details', [
-            'course'            => $course,
-            'schedules'         => $schedules,
-            'isBooked'          => auth()->user() && auth()->user()->isCourseBooked($id),
-            'hasFeedback'       => auth()->user() && auth()->user()->hasFeedback($id),
-            'title'             => $course->title,
+            'course'           => $course,
+            'schedules'        => $schedules,
+            'feedbacks'        => $feedbacks,
+            'isBooked'         => auth()->user() && auth()->user()->isCourseBooked($id),
+            'hasFeedback'      => auth()->user() && auth()->user()->hasFeedback($id),
+            'title'            => $course->title,
+            'feedbackCount'    => $feedbackCount,
+            'feedbacksPerPage' => CourseFeedbackRepository::PER_PAGE
         ])->withViewData([
-            'title'       => $course->title,
-            'description' => 'Course Details'
+            'title'            => $course->title,
+            'description'      => 'Course Details'
         ]);
     }
 

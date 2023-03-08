@@ -1,4 +1,4 @@
-import { Box, Grid, Typography, Card, CardContent, Container, Divider, Chip, Paper, CircularProgress, Stack } from "@mui/material";
+import { Box, Grid, Typography, Card, CardContent, Container, Divider, Chip, Paper, CircularProgress, Stack, Button } from "@mui/material";
 import Feedback from "../../../components/cards/Feedback";
 import { usePage } from "@inertiajs/inertia-react"
 import ConfirmationDialog from "../../../components/common/ConfirmationDialog"
@@ -15,7 +15,7 @@ const Details = () => {
 
     const dispatch = useDispatch()
 
-    const { auth, course, schedules, translatables } = usePage().props
+    const { auth, course, schedules, feedbacks, translatables, feedbackCount, feedbacksPerPage } = usePage().props
 
     const [dialog, setDialog] = useState({
         open: false,
@@ -74,9 +74,39 @@ const Details = () => {
         })
     }
 
-    const Feedbacks = () => course.top_feedbacks && course.top_feedbacks.length > 0 && course.top_feedbacks.map(feedback => (
-        <Feedback auth={auth} key={feedback.id} feedback={feedback}/>
-    ))
+    const handleOnFeedbacksLoad = () => {
+        Inertia.visit(getRoute('course.details', { id: course.id }), {
+            data: {feedback_count: parseInt(feedbackCount) + parseInt(feedbacksPerPage)},
+            only: [
+                'feedbacks',
+                'feedbackCount'
+            ],
+            preserveScroll: true
+        })
+    }
+
+    const Feedbacks = () => {
+
+        const CourseFeedbacks = () => feedbacks && feedbacks.length > 0 && feedbacks.map(feedback => (
+            <Feedback auth={auth} key={feedback.id} feedback={feedback}/>
+        ))
+
+        return (
+            <>
+                <CourseFeedbacks />
+                {
+                    feedbacks.length < course.feedbacks.length &&
+                    <Box textAlign="center">
+                        <Button
+                            variant="outlined"
+                            children={translatables.texts.load_more}
+                            onClick={handleOnFeedbacksLoad}
+                        />
+                    </Box>
+                }
+            </>
+        )
+    }
 
     const CourseImage = () => (
         <Box sx={{ backgroundColor: '#333', width: '100%' }}>
