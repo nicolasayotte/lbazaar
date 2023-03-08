@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import { Box, Button, Grid, Typography, Container } from "@mui/material";
-=======
 import { Box,  Button, Grid, Typography, Container } from "@mui/material";
->>>>>>> develop
 import Course from "../../components/cards/Course";
 import User from "../../components/cards/User";
 import { Link, usePage } from "@inertiajs/inertia-react";

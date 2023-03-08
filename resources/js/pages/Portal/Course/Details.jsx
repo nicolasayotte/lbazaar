@@ -9,6 +9,7 @@ import { Inertia } from "@inertiajs/inertia"
 import { actions } from "../../../store/slices/ToasterSlice"
 import CourseScheduleList from "./components/CourseScheduleList";
 import { grey } from "@mui/material/colors";
+import Course from "../../../components/cards/Course";
 
 const Details = () => {
 
@@ -187,6 +188,23 @@ const Details = () => {
         )
     }
 
+    const PackageInformation = () => {
+
+        const packageCourses = course.course_package && course.course_package.courses && course.course_package.courses.length > 0
+                               ? course.course_package.courses.filter(packageCourse => packageCourse.id != course.id)
+                               : []
+
+        const PackageCourses = () => packageCourses.map(packageCourse => <Course key={packageCourse.id} course={packageCourse} />)
+
+        return packageCourses.length > 0 && (
+            <>
+                <Typography variant="h5" children={course.course_package && course.course_package.name} />
+                <Typography variant="caption" color="GrayText" children={translatables.texts.complete_classes_earn_badge} />
+                <PackageCourses />
+            </>
+        )
+    }
+
     return (
         <Box>
             <CourseImage />
@@ -203,6 +221,7 @@ const Details = () => {
                             </CardContent>
                         </Card>
                         <CourseScheduleList data={schedules} handleOnBook={handleBook} handleOnCancelBook={handleCancelBooking} />
+                        <PackageInformation />
                     </Grid>
                     <Grid item xs={12} md={4}>
                         <Rating />
