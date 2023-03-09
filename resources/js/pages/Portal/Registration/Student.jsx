@@ -42,12 +42,10 @@ const Student  = () => {
         <Container>
             <Grid container alignItems="center" minHeight="100vh" >
                 <Grid item xs={12} md={5} mx="auto" py={5}>
+                    <Typography variant="h5" sx={{ mb: 2 }}>{translatables.texts.sign_up_student}</Typography>
                     <Card>
                         <CardContent sx={{ p: 3 }}>
                             <form method="POST" onSubmit={handleSubmit}>
-                                <Typography variant="h5">{translatables.texts.sign_up_student}</Typography>
-                                <Divider sx={{ my: 2 }} />
-
                                 <Grid container spacing={2}>
                                     <Grid item xs={12} sm={6}>
                                         <Input

@@ -22,6 +22,7 @@ use App\Http\Controllers\Portal\WalletTransactionHistoryController;
 use App\Http\Controllers\Portal\ManageCourseController;
 use App\Http\Controllers\Portal\ProfileController as PortalProfileController;
 use App\Http\Controllers\Portal\RegisterStudentController;
+use App\Http\Controllers\Portal\RegisterTeacherController;
 use App\Http\Controllers\Portal\TopPageController;
 use App\Http\Controllers\Portal\UserController as PortalUserController;
 use Illuminate\Http\Request;
@@ -157,8 +158,12 @@ Route::prefix('classes')->name('course.')->group(function() {
 
 # User Registration
 Route::prefix('register')->name('register.')->group(function() {
-    Route::get('/student', [RegisterStudentController::class, 'index'])->name('index');
+    Route::get('/', [AuthPortalController::class, 'register'])->name('index');
+
+    Route::get('/student', [RegisterStudentController::class, 'index'])->name('student');
     Route::post('/student', [RegisterStudentController::class, 'store'])->name('store');
+
+    Route::get('/teacher', [RegisterTeacherController::class, 'index'])->name('teacher');
 });
 
 # Portal Routes
