@@ -1,17 +1,17 @@
 import { useForm, usePage } from "@inertiajs/inertia-react"
 import { Box, Button, Card, CardContent, Container, Divider, Grid, Typography } from "@mui/material"
-import { actions } from '../../store/slices/ToasterSlice'
+import { actions } from '../../../store/slices/ToasterSlice'
 import { useDispatch } from "react-redux"
-import Input from "../../components/forms/Input"
-import routes from "../../helpers/routes.helper"
-import { displaySelectOptions } from "../../helpers/form.helper"
+import Input from "../../../components/forms/Input"
+import routes from "../../../helpers/routes.helper"
+import { displaySelectOptions } from "../../../helpers/form.helper"
 import { Link } from "@inertiajs/inertia-react"
 
-const RegisterStudent  = () => {
+const Student  = () => {
 
     const dispatch = useDispatch()
 
-    const { countries } = usePage().props
+    const { countries, translatables } = usePage().props
 
     const { data, setData, post, processing, errors, reset, clearErrors } = useForm({
         first_name: '',
@@ -30,20 +30,10 @@ const RegisterStudent  = () => {
         e.preventDefault()
 
         post(routes["register.store"], {
-            onSuccess: () => {
-                reset()
-                clearErrors()
-
-                dispatch(actions.success({
-                    open: true,
-                    type: 'success',
-                    message: 'Student is successfully registered'
-                }))
-            },
             onError: () => dispatch(actions.error({
                     open: true,
                     type: 'error',
-                    message: 'There was an error encountered'
+                    message: translatables.error
             }))
         });
     }
@@ -55,13 +45,13 @@ const RegisterStudent  = () => {
                     <Card>
                         <CardContent sx={{ p: 3 }}>
                             <form method="POST" onSubmit={handleSubmit}>
-                                <Typography variant="h5">Sign Up</Typography>
+                                <Typography variant="h5">{translatables.texts.sign_up_student}</Typography>
                                 <Divider sx={{ my: 2 }} />
 
                                 <Grid container spacing={2}>
                                     <Grid item xs={12} sm={6}>
                                         <Input
-                                            label="First Name"
+                                            label={translatables.texts.first_name}
                                             name="first_name"
                                             value={data.first_name}
                                             onChange={handleOnChange}
@@ -70,7 +60,7 @@ const RegisterStudent  = () => {
                                     </Grid>
                                     <Grid item xs={12} sm={6}>
                                         <Input
-                                            label="Last Name"
+                                            label={translatables.texts.last_name}
                                             fullWidth
                                             name="last_name"
                                             defaultValue={data.last_name}
@@ -80,7 +70,7 @@ const RegisterStudent  = () => {
                                     </Grid>
                                     <Grid item xs={12} >
                                         <Input
-                                        label="Country"
+                                        label={translatables.texts.country}
                                         select
                                         name="country_id"
                                         value={data.country_id}
@@ -93,7 +83,7 @@ const RegisterStudent  = () => {
                                     </Grid>
                                     <Grid item xs={12}>
                                         <Input
-                                            label="Email"
+                                            label={translatables.texts.email}
                                             fullWidth
                                             name="email"
                                             defaultValue={data.email}
@@ -104,18 +94,19 @@ const RegisterStudent  = () => {
 
                                     <Grid item xs={12}>
                                         <Input
-                                            label="Password"
+                                            label={translatables.texts.password}
                                             type="password"
                                             fullWidth
                                             name="password"
                                             defaultValue={data.password}
                                             onChange={handleOnChange}
                                             errors={errors}
+                                            helperText={translatables.texts.password_help}
                                         />
                                     </Grid>
                                     <Grid item xs={12}>
                                         <Input
-                                            label="Confirm Password"
+                                            label={translatables.texts.confirm_password}
                                             type="password"
                                             fullWidth
                                             name="password_confirmation"
@@ -124,21 +115,24 @@ const RegisterStudent  = () => {
                                             errors={errors}
                                         />
                                     </Grid>
-                                    <Grid item xs={12} textAlign="center">
+                                    <Grid item xs={12} textAlign="right">
                                         <Button
                                             alignitems="center"
                                             onClick={handleSubmit}
                                             variant="contained"
                                             disabled={processing}
                                             type="submit"
-                                        >SUBMIT</Button>
+                                            children={translatables.texts.submit}
+                                        />
                                     </Grid>
                                 </Grid>
                             </form>
                         </CardContent>
                     </Card>
                     <Box sx={{ textAlign: 'center', mt: 3 }}>
-                        <Link href={routes["portal.login"]}><Button>Back to Sign In</Button></Link>
+                        <Link href={routes["portal.login"]}>
+                            <Button children={translatables.texts.back_to_sign_in} />
+                        </Link>
                     </Box>
                 </Grid>
             </Grid>
@@ -146,4 +140,4 @@ const RegisterStudent  = () => {
     )
 }
 
-export default RegisterStudent
+export default Student
