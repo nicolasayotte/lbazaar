@@ -43,6 +43,7 @@
     39 => 'App\\Providers\\EventServiceProvider',
     40 => 'App\\Providers\\RouteServiceProvider',
     41 => 'App\\Providers\\AssetServiceProvider',
+    42 => 'App\\Providers\\DiscordServiceProvider',
   ),
   'eager' => 
   array (
@@ -74,6 +75,7 @@
     25 => 'App\\Providers\\EventServiceProvider',
     26 => 'App\\Providers\\RouteServiceProvider',
     27 => 'App\\Providers\\AssetServiceProvider',
+    28 => 'App\\Providers\\DiscordServiceProvider',
   ),
   'deferred' => 
   array (
