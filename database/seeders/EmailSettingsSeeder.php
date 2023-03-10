@@ -20,14 +20,14 @@ class EmailSettingsSeeder extends Seeder
                 'name'     => 'Inquiry Receiver Email',
                 'slug'     => 'inquiry-receiver-email',
                 'type'     => 'text',
-                'value'    => 'inquiry@lebazaar.com',
+                'value'    => 'inquiry@l-e-bazaar.com',
                 'category' => 'email'
             ],
             [
                 'name'     => 'No Reply Email Generator',
                 'slug'     => 'no-reply-email',
                 'type'     => 'text',
-                'value'    => 'noreply@lebazaar.com',
+                'value'    => 'noreply@l-e-bazaar.com',
                 'category' => 'email'
             ]
         ]);

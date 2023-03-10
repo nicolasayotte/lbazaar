@@ -17,7 +17,9 @@ return new class extends Migration
             $table->id();
             $table->string('first_name', 100);
             $table->string('last_name', 100);
+            $table->longText('discord_id')->nullable();
             $table->string('image')->nullable();
+            $table->string('university')->nullable();
             $table->longText('about')->nullable();
             $table->longText('specialty')->nullable();
             $table->string('email')->unique();

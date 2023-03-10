@@ -195,7 +195,8 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        App\Providers\AssetServiceProvider::class
+        App\Providers\AssetServiceProvider::class,
+        App\Providers\DiscordServiceProvider::class
     ],
 
     /*
@@ -212,7 +213,8 @@ return [
     'aliases' => Facade::defaultAliases()->merge([
         // 'ExampleClass' => App\Example\ExampleClass::class,
         'Countries' => Monarobase\CountryList\CountryListFacade::class,
-        'Asset' => App\Facades\Asset::class
+        'Asset' => App\Facades\Asset::class,
+        'Discord' => App\Classes\Discord::class
     ])->toArray(),
 
 ];
