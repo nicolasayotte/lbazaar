@@ -37,8 +37,6 @@ const Teacher = () => {
         work: []
     })
 
-    console.log(errors)
-
     const handleOnItemAdd = (type = '', bluePrint = null) => {
         const items = data[type];
 
