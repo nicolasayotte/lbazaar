@@ -53,6 +53,8 @@
     "register.student": "\/register\/student",
     "register.store": "\/register\/student",
     "register.teacher": "\/register\/teacher",
+    "register.teacher.store": "\/register\/teacher",
+    "register.teacher.success": "\/register\/teacher\/success",
     "portal.": "\/portal",
     "portal.login": "\/portal\/login",
     "portal.authenticate": "\/portal\/authenticate",

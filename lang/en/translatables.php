@@ -248,6 +248,8 @@ return [
         'add_item' => 'Add Item',
         'admin' => 'Admin',
         'all' => 'All',
+        'application_submitted' => 'Application Submitted',
+        'application_submitted_description' => 'The application will undergo an approval process. You will receive an email notification once there is an update on your application',
         'approve' => 'Approve',
         'back' => 'Back',
         'back_to_class' => 'Back to Class',

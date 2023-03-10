@@ -164,6 +164,9 @@ Route::prefix('register')->name('register.')->group(function() {
     Route::post('/student', [RegisterStudentController::class, 'store'])->name('store');
 
     Route::get('/teacher', [RegisterTeacherController::class, 'index'])->name('teacher');
+    Route::post('/teacher', [RegisterTeacherController::class, 'store'])->name('teacher.store');
+
+    Route::get('/teacher/success', [RegisterTeacherController::class, 'success'])->name('teacher.success');
 });
 
 # Portal Routes

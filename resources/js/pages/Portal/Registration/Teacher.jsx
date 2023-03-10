@@ -2,8 +2,10 @@ import { useForm, usePage } from "@inertiajs/inertia-react"
 import { Add, Delete } from "@mui/icons-material"
 import { Box, Button, Card, CardContent, Container, Divider, Grid, IconButton, Paper, Stack, Typography } from "@mui/material"
 import { grey } from "@mui/material/colors"
+import ErrorText from "../../../components/common/ErrorText"
 import Input from "../../../components/forms/Input"
 import { handleOnChange } from "../../../helpers/form.helper"
+import routes from "../../../helpers/routes.helper"
 
 const Teacher = () => {
 
@@ -34,6 +36,8 @@ const Teacher = () => {
         education: [],
         work: []
     })
+
+    console.log(errors)
 
     const handleOnItemAdd = (type = '', bluePrint = null) => {
         const items = data[type];
@@ -86,6 +90,12 @@ const Teacher = () => {
                 onClick={handleOnClick}
             />
         )
+    }
+
+    const handleOnSubmit = e => {
+        e.preventDefault()
+
+        post(routes["register.teacher.store"])
     }
 
     const basicInformationForm = () => (
@@ -236,6 +246,12 @@ const Teacher = () => {
                     </Grid>
                 }
                 { education() }
+                {
+                    errors && errors.education &&
+                    <Grid item xs={12}>
+                        <ErrorText error={errors.education} />
+                    </Grid>
+                }
             </Grid>
         )
     }
@@ -334,6 +350,12 @@ const Teacher = () => {
                     </Grid>
                 }
                 { work() }
+                {
+                    errors && errors.work &&
+                    <Grid item xs={12}>
+                        <ErrorText error={errors.work} />
+                    </Grid>
+                }
             </Grid>
         )
     }
@@ -341,36 +363,42 @@ const Teacher = () => {
     return (
         <Box py={5}>
             <Container>
-                <Grid container spacing={2} justifyContent="center">
-                    <Grid item xs={12} md={8}>
-                        <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
-                            <Typography variant="h5" children={translatables.texts.sign_up_teacher} />
+                <form onSubmit={handleOnSubmit}>
+                    <Grid container spacing={2} justifyContent="center">
+                        <Grid item xs={12} md={8}>
+                            <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
+                                <Typography variant="h5" children={translatables.texts.sign_up_teacher} />
+                                <Button
+                                    type="submit"
+                                    variant="contained"
+                                    size="large"
+                                    children={translatables.texts.submit}
+                                    onClick={handleOnSubmit}
+                                />
+                            </Stack>
+                        </Grid>
+                        <Grid item xs={12} md={8}>
+                            <Card>
+                                <CardContent>
+                                    { basicInformationForm() }
+                                    <Divider sx={{ my: 3 }} />
+                                    { educationForm() }
+                                    <Divider sx={{ my: 3 }} />
+                                    { workExperienceForm() }
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                        <Grid item xs={12} md={8} textAlign="right">
                             <Button
+                                type="submit"
                                 variant="contained"
                                 size="large"
                                 children={translatables.texts.submit}
+                                onClick={handleOnSubmit}
                             />
-                        </Stack>
+                        </Grid>
                     </Grid>
-                    <Grid item xs={12} md={8}>
-                        <Card>
-                            <CardContent>
-                                { basicInformationForm() }
-                                <Divider sx={{ my: 3 }} />
-                                { educationForm() }
-                                <Divider sx={{ my: 3 }} />
-                                { workExperienceForm() }
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                    <Grid item xs={12} md={8} textAlign="right">
-                        <Button
-                            variant="contained"
-                            size="large"
-                            children={translatables.texts.submit}
-                        />
-                    </Grid>
-                </Grid>
+                </form>
             </Container>
         </Box>
     )
