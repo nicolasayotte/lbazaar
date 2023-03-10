@@ -48,9 +48,11 @@ class RegisterTeacherController extends Controller
 
         $teacherApplication = $this->teacherApplicationRepository->create($inputs);
 
-        Discord::sendMessage($teacherApplication);
+        if (!Discord::sendMessage($teacherApplication)) {
+            session()->flash('error', getTranslation('error'));
+        }
 
-        return to_route('register.teacher.success')->with('success', 'Teacher application successfully submitted');
+        return to_route('register.teacher.success')->with('success', getTranslation('success.teacher_applications.submitted'));
     }
 
     public function success()

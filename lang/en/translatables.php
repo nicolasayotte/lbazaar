@@ -29,6 +29,9 @@ return [
             'create' => 'User successfully created',
             'register' => 'User successfully registered'
         ],
+        'teacher_applications' => [
+            'submitted' => 'Teacher application successfully submitted'
+        ],
         'class' => [
             'applications' => [
                 'status' => [
