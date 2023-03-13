@@ -1,18 +1,18 @@
 
 import routes from "../../helpers/routes.helper"
-import { Typography, Container, Box, Grid, Card, List, IconButton, Drawer, ListItem, ListItemButton, ListItemIcon, Stack, Toolbar, Divider} from "@mui/material"
+import { Typography, Box, Grid, Card, List, IconButton, Drawer, ListItem, ListItemButton, ListItemIcon, Stack, Toolbar, Divider} from "@mui/material"
 import { Article, Logout, History, MenuBook, ManageAccounts, Menu } from "@mui/icons-material"
 import { useState } from "react"
 import { Link, usePage } from "@inertiajs/inertia-react"
 
-const MyPage = ({ page }) => {
+const MyPage = ({ window }) => {
 
     const { component } = usePage()
-    const { translatables } = usePage().props
+    const { translatables, title, auth } = usePage().props
 
-    const container = page.props.window !== undefined ? () => window().document.body : undefined;
+    const container = window !== undefined ? () => window().document.body : undefined;
 
-    const myPageTitle = page.props.title !== undefined ? page.props.title  : 'My Page';
+    const myPageTitle = title || 'My Page'
 
     const [openMobileDrawer, setopenMobileDrawer] = useState(false)
 
@@ -61,7 +61,7 @@ const MyPage = ({ page }) => {
     ]
 
     const menu = navItems.map(item => {
-        let isAccessible = page.props.auth.user.roles.some(role => {
+        let isAccessible = auth.user.roles.some(role => {
             return item.roles.includes(role.name);
         });
 
@@ -132,39 +132,18 @@ const MyPage = ({ page }) => {
     )
 
     return (
-        <Box sx={{ minHeight: { xs: '100vh', lg: '83.7vh' } }}>
-            <Container>
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <Typography
-                            variant="h5"
-                            sx={{ mt: 3, display: { xs: 'none', md: 'inline-block' } }}
-                            children={myPageTitle}
-                        />
-                    </Grid>
-                    <Grid item xs={3}>
-                        <Card sx={{ display: { xs: 'none', md: 'block' } }} children={sidebarLink} />
-                    </Grid>
-                    <Grid className="myprofile-card" item xs={12} md={9}>
-                        <Stack direction="row" alignItems="center">
-                            <IconButton
-                                sx={{ display: { xs: 'block', md: 'none' } }}
-                                onClick={toggleMobileDrawer}
-                            >
-                                <Menu color="inherit" />
-                            </IconButton>
-                            <Typography
-                                variant="h6"
-                                children={myPageTitle}
-                                gutterBottom
-                                sx={{ display: { xs: 'block', md: 'none' } }}
-                            />
-                        </Stack>
-                        {page}
-                    </Grid>
-                </Grid>
-                {mobileDrawer}
-            </Container>
+        <Box>
+            <Stack direction="row" alignItems="center" sx={{ display: { xs: 'flex', md: 'none' } }}>
+                <IconButton onClick={toggleMobileDrawer}>
+                    <Menu color="inherit" />
+                </IconButton>
+                <Typography
+                    variant="h6"
+                    children={myPageTitle}
+                />
+            </Stack>
+            <Card sx={{ display: { xs: 'none', md: 'block' } }} children={sidebarLink} />
+            {mobileDrawer}
         </Box>
     )
 }

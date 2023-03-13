@@ -1,9 +1,8 @@
 import { Link, usePage } from "@inertiajs/inertia-react";
-import { Menu as MenuIcon } from "@mui/icons-material"
-import { AppBar, Box, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemText, Stack, Toolbar, Typography, Grid, Tooltip, Button } from "@mui/material"
+import { AccountBalanceWallet, Menu as MenuIcon } from "@mui/icons-material"
+import { AppBar, Box, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemText, Stack, Toolbar, Typography, Button } from "@mui/material"
 import { useState } from "react"
 import routes from "../../helpers/routes.helper"
-import PointsIcon from '@mui/icons-material/WorkspacePremium'
 import LanguageNavbar from "./LanguageNavbar"
 
 const Navbar = () => {
@@ -61,7 +60,7 @@ const Navbar = () => {
 
     const authButtons = (isLoggedIn, ParentComponent = null, parentProps = {}, ButtonComponent = null) => authNavItems.map(item => {
 
-        const itemProps = item.method && { method: item.method }
+        let itemProps = item.method && { method: item.method }
 
         const output = (
             <Link
@@ -105,28 +104,20 @@ const Navbar = () => {
                 />
             </Toolbar>
             <Divider />
-
             <List>
-                { isLoggedIn && (
-                    <ListItem disablePadding>
-                        <ListItemButton>
-                        <Tooltip title={`${translatables.texts.points}`}>
-                            <Grid container spacing={0} alignItems={'center'}>
-                                <Grid item >
-                                    <PointsIcon sx={{ color: '#FF6B09' }}/>
-                                </Grid>
-                                <Grid item>
-                                    <Typography
-                                        sx={{ color: '#FF6B09' }}
-                                        variant="subtitle2"
-                                        children={`${auth.user.user_wallet.points}`}
-                                    />
-                                </Grid>
-                            </Grid>
-                        </Tooltip>
-                        </ListItemButton>
-                    </ListItem>
-                 )}
+                {
+                    isLoggedIn && (
+                        <>
+                            <ListItem>
+                                <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ width: '100%' }}>
+                                    <AccountBalanceWallet sx={{ mr: 'auto' }} />
+                                    <Typography children={ auth.user.user_wallet.points.toFixed(2) } />
+                                </Stack>
+                            </ListItem>
+                            <Divider sx={{ my: 1 }} />
+                        </>
+                    )
+                }
                 {navItems.map(item => (
                     <ListItem key={item.name} disablePadding>
                         <Link href={item.link} style={{ width: '100%' }}>
@@ -178,21 +169,14 @@ const Navbar = () => {
                         <MenuIcon />
                     </IconButton>
                     <Stack display={{ xs: 'none', md: 'flex' }} direction="row" spacing={1}>
-                        { isLoggedIn && (
-                            <Tooltip title={`${translatables.texts.points}`}>
-                                <Grid container spacing={1} alignItems={'center'}>
-                                    <Grid item >
-                                        <PointsIcon/>
-                                    </Grid>
-                                    <Grid item>
-                                        <Typography
-                                            variant="subtitle2"
-                                            children={`${auth.user.user_wallet.points}`}
-                                        />
-                                    </Grid>
-                                </Grid>
-                            </Tooltip>
-                        )}
+                        {
+                            isLoggedIn && (
+                                <Stack direction="row" spacing={1} alignItems="center" sx={{ mx: 2 }}>
+                                    <AccountBalanceWallet />
+                                    <Typography children={ auth.user.user_wallet.points.toFixed(2) } />
+                                </Stack>
+                            )
+                        }
                         { authButtons(isLoggedIn, null, {}, Button) }
                     </Stack>
                 </Toolbar>

@@ -9,6 +9,7 @@ import { useDispatch } from "react-redux"
 import { usePage } from "@inertiajs/inertia-react"
 import { Inertia } from "@inertiajs/inertia"
 import { actions } from "../../store/slices/ToasterSlice"
+import { AccountBalanceWallet } from "@mui/icons-material"
 
 const UserPoints = ({ user, translatables }) => {
 
@@ -58,11 +59,11 @@ const UserPoints = ({ user, translatables }) => {
     }
 
     return (
-        <Card sx={{ minWidth: 275, mb: 2, position: 'relative' }}>
+        <Card sx={{ minWidth: 275, position: 'relative' }}>
             <CardContent>
                     <Grid container spacing={1} alignItems={'center'}>
                         <Grid item xs={1.5}>
-                            <PointsIcon sx={{ color: '#FF6B09' }} />
+                            <AccountBalanceWallet sx={{ color: '#FF6B09' }} />
                         </Grid>
                         <Grid item xs={8.5}>
                             <Typography variant="h6" children={translatables.texts.points} sx={{ color: '#FF6B09' }} />
@@ -75,7 +76,7 @@ const UserPoints = ({ user, translatables }) => {
                             </Tooltip>
                         </Grid>
                         <Grid item xs={11} ml={1} textAlign={'center'}>
-                            <Typography variant="h6" children={user.user_wallet.points} color={'grey'} />
+                            <Typography variant="h6" children={user.user_wallet.points.toFixed(2)} color={'grey'} />
                         </Grid>
                     </Grid>
                     <ExchangePointsInputDialog
