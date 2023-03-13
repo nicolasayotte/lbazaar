@@ -20,7 +20,6 @@ const Index = ({ errors }) => {
         }))
         handleFilterSubmit(e)
     }
-    const hasBadgeToClaim = auth.user.unclaimed_badges.length > 0
 
     const handleFilterSubmit = (e) => {
         e.preventDefault()
