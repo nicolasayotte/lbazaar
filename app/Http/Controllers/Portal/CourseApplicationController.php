@@ -42,22 +42,26 @@ class CourseApplicationController extends Controller
             'status'             => @$request['status'] ?? '',
             'sort'               => @$request['sort'] ?? 'created_at:desc',
             'page'               => @$request['page'] ?? 1,
-            'title'              => getTranslation('texts.mypage').' | '.getTranslation('title.class.applications.view')
+            'title'              => getTranslation('texts.mypage').' | '.getTranslation('title.class.applications.index')
         ])->withViewData([
-            'title'              => getTranslation('texts.mypage').' | '.getTranslation('title.class.applications.view')
+            'title'              => getTranslation('texts.mypage').' | '.getTranslation('title.class.applications.index')
         ]);
     }
 
     public function create()
     {
-        return Inertia::render('Portal/MyPage/ClassApplications/Form', [
+        return Inertia::render('Portal/MyPage/ClassApplications/Create', [
             'categoryOptions'    => $this->courseCategoryRepository->getDropdownData(),
             'typeOptions'        => $this->courseTypeRepository->getDropdownData(),
-            'title'              => getTranslation('texts.mypage').' | '.getTranslation('title.class.applications.view'),
-            'command'            => Session::get('command')
+            'title'              => getTranslation('texts.mypage').' | '.getTranslation('title.class.applications.create')
         ])->withViewData([
-            'title'              => Session::has('command') ? Session::get("command") : ''
+            'title'              => getTranslation('texts.mypage').' | '.getTranslation('title.class.applications.create')
         ]);
+    }
+
+    public function store(CourseApplicationRequest $request)
+    {
+        dd($request->all());
     }
 
     public function generate(CourseApplicationRequest $request)

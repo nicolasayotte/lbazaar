@@ -241,6 +241,7 @@ Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function()
     Route::prefix('/class-application')->middleware(['teacher'])->name('course.applications.')->group(function() {
         Route::get('/', [PortalClassApplicationController::class, 'index'])->name('index');
         Route::get('/create', [PortalClassApplicationController::class, 'create'])->name('create');
+        Route::post('/', [PortalClassApplicationController::class, 'store'])->name('store');
         Route::get('/details/{id}', [PortalClassApplicationController::class, 'view'])->name('view');
         Route::post('/generate', [PortalClassApplicationController::class, 'generate'])->name('generate');
     });

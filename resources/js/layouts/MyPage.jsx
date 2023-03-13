@@ -15,15 +15,8 @@ const Layout = ({ children }) => {
         <>
             <Head title={title} />
             <Navbar />
-            <Container>
+            <Container sx={{ py: 4 }}>
                 <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <Typography
-                            variant="h5"
-                            sx={{ mt: 3, display: { xs: 'none', md: 'inline-block' } }}
-                            children={myPageTitle}
-                        />
-                    </Grid>
                     <Grid item xs={12} md={3}>
                         <MyPageSideBar />
                     </Grid>
