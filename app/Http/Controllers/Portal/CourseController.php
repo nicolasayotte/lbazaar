@@ -155,7 +155,7 @@ class CourseController extends Controller
 
         } else {
             return redirect()->back()->withErrors([
-                'error' => trans('messages.error')
+                'error' => getTranslation('error')
             ]);
         }
 
@@ -195,7 +195,7 @@ class CourseController extends Controller
 
         } else {
             return redirect()->back()->withErrors([
-                'error' => trans('messages.error')
+                'error' => getTranslation('error')
             ]);
         }
 
@@ -399,11 +399,11 @@ class CourseController extends Controller
 
         if ($isBadgeReceived) $successMessage .= getTranslation('success.badge.earn');
 
-        if ($earnedPoints > 0) $successMessage .= ' ' . getTranslation('sucess.points.earn') . $earnedPoints;
+        if ($earnedPoints > 0) $successMessage .= ' ' . getTranslation('success.points.earn') . $earnedPoints;
 
         return to_route('course.details', ['id' => $course_id])->with(
             'success',
-            $isBadgeReceived ? $successMessage : getTranslation('success.class.compelted')
+            $isBadgeReceived ? $successMessage : getTranslation('success.class.completed')
         );
     }
 

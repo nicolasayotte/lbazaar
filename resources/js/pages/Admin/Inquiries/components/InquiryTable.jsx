@@ -41,7 +41,7 @@ const InquiryTable = ({ data }) => {
                         <TableCell children={translatables.texts.email} />
                         <TableCell children={translatables.texts.subject} />
                         <TableCell align="center" children={translatables.texts.date} width={100}/>
-                        <TableCell align="center" children={translatables.texts.actions}/>
+                        <TableCell align="center" children={translatables.texts.content}/>
                     </TableRow>
                 </TableHead>
                 <TableBody>

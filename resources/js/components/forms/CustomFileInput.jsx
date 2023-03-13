@@ -1,11 +1,11 @@
 import { Upload } from "@mui/icons-material"
-import { Box, Button, CardMedia, FormHelperText, Grid } from "@mui/material"
+import { Box, Button, CardMedia, FormHelperText, Grid, Avatar } from "@mui/material"
 import ErrorText from "../common/ErrorText"
 import Input from "./Input"
 import placeholderImg from "../../../img/placeholder.png"
 import { usePage } from "@inertiajs/inertia-react"
 
-const CustomFileInput = ({ name, src = '', value, onChange = () => {}, errors, helperText = '', buttonPosition = 'start', accepts = "image", placeholderImageHeight = '200px' }) => {
+const CustomFileInput = ({ name, src = '', value, onChange = () => {}, errors, helperText = '', buttonPosition = 'start', accepts = "image", placeholderImageHeight = '200px', isAvatar = false }) => {
 
     const { translatables } = usePage().props
 
@@ -31,14 +31,29 @@ const CustomFileInput = ({ name, src = '', value, onChange = () => {}, errors, h
         if (accepts === 'image' || (accepts === 'video' && src == null)) {
             return (
                 <Box mb={2} onClick={showInputDialog}>
-                    <CardMedia
-                        image={src || placeholderImg}
-                        sx={{
-                            minHeight: placeholderImageHeight,
-                            backgroundSize: 'cover',
-                            cursor: 'pointer'
-                        }}
-                    />
+
+                    { isAvatar ? (
+                        <Avatar
+                            src={src || placeholderImg}
+                            variant="circular"
+                            sx={{
+                                width: 200,
+                                height: 200,
+                                maxWidth: '100%',
+                                mx: 'auto'
+                            }}
+                        />
+                    ) : (
+                        <CardMedia
+                            image={src || placeholderImg}
+                            sx={{
+                                minHeight: placeholderImageHeight,
+                                backgroundSize: 'cover',
+                                cursor: 'pointer',
+                            }}
+                        />
+                    )}
+
                     { helperText && <FormHelperText children={helperText} /> }
                 </Box>
             )

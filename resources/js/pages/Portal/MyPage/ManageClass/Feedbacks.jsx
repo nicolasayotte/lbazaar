@@ -24,7 +24,12 @@ const Feedbacks = () => {
         }
 
         return feedbacks && feedbacks.data && feedbacks.data.length > 0 && feedbacks.data.map(feedback => (
-            <Feedback auth={auth} key={feedback.id} feedback={feedback}/>
+            <Feedback
+                auth={auth}
+                key={feedback.id}
+                feedback={feedback}
+                showUser={true}
+            />
         ))
     }
 

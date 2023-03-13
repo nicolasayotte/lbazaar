@@ -28,7 +28,7 @@ class CourseScheduleRepository extends BaseRepository
                     ->get();
     }
 
-    public function get($courseID, $filters)
+    public function get($courseID, $filters, $userID = null)
     {
         $sortFilterArr = explode(':', @$filters['sort'] ?? 'start_datetime:asc');
 
@@ -36,7 +36,12 @@ class CourseScheduleRepository extends BaseRepository
         $sortOrder = $sortFilterArr[1];
 
         return $this->model->with(['course'])
-            ->where('course_id', $courseID)
+            ->when(@$courseID, function($q) use($courseID) {
+                return $q->where('course_id', $courseID);
+            })
+            ->when(@$userID, function($q) use($userID) {
+                return $q->where('user_id', $userID);
+            })
             ->when(@$filters['month'], function($q) use ($filters) {
 
                 $startDate = date('Y-m-d', strtotime($filters->get('month') . '-01'));
@@ -47,6 +52,12 @@ class CourseScheduleRepository extends BaseRepository
                     $endDate
                 ]);
             })
+            ->when(@$filters['from'], function($q) use($filters) {
+                return $q->whereDate('start_datetime', '>=', $filters['from']);
+            })
+            ->when(@$filters['to'], function($q) use($filters) {
+                return $q->whereDate('start_datetime', '<=', $filters['to']);
+            })
             ->when(@$filters['status'], function($q) use($filters) {
 
                 // Upcoming
@@ -56,13 +67,14 @@ class CourseScheduleRepository extends BaseRepository
 
                 // Done
                 if (@$filters['status'] == Status::DONE) {
-                    return $q->whereDate('end_datetime', '<', new DateTime());
+                    return $q->where('is_completed', true);
                 }
 
                 // Ongoing
                 if ($filters['status'] == Status::ONGOING) {
                     return $q->whereDate('start_datetime', '<=', new DateTime())
-                            ->whereDate('end_datetime', '>=', new DateTime());
+                            ->whereDate('end_datetime', '>=', new DateTime())
+                            ->where('is_completed', false);
                 }
             })
             ->orderBy($sortBy, $sortOrder)

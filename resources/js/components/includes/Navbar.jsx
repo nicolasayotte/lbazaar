@@ -47,7 +47,7 @@ const Navbar = () => {
             auth: false
         },
         {
-            name: `${translatables.texts.profile}`,
+            name: `${translatables.texts.mypage}`,
             link: routes["mypage.profile.index"],
             auth: true
         },
@@ -108,24 +108,30 @@ const Navbar = () => {
 
             <List>
                 { isLoggedIn && (
-                    <ListItem disablePadding>
-                        <ListItemButton>
-                        <Tooltip title={`${translatables.texts.points}`}>
-                            <Grid container spacing={0} alignItems={'center'}>
-                                <Grid item >
-                                    <PointsIcon sx={{ color: '#FF6B09' }}/>
-                                </Grid>
-                                <Grid item>
-                                    <Typography
-                                        sx={{ color: '#FF6B09' }}
-                                        variant="subtitle2"
-                                        children={`${auth.user.user_wallet.points}`}
-                                    />
-                                </Grid>
-                            </Grid>
-                        </Tooltip>
-                        </ListItemButton>
-                    </ListItem>
+                    <>
+                        <ListItem disablePadding>
+                            <ListItemButton>
+                                <Tooltip title={`${translatables.texts.points}`}>
+                                    <Box display="flex" alignItems="center">
+                                        <PointsIcon sx={{ color: '#FF6B09' }}/>
+                                        <Typography
+                                            variant="subtitle2"
+                                            sx={{ color: '#FF6B09' }}
+                                            children={`${auth.user.user_wallet.points}`}
+                                        />
+                                    </Box>
+                                </Tooltip>
+                            </ListItemButton>
+                        </ListItem>
+                        <ListItem disablePadding>
+                            <ListItemButton>
+                                <Typography
+                                    variant="subtitle2"
+                                    children={`${auth.user.roles[0].name.toUpperCase()}`}
+                                />
+                            </ListItemButton>
+                        </ListItem>
+                    </>
                  )}
                 {navItems.map(item => (
                     <ListItem key={item.name} disablePadding>
@@ -177,21 +183,27 @@ const Navbar = () => {
                     >
                         <MenuIcon />
                     </IconButton>
-                    <Stack display={{ xs: 'none', md: 'flex' }} direction="row" spacing={1}>
+                    <Stack display={{ xs: 'none', md: 'flex' }} direction="row" spacing={1} >
                         { isLoggedIn && (
-                            <Tooltip title={`${translatables.texts.points}`}>
-                                <Grid container spacing={1} alignItems={'center'}>
-                                    <Grid item >
-                                        <PointsIcon/>
-                                    </Grid>
+                            <>
+                                <Grid container alignItems={'center'} spacing={1}>
                                     <Grid item>
+                                        <Typography
+                                            variant="subtitle2"
+                                            children={`${auth.user.roles[0].name.toUpperCase()}`}
+                                        />
+                                    </Grid>
+                                </Grid>
+                                <Tooltip title={`${translatables.texts.points}`}>
+                                    <Box display="flex" alignItems="center">
+                                        <PointsIcon/>
                                         <Typography
                                             variant="subtitle2"
                                             children={`${auth.user.user_wallet.points}`}
                                         />
-                                    </Grid>
-                                </Grid>
-                            </Tooltip>
+                                    </Box>
+                                </Tooltip>
+                            </>
                         )}
                         { authButtons(isLoggedIn, null, {}, Button) }
                     </Stack>
