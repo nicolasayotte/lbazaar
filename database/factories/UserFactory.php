@@ -24,8 +24,10 @@ class UserFactory extends Factory
         return [
             'first_name'        => fake()->firstName(),
             'last_name'         => fake()->lastName(),
+            'discord_id'        => fake()->lexify('?????#') . fake()->numerify('####'),
             'image'             => 'https://picsum.photos/id/'.(fake()->numberBetween(100, 140)).'/1000/650',
             'about'             => fake()->paragraphs(4, 2),
+            'university'        => 'University of ' . fake()->city(),
             'specialty'         => fake()->sentence(),
             'email'             => fake()->unique()->safeEmail(),
             'email_verified_at' => fake()->dateTime(),

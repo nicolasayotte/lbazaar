@@ -24,7 +24,7 @@ class RegisterStudentController extends Controller
     {
         $countries = Country::all();
 
-        return Inertia::render('Portal/RegisterStudent', [
+        return Inertia::render('Portal/Registration/Student', [
             'countries' => $countries,
             'title'     => 'Sign Up'
         ])->withViewData([
@@ -71,7 +71,7 @@ class RegisterStudentController extends Controller
             'password'  => $notHashPassword,
             fn ($query) => $query->whereRoleIs(Role::STUDENT)
         ])) {
-            return redirect()->route('verify.email');
+            return redirect()->route('verify.email')->with('success', getTranslation('success.user.register'));
         }
 
         return redirect()->route('register.index');

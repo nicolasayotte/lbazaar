@@ -1,6 +1,6 @@
 import { Link, usePage } from "@inertiajs/inertia-react";
 import { Menu as MenuIcon } from "@mui/icons-material"
-import { AppBar, Box, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemText, Stack, Toolbar, Typography, Grid, Tooltip } from "@mui/material"
+import { AppBar, Box, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemText, Stack, Toolbar, Typography, Grid, Tooltip, Button } from "@mui/material"
 import { useState } from "react"
 import routes from "../../helpers/routes.helper"
 import PointsIcon from '@mui/icons-material/WorkspacePremium'
@@ -59,7 +59,7 @@ const Navbar = () => {
         }
     ]
 
-    const authButtons = (isLoggedIn, ParentComponent = null, parentProps = {}) => authNavItems.map(item => {
+    const authButtons = (isLoggedIn, ParentComponent = null, parentProps = {}, ButtonComponent = null) => authNavItems.map(item => {
 
         const itemProps = item.method && { method: item.method }
 
@@ -69,16 +69,22 @@ const Navbar = () => {
                 style={{
                     cursor: 'pointer',
                     width: '100%',
-                    minWidth: '100px',
-                    textAlign: 'center'
+                    whiteSpace: 'nowrap',
+                    textAlign: 'center',
                 }}
                 href={item.link}
                 key={item.name}
                 {...itemProps}
             >
-                <ListItemButton>
-                    <ListItemText primary={item.name} sx={{ textAlign: { xs: 'left', md: 'center' } }} />
-                </ListItemButton>
+                {
+                    ButtonComponent
+                    ? <ButtonComponent variant="outlined" color="inherit" children={item.name} />
+                    : (
+                        <ListItemButton>
+                            <ListItemText primary={item.name} sx={{ textAlign: { xs: 'left', md: 'center' } }} />
+                        </ListItemButton>
+                    )
+                }
             </Link>
         )
 
@@ -135,18 +141,18 @@ const Navbar = () => {
         </Box>
     )
 
-    const nav = (
+    const Nav = () => (
         navItems.map(item => (
-            <Box key={item.name} sx={{ mr: 2 }}>
-                <Link
-                    key={item.name}
-                    href={item.link}
-                    style={{
-                        textDecoration: 'none',
-                        color: 'white'
-                    }}
-                >{item.name}</Link>
-            </Box>
+            <Link
+                key={item.name}
+                href={item.link}
+                style={{
+                    textDecoration: 'none',
+                    color: 'white'
+                }}
+            >
+                <Button color="inherit" children={item.name} />
+            </Link>
         ))
     )
 
@@ -158,9 +164,9 @@ const Navbar = () => {
                 <LanguageNavbar locale={locale} />
                 <Toolbar>
                     <Typography variant="h6" sx={{ my: 3, mr: 4 }}>L-Earning Bazaar</Typography>
-                    <Box sx={{ flexGrow: 1, display: { xs: "none", sm: "flex" } }}>
-                        { nav }
-                    </Box>
+                    <Stack direction="row" spacing={1} sx={{ mr: 'auto', display: { xs: "none", sm: "flex" } }}>
+                        <Nav />
+                    </Stack>
                     <IconButton
                         color="inherit"
                         sx={{
@@ -187,7 +193,7 @@ const Navbar = () => {
                                 </Grid>
                             </Tooltip>
                         )}
-                        { authButtons(isLoggedIn) }
+                        { authButtons(isLoggedIn, null, {}, Button) }
                     </Stack>
                 </Toolbar>
             </AppBar>

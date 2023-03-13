@@ -26,7 +26,11 @@ return [
             'status' => [
                 'update' => 'User status successfully updated'
             ],
-            'create' => 'User successfully created'
+            'create' => 'User successfully created',
+            'register' => 'User successfully registered'
+        ],
+        'teacher_applications' => [
+            'submitted' => 'Teacher application successfully submitted'
         ],
         'class' => [
             'applications' => [
@@ -215,18 +219,22 @@ return [
     'education' => [
         'school' => 'School',
         'degree' => 'Degree',
+        'background' => 'Educational Background'
     ],
     'work' => [
         'company' => 'Company',
         'position' => 'Position',
         'description' => 'Description',
+        'history' => 'Professional History'
     ],
     'user' => [
         'about' => 'About',
         'specialty' => 'Specialization',
+        'university' => 'School/University'
     ],
     'class_schedule' => [
         'start_date' => 'Start Date',
+        'end_date' => 'End Date',
         'number_users_booked' => 'Users Booked',
         'class_style' => 'On Demand/Live',
     ],
@@ -243,14 +251,19 @@ return [
         'add_item' => 'Add Item',
         'admin' => 'Admin',
         'all' => 'All',
+        'application_submitted' => 'Application Submitted',
+        'application_submitted_description' => 'The application will undergo an approval process. You will receive an email notification once there is an update on your application',
         'approve' => 'Approve',
         'back' => 'Back',
         'back_to_class' => 'Back to Class',
+        'back_to_sign_in' => 'Back to Sign In',
         'back_to_top' => 'Back to Top Page',
+        'basic_information' => 'Basic Information',
         'cancel' => 'Cancel',
         'cancellable' => 'Cancellable',
         'category' => 'Category',
         'choice' => 'Choice',
+        'choose_role' => 'Choose you role',
         'class_type' => 'Class Type',
         'class_image' => 'Class Image',
         'class_information' => 'Class Information',
@@ -321,6 +334,7 @@ return [
         'no_schedules_available' => 'No Schedules Available',
         'package' => 'Package',
         'package_information' => 'Package Information',
+        'password_help' => 'Must have at least 8 characters',
         'points' => 'Points',
         'points_earned' => 'Points Earned',
         'price' => 'Price',
@@ -344,6 +358,8 @@ return [
         'send_reply' => 'Send Reply',
         'sign_in' => 'Sign In',
         'sign_out' => 'Sign Out',
+        'sign_up_student' => 'Student Sign Up',
+        'sign_up_teacher' => 'Teacher Sign Up',
         'sort' => 'Sort',
         'status' => 'Status',
         'status_information' => 'Status Information',

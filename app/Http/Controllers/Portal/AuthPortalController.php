@@ -18,8 +18,23 @@ class AuthPortalController extends Controller
             return redirect()->back();
         }
 
-        return Inertia::render('Portal/Login', [])->withViewData([
-            'title' => 'Portal Login'
+        return Inertia::render('Portal/Login', [
+            'title' => getTranslation('texts.sign_in')
+        ])->withViewData([
+            'title' => getTranslation('texts.sign_in')
+        ]);
+    }
+
+    public function register()
+    {
+        if (auth()->check()) {
+            return redirect()->back();
+        }
+
+        return Inertia::render('Portal/Registration/Index', [
+            'title' => getTranslation('texts.sign_up')
+        ])->withViewData([
+            'title' => getTranslation('texts.sign_up')
         ]);
     }
 
