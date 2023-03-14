@@ -2,6 +2,8 @@
 
 namespace App\Classes;
 
+use App\Models\CourseApplication;
+use App\Models\TeacherApplication;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Log;
@@ -10,18 +12,16 @@ class Discord
 {
     private $webhook_url;
 
-    private $line_break = '---------------------------------------------------';
-
     public function __construct()
     {
         $this->webhook_url = env('DISCORD_WEBOOK_URL');
     }
 
-    public function sendMessage($data, $type = '')
+    public function sendMessage($data, $type)
     {
         $buildMethods = [
-            'class' => 'buildClassApplicationMessage',
-            'teacher' => 'buildTeacherApplicationMessage'
+            CourseApplication::class => 'buildClassApplicationMessage',
+            TeacherApplication::class => 'buildTeacherApplicationMessage'
         ];
 
         $messageContent = $this->{$buildMethods[$type]}($data);
@@ -100,9 +100,9 @@ class Discord
         $message = [];
 
         $message['title'] = 'New Teacher Application Created';
-        $message['description'] = '**Vote ID:** ' . $data->vote_id;
+        $message['description'] = '**Vote ID:** ' . $data->id;
         $message['type'] = 'rich';
-        $message['footer']['text'] = 'Voting period ends on ' . $data->vote->end_date;
+        $message['footer']['text'] = 'Voting period ends on ' . $data->end_date;
 
         $keys = array_keys($contents);
 
@@ -156,6 +156,29 @@ class Discord
 
                         $field['name'] = $work['position'] . ' for ' . $work['company'] . " (" . $startDate . " - " . $endDate . ") ";
                         $field['value'] = '>>> ' . ($work['description'] ?? 'No description provided');
+
+                        $message['fields'][] = $field;
+                    }
+
+                    // Additional lines
+                    $this->addEmptyLines($message, 1);
+                }
+            } else if ($key == 'certification') {
+                if (!empty($contents[$key])) {
+                    // Additional lines
+                    $this->addEmptyLines($message, 2);
+
+                    $message['fields'][] = [
+                        'name' => 'Certification',
+                        'value' => ''
+                    ];
+
+                    foreach ($contents[$key] as $certification) {
+
+                        $awardedAt = Carbon::parse(@$certification['awarded_at'])->format('F Y');
+
+                        $field['name'] = $certification['awarded_by'] . " (" . $awardedAt . ") ";
+                        $field['value'] = $certification['title'];
 
                         $message['fields'][] = $field;
                     }

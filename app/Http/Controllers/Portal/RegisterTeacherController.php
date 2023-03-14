@@ -41,16 +41,11 @@ class RegisterTeacherController extends Controller
 
         $data = json_encode($request->all());
 
-        $vote = $this->voteRepository->generateNewId($data);
-
         $inputs['data'] = $data;
-        $inputs['vote_id'] = $vote->id;
 
         $teacherApplication = $this->teacherApplicationRepository->create($inputs);
 
-        if (!Discord::sendMessage($teacherApplication)) {
-            session()->flash('error', getTranslation('error'));
-        }
+        $vote = $this->voteRepository->generateNewId($teacherApplication);
 
         return to_route('register.teacher.success')->with('success', getTranslation('success.teacher_applications.submitted'));
     }

@@ -24,7 +24,7 @@ class VoteRepository extends BaseRepository
 
         $vote->voteable()->associate($applicationData)->save();
 
-        if (!Discord::sendMessage($vote, 'class')) {
+        if (!Discord::sendMessage($vote, $applicationData::class)) {
             session()->flash('error', getTranslation('error'));
         }
 

@@ -155,13 +155,13 @@ const Navbar = () => {
                 <LanguageNavbar locale={locale} />
                 <Toolbar>
                     <Typography variant="h6" sx={{ my: 3, mr: 4 }}>L-Earning Bazaar</Typography>
-                    <Stack direction="row" spacing={1} sx={{ mr: 'auto', display: { xs: "none", sm: "flex" } }}>
+                    <Stack direction="row" spacing={1} sx={{ mr: 'auto', display: { xs: "none", md: "flex" } }}>
                         <Nav />
                     </Stack>
                     <IconButton
                         color="inherit"
                         sx={{
-                            display: {xs: "flex", sm: "none"},
+                            display: {xs: "flex", md: "none"},
                             marginLeft: "auto"
                         }}
                         onClick={toggleDrawer}
@@ -191,7 +191,7 @@ const Navbar = () => {
                         keepMounted: true
                     }}
                     sx={{
-                        display: { xs: "block", sm: "none" },
+                        display: { xs: "block", md: "none" },
                         "& .MuiDrawer-paper": { boxSizing: 'border-box', width: drawerWidth }
                     }}
                 >

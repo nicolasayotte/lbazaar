@@ -184,6 +184,7 @@ const Create = () => {
                                     value={data.length}
                                     onChange={e => handleOnChange(e, setData)}
                                     errors={errors}
+                                    placeholder="e.g. 01:30:00 or 1hr 30mins"
                                 />
                             </Grid>
                             <Grid item xs={12}>

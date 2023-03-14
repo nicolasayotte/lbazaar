@@ -1,4 +1,4 @@
-import { useForm, usePage } from "@inertiajs/inertia-react"
+import { Link, useForm, usePage } from "@inertiajs/inertia-react"
 import { Add, Delete } from "@mui/icons-material"
 import { Box, Button, Card, CardContent, Container, Divider, Grid, IconButton, Paper, Stack, Typography } from "@mui/material"
 import { grey } from "@mui/material/colors"
@@ -26,6 +26,12 @@ const Teacher = () => {
         description: ''
     }
 
+    const certificationBlueprint = {
+        title: '',
+        awarded_at: '',
+        awarded_by: ''
+    }
+
     const { data, setData, errors, post } = useForm('TeacherRegistrationForm', {
         first_name: '',
         last_name: '',
@@ -34,7 +40,8 @@ const Teacher = () => {
         specialty: '',
         about: '',
         education: [],
-        work: []
+        work: [],
+        certification: []
     })
 
     const handleOnItemAdd = (type = '', bluePrint = null) => {
@@ -266,7 +273,7 @@ const Teacher = () => {
                                 <IconButton
                                     size="small"
                                     title={translatables.texts.delete}
-                                    onClick={() => handleOnItemDelete(index, 'work')}
+                                    onClick={() => handleOnItemDelete(index, 'certificate')}
                                 >
                                     <Delete fontSize="inherit" color="error" />
                                 </IconButton>
@@ -358,22 +365,117 @@ const Teacher = () => {
         )
     }
 
+    const certificationForm = () => {
+
+        const certificates = () => data.certification && data.certification.length > 0 && data.certification.map((certification, index) => (
+            <Grid key={index} item xs={12}>
+                <Paper elevation={3} sx={{ p: 2 }}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} textAlign="right">
+                            <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
+                                <Typography children={translatables.texts.certification} />
+                                <IconButton
+                                    size="small"
+                                    title={translatables.texts.delete}
+                                    onClick={() => handleOnItemDelete(index, 'certification')}
+                                >
+                                    <Delete fontSize="inherit" color="error" />
+                                </IconButton>
+                            </Stack>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Input
+                                label={translatables.texts.title}
+                                name={`certification.${index}.title`}
+                                value={data.certification[index].title}
+                                onChange={e => handleOnItemChange(e, index, 'title', 'certification')}
+                                errors={errors}
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                            <Input
+                                type="date"
+                                InputLabelProps={{ shrink: true }}
+                                label={translatables.certification.awarded_at}
+                                name={`certification.${index}.awarded_at`}
+                                value={data.certification[index].awarded_at}
+                                onChange={e => handleOnItemChange(e, index, 'awarded_at', 'certification')}
+                                errors={errors}
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                            <Input
+                                label={translatables.certification.awarded_by}
+                                name={`certification.${index}.awarded_by`}
+                                value={data.certification[index].awarded_by}
+                                onChange={e => handleOnItemChange(e, index, 'awarded_by', 'certification')}
+                                errors={errors}
+                            />
+                        </Grid>
+                    </Grid>
+                </Paper>
+            </Grid>
+        ))
+
+        return (
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <Stack direction="row" justifyContent="space-between" spacing={2}>
+                        <Typography variant="h6" children={translatables.texts.certification} />
+                        <Button
+                            variant="outlined"
+                            children={translatables.texts.add_item}
+                            onClick={() => handleOnItemAdd('certification', certificationBlueprint)}
+                            startIcon={<Add />}
+                        />
+                    </Stack>
+                </Grid>
+                {
+                    data.certification && data.certification.length <= 0 &&
+                    <Grid item xs={12}>
+                        <EmptyBox handleOnClick={() => handleOnItemAdd('certification', certificationBlueprint)} />
+                    </Grid>
+                }
+                { certificates() }
+                {
+                    errors && errors.certification &&
+                    <Grid item xs={12}>
+                        <ErrorText error={errors.certification} />
+                    </Grid>
+                }
+            </Grid>
+        )
+    }
+
     return (
         <Box py={5}>
             <Container>
                 <form onSubmit={handleOnSubmit}>
                     <Grid container spacing={2} justifyContent="center">
-                        <Grid item xs={12} md={8}>
-                            <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
+                        <Grid item xs={12} md={8} container spacing={2} alignItems="center" justifyContent="space-between">
+                            <Grid item xs={12} md="auto">
                                 <Typography variant="h5" children={translatables.texts.sign_up_teacher} />
-                                <Button
-                                    type="submit"
-                                    variant="contained"
-                                    size="large"
-                                    children={translatables.texts.submit}
-                                    onClick={handleOnSubmit}
-                                />
-                            </Stack>
+                            </Grid>
+                            <Grid item xs={12} md={4}>
+                                <Stack direction="row" alignItems="center" spacing={2}>
+                                    <Link href={routes["register.index"]}>
+                                        <Button
+                                            type="submit"
+                                            size="large"
+                                            children={translatables.texts.cancel}
+                                            fullWidth
+                                        />
+                                    </Link>
+                                    <Button
+                                        type="submit"
+                                        variant="contained"
+                                        size="large"
+                                        children={translatables.texts.submit}
+                                        onClick={handleOnSubmit}
+                                        fullWidth
+                                    />
+                                </Stack>
+                            </Grid>
                         </Grid>
                         <Grid item xs={12} md={8}>
                             <Card>
@@ -383,6 +485,8 @@ const Teacher = () => {
                                     { educationForm() }
                                     <Divider sx={{ my: 3 }} />
                                     { workExperienceForm() }
+                                    <Divider sx={{ my: 3 }} />
+                                    { certificationForm() }
                                 </CardContent>
                             </Card>
                         </Grid>
