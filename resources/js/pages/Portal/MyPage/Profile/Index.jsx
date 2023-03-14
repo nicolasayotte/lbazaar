@@ -7,7 +7,7 @@ import { Grid } from "@mui/material"
 
 const Index = ({ auth, countries, errors, translatables }) => {
     return (
-        <Grid container spacing={1}>
+        <Grid container spacing={2}>
             <Grid item xs={12} md={8}>
                 <ProfileForm
                     auth={auth}
@@ -18,15 +18,10 @@ const Index = ({ auth, countries, errors, translatables }) => {
                 />
             </Grid>
             <Grid item xs={12} md={3}>
-                <Grid container spacing={1}>
-                    <Grid item xs={12} md={12}>
-                        <UserPoints
-                            translatables={translatables}
-                            user={auth.user}
-                        />
-                    </Grid>
-                </Grid>
-
+                <UserPoints
+                    translatables={translatables}
+                    user={auth.user}
+                />
             </Grid>
             <Grid item xs={12} md={8}>
                 <PasswordForm

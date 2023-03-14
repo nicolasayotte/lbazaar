@@ -1,5 +1,5 @@
-import { useForm, usePage } from "@inertiajs/inertia-react"
-import { Box, Button, Card, CardContent, Grid, Pagination } from "@mui/material"
+import { Link, useForm, usePage } from "@inertiajs/inertia-react"
+import { Box, Button, Card, CardContent, Grid, Pagination, Typography } from "@mui/material"
 import Input from "../../../../components/forms/Input"
 import { displaySelectOptions, handleOnChange, handleOnSelectChange } from "../../../../helpers/form.helper"
 import ClassApplicationTable from "./components/ClassApplicationTable"
@@ -18,7 +18,8 @@ const Index = () => {
         status,
         sort,
         page,
-        translatables
+        translatables,
+        title
     } = usePage().props
 
     const sortOptions = [
@@ -60,7 +61,25 @@ const Index = () => {
 
     return (
         <>
-            <Card sx={{ mb: 2 }}>
+            <Grid container spacing={2} justifyContent="space-between" alignItems="center">
+                <Grid item xs={12} md='auto'>
+                    <Typography
+                        variant="h5"
+                        sx={{ display: { xs: 'none', md: 'inline-block' } }}
+                        children={title}
+                    />
+                </Grid>
+                <Grid item xs={12} md='auto'>
+                    <Link href={routes["mypage.course.applications.create"]}>
+                        <Button
+                            variant="contained"
+                            fullWidth
+                            children={translatables.title.class.applications.create}
+                        />
+                    </Link>
+                </Grid>
+            </Grid>
+            <Card sx={{ my: 2 }}>
                 <CardContent>
                     <form onSubmit={handleFilterSubmit}>
                         <Grid container spacing={2}>

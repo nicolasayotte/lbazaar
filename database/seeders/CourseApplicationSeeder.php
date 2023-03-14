@@ -40,7 +40,7 @@ class CourseApplicationSeeder extends Seeder
      * @param string $courseTypeName The name of the course type
      * @param bool $approved Set as approved when true, otherwise denied
      */
-    private function createData($count = 1, $userId, $courseTypeName = CourseType::GENERAL, $approved = true)
+    private function createData($count = 1, $userId, $courseTypeName = CourseType::GENERAL)
     {
         $applications = CourseApplication::factory()
                                         ->count($count)
@@ -58,11 +58,7 @@ class CourseApplicationSeeder extends Seeder
             $applications = $applications->special();
         }
 
-        if ($approved) {
-            $applications = $applications->approved();
-        } else {
-            $applications = $applications->denied();
-        }
+        $applications = $applications->approved();
 
         return $applications->create();
     }

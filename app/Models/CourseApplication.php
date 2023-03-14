@@ -34,11 +34,13 @@ class CourseApplication extends Model
         'title',
         'description',
         'max_participant',
-        'language',
         'is_live',
         'video_link',
         'zoom_link',
         'approved_at',
+        'length',
+        'lecture_frequency',
+        'data'
     ];
 
 

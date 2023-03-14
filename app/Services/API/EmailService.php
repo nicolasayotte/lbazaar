@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\CourseApplicationUpdate;
 use App\Mail\WalletUpdateNotification;
 use App\Mail\AdminCreateUserNotification;
+use App\Mail\DeniedTeacherApplication;
+use App\Models\TeacherApplication;
+use Exception;
 
 class EmailService
 {
@@ -30,6 +33,15 @@ class EmailService
             Mail::send(new AdminCreateUserNotification($user, $password, $loginUrl));
         } catch (\Exception $e) {
             Log::error($e);
+        }
+    }
+
+    public function sendDeniedTeacherApplicationNOtification(TeacherApplication $teacherApplication)
+    {
+        try {
+            Mail::send(new DeniedTeacherApplication($teacherApplication));
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
         }
     }
 

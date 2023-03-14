@@ -63,9 +63,9 @@ class CourseScheduleController extends Controller
             'page'      => @$request['page'] ?? 1,
             'sort'      => @$request['sort'] ?? 'start_datetime:asc',
             'status'    => @$request['status'] ?? '',
-            'title'     => $this->baseTitle . getTranslation('title.schedules.index'),
+            'title'     => getTranslation('texts.mypage') . ' | ' . getTranslation('texts.teaching_history'),
         ])->withViewData([
-            'title'     => $this->baseTitle . getTranslation('title.schedules.index')
+            'title'     => getTranslation('texts.mypage') . ' | ' . getTranslation('texts.teaching_history')
         ]);
     }
 

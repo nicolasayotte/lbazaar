@@ -43,4 +43,9 @@ class CourseCategoryRepository extends BaseRepository
             ];
         });
     }
+
+    public function firstOrCreate($category)
+    {
+        return $this->model->firstOrCreate(['name' => $category]);
+    }
 }

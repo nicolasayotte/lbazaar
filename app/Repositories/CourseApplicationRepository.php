@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Data\CourseApplicationData;
 use App\Models\Course;
 use App\Models\CourseApplication;
+use App\Services\API\EmailService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
@@ -126,5 +127,17 @@ class CourseApplicationRepository extends BaseRepository
                     ->whereDoesntHave('course')
                     ->where('id', $id)
                     ->firstOrFail();
+    }
+
+    public function processApplication(CourseApplication $applicationData)
+    {
+        $emailService = new EmailService();
+
+        $applicationData->denied_at = null;
+        $applicationData->approved_at = Carbon::now();
+
+        $applicationData->save();
+
+        $emailService->sendEmailCourseApplicationUpdate($applicationData);
     }
 }

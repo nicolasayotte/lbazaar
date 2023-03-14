@@ -52,7 +52,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'is_enabled',
         'is_temp_password',
-        'classification_id'
+        'classification_id',
+        'university'
     ];
 
     /**

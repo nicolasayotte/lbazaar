@@ -140,7 +140,8 @@ return [
         'class' => [
             'applications' => [
                 'index' => 'Class Applications',
-                'view' => 'Class Application'
+                'view' => 'Class Application',
+                'create' => 'Create Class Application'
             ],
             'types' => 'Class Types',
             'manage' => [
@@ -341,6 +342,7 @@ return [
         'forgot_password' => 'Forgot Password',
         'format' => 'Format',
         'free' => 'Free',
+        'frequency' => 'Frequency',
         'from' => 'From',
         'fully_booked' => 'Fully Booked',
         'featured_teachers' => 'Featured Teachers',
@@ -352,6 +354,7 @@ return [
         'keyword' => 'Keyword',
         'language' => 'Language',
         'last_name' => 'Last Name',
+        'length' => 'Length',
         'live' => 'Live',
         'live_class' => 'Live Class',
         'live_class_description' => 'Attend the live Zoom class together with the teacher and fellow attendees',
@@ -360,6 +363,7 @@ return [
         'message' => 'Message',
         'mypage' => 'My Page',
         'name' => 'Name',
+        'new_category'  => 'New Category',
         'new_password' => 'New Password',
         'next_question' => 'Next Question',
         'no_file_selected' => 'No file selected',

@@ -36,6 +36,11 @@ class CourseTypeRepository extends BaseRepository
 
     public function getNameById($id)
     {
-        return $this->model->find($id)->name;
+        return $this->model->find($id)->type;
+    }
+
+    public function findByName($type)
+    {
+        return $this->model->where('type', $type)->first();
     }
 }
