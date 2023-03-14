@@ -28,6 +28,21 @@ class CourseApplicationRequest extends FormRequest
      */
     public function rules()
     {
+        $isPaid = $this->type == strtolower(CourseType::GENERAL) || $this->type == strtolower(CourseType::SPECIAL);
+        $isEarn = $this->type == strtolower(CourseType::EARN);
+
+        $priceRules = [
+            Rule::requiredIf($isPaid),
+            'integer',
+            'min:' . ($isPaid ? '1' : '0')
+        ];
+
+        $pointsRules = [
+            Rule::requiredIf($isEarn),
+            'integer',
+            'min:' . ($isEarn ? '1' : '0')
+        ];
+
         return [
             'title'             => 'required',
             'type'              => 'required',
@@ -35,8 +50,8 @@ class CourseApplicationRequest extends FormRequest
             'category'          => 'required',
             'lecture_frequency' => 'required',
             'length'            => 'required',
-            'price'             => 'required_if:type,' . CourseType::GENERAL . '|integer|min:1',
-            'points_earned'     => 'required_if:type, ' . CourseType::EARN . '|min:1',
+            'price'             => $priceRules,
+            'points_earned'     => $pointsRules,
             'seats'             => 'required|integer|min:1',
             'description'       => 'required'
         ];
