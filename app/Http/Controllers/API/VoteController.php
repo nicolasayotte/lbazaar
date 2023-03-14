@@ -11,6 +11,7 @@ use App\Repositories\CourseApplicationRepository;
 use App\Repositories\UserRepository;
 use App\Repositories\VoteRepository;
 use App\Services\API\EmailService;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -24,11 +25,14 @@ class VoteController extends Controller
 
     private $courseApplicationRepository;
 
+    private $emailService;
+
     public function __construct()
     {
         $this->userRepository = new UserRepository();
         $this->voteRepository = new VoteRepository();
         $this->courseApplicationRepository = new CourseApplicationRepository();
+        $this->emailService = new EmailService();
     }
 
     public function register(RegisterVoteRequest $request)
@@ -45,16 +49,23 @@ class VoteController extends Controller
                     CourseApplication::class => $this->courseApplicationRepository
                 ];
 
-                $repositoryByClass[$vote->voteable::class]->createFromApi($vote->voteable);
+                $repositoryByClass[$vote->voteable::class]->processApplication($vote->voteable);
             } else {
 
                 // Check if teacher application then send rejection email
                 if ($vote->voteable::class == TeacherApplication::class) {
-                    try {
-                        Mail::send(new DeniedTeacherApplication($vote->voteable));
-                    } catch (Exception $e) {
-                        Log::error($e->getMessage());
-                    }
+                    $this->emailService->sendDeniedTeacherApplicationNOtification($vote->voteable);
+                }
+
+                // Check if class application then send rejection email
+                if ($vote->voteable::class == CourseApplication::class) {
+
+                    $vote->voteable->denied_at = Carbon::now();
+                    $vote->voteable->approved_at = null;
+
+                    $vote->voteable->save();
+
+                    $this->emailService->sendEmailCourseApplicationUpdate($vote->voteable);
                 }
             }
 

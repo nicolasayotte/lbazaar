@@ -115,7 +115,7 @@ class UserRepository extends BaseRepository
         ];
     }
 
-    public function createFromApi(TeacherApplication $applicationData)
+    public function processApplication(TeacherApplication $applicationData)
     {
         $emailService = new EmailService();
 
