@@ -73,7 +73,6 @@ const Index = () => {
                     <Link href={routes["mypage.course.applications.create"]}>
                         <Button
                             variant="contained"
-                            size="large"
                             fullWidth
                             children={translatables.title.class.applications.create}
                         />

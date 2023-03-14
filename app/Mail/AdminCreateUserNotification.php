@@ -53,7 +53,7 @@ class AdminCreateUserNotification extends Mailable
         $settingsRepository = new SettingRepository();
 
         return new Envelope(
-            subject: 'Account successfully created',
+            subject: 'Your application has been approved',
             from: new Address($settingsRepository->getSetting('no-reply-email')),
             to: [$this->user->email]
         );

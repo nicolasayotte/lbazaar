@@ -5,7 +5,11 @@ namespace App\Repositories;
 use App\Models\Role;
 use App\Models\User;
 use App\Data\UserData;
+use App\Models\TeacherApplication;
+use App\Services\API\EmailService;
 use Illuminate\Support\Collection;
+use DragonCode\Support\Facades\Helpers\Str;
+use Illuminate\Support\Facades\Hash;
 
 class UserRepository extends BaseRepository
 {
@@ -109,5 +113,30 @@ class UserRepository extends BaseRepository
                 'value' => User::DISABLED
             ]
         ];
+    }
+
+    public function createFromApi(TeacherApplication $applicationData)
+    {
+        $emailService = new EmailService();
+
+        $data = json_decode($applicationData->data, true);
+
+        $tempPassword = Str::random(User::RANDOM_PASSWORD_STRING_LENGTH);
+
+        $data['password'] = Hash::make($tempPassword);
+        $data['is_temp_password'] = true;
+        $data['is_enabled'] = true;
+        $data['country_id'] = fake()->numberBetween(1, 249);
+
+        $user = $this->model->create($data);
+
+        $user->userEducation()->createMany($data['education']);
+
+        if (!empty(@$data['work'])) $user->userWorkHistory()->createMany(@$data['work']);
+        if (!empty(@$data['certification'])) $user->userCertification()->createMany(@$data['certification']);
+
+        $user->save();
+
+        $emailService->sendEmailNotificationUserCreated($user, $tempPassword);
     }
 }

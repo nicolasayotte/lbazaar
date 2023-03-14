@@ -1,5 +1,5 @@
 <x-mail::message>
-# Account Successfully Created
+# Teacher Application Update
 
 <br>
 <p>Hi {{ $user->fullname }},</p>
