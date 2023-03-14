@@ -40,7 +40,7 @@ const PasswordForm = ({ errors, messages: translatables, routes, logoutUrl }) =>
     }
 
     return (
-        <Card key="Password Form Card" sx={{ mt: 2 }}>
+        <Card key="Password Form Card">
             <form onSubmit={handleSubmit}>
                 <CardContent sx={{ p: 4 }}>
                     <Box sx={{ mb: 3 }}>

@@ -33,7 +33,7 @@ class ManageCourseController extends Controller
         $this->courseFeedbackRepository = new CourseFeedbackRepository();
         $this->userRepository = new UserRepository();
 
-        $this->baseTitle = getTranslation('title.class.manage.view') . ' - ';
+        $this->baseTitle = getTranslation('title.class.manage.view') . ' | ';
     }
 
     public function index(Request $request)
@@ -48,9 +48,9 @@ class ManageCourseController extends Controller
             'format'          => @$request['format'] ?? '',
             'sort'            => @$request['sort'] ?? 'courses.created_at:desc',
             'page'            => @$request['page'] ?? 1,
-            'title'           => $this->baseTitle
+            'title'           => getTranslation('texts.mypage') . ' | ' . getTranslation('title.class.manage.view')
         ])->withViewData([
-            'title'           => $this->baseTitle,
+            'title'           => getTranslation('texts.mypage') . ' | ' . getTranslation('title.class.manage.view'),
         ]);
     }
 

@@ -43,7 +43,8 @@ class CourseApplicationController extends Controller
             'status'             => @$request['status'] ?? '',
             'sort'               => @$request['sort'] ?? 'created_at:desc',
             'page'               => @$request['page'] ?? 1,
-            'title'              => getTranslation('texts.mypage').' | '.getTranslation('title.class.applications.index')
+            'title'              => getTranslation('texts.mypage').' | '.getTranslation('title.class.applications.index'),
+            'hasButtons'         => true
         ])->withViewData([
             'title'              => getTranslation('texts.mypage').' | '.getTranslation('title.class.applications.index')
         ]);
@@ -54,7 +55,8 @@ class CourseApplicationController extends Controller
         return Inertia::render('Portal/MyPage/ClassApplications/Create', [
             'categoryOptions'    => $this->courseCategoryRepository->getDropdownData(),
             'typeOptions'        => $this->courseTypeRepository->getDropdownData(),
-            'title'              => getTranslation('texts.mypage').' | '.getTranslation('title.class.applications.create')
+            'title'              => getTranslation('texts.mypage').' | '.getTranslation('title.class.applications.create'),
+            'hasButtons'         => true
         ])->withViewData([
             'title'              => getTranslation('texts.mypage').' | '.getTranslation('title.class.applications.create')
         ]);
@@ -89,7 +91,8 @@ class CourseApplicationController extends Controller
     {
         return Inertia::render('Portal/MyPage/ClassApplications/View',[
             'courseApplication'     => CourseApplicationData::fromModel($this->courseApplicationRepository->with(['professor.classification'])->findOrFail($id)),
-            'title'                 => getTranslation('texts.mypage').' | '.getTranslation('title.class.applications.view')
+            'title'                 => getTranslation('texts.mypage').' | '.getTranslation('title.class.applications.view'),
+            'hasButtons'            => true
         ])->withViewData([
             'title'                 => getTranslation('texts.mypage').' | '.getTranslation('title.class.applications.view')
         ]);

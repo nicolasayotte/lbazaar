@@ -56,7 +56,7 @@ const View = () => {
         <Box>
             <Grid container spacing={2} alignItems="center" justifyContent="space-between">
                 <Grid item xs={12} md="auto">
-                    <Typography variant="h4" children={translatables.title.class.applications.view} />
+                    <Typography variant="h5" children={translatables.title.class.applications.view} />
                     <Breadcrumbs>
                         <Link href={routes["mypage.course.applications.index"]} children={translatables.title.class.applications.index} />
                         <Typography color="text.primary" children={translatables.title.class.applications.view} />

@@ -7,7 +7,7 @@ import { Head, usePage } from "@inertiajs/inertia-react"
 
 const Layout = ({ children }) => {
 
-    const { title } = usePage().props
+    const { title, hasButtons } = usePage().props
 
     const myPageTitle = title || 'My Page'
 
@@ -21,6 +21,15 @@ const Layout = ({ children }) => {
                         <MyPageSideBar />
                     </Grid>
                     <Grid item xs={12} md={9}>
+                        {
+                            !hasButtons &&
+                            <Typography
+                                variant="h5"
+                                sx={{ display: { xs: 'none', md: 'inline-block' } }}
+                                gutterBottom
+                                children={myPageTitle}
+                            />
+                        }
                         { children }
                     </Grid>
                 </Grid>
