@@ -20,6 +20,7 @@ return [
         'inquiry' => 'Inquiry successfully submitted',
         'class_generated' => 'Command Generated.',
         'copy' => 'Copied!',
+        'verification_sent' => 'Verification link successfully sent',
         'user' => [
             'login'  => 'User successfully authenticated',
             'logout' => 'User successfully signed out',
@@ -27,7 +28,8 @@ return [
                 'update' => 'User status successfully updated'
             ],
             'create' => 'User successfully created',
-            'register' => 'User successfully registered'
+            'register' => 'User successfully registered',
+            'verified' => 'User successfully verified'
         ],
         'teacher_applications' => [
             'submitted' => 'Teacher application successfully submitted'
