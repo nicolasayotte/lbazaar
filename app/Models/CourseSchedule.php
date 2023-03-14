@@ -17,6 +17,7 @@ class CourseSchedule extends Model
     protected $fillable = [
         'start_datetime',
         'end_datetime',
+        'user_id',
         'max_participant',
         'is_completed'
     ];

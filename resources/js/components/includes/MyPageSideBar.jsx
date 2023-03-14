@@ -1,10 +1,9 @@
 
 import routes from "../../helpers/routes.helper"
 import { Typography, Container, Box, Grid, Card, List, IconButton, Drawer, ListItem, ListItemButton, ListItemIcon, Stack, Toolbar, Divider} from "@mui/material"
-import { Article, Logout, History, MenuBook, ManageAccounts, Menu } from "@mui/icons-material"
+import { Article, Logout, History, MenuBook, ManageAccounts, Menu, Wallet, LocalPolice as Badge, HistoryEdu as Teaching } from "@mui/icons-material"
 import { useState } from "react"
 import { Link, usePage } from "@inertiajs/inertia-react"
-
 const MyPage = ({ page }) => {
 
     const { component } = usePage()
@@ -45,6 +44,20 @@ const MyPage = ({ page }) => {
             icon: <MenuBook />,
         },
         {
+            name: `${translatables.texts.badges}`,
+            link: routes["mypage.badges.index"],
+            roles: ['student', 'teacher'],
+            active: component.startsWith('Portal/MyPage/Badges'),
+            icon: <Badge />,
+        },
+        {
+            name: `${translatables.texts.teaching_history}`,
+            link: routes["mypage.schedules"],
+            roles: ['teacher'],
+            active: component.startsWith('Portal/MyPage/TeachingHistory'),
+            icon: <Teaching />,
+        },
+        {
             name: `${translatables.texts.class_history}`,
             link: routes["mypage.course.history.index"],
             roles: ['student', 'teacher'],
@@ -56,7 +69,7 @@ const MyPage = ({ page }) => {
             link: routes["mypage.wallet.history.index"],
             roles: ['student', 'teacher'],
             active: component.startsWith('Portal/MyPage/WalletHistory'),
-            icon: <History />,
+            icon: <Wallet />,
         }
     ]
 

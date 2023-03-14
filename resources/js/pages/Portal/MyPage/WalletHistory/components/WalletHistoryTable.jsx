@@ -1,7 +1,9 @@
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Stack, IconButton, Box } from "@mui/material"
 import EmptyCard from "../../../../../components/common/EmptyCard"
 import { usePage } from '@inertiajs/inertia-react'
-
+import { Link } from "@inertiajs/inertia-react"
+import route, { getRoute } from "../../../../../helpers/routes.helper"
+import { Search , Iso } from "@mui/icons-material"
 const WalletHistoryTable = ({ data }) => {
 
     const { translatables } = usePage().props
@@ -11,7 +13,10 @@ const WalletHistoryTable = ({ data }) => {
             <TableRow key={index}>
                 <TableCell children={row.id} align="center"/>
                 <TableCell children={row.type} align="center"/>
-                <TableCell children={`${translatables.texts.from} ${row.points_before}  ${translatables.texts.to} ${row.points_after}`} align="center"/>
+                <TableCell children={row.amount} align="center"/>
+                <TableCell children={row.transaction_details} align="center"/>
+                <TableCell children={row.points_after} align="center"/>
+                <TableCell children={row.transaction_datetime} align="center"/>
             </TableRow>
         )
     })
@@ -27,7 +32,15 @@ const WalletHistoryTable = ({ data }) => {
                     <TableRow>
                         <TableCell children={translatables.wallet_history.id} align="center"/>
                         <TableCell children={translatables.wallet_history.type} align="center"/>
-                        <TableCell children={translatables.texts.points} align="center"/>
+                        <TableCell align="center">
+                            <Box display={'flex'}>
+                                {translatables.texts.points}
+                                <Iso />
+                            </Box>
+                        </TableCell>
+                        <TableCell children={translatables.texts.content} align="center"/>
+                        <TableCell children={translatables.texts.wallet_balance} align="center"/>
+                        <TableCell children={translatables.texts.transaction_date} align="center"/>
                     </TableRow>
                 </TableHead>
                 <TableBody>

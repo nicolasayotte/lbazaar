@@ -12,6 +12,7 @@ class UserWallet extends Model
     protected $fillable = [
         'user_id',
         'points',
+        'badges',
     ];
 
     public function userWalletTransactions()

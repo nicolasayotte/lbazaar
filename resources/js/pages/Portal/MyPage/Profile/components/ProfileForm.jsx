@@ -59,10 +59,11 @@ const ProfileForm = ({ errors, auth, countries, messages, routes }) => {
                             <FileInput
                                 name="image"
                                 value={data.image}
-                                helperText={`${translatables.texts.recommended_size}: 400x400`}
+                                helperText={`${translatables.texts.recommended_size}: 200x200`}
                                 onChange={e => handleOnFileUpload(e, setImgPreview)}
                                 src={imgPreview}
                                 errors={errors}
+                                isAvatar={true}
                             />
                         </Grid>
                         <Grid item xs={12} md={6}>

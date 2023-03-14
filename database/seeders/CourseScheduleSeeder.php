@@ -23,7 +23,8 @@ class CourseScheduleSeeder extends Seeder
             CourseSchedule::factory()
                         ->count(1)
                         ->state(new Sequence([
-                            'course_id' => $course->id
+                            'course_id' => $course->id,
+                            'user_id' => $course->professor_id,
                         ]))
                         ->create();
         }

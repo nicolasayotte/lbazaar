@@ -3,13 +3,13 @@ import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Dialog
 import Input from "../../../../../components/forms/Input"
 import { useState } from "react"
 
-const ExchangePointsInputDialog = ({ open, title, handleClose, handleConfirm, processing = false, cancelButtonText = '', confirmButtonText = '' }) => {
+const ExchangeToNFTInputDialog = ({ open, title, exchange_item, handleClose, handleConfirm, processing = false, cancelButtonText = '', confirmButtonText = '' }) => {
 
     const { translatables, auth } = usePage().props
     const [isDisabled, setDisabled] = useState(true)
     const handleOnChange = (e) => {
         const regex = /^[0-9\b]+$/
-        if ((e.target.value !== '' || regex.test(e.target.value)) && auth.user.user_wallet.points >= e.target.value) {
+        if ((e.target.value !== '' || regex.test(e.target.value)) && auth.user.user_wallet[exchange_item] >= e.target.value) {
             setDisabled(false)
         } else {
             setDisabled(true)
@@ -36,7 +36,7 @@ const ExchangePointsInputDialog = ({ open, title, handleClose, handleConfirm, pr
                     <DialogContentText sx={{ p: 1 }}>
                     </DialogContentText>
                     <Input
-                        label={translatables.texts.points_to_convert_to_nft}
+                        label={`${translatables.texts[exchange_item]} ${translatables.texts.to_convert_to_nft}`}
                         name="exchange_amount"
                         onChange={handleOnChange}
                     />
@@ -67,4 +67,4 @@ const ExchangePointsInputDialog = ({ open, title, handleClose, handleConfirm, pr
     )
 }
 
-export default ExchangePointsInputDialog
+export default ExchangeToNFTInputDialog

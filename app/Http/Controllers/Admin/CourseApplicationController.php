@@ -68,7 +68,7 @@ class CourseApplicationController extends Controller
             || (!is_null(@$courseApplication->approved_at ) || !is_null(@$courseApplication->denied_at)) // Check if already approved/denied
         ) {
             return redirect()->back()->withErrors([
-                'error' => trans('messages.error')
+                'error' => getTranslation('error')
             ]);
         }
 

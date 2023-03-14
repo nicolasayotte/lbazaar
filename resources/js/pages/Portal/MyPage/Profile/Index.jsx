@@ -18,10 +18,15 @@ const Index = ({ auth, countries, errors, translatables }) => {
                 />
             </Grid>
             <Grid item xs={12} md={3}>
-                <UserPoints
-                    translatables={translatables}
-                    user={auth.user}
-                />
+                <Grid container spacing={1}>
+                    <Grid item xs={12} md={12}>
+                        <UserPoints
+                            translatables={translatables}
+                            user={auth.user}
+                        />
+                    </Grid>
+                </Grid>
+
             </Grid>
             <Grid item xs={12} md={8}>
                 <PasswordForm

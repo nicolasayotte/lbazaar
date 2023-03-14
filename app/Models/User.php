@@ -12,7 +12,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Mail;
 use Laratrust\Traits\LaratrustUserTrait;
 use Laravel\Sanctum\HasApiTokens;
-
+use App\Facades\Asset;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -180,8 +180,18 @@ class User extends Authenticatable implements MustVerifyEmail
         );
     }
 
+    public function teacherSchedules()
+    {
+        return $this->hasMany(CourseSchedule::class, 'user_id', 'id');
+    }
+
     public function badges()
     {
         return $this->hasMany(UserBadge::class);
+    }
+
+    public function getImageAttribute($path)
+    {
+        return @$path ? Asset::get($path) : null;
     }
 }
