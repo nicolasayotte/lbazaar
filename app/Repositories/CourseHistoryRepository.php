@@ -23,12 +23,14 @@ class CourseHistoryRepository extends BaseRepository
     {
 
         $sortFilterArr = explode(':', @$request->get('sort') ?? 'course_histories.created_at:desc');
-
         $sortBy    = $sortFilterArr[0];
         $sortOrder = $sortFilterArr[1];
-        // return $this->model->select('course_histories.course_id as course_histories_course_id', 'course_histories.user_id as course_histories_user_id', 'course_histories.id as course_histories_id', 'course_histories.completed_at as course_histories_completed_at', 'course_histories.is_cancelled as course_histories_is_cancelled', 'course_histories.is_watched as course_histories_is_watched' , 'courses.*', 'users.*', 'course_types.*', 'course_categories.*')
+
         return $this->model->select('*','course_histories.id as id')
-           ->where('user_id', $user_id)
+            ->where('user_id', $user_id)
+            ->when($request->has('is_cancelled'), function ($q) use ($request)  {
+                return $q->where('course_histories.is_cancelled', $request->get('is_cancelled'));
+            })
             ->when($request->has('professor_id') && !empty($request->get('professor_id')), function ($q) use ($request)  {
                 return $q->where('courses.professor_id', $request->get('professor_id'));
             })
@@ -136,10 +138,13 @@ class CourseHistoryRepository extends BaseRepository
                 ]);
             }
 
-            auth()->user()->badges()->create([
-                'badge_id' => $badge->id,
-                'course_history_id' => $courseHistory->id,
-            ]);
+            $userBadgeExist = auth()->user()->badges()->where('badge_id', $badge->id)->first();
+            if($userBadgeExist == null) {
+                auth()->user()->badges()->create([
+                    'badge_id' => $badge->id,
+                    'course_history_id' => $courseHistory->id,
+                ]);
+            }
 
             return true;
         }
@@ -174,12 +179,13 @@ class CourseHistoryRepository extends BaseRepository
                         'type' => 'student',
                     ]);
                 }
-
-
-                auth()->user()->badges()->create([
-                    'badge_id' => $badge->id,
-                    'course_package_id' => $courseHistory->course->coursePackage->id,
-                ]);
+                $userBadgeExist = auth()->user()->badges()->where('badge_id', $badge->id)->first();
+                if($userBadgeExist == null) {
+                    auth()->user()->badges()->create([
+                        'badge_id' => $badge->id,
+                        'course_package_id' => $courseHistory->course->coursePackage->id,
+                    ]);
+                }
             }
         }
 
