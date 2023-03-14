@@ -155,7 +155,7 @@ class CourseController extends Controller
 
         } else {
             return redirect()->back()->withErrors([
-                'error' => trans('messages.error')
+                'error' => getTranslation('error')
             ]);
         }
 
@@ -195,7 +195,7 @@ class CourseController extends Controller
 
         } else {
             return redirect()->back()->withErrors([
-                'error' => trans('messages.error')
+                'error' => getTranslation('error')
             ]);
         }
 
@@ -399,11 +399,11 @@ class CourseController extends Controller
 
         if ($isBadgeReceived) $successMessage .= getTranslation('success.badge.earn');
 
-        if ($earnedPoints > 0) $successMessage .= ' ' . getTranslation('sucess.points.earn') . $earnedPoints;
+        if ($earnedPoints > 0) $successMessage .= ' ' . getTranslation('success.points.earn') . $earnedPoints;
 
         return to_route('course.details', ['id' => $course_id])->with(
             'success',
-            $isBadgeReceived ? $successMessage : getTranslation('success.class.compelted')
+            $isBadgeReceived ? $successMessage : getTranslation('success.class.completed')
         );
     }
 
@@ -428,17 +428,18 @@ class CourseController extends Controller
         $pointsToGive = $pointsToGive - $teacherCommission;
 
         // Update admin points
-        $newUserPoints =  $userWallet->points + $pointsToGive;
+        // $newUserPoints =  $userWallet->points + $pointsToGive;
+        $newUserPoints =  $userWallet->points + $course->points_earned;
         $this->updateWalletHistory($userWallet, WalletTransactionHistory::EARN, $newUserPoints, $courseHistory);
         $this->updateWallet($userWallet, $newUserPoints);
 
-        $newTeacherPoints = $teacherWallet->points + $teacherCommission;
-        $this->updateWalletHistory($teacherWallet, WalletTransactionHistory::COMMISSION, $newTeacherPoints, $courseHistory);
-        $this->updateWallet($teacherWallet, $newTeacherPoints);
+        // $newTeacherPoints = $teacherWallet->points + $teacherCommission;
+        // $this->updateWalletHistory($teacherWallet, WalletTransactionHistory::COMMISSION, $newTeacherPoints, $courseHistory);
+        // $this->updateWallet($teacherWallet, $newTeacherPoints);
 
-        $newAdminPoints =  $adminWallet->points - $course->points_earned;
-        $this->updateWalletHistory($adminWallet, WalletTransactionHistory::DEDUCT, $newAdminPoints, $courseHistory);
-        $this->updateWallet($adminWallet, $newAdminPoints);
+        // $newAdminPoints =  $adminWallet->points - $course->points_earned;
+        // $this->updateWalletHistory($adminWallet, WalletTransactionHistory::DEDUCT, $newAdminPoints, $courseHistory);
+        // $this->updateWallet($adminWallet, $newAdminPoints);
 
         return $pointsToGive;
     }

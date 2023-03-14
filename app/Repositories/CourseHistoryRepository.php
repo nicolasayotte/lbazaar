@@ -23,12 +23,14 @@ class CourseHistoryRepository extends BaseRepository
     {
 
         $sortFilterArr = explode(':', @$request->get('sort') ?? 'course_histories.created_at:desc');
-
         $sortBy    = $sortFilterArr[0];
         $sortOrder = $sortFilterArr[1];
 
-        return $this->model
+        return $this->model->select('*','course_histories.id as id')
             ->where('user_id', $user_id)
+            ->when($request->has('is_cancelled'), function ($q) use ($request)  {
+                return $q->where('course_histories.is_cancelled', $request->get('is_cancelled'));
+            })
             ->when($request->has('professor_id') && !empty($request->get('professor_id')), function ($q) use ($request)  {
                 return $q->where('courses.professor_id', $request->get('professor_id'));
             })
@@ -124,13 +126,25 @@ class CourseHistoryRepository extends BaseRepository
         $courseHistory = $this->with(['course', 'course.coursePackage', 'course.coursePackage.courses'])->findOrFail($courseHistoryId);
 
         if (!@$courseHistory->course->coursePackage) {
-
-            $badge = Badge::create([
+            $badge = Badge::where([
                 'name' => Badge::COMPLETION . ' - ' . $courseHistory->course->title,
-                'type' => 'student'
-            ]);
+                'type' => 'student',
+            ])->first();
 
-            auth()->user()->badges()->create(['badge_id' => $badge->id]);
+            if(!isset($badge->id)) {
+                $badge = Badge::create([
+                    'name' => Badge::COMPLETION . ' - ' . $courseHistory->course->title,
+                    'type' => 'student',
+                ]);
+            }
+
+            $userBadgeExist = auth()->user()->badges()->where('badge_id', $badge->id)->first();
+            if($userBadgeExist == null) {
+                auth()->user()->badges()->create([
+                    'badge_id' => $badge->id,
+                    'course_history_id' => $courseHistory->id,
+                ]);
+            }
 
             return true;
         }
@@ -154,13 +168,24 @@ class CourseHistoryRepository extends BaseRepository
 
             // Check if completed all package courses
             if ($packageCoursesCompleted == $courseHistory->course->coursePackage->courses->count()) {
-
-                $badge = Badge::create([
+                $badge = Badge::where([
                     'name' => Badge::COMPLETION . ' - ' . $courseHistory->course->coursePackage->name,
-                    'type' => 'student'
-                ]);
+                    'type' => 'student',
+                ])->first();
 
-                auth()->user()->badges()->create(['badge_id' => $badge->id]);
+                if(!isset($badge->id)) {
+                    $badge = Badge::create([
+                        'name' => Badge::COMPLETION . ' - ' . $courseHistory->course->coursePackage->name,
+                        'type' => 'student',
+                    ]);
+                }
+                $userBadgeExist = auth()->user()->badges()->where('badge_id', $badge->id)->first();
+                if($userBadgeExist == null) {
+                    auth()->user()->badges()->create([
+                        'badge_id' => $badge->id,
+                        'course_package_id' => $courseHistory->course->coursePackage->id,
+                    ]);
+                }
             }
         }
 

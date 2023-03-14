@@ -1,12 +1,24 @@
 import { Link } from "@inertiajs/inertia-react"
-import { Search, InsertComment } from "@mui/icons-material"
+import { Search, InsertComment, LocalPolice as BadgeIcon } from "@mui/icons-material"
 import { Box, IconButton, Chip, Stack, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
 import EmptyCard from "../../../../../components/common/EmptyCard"
 import route, { getRoute } from "../../../../../helpers/routes.helper"
+import { usePage } from '@inertiajs/inertia-react'
 
 const CourseHistoryTable = ({ data }) => {
+    const { translatables } = usePage().props
 
     const displayTableData = rows => rows.map((row, index) => {
+
+        const Package = () => (
+            row.isPackage &&
+            <Chip color="default" label={translatables.texts.package} size="small" variant="outlined" />
+        )
+
+        const Badge = () => (
+            row.hasBadge &&
+            <BadgeIcon />
+        )
 
         const statusColors = {
             'Ongoing' : 'default',
@@ -22,6 +34,11 @@ const CourseHistoryTable = ({ data }) => {
                 <TableCell sx={{ whiteSpace: 'nowrap'}} children={row.booked_date} align="center"/>
                 <TableCell align="center">
                     <Chip size="small" label={row.status} color={statusColors[row.status]}/>
+                </TableCell>
+                <TableCell align="center">
+                    <Box justifyContent={'center'}>
+                        <Package />
+                    </Box>
                 </TableCell>
                 <TableCell sx={{ whiteSpace: 'nowrap'}} align="center">
                     <Stack direction="row" spacing={1} justifyContent="center">
@@ -45,13 +62,14 @@ const CourseHistoryTable = ({ data }) => {
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell children="Class" align="center"/>
-                        <TableCell children="Type" align="center"/>
-                        <TableCell children="Category" align="center"/>
-                        <TableCell children="Teacher" align="center"/>
-                        <TableCell children="Booked Date" align="center"/>
-                        <TableCell children="Status" align="center"/>
-                        <TableCell children="Actions" align="center"/>
+                        <TableCell children={translatables.texts.classes} align="center"/>
+                        <TableCell children={translatables.texts.type} align="center"/>
+                        <TableCell children={translatables.texts.category} align="center"/>
+                        <TableCell children={translatables.texts.teacher} align="center"/>
+                        <TableCell children={translatables.texts.booked_date} align="center"/>
+                        <TableCell children={translatables.texts.status} align="center"/>
+                        <TableCell children={translatables.texts.package} align="center"/>
+                        <TableCell children={translatables.texts.actions} align="center"/>
                     </TableRow>
                 </TableHead>
                 <TableBody>

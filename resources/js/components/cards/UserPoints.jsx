@@ -3,7 +3,7 @@ import {Card, CardContent, Button, Typography, Tooltip, Grid, IconButton} from "
 import { getRoute } from "../../helpers/routes.helper"
 import PointsIcon from '@mui/icons-material/WorkspacePremium'
 import ExchangePoints from '@mui/icons-material/CurrencyExchange'
-import ExchangePointsInputDialog from '../../pages/Portal/MyPage/Profile/components/ExchangePointsInputDialog'
+import ExchangeToNFTInputDialog from '../../pages/Portal/MyPage/Profile/components/ExchangeToNFTInputDialog'
 import { useState } from "react"
 import { useDispatch } from "react-redux"
 import { usePage } from "@inertiajs/inertia-react"
@@ -23,7 +23,8 @@ const UserPoints = ({ user, translatables }) => {
         submitUrl: '',
         method: null,
         processing: false,
-        type: ''
+        type: '',
+        exchange_item: 'points',
     })
 
     const handleExchange = () => {
@@ -79,7 +80,7 @@ const UserPoints = ({ user, translatables }) => {
                             <Typography variant="h6" children={user.user_wallet.points.toFixed(2)} color={'grey'} />
                         </Grid>
                     </Grid>
-                    <ExchangePointsInputDialog
+                    <ExchangeToNFTInputDialog
                         {...dialog}
                         handleClose={handleOnDialogClose}
                         handleConfirm={handleOnDialogSubmit}

@@ -1,16 +1,14 @@
-import { Link, useForm, usePage } from "@inertiajs/inertia-react"
-import { Add, TramSharp } from "@mui/icons-material"
-import { Box, Button, Card, CardContent, Grid, Pagination, Typography } from "@mui/material"
-import { useEffect, useState } from "react"
+
+import routes from "../../../../helpers/routes.helper"
+import { useForm, usePage } from "@inertiajs/inertia-react"
+import { Box, Grid, Pagination, Card, CardContent, Button } from "@mui/material"
 import TableLoader from "../../../../components/common/TableLoader"
+import ScheduleTable from "./components/ScheduleTable"
+import { useEffect, useState } from "react"
 import Input from "../../../../components/forms/Input"
 import { displaySelectOptions, handleOnSelectChange } from "../../../../helpers/form.helper"
-import { getRoute } from "../../../../helpers/routes.helper"
-import ScheduleTable from "./components/ScheduleTable"
-import ConfirmationDialog from "../../../../components/common/ConfirmationDialog"
-import { Inertia } from "@inertiajs/inertia"
 
-const Schedules = () => {
+const Index = ({ errors }) => {
 
     const { schedules, translatables, course, from, to, page, status, sort } = usePage().props
 
@@ -34,17 +32,10 @@ const Schedules = () => {
         page
     })
 
-    const [dialog, setDialog] = useState({
-        open: false,
-        title: translatables.texts.delete_schedule,
-        text: translatables.confirm.schedules.delete,
-        submitUrl: ''
-    })
-
     const handleOnFilterSubmit = e => {
         e.preventDefault()
-
-        get(getRoute('mypage.course.manage_class.schedules', { id: course.id }))
+        get(routes["mypage.schedules"])
+        // get(getRoute('mypage.course.manage_class.schedules', { id: course.id }))
     }
 
     const handleOnPaginate = (e, page) => {
@@ -56,50 +47,8 @@ const Schedules = () => {
         handleOnFilterSubmit(e)
     }
 
-    const handleOnDelete = id => {
-        setDialog(dialog => ({
-            ...dialog,
-            open: true,
-            submitUrl: getRoute('schedules.delete', { id: id })
-        }))
-    }
-
-    const handleOnDialogClose = () => {
-        setDialog(dialog => ({
-            ...dialog,
-            open: false
-        }))
-    }
-
-    const handleOnDialogConfirm = () => {
-        Inertia.delete(dialog.submitUrl)
-
-        handleOnDialogClose()
-    }
-
     return (
         <>
-            <ConfirmationDialog
-                {...dialog}
-                handleClose={handleOnDialogClose}
-                handleConfirm={handleOnDialogConfirm}
-            />
-            <Grid container spacing={2} justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-                <Grid item xs={12} md="auto">
-                    <Typography variant="h5" children={translatables.title.schedules.index} />
-                </Grid>
-                <Grid item xs={12} md="auto">
-                    <Link href={getRoute('schedules.create', { id: course.id })}>
-                        <Button
-                            variant="contained"
-                            children={translatables.title.schedules.create}
-                            color="success"
-                            sx={{ width: { xs: '100%', md: 'auto' } }}
-                            startIcon={<Add />}
-                        />
-                    </Link>
-                </Grid>
-            </Grid>
             <Card sx={{ mb: 2 }}>
                 <CardContent>
                     <form onSubmit={handleOnFilterSubmit}>
@@ -157,22 +106,24 @@ const Schedules = () => {
                         </Grid>
                     </form>
                 </CardContent>
-            </Card>
+             </Card>
             {
                 processing
                 ? <TableLoader />
-                : <ScheduleTable data={schedules.data} handleOnDelete={handleOnDelete} />
+                : <ScheduleTable data={schedules.data}/>
             }
-            <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
-                <Pagination
-                    onChange={handleOnPaginate}
-                    count={schedules.last_page}
-                    page={schedules.current_page}
-                    color="primary"
-                />
-            </Box>
+            <Grid item xs={12} md={12}>
+                <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+                    <Pagination
+                        onChange={handleOnPaginate}
+                        count={schedules.last_page}
+                        page={schedules.current_page}
+                        color="primary"
+                    />
+                </Box>
+            </Grid>
         </>
     )
 }
 
-export default Schedules
+export default Index

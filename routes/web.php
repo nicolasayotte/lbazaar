@@ -15,10 +15,11 @@ use App\Http\Controllers\Portal\CourseController;
 use App\Http\Controllers\Portal\CourseFeedbackController;
 use App\Http\Controllers\Portal\CourseHistoryController;
 use App\Http\Controllers\Portal\CourseScheduleController;
+use App\Http\Controllers\Portal\UserBadgeController;
 use App\Http\Controllers\Portal\ExamController;
 use App\Http\Controllers\Portal\ForgotPasswordController;
 use App\Http\Controllers\Portal\InquiriesController;
-use App\Http\Controllers\Portal\WalletTransactionHistoryController;
+use App\Http\Controllers\Portal\WalletTransactionHistoryController as PortalWalletTransactionHistoryController;
 use App\Http\Controllers\Portal\ManageCourseController;
 use App\Http\Controllers\Portal\ProfileController as PortalProfileController;
 use App\Http\Controllers\Portal\RegisterStudentController;
@@ -235,7 +236,17 @@ Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function()
     Route::get('/class-history', [CourseHistoryController::class, 'index'])->name('course.history.index');
 
     # Wallet Transactions
-    Route::get('/wallet-history', [WalletTransactionHistoryController::class, 'index'])->name('wallet.history.index');
+    Route::get('/wallet-history', [PortalWalletTransactionHistoryController::class, 'index'])->name('wallet.history.index');
+
+    # user badges
+    Route::prefix('/badges')->name('badges.')->group(function() {
+        Route::get('/claimAll', [UserBadgeController::class, 'claimAllBadges'])->name('claimAll');
+        Route::get('/', [UserBadgeController::class, 'index'])->name('index');
+    });
+
+
+    # teacher schedule
+    Route::get('/schedules', [CourseScheduleController::class, 'teacherSchedules'])->name('schedules');
 
     # Class Applications
     Route::prefix('/class-application')->middleware(['teacher'])->name('course.applications.')->group(function() {

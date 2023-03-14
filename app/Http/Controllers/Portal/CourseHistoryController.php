@@ -40,9 +40,9 @@ class CourseHistoryController extends Controller
         $countries = Country::all();
         $types = $this->courseTypeRepository->getAll();
         $categories = $this->courseCategoryRepository->getAll();
+        $request->query->add(['is_cancelled' => false]);
 
         $courseHistories = $this->courseHistoryRepository->search($request, Auth::user()->id);
-
         return Inertia::render('Portal/MyPage/CourseHistory/Index', [
             'course_types'          => $types,
             'course_categories'     => $categories,

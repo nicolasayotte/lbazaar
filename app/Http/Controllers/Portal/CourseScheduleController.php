@@ -24,10 +24,13 @@ class CourseScheduleController extends Controller
 
     private $baseTitle;
 
+    private $userRepository;
+
     public function __construct()
     {
         $this->courseRepository         = new CourseRepository();
         $this->courseScheduleRepository = new CourseScheduleRepository();
+        $this->userRepository           = new UserRepository();
 
         $this->baseTitle = getTranslation('title.class.manage.view') . ' - ';
     }
@@ -37,12 +40,30 @@ class CourseScheduleController extends Controller
         return Inertia::render('Portal/MyPage/ManageClass/Schedules', [
             'course'    => $this->courseRepository->findByIdManageClass($id),
             'schedules' => $this->courseScheduleRepository->get($id, $request),
-            'month'     => @$request['month'] ?? '',
+            'from'      => @$request['from'] ?? '',
+            'to'        => @$request['to'] ?? '',
             'page'      => @$request['page'] ?? 1,
             'sort'      => @$request['sort'] ?? 'start_datetime:asc',
             'status'    => @$request['status'] ?? '',
             'title'     => $this->baseTitle . getTranslation('title.schedules.index'),
             'tabValue'  => 'schedules'
+        ])->withViewData([
+            'title'     => $this->baseTitle . getTranslation('title.schedules.index')
+        ]);
+    }
+
+    public function teacherSchedules(Request $request)
+    {
+        $this->courseScheduleRepository->get($request['course'], $request, auth()->user()->id);
+        return Inertia::render('Portal/MyPage/TeachingHistory/Index', [
+            'course'    => $request['course'] ? $this->courseRepository->findByIdManageClass($request['course']) : '',
+            'schedules' => $request['course'] ? $this->courseScheduleRepository->get($request['course'], $request, auth()->user()->id) : $this->courseScheduleRepository->get(null, $request, auth()->user()->id),
+            'from'      => @$request['from'] ?? '',
+            'to'        => @$request['to'] ?? '',
+            'page'      => @$request['page'] ?? 1,
+            'sort'      => @$request['sort'] ?? 'start_datetime:asc',
+            'status'    => @$request['status'] ?? '',
+            'title'     => $this->baseTitle . getTranslation('title.schedules.index'),
         ])->withViewData([
             'title'     => $this->baseTitle . getTranslation('title.schedules.index')
         ]);
@@ -100,6 +121,7 @@ class CourseScheduleController extends Controller
 
         $inputs = $request->all();
 
+        $inputs['user_id'] = auth()->user()->id;
         $inputs['end_datetime'] = Carbon::parse($inputs['start_datetime'])->addDays(7);
 
         $course->schedules()->create($inputs);

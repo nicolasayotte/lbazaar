@@ -1,7 +1,7 @@
 
 import routes from "../../helpers/routes.helper"
-import { Typography, Box, Grid, Card, List, IconButton, Drawer, ListItem, ListItemButton, ListItemIcon, Stack, Toolbar, Divider} from "@mui/material"
-import { Article, Logout, History, MenuBook, ManageAccounts, Menu } from "@mui/icons-material"
+import { Typography, Box, Card, List, IconButton, Drawer, ListItem, ListItemButton, ListItemIcon, Stack, Toolbar, Divider} from "@mui/material"
+import { Article, Logout, History, MenuBook, ManageAccounts, Menu, Wallet, LocalPolice as Badge, HistoryEdu as Teaching } from "@mui/icons-material"
 import { useState } from "react"
 import { Link, usePage } from "@inertiajs/inertia-react"
 
@@ -45,6 +45,20 @@ const MyPage = ({ window }) => {
             icon: <MenuBook />,
         },
         {
+            name: `${translatables.texts.badges}`,
+            link: routes["mypage.badges.index"],
+            roles: ['student', 'teacher'],
+            active: component.startsWith('Portal/MyPage/Badges'),
+            icon: <Badge />,
+        },
+        {
+            name: `${translatables.texts.teaching_history}`,
+            link: routes["mypage.schedules"],
+            roles: ['teacher'],
+            active: component.startsWith('Portal/MyPage/TeachingHistory'),
+            icon: <Teaching />,
+        },
+        {
             name: `${translatables.texts.class_history}`,
             link: routes["mypage.course.history.index"],
             roles: ['student', 'teacher'],
@@ -56,18 +70,18 @@ const MyPage = ({ window }) => {
             link: routes["mypage.wallet.history.index"],
             roles: ['student', 'teacher'],
             active: component.startsWith('Portal/MyPage/WalletHistory'),
-            icon: <History />,
+            icon: <Wallet />,
         }
     ]
 
-    const menu = navItems.map(item => {
+    const menu = navItems.map((item, index) => {
         let isAccessible = auth.user.roles.some(role => {
             return item.roles.includes(role.name);
         });
 
         if (isAccessible) {
             return (
-                <ListItem key={item.name}>
+                <ListItem key={index}>
                     <ListItemButton selected={item.active}>
                         {
                             item.icon && !openMobileDrawer &&

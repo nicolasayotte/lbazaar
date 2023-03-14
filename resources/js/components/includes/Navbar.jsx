@@ -46,7 +46,7 @@ const Navbar = () => {
             auth: false
         },
         {
-            name: `${translatables.texts.profile}`,
+            name: `${translatables.texts.mypage}`,
             link: routes["mypage.profile.index"],
             auth: true
         },
@@ -115,6 +115,15 @@ const Navbar = () => {
                                 </Stack>
                             </ListItem>
                             <Divider sx={{ my: 1 }} />
+                            <ListItem disablePadding>
+                                <ListItemButton>
+                                    <Typography
+                                        variant="subtitle2"
+                                        children={`${auth.user.roles[0].name.toUpperCase()}`}
+                                    />
+                                </ListItemButton>
+                            </ListItem>
+                            <Divider sx={{ my: 1 }} />
                         </>
                     )
                 }
@@ -171,7 +180,12 @@ const Navbar = () => {
                     <Stack display={{ xs: 'none', md: 'flex' }} direction="row" spacing={1}>
                         {
                             isLoggedIn && (
-                                <Stack direction="row" spacing={1} alignItems="center" sx={{ mx: 2 }}>
+                                <Stack direction="row" spacing={1} alignItems="center" sx={{ mr: 2 }}>
+                                    <Typography
+                                        variant="subtitle2"
+                                        children={`${auth.user.roles[0].name.toUpperCase()}`}
+                                        sx={{ mr: 2 }}
+                                    />
                                     <AccountBalanceWallet />
                                     <Typography children={ auth.user.user_wallet.points.toFixed(2) } />
                                 </Stack>

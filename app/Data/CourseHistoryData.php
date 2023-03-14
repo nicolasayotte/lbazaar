@@ -3,6 +3,7 @@
 namespace App\Data;
 
 use App\Models\CourseHistory;
+use App\Models\UserBadge;
 use Illuminate\Support\Facades\Auth;
 
 class CourseHistoryData
@@ -24,6 +25,10 @@ class CourseHistoryData
     private $language;
 
     private $hasFeedback;
+
+    private $isPackage;
+
+    private $hasBadge;
 
     public function setId($id)
     {
@@ -70,6 +75,21 @@ class CourseHistoryData
     public function setHasFeedback($hasFeedback)
     {
         $this->hasFeedback = $hasFeedback;
+
+        return $this;
+    }
+
+
+    public function setIsPackage($isPackage)
+    {
+        $this->isPackage = $isPackage;
+
+        return $this;
+    }
+
+    public function setHasBadge($hasBadge)
+    {
+        $this->hasBadge = $hasBadge;
 
         return $this;
     }
@@ -133,6 +153,17 @@ class CourseHistoryData
         return $this->hasFeedback;
     }
 
+
+    public function getIsPackage()
+    {
+        return $this->isPackage;
+    }
+
+    public function getHasBadge()
+    {
+        return $this->hasBadge;
+    }
+
     public function getProperties()
     {
         return get_object_vars($this);
@@ -143,7 +174,6 @@ class CourseHistoryData
     public static function fromModel(CourseHistory $courseHistory)
     {
         $courseHistoryData = new CourseHistoryData();
-
         $courseHistoryData->setId($courseHistory->course->id);
         $courseHistoryData->setTeacher($courseHistory->course->professor->fullname);
         $courseHistoryData->setTitle($courseHistory->course->title);
@@ -153,6 +183,19 @@ class CourseHistoryData
         $courseHistoryData->setStatus($courseHistory->completed_at != null ? CourseHistory::COMPLETED : CourseHistory::ONGOING);
         $courseHistoryData->setBookedDate($courseHistory->created_at);
         $courseHistoryData->setHasFeedback(Auth::user()->hasFeedback($courseHistory->course->id));
+        if ($courseHistory->course->coursePackage && $courseHistory->course->coursePackage->id != null) {
+            $courseHistoryData->setIsPackage(true);
+            $badge = UserBadge::where('course_package_id', $courseHistory->course->coursePackage->first()->id)->first();
+        } else {
+            $badge = UserBadge::where('course_history_id', $courseHistory->id)->first();
+            $courseHistoryData->setIsPackage(false);
+        }
+
+        if($badge != null) {
+            $courseHistoryData->setHasBadge(true);
+        } else {
+            $courseHistoryData->setHasBadge(false);
+        }
 
         return $courseHistoryData->getProperties();
     }
