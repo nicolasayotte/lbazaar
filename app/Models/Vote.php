@@ -9,7 +9,9 @@ class Vote extends Model
 {
     use HasFactory;
 
-    public const DEFAULT_EMOJI = "👍";
+    public const DEFAULT_OPTION = "👍";
+
+    public const OPTIONS = ["👍", "👎"];
 
     public const PASSING_PERCENTAGE = 75;
 
@@ -17,6 +19,7 @@ class Vote extends Model
         'description',
         'end_date',
         'counted_option',
+        'options',
         'approved_at',
         'denied_at',
         'data',
@@ -28,6 +31,10 @@ class Vote extends Model
     protected $appends = [
         'is_approved',
         'is_denied'
+    ];
+
+    protected $cast = [
+        'options' => 'array'
     ];
 
     public function voteable()

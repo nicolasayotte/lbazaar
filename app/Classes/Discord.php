@@ -4,6 +4,7 @@ namespace App\Classes;
 
 use App\Models\CourseApplication;
 use App\Models\TeacherApplication;
+use App\Models\Vote;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Log;
@@ -64,13 +65,25 @@ class Discord
         }
     }
 
+    private function getVoteDescription($voteId)
+    {
+        $message = '';
+
+        $message .= '** Vote ID: ** ' . $voteId . PHP_EOL . PHP_EOL;
+        $message .= 'React ' . (Vote::OPTIONS[0]) . ' if you approve' . PHP_EOL . PHP_EOL;
+        $message .= 'React ' . (Vote::OPTIONS[1]) . ' if you disapprove' . PHP_EOL . PHP_EOL;
+        $message .= '*Note: Only the emojis above will be counted for the vote results*';
+
+        return $message;
+    }
+
     private function buildClassApplicationMessage($data)
     {
         $contents = json_decode($data->data, true);
         $message = [];
 
         $message['title'] = 'New Class Application Created';
-        $message['description'] = '**Vote ID:** ' . $data->id;
+        $message['description'] = $this->getVoteDescription($data->id);
         $message['footer']['text'] = 'Voting period ends on ' . $data->end_date;
 
         $content_keys = array_keys($contents);
@@ -100,7 +113,9 @@ class Discord
         $message = [];
 
         $message['title'] = 'New Teacher Application Created';
-        $message['description'] = '**Vote ID:** ' . $data->id;
+
+        $message['description'] = $this->getVoteDescription($data->id);
+
         $message['type'] = 'rich';
         $message['footer']['text'] = 'Voting period ends on ' . $data->end_date;
 

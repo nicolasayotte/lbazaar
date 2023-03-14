@@ -18,7 +18,8 @@ class VoteRepository extends BaseRepository
         $voteData = [
             'end_date' => Carbon::now()->addDays(7)->format('Y-m-d'),
             'data' => $applicationData->data,
-            'counted_option' => Vote::DEFAULT_EMOJI
+            'counted_option' => Vote::DEFAULT_OPTION,
+            'options' => json_encode(Vote::OPTIONS)
         ];
 
         $vote = $this->model->create($voteData);
@@ -64,14 +65,18 @@ class VoteRepository extends BaseRepository
      */
     private function tallyVotes($vote, $tally)
     {
-        $options = array_keys($tally);
+        $voteOptions = json_decode($vote->options);
+
+        $keys = array_keys($tally);
 
         $approveVotes = $tally[$vote->counted_option] ?? 0;
 
         $totalNumberOfVotes = 0;
 
-        foreach ($options as $option) {
-            $totalNumberOfVotes += $tally[$option];
+        foreach ($keys as $key) {
+            if (in_array($key, $voteOptions)) {
+                $totalNumberOfVotes += $tally[$key];
+            }
         }
 
         if ($approveVotes > 0 && (($approveVotes / $totalNumberOfVotes) * 100) >= Vote::PASSING_PERCENTAGE) {
