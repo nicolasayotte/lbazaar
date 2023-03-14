@@ -1,44 +1,50 @@
 
-import {Card, CardContent, Button, Typography, Box , Avatar, Grid } from "@mui/material"
+import { Button, Typography, Box , Avatar, Grid, Paper, Stack } from "@mui/material"
 import { Link, usePage } from "@inertiajs/inertia-react"
 import { getRoute } from "../../helpers/routes.helper"
 import placeholderImg from "../../../img/placeholder.png"
 
-const User = ({ user, showInfo = false }) => {
+const User = ({ user, condensed = true }) => {
     const { translatables } = usePage().props
 
     return (
-        <Card sx={{ minWidth: 275, mb: 2, position: 'relative' }}>
-            <CardContent>
-                <Box display="flex" justifyContent="space-between" alignItems="center">
-                    <Box  mr={2}>
-                        <Avatar
-                            src={user.image || placeholderImg}
-                            variant="circular"
-                            sx={{
-                                width: 100,
-                                height: 100,
-                                maxWidth: '100%',
-                                mx: 'auto'
-                            }}
-                        />
-                    </Box>
+        <Paper sx={{ p: 2, mb: 2 }}>
+            <Stack direction="row" alignItems="center">
+                <Box  mr={2}>
+                    <Avatar
+                        src={user.image || placeholderImg}
+                        variant="circular"
+                        sx={{
+                            width: 80,
+                            height: 80,
+                            maxWidth: '100%',
+                            mx: 'auto'
+                        }}
+                    />
+                </Box>
+                <Stack
+                    direction={condensed ? 'column' : 'row'}
+                    justifyContent="space-between"
+                    alignItems={condensed ? 'flex-start' : 'center'}
+                    flexGrow={1}
+                >
                     <Box>
+                        <Typography variant="caption" color="GrayText" children={translatables.texts.teacher} display="block" mb={-1} />
                         <Typography variant="h6" children={user.fullname} />
-                        <Typography variant="caption" color="GrayText" children={`Member since ${user.created_at}`} />
+                        <Typography variant="caption" color="GrayText" children={`${translatables.texts.date_joined} ${user.created_at}`} display="block"  />
+                    </Box>
+                    <Box sx={ condensed ? { mt: 1 } : { ml: 'auto' } }>
                         <Link href={getRoute('portal.users.view', {id : user.id})}>
                             <Button
-                                size="small"
+                                size={condensed ? 'small' : 'large'}
                                 variant="contained"
                                 children={translatables.texts.view_profile}
                             />
                         </Link>
                     </Box>
-
-
-                </Box>
-            </CardContent>
-        </Card>
+                </Stack>
+            </Stack>
+        </Paper>
     );
 }
 
