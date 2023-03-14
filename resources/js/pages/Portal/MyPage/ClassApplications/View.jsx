@@ -1,14 +1,15 @@
-import { usePage } from "@inertiajs/inertia-react"
-import { Box, Chip, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
+import { Link, usePage } from "@inertiajs/inertia-react"
+import { Box, Breadcrumbs, Button, Chip, Grid, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
 import { useState } from "react"
 import { useDispatch } from "react-redux"
 import BackButton from "../../../../components/common/BackButton"
+import routes from "../../../../helpers/routes.helper"
 
 const View = () => {
 
     const dispatch = useDispatch()
 
-    const { courseApplication } = usePage().props
+    const { courseApplication, translatables } = usePage().props
 
     const [dialog, setDialog] = useState({
         open: false,
@@ -53,42 +54,51 @@ const View = () => {
 
     return (
         <Box>
-            <Grid container spacing={2}>
-                <Grid item xs={12} lg={8}>
+            <Grid container spacing={2} alignItems="center" justifyContent="space-between">
+                <Grid item xs={12} md="auto">
+                    <Typography variant="h4" children={translatables.title.class.applications.view} />
+                    <Breadcrumbs>
+                        <Link href={routes["mypage.course.applications.index"]} children={translatables.title.class.applications.index} />
+                        <Typography color="text.primary" children={translatables.title.class.applications.view} />
+                    </Breadcrumbs>
+                </Grid>
+                <Grid item xs={12} md={2}>
+                    <Link href={routes["mypage.course.applications.index"]} style={{ width: '100%' }}>
+                        <Button
+                            fullWidth
+                            children={translatables.texts.back}
+                            variant="contained"
+                        />
+                    </Link>
+                </Grid>
+                <Grid item xs={12} md={8}>
                     <TableContainer component={Paper} sx={{ mb: 2 }}>
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell colSpan={2} children="General Information"/>
+                                    <TableCell colSpan={2} children={translatables.texts.general_information}/>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 <TableRow>
-                                    <TableCell width="10%" children="Title"/>
+                                    <TableCell width="10%" children={translatables.texts.title}/>
                                     <TableCell
                                         sx={generalInformationStyle}
                                         children={courseApplication.title}
                                     />
                                 </TableRow>
                                 <TableRow>
-                                    <TableCell width="10%" children="Type"/>
+                                    <TableCell width="10%" children={translatables.texts.type}/>
                                     <TableCell
                                         sx={generalInformationStyle}
                                         children={courseApplication.type}
                                     />
                                 </TableRow>
                                 <TableRow>
-                                    <TableCell width="10%" children="Category"/>
+                                    <TableCell width="10%" children={translatables.texts.category}/>
                                     <TableCell
                                         sx={generalInformationStyle}
                                         children={courseApplication.category}
-                                    />
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell width="10%" children="Language"/>
-                                    <TableCell
-                                        sx={generalInformationStyle}
-                                        children={courseApplication.language}
                                     />
                                 </TableRow>
                             </TableBody>
@@ -98,7 +108,7 @@ const View = () => {
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell children="Content Information"/>
+                                    <TableCell children={translatables.texts.content_information}/>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -111,23 +121,23 @@ const View = () => {
                         </Table>
                     </TableContainer>
                 </Grid>
-                <Grid item xs={12} lg={4}>
+                <Grid item xs={12} md={4}>
                     <TableContainer component={Paper} sx={{ mb: 2 }}>
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell colSpan={2} children="Status Information"/>
+                                    <TableCell colSpan={2} children={translatables.texts.status_information}/>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 <TableRow>
-                                    <TableCell children="Status"/>
+                                    <TableCell children={translatables.texts.status}/>
                                     <TableCell align="right">
                                         <Chip label={courseApplication.status} size="small" color={statusColors[courseApplication.status]}/>
                                     </TableCell>
                                 </TableRow>
                                 <TableRow>
-                                    <TableCell children="Date Applied"/>
+                                    <TableCell children={translatables.texts.date_applied}/>
                                     <TableCell align="right" children={courseApplication.created_at}/>
                                 </TableRow>
                                 {displayApprovalStatus()}
@@ -138,27 +148,22 @@ const View = () => {
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell colSpan={2} children="Pricing Information"/>
+                                    <TableCell colSpan={2} children={translatables.texts.pricing_information}/>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 <TableRow>
-                                    <TableCell width="50%" children="Price"/>
+                                    <TableCell width="50%" children={translatables.texts.price}/>
                                     <TableCell align="right" children={courseApplication.price}/>
                                 </TableRow>
                                 <TableRow>
-                                    <TableCell width="50%" children="Points Earned"/>
+                                    <TableCell width="50%" children={translatables.texts.points_earned}/>
                                     <TableCell align="right" children={courseApplication.points_earned}/>
                                 </TableRow>
                             </TableBody>
                         </Table>
                     </TableContainer>
                 </Grid>
-            </Grid>
-            <Grid item xs={12} md={12}>
-                <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
-                    <BackButton />
-                </Box>
             </Grid>
         </Box>
     )

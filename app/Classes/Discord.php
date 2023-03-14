@@ -19,6 +19,13 @@ class Discord
 
     public function sendMessage($data, $type = '')
     {
+        $buildMethods = [
+            'class' => 'buildClassApplicationMessage',
+            'teacher' => 'buildTeacherApplicationMessage'
+        ];
+
+        $messageContent = $this->{$buildMethods[$type]}($data);
+
         try {
             $ch = curl_init();
 
@@ -29,7 +36,7 @@ class Discord
             curl_setopt($ch, CURLOPT_URL, $this->webhook_url . '?wait=true');
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
-                'embeds' => [$this->buildTeacherApplicationMessage($data)]
+                'embeds' => [$messageContent]
             ]));
 
             // Receive server response
@@ -47,7 +54,7 @@ class Discord
         }
     }
 
-    protected function addEmptyLines(&$message, $count = 1)
+    private function addEmptyLines(&$message, $count = 1)
     {
         for ($i = 0; $i < $count; $i++) {
             $message['fields'][] = [
@@ -55,6 +62,36 @@ class Discord
                 'value' => ''
             ];
         }
+    }
+
+    private function buildClassApplicationMessage($data)
+    {
+        $contents = json_decode($data->data, true);
+        $message = [];
+
+        $message['title'] = 'New Class Application Created';
+        $message['description'] = '**Vote ID:** ' . $data->id;
+        $message['footer']['text'] = 'Voting period ends on ' . $data->end_date;
+
+        $content_keys = array_keys($contents);
+
+        foreach ($content_keys as $key) {
+
+            $field = [];
+            $fieldName = ucwords(str_replace('_', ' ', $key));
+
+            $field['name'] = $fieldName;
+
+            if ($key == 'description') {
+                $field['value'] = '>>> ' . $contents[$key];
+            } else {
+                $field['value'] = ucwords($contents[$key]);
+            }
+
+            $message['fields'][] = $field;
+        }
+
+        return $message;
     }
 
     private function buildTeacherApplicationMessage($data)

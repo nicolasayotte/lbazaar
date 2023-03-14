@@ -16,6 +16,13 @@ class Vote extends Model
         'approved_at',
         'denied_at',
         'data',
-        'result_data'
+        'result_data',
+        'voteable_type',
+        'voteable_id'
     ];
+
+    public function voteable()
+    {
+        return $this->morphTo(__FUNCTION__, 'voteable_type', 'voteable_id');
+    }
 }

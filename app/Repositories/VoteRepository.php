@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Facades\Discord;
 use App\Models\Vote;
 use Carbon\Carbon;
 
@@ -12,13 +13,21 @@ class VoteRepository extends BaseRepository
         parent::__construct(new Vote());
     }
 
-    public function generateNewId($data)
+    public function generateNewId($applicationData)
     {
         $voteData = [
             'end_date' => Carbon::now()->addDays(7)->format('Y-m-d'),
-            'data' => $data
+            'data' => $applicationData->data
         ];
 
-        return $this->model->create($voteData);
+        $vote = $this->model->create($voteData);
+
+        $vote->voteable()->associate($applicationData)->save();
+
+        if (!Discord::sendMessage($vote, 'class')) {
+            session()->flash('error', getTranslation('error'));
+        }
+
+        return $vote;
     }
 }
