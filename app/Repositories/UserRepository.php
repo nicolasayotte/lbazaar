@@ -171,11 +171,13 @@ class UserRepository extends BaseRepository
         if (!empty(@$data['work'])) $user->userWorkHistory()->createMany(@$data['work']);
         if (!empty(@$data['certification'])) $user->userCertification()->createMany(@$data['certification']);
 
-        $user->save();
-
         $user->userWallet()->create([
             'points' => 0
         ]);
+
+        $user->attachRole(Role::TEACHER);
+
+        $user->save();
 
         $emailService->sendEmailNotificationUserCreated($user, $tempPassword);
     }
