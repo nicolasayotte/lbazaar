@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CourseRequest;
 use App\Http\Requests\CreateCourseRequest;
 use App\Http\Requests\SearchClassRequest;
+use App\Mail\CourseBooking;
 use App\Models\CourseHistory;
 use App\Models\CourseSchedule;
 use App\Models\Setting;
@@ -25,6 +26,8 @@ use App\Repositories\TranslationRepository;
 use App\Repositories\UserRepository;
 use Inertia\Inertia;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use DateTime;
 use DateTimeZone;
 use Illuminate\Http\Request;
@@ -125,7 +128,7 @@ class CourseController extends Controller
         $schedule = CourseSchedule::find($schedule_id)->load('course');
         $isBooked = count($this->courseHistoryRepository->findByUserAndCourseScheduleID(auth()->user()->id, $schedule_id)) > 0;
         $isFullyBooked = count($this->courseHistoryRepository->findByCourseScheduleID($schedule_id)) == $schedule->max_participant;
-
+        $isLive = $schedule->course->is_live;
         $userWallet = auth()->user()->userWallet()->first();
         $adminWallet = $this->userRepository->getAdmin()->userWallet()->first();
         $teacherWallet = $schedule->course->professor()->first()->userWallet()->first();
@@ -136,6 +139,7 @@ class CourseController extends Controller
                 'course_id'          => $schedule->course->id,
                 'user_id'            => auth()->user()->id,
             ]);
+            $this->sendBookEmailCourse($schedule->course, $schedule_id);
             if ($schedule->course->courseType->type != CourseType::FREE) {
 
                 $newUserPoints =  $userWallet->points - $schedule->course->price;
@@ -445,5 +449,16 @@ class CourseController extends Controller
         // $this->updateWallet($adminWallet, $newAdminPoints);
 
         return $pointsToGive;
+    }
+
+    public function sendBookEmailCourse($course, $schedule_id)
+    {
+        $user = auth()->user();
+        $url = env('APP_URL').'classes/'.$course->id.'/'.'attend/'.$schedule_id;
+        try {
+            Mail::send(new CourseBooking($course, $user, $url));
+        } catch (\Exception $e) {
+            Log::error($e);
+        }
     }
 }
