@@ -44,7 +44,7 @@ class Inquiry extends Mailable
 
         return new Envelope(
             subject: $this->inquiry->subject,
-            from: new Address($this->inquiry->email, $this->inquiry->name),
+            from: new Address($settingRepository->getSetting('no-reply-email'), $this->inquiry->name),
             to: [$settingRepository->getSetting('inquiry-receiver-email')]
         );
     }
