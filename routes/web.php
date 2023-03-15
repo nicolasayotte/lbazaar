@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\TranslationController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\WalletTransactionHistoryController as AdminWalletController;
 use App\Http\Controllers\Portal\AuthPortalController;
 use App\Http\Controllers\Portal\CourseApplicationController as PortalClassApplicationController;
 use App\Http\Controllers\Portal\CourseController;
@@ -73,6 +74,9 @@ Route::prefix('admin')->name('admin.')->group(function() {
             Route::get('/', [ProfileController::class, 'index'])->name('index');
             Route::patch('/', [ProfileController::class, 'update'])->name('update');
         });
+
+        # admin wallet
+        Route::get('/wallet-history', [AdminWalletController::class, 'index'])->name('wallet.index');
 
         # Inquiries
         Route::prefix('inquiries')->name('inquiries.')->group(function() {

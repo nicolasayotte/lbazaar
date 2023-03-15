@@ -454,7 +454,7 @@ class CourseController extends Controller
     public function sendBookEmailCourse($course, $schedule_id)
     {
         $user = auth()->user();
-        $url = env('APP_URL').'classes/'.$course->id.'/'.'attend/'.$schedule_id;
+        $url = env('APP_URL').'/'.'classes/'.$course->id.'/'.'attend/'.$schedule_id;
         try {
             Mail::send(new CourseBooking($course, $user, $url));
         } catch (\Exception $e) {

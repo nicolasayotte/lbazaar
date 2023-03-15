@@ -1,6 +1,6 @@
 import { Link, usePage } from "@inertiajs/inertia-react"
-import { AccountCircle, Article, ExpandLess, ExpandMore, GTranslate, Inbox, LibraryBooks, LocalOffer, Logout, Mail, ManageAccounts, Menu, People, Settings, DisplaySettings } from "@mui/icons-material"
-import { AppBar, Box, Collapse, Divider, Drawer, Grid, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar, Typography } from "@mui/material"
+import { Wallet, AccountBalanceWallet, AccountCircle, Article, ExpandLess, ExpandMore, GTranslate, Inbox, LibraryBooks, LocalOffer, Logout, Mail, ManageAccounts, Menu, People, Settings, DisplaySettings } from "@mui/icons-material"
+import { AppBar, Box, Collapse, Divider, Drawer, Grid, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar, Typography, Stack } from "@mui/material"
 import { useState } from "react"
 import routes from "../../helpers/routes.helper"
 import LanguageNavbar from "./LanguageNavbar"
@@ -9,7 +9,7 @@ const AdminNavbar = ({ drawerWidth, window }) => {
 
     const { component } = usePage()
 
-    const { locale, translatables } = usePage().props
+    const { locale, translatables, auth } = usePage().props
 
     const container = window !== undefined ? () => window().document.body : undefined;
 
@@ -41,6 +41,12 @@ const AdminNavbar = ({ drawerWidth, window }) => {
             link: routes["admin.inquiries.index"],
             icon: <Inbox />,
             active: component.startsWith('Admin/Inquiries')
+        },
+        {
+            name: `${translatables.texts.wallet_history}`,
+            link: routes["admin.wallet.index"],
+            active: component.startsWith('Admin/WalletHistory'),
+            icon: <Wallet />,
         }
     ]
 
@@ -138,7 +144,7 @@ const AdminNavbar = ({ drawerWidth, window }) => {
         >
             <ListItemButton selected={component.startsWith('Admin/Profile')}>
                 <ListItemIcon children={<AccountCircle />} sx={{ display: { md: 'none' } }} />
-                <ListItemText primary={translatables.texts.profile} />
+                <ListItemText primary={translatables.texts.mypage} />
             </ListItemButton>
         </Link>
     )
@@ -210,7 +216,13 @@ const AdminNavbar = ({ drawerWidth, window }) => {
                         children={translatables.texts.admin}
                     />
                     <Box sx={{ ml: 'auto' }}>
-                        <Grid container sx={{ display: { xs: 'none', md: 'flex' } }}>
+                        <Grid container sx={{ display: { xs: 'none', md: 'flex' } }} alignItems={'center'}>
+                            <Grid item>
+                                <Box  display="flex" justifyContent="space-between" alignItems="center">
+                                    <AccountBalanceWallet />
+                                    <Typography children={ auth.user.user_wallet.points } />
+                                </Box>
+                            </Grid>
                             <Grid item>
                                 {profileBtn}
                             </Grid>
