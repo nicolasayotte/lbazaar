@@ -199,21 +199,19 @@ const Index = () => {
                                             InputLabelProps={{
                                                 shrink: true
                                             }}
+                                            onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
                                         >
-                                            {displaySelectOptions(export_options, 'value', 'name')}
+                                            {displaySelectOptions(export_options, 'id', 'name')}
                                         </Input>
                                     </Grid>
                                     <Grid item>
-                                    <Link href={getRoute(["admin.users.export"], { data: filters })} >
-
+                                        <a href={getRoute(["admin.users.export"])+"?"+(new URLSearchParams(filters).toString())}>
                                             <Button
-                                                type="submit"
                                                 variant="contained"
                                                 children={translatables.texts.export_csv}
                                                 value="export"
-                                                // onClick={handleFilterSubmit}
                                             />
-                                    </Link>
+                                        </a>
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -224,7 +222,13 @@ const Index = () => {
             {
                 processing
                 ? <TableLoader />
-                : <UserTable data={users.data} handleOnEnable={handleOnEnable} handleOnDisable={handleOnDisable} />
+                : <UserTable
+                    data={users.data}
+                    handleOnEnable={handleOnEnable}
+                    handleOnDisable={handleOnDisable}
+                    export_options={export_options}
+                    export_type={export_type}
+                    />
             }
             <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
                 <Pagination

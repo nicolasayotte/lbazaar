@@ -1,13 +1,12 @@
 import { Link, usePage } from "@inertiajs/inertia-react"
 import { Block, Check, Search } from "@mui/icons-material"
-import { IconButton, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
+import { IconButton, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button } from "@mui/material"
 import EmptyCard from "../../../../components/common/EmptyCard"
 import { getRoute } from "../../../../helpers/routes.helper"
 
-const UserTable = ({ data, handleOnEnable, handleOnDisable }) => {
+const UserTable = ({ data, handleOnEnable, handleOnDisable, export_options, export_type }) => {
 
     const { translatables } = usePage().props
-
     const enableButton = (id, isDisabled) => (
         <IconButton
             size="small"
@@ -46,6 +45,13 @@ const UserTable = ({ data, handleOnEnable, handleOnDisable }) => {
                     </Link>
                     {enableButton(row.id, row.is_active)}
                     {disableButton(row.id, !row.is_active)}
+                    <a href={getRoute(["admin.users.export"])+"?user_id="+row.id+"&export_type="+export_type}>
+                        <Button
+                            variant="contained"
+                            children={`${export_options[export_type]['name']} ${translatables.texts.export_csv}`}
+                            value="export"
+                        />
+                    </a>
                 </Stack>
             </TableCell>
         </TableRow>

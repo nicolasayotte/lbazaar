@@ -7,7 +7,6 @@ use App\Data\CourseManageStudentData;
 use App\Models\Badge;
 use App\Models\CourseHistory;
 use Illuminate\Support\Facades\Auth;
-
 class CourseHistoryRepository extends BaseRepository
 {
     const PER_PAGE = 10;
@@ -21,7 +20,6 @@ class CourseHistoryRepository extends BaseRepository
 
     public function search($request, $user_id)
     {
-
         $sortFilterArr = explode(':', @$request->get('sort') ?? 'course_histories.created_at:desc');
         $sortBy    = $sortFilterArr[0];
         $sortOrder = $sortFilterArr[1];
