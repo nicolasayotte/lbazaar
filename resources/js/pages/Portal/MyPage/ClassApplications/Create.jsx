@@ -140,14 +140,14 @@ const Create = () => {
                                     options={categoryOptions.map(category => category.name)}
                                     fullWidth
                                     size="small"
-                                    onChange={(e, newValue) => setData('category', newValue)}
+                                    value={data.category}
+                                    inputValue={data.category}
+                                    onInputChange={(e, newValue) => setData('category', newValue)}
                                     renderInput={params =>
                                         <Input
                                             {...params}
                                             label={translatables.texts.category}
-                                            name="category"
                                             value={data.category}
-                                            onChange={e => handleOnChange(e, setData)}
                                             errors={errors}
                                         />
                                     }

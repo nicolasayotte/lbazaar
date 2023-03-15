@@ -6,6 +6,7 @@ use App\Data\CourseManageData;
 use App\Facades\Asset;
 use App\Http\Requests\CourseUpdateRequest;
 use App\Models\Course;
+use App\Models\CourseCategory;
 use Carbon\Carbon;
 use DateTime;
 use DateTimeZone;
@@ -194,6 +195,8 @@ class CourseRepository extends BaseRepository
     {
         $inputs = $request->all();
 
+        $inputs['course_category_id'] = CourseCategory::firstOrCreate(['name' => $inputs['category']])->id;
+
         $isLive = $inputs['format'] == Course::LIVE ? true : false;
 
         $inputs['course_application_id'] = $courseApplication->id;
@@ -219,6 +222,8 @@ class CourseRepository extends BaseRepository
         $course = $this->findOrFail($id);
 
         $inputs = $request->all();
+
+        $inputs['course_category_id'] = CourseCategory::firstOrCreate(['name' => $inputs['category']])->id;
 
         $isLive = $inputs['format'] == Course::LIVE ? true : false;
 
