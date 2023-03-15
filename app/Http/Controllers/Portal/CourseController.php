@@ -8,6 +8,7 @@ use App\Http\Requests\CreateCourseRequest;
 use App\Http\Requests\SearchClassRequest;
 use App\Models\CourseHistory;
 use App\Models\CourseSchedule;
+use App\Models\Setting;
 use App\Models\WalletTransactionHistory;
 use App\Models\CourseType;
 use App\Models\Status;
@@ -128,7 +129,7 @@ class CourseController extends Controller
         $userWallet = auth()->user()->userWallet()->first();
         $adminWallet = $this->userRepository->getAdmin()->userWallet()->first();
         $teacherWallet = $schedule->course->professor()->first()->userWallet()->first();
-
+        $adminCommissionSettings = Setting::where('slug', 'admin-commission')->first();
         if (!$isBooked && !$isFullyBooked && ($userWallet->points >= $schedule->course->price)) {
             $courseHistory = CourseHistory::create([
                 'course_schedule_id' => $schedule->id,
@@ -141,15 +142,17 @@ class CourseController extends Controller
                 $this->updateWalletHistory($userWallet, WalletTransactionHistory::BOOK, $newUserPoints, $courseHistory);
                 $this->updateWallet($userWallet, $newUserPoints);
 
-                $teacherCommission = (int)($schedule->course->price / 100 * ($schedule->course->professor()->first()->commission_rate));
-                $newTeacherPoints = $teacherWallet->points + $teacherCommission;
-                $this->updateWalletHistory($teacherWallet, WalletTransactionHistory::COMMISSION, $newTeacherPoints, $courseHistory);
-                $this->updateWallet($teacherWallet, $newTeacherPoints);
-
-                $adminCommission = $schedule->course->price - $teacherCommission;
+                // $adminCommission = $schedule->course->price - $teacherCommission;
+                $adminCommission = (int)($schedule->course->price / 100 * $adminCommissionSettings->value);
                 $newAdminPoints =  $adminWallet->points + $adminCommission;
                 $this->updateWalletHistory($adminWallet, WalletTransactionHistory::COMMISSION, $newAdminPoints, $courseHistory);
                 $this->updateWallet($adminWallet, $newAdminPoints);
+
+                 // $teacherCommission = (int)($schedule->course->price / 100 * ($schedule->course->professor()->first()->commission_rate));
+                 $teacherCommission = $schedule->course->price - $adminCommission;
+                 $newTeacherPoints = $teacherWallet->points + $teacherCommission;
+                 $this->updateWalletHistory($teacherWallet, WalletTransactionHistory::COMMISSION, $newTeacherPoints, $courseHistory);
+                 $this->updateWallet($teacherWallet, $newTeacherPoints);
 
             }
 

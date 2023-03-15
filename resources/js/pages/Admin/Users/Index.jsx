@@ -1,4 +1,4 @@
-import { useForm, usePage } from "@inertiajs/inertia-react"
+import { useForm, usePage, Link } from "@inertiajs/inertia-react"
 import { Box, Button, Card, CardContent, Grid, Pagination, Typography } from "@mui/material"
 import Input from "../../../components/forms/Input"
 import { displaySelectOptions, handleOnChange, handleOnSelectChange } from "../../../helpers/form.helper"
@@ -16,7 +16,7 @@ const Index = () => {
 
     const dispatch = useDispatch()
 
-    const { users, roleOptions, statusOptions, status, keyword, role, sort, translatables, page } = usePage().props
+    const { users, roleOptions, statusOptions, status, keyword, role, sort, translatables, page, export_type, export_options } = usePage().props
 
     const [dialog, setDialog] = useState({
         open: false,
@@ -25,12 +25,13 @@ const Index = () => {
         url: ''
     })
 
-    const { data: filters, setData: setFilters, get, transform, processing } = useForm({
+    const { data: filters, setData: setFilters, get, transform, processing, post } = useForm({
         keyword,
         status,
         role,
         sort,
-        page
+        page,
+        export_type,
     })
 
     const sortOptions = [
@@ -42,10 +43,17 @@ const Index = () => {
 
     const handleFilterSubmit = e => {
         e.preventDefault()
-
-        get(routes["admin.users.index"], {
-            data: filters
-        })
+        console.log(e.target.value)
+        if (e.target.value == 'export') {
+            get(routes["admin.users.export"], {
+                data: filters
+            })
+            // console.log.()
+        } else {
+            get(routes["admin.users.index"], {
+                data: filters
+            })
+        }
     }
 
     const handleOnPaginate = (e, page) => {
@@ -175,9 +183,39 @@ const Index = () => {
                                     type="submit"
                                     variant="contained"
                                     children={translatables.texts.filter}
+                                    value="filter"
                                     fullWidth
                                     onClick={handleFilterSubmit}
                                 />
+                            </Grid>
+                            <Grid item xs={12} md={12} mt={2}>
+                                <Grid container justifyContent="flex-end" spacing={2}>
+                                    <Grid item>
+                                        <Input
+                                            label={translatables.texts.export_items}
+                                            select
+                                            name="export_type"
+                                            value={filters.export_type}
+                                            InputLabelProps={{
+                                                shrink: true
+                                            }}
+                                        >
+                                            {displaySelectOptions(export_options, 'value', 'name')}
+                                        </Input>
+                                    </Grid>
+                                    <Grid item>
+                                    <Link href={getRoute(["admin.users.export"], { data: filters })} >
+
+                                            <Button
+                                                type="submit"
+                                                variant="contained"
+                                                children={translatables.texts.export_csv}
+                                                value="export"
+                                                // onClick={handleFilterSubmit}
+                                            />
+                                    </Link>
+                                    </Grid>
+                                </Grid>
                             </Grid>
                         </Grid>
                     </form>

@@ -1,5 +1,5 @@
 import { Link, usePage } from "@inertiajs/inertia-react"
-import { AccountCircle, Article, ExpandLess, ExpandMore, GTranslate, Inbox, LibraryBooks, LocalOffer, Logout, Mail, ManageAccounts, Menu, People, Settings } from "@mui/icons-material"
+import { AccountCircle, Article, ExpandLess, ExpandMore, GTranslate, Inbox, LibraryBooks, LocalOffer, Logout, Mail, ManageAccounts, Menu, People, Settings, DisplaySettings } from "@mui/icons-material"
 import { AppBar, Box, Collapse, Divider, Drawer, Grid, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar, Typography } from "@mui/material"
 import { useState } from "react"
 import routes from "../../helpers/routes.helper"
@@ -62,6 +62,12 @@ const AdminNavbar = ({ drawerWidth, window }) => {
             link: routes["admin.settings.translations.index"],
             icon: <GTranslate />,
             active: component.startsWith('Admin/Settings/Translations')
+        },
+        {
+            name: translatables.title.general,
+            link: routes["admin.settings.general.index"],
+            icon: <DisplaySettings />,
+            active: component.startsWith('Admin/Settings/General')
         }
     ]
 

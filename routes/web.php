@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\InquiriesController as AdminInquiriesController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\TranslationController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Portal\AuthPortalController;
 use App\Http\Controllers\Portal\CourseApplicationController as PortalClassApplicationController;
 use App\Http\Controllers\Portal\CourseController;
@@ -82,6 +83,7 @@ Route::prefix('admin')->name('admin.')->group(function() {
         # Users
         Route::prefix('users')->name('users.')->group(function() {
             Route::get('/', [UserController::class, 'index'])->name('index');
+            Route::get('/export', [UserController::class, 'exportCsv'])->name('export');
             Route::get('/create', [UserController::class, 'create'])->name('create');
             Route::post('/', [UserController::class, 'store'])->name('store');
             Route::get('/{id}', [UserController::class, 'view'])->name('view');
@@ -125,6 +127,14 @@ Route::prefix('admin')->name('admin.')->group(function() {
                 Route::get('/', [TranslationController::class, 'index'])->name('index');
                 Route::patch('/', [TranslationController::class, 'update'])->name('update');
             });
+
+            # Translations
+            Route::prefix('general')->name('general.')->group(function() {
+                Route::get('/', [SettingsController::class, 'index'])->name('index');
+                Route::post('/', [SettingsController::class, 'update'])->name('update');
+            });
+
+
         });
     });
 });

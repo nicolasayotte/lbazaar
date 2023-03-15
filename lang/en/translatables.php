@@ -100,7 +100,8 @@ return [
         ],
         'live_class' => [
             'attended' => 'You have successfully attended a live class'
-        ]
+        ],
+        'update' => 'Successfully updated',
     ],
     'confirm' => [
         'class' => [
@@ -136,6 +137,9 @@ return [
         'schedules' => [
             'delete' => 'Are you sure you want to delete this schedule?',
             'update' => 'Are you sure you want to update this schedule?'
+        ],
+        'settings' => [
+            'update' => 'Are you sure you want to update this settings?'
         ]
     ],
     'title' => [
@@ -166,6 +170,7 @@ return [
             'update' => 'Update Password'
         ],
         'login' => 'Login',
+        'general' => 'General',
         'translations' => 'Translations',
         'settings' => 'Settings',
         'exams' => 'Exams',
@@ -338,6 +343,8 @@ return [
         'exam_name' => 'Exam Name',
         'exchange_badges' => 'Exchange Badges',
         'exchange_points' => 'Exchange Points',
+        'export_csv' => 'Export CSV',
+        'export_items' => 'Export items',
         'featured_classes' => 'Featured Classes',
         'filter' => 'Filter',
         'first_name' => 'First Name',

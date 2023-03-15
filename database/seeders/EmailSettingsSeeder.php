@@ -29,6 +29,13 @@ class EmailSettingsSeeder extends Seeder
                 'type'     => 'text',
                 'value'    => 'noreply@l-e-bazaar.com',
                 'category' => 'email'
+            ],
+            [
+                'name'     => 'Admin Commission',
+                'slug'     => 'admin-commission',
+                'type'     => 'number',
+                'value'    => '20',
+                'category' => 'general'
             ]
         ]);
     }
