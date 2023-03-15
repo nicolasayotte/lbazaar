@@ -42,6 +42,28 @@ class UserRepository extends BaseRepository
                 });
     }
 
+    public function search($filters)
+    {
+        $sortFilterArr = explode(':', @$filters['sort'] ?? 'created_at:desc');
+
+        $sortBy    = $sortFilterArr[0];
+        $sortOrder = $sortFilterArr[1];
+
+        return $this->model
+                ->where('id', '!=', auth()->user()->id)
+                ->where( function($q) use($filters){
+                    return $q->whereRaw("CONCAT(`first_name`, ' ', `last_name`) LIKE ?", ['%'. @$filters['keyword'] .'%'])
+                             ->orWhere('email', 'LIKE', '%'. @$filters['keyword'] .'%');
+                })
+                ->when(@$filters['role'] && !empty(@$filters['role']), function($q) use($filters) {
+                    return $q->whereRoleIs($filters['role']);
+                })
+                ->when(@$filters['status'] && !empty(@$filters['status']), function($q) use($filters) {
+                    return $q->where('is_enabled', @$filters['status'] == User::ACTIVE ? 1 : 0);
+                })
+                ->orderBy($sortBy, $sortOrder)->get();
+    }
+
     public function findOne(int $id)
     {
         $user = $this->model->with('courses', 'createdCourses')->findOrFail($id);

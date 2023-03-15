@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\FromArrayCollection;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateUserRequest;
 use App\Mail\AdminCreateUserNotification;
 use App\Models\Role;
 use App\Models\User;
+use App\Models\WalletTransactionHistory;
 use App\Repositories\ClassificationRepository;
 use App\Repositories\CountryRepository;
 use App\Repositories\RoleRepository;
@@ -20,6 +22,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Collection;
 
 class UserController extends Controller
 {
@@ -55,6 +59,8 @@ class UserController extends Controller
             'status'        => @$request['status'] ?? '',
             'sort'          => @$request['sort'] ?? 'created_at:desc',
             'page'          => @$request['page'] ?? 1,
+            'export_type'   => @$request['export_type'] ?? 1,
+            'export_options'=> User::EXPORT_OPTIONS,
             'title'         => $title
         ])->withViewData([
             'title' => $title
@@ -131,5 +137,73 @@ class UserController extends Controller
         } catch (Exception $e) {
             Log::error($e);
         }
+    }
+
+    public function exportCsv(Request $request)
+    {
+        // dd($request);
+        // $fileName = 'tasks.csv';
+
+        // $headers = array(
+        //     "Content-type"        => "text/csv",
+        //     "Content-Disposition" => "attachment; filename=$fileName",
+        //     "Pragma"              => "no-cache",
+        //     "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+        //     "Expires"             => "0"
+        // );
+
+        // $columns = array('Title', 'Assign', 'Description', 'Start Date', 'Due Date');
+
+        // $callback = function() use($columns) {
+        //     $file = fopen('php://output', 'w');
+        //     fputcsv($file, $columns);
+
+        //     fclose($file);
+        // };
+
+        // return response()->stream($callback, 200, $headers);
+        //  dd($request);
+         $users = $this->userRepository->search($request->all());
+            // dd($users);
+         // $courseHistories = $this->courseHistoryRepository->search($request, Auth::user()->id);
+         // $userBadges = auth()->user()->badges()->paginate(10);
+         // $this->courseScheduleRepository->get($request['course'], $request, auth()->user()->id);
+
+         foreach($users as $user) {
+            $walletTransactionHistory = $user->userWallet()->first()->userWalletTransactions()->orderBy('id', 'DESC')->get();
+            $userName = array('Name', $user->first_name ." ".$user->last_name);
+            $userEmail = array('Email', $user->email);
+            $columns = array('Transaction ID', 'Transaction Type', 'Points +-', 'Content', 'Wallet balance', 'Transaction Date');
+            $walletData = new Collection();
+            foreach ($walletTransactionHistory as $walletTransaction) {
+                $walletData->add([
+                    'Transaction ID'=> $walletTransaction->id,
+                    'Transaction Type'=>$walletTransaction->type,
+                    'Points +-'=>$walletTransaction->amount,
+                    'Content'=>$walletTransaction->transaction_details,
+                    'Wallet balance'=> $walletTransaction->points_after,
+                    'Transaction Date'=> $walletTransaction->transaction_datetime,
+                ]);
+            }
+            // $walletData = [];
+            // foreach ($walletTransactionHistory as $walletTransaction) {
+            //     $row['Transaction ID']  = $walletTransaction->id;
+            //     $row['Transaction Type']    = $walletTransaction->type;
+            //     $row['Points +-']    = $walletTransaction->amount;
+            //     $row['Content']  = $walletTransaction->transaction_details;
+            //     $row['Wallet balance']  = $walletTransaction->points_after;
+            //     $row['Transaction Date']  = $walletTransaction->transaction_datetime;
+            // }
+        }
+        // $excel->sheet($user->first_name ." ". $user->last_name, function($sheet) use($walletData) {
+
+        //     $sheet->fromArray($walletData);
+
+        // });
+
+        return Excel::download($walletTransactionHistory, 'WalletHistory.csv', \Maatwebsite\Excel\Excel::CSV);
+        //  return response()->stream($callback, 200, $headers);
+         // return redirect()->back();
+
     }
 }

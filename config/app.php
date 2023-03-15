@@ -196,7 +196,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\AssetServiceProvider::class,
-        App\Providers\DiscordServiceProvider::class
+        App\Providers\DiscordServiceProvider::class,
+        Maatwebsite\Excel\ExcelServiceProvider::class,
     ],
 
     /*
@@ -214,7 +215,8 @@ return [
         // 'ExampleClass' => App\Example\ExampleClass::class,
         'Countries' => Monarobase\CountryList\CountryListFacade::class,
         'Asset' => App\Facades\Asset::class,
-        'Discord' => App\Classes\Discord::class
+        'Discord' => App\Classes\Discord::class,
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
     ])->toArray(),
 
 ];
