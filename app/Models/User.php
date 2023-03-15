@@ -64,7 +64,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_enabled',
         'is_temp_password',
         'classification_id',
-        'university'
+        'university',
+        'email_verified_at'
     ];
 
     /**

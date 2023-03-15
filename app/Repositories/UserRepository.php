@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Data\UserData;
 use App\Models\TeacherApplication;
 use App\Services\API\EmailService;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use DragonCode\Support\Facades\Helpers\Str;
 use Illuminate\Support\Facades\Hash;
@@ -161,6 +162,7 @@ class UserRepository extends BaseRepository
         $data['is_temp_password'] = true;
         $data['is_enabled'] = true;
         $data['country_id'] = fake()->numberBetween(1, 249);
+        $data['email_verified_at'] = Carbon::now();
 
         $user = $this->model->create($data);
 
@@ -170,6 +172,10 @@ class UserRepository extends BaseRepository
         if (!empty(@$data['certification'])) $user->userCertification()->createMany(@$data['certification']);
 
         $user->save();
+
+        $user->userWallet()->create([
+            'points' => 0
+        ]);
 
         $emailService->sendEmailNotificationUserCreated($user, $tempPassword);
     }
