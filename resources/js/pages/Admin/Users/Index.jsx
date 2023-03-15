@@ -48,7 +48,6 @@ const Index = () => {
             get(routes["admin.users.export"], {
                 data: filters
             })
-            // console.log.()
         } else {
             get(routes["admin.users.index"], {
                 data: filters

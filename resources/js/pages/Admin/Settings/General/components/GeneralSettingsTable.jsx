@@ -7,7 +7,7 @@ const GeneralSettingsTable = ({ data, formData, handleOnChange, translatables, e
     if (data && data.length <= 0) {
         return <EmptyCard />
     }
-    console.log(errors)
+
     const displayTableData = data.map(general_setting => (
         <TableRow key={general_setting.slug}>
             <TableCell children={general_setting.name} />
