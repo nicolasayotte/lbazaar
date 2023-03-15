@@ -39,7 +39,12 @@ class WalletTransactionHistory extends Model
 
     public function getCourseNameAttribute()
     {
-        return $this->courseHistory()->first()->course()->first()->title;
+        if($this->courseHistory()->first() != null)
+        {
+            return $this->courseHistory()->first()->course()->first()->title;
+        }
+
+        return "";
     }
 
     public function getTransactionDatetimeAttribute()
