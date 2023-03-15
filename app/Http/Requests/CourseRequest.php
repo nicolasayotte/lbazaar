@@ -28,17 +28,17 @@ class CourseRequest extends FormRequest
     public function rules()
     {
         $rules = [
-            'title' => 'required',
-            'description' => 'required',
-            'course_category_id' => 'required',
-            'course_type_id' => 'required',
-            'max_participant' => 'integer|required|min:1',
-            'format' => 'required',
-            'zoom_link' => 'required_if:format,' . Course::LIVE,
-            'is_cancellable' => 'boolean',
+            'title'                    => 'required',
+            'description'              => 'required',
+            'category'                 => 'required',
+            'course_type_id'           => 'required',
+            'max_participant'          => 'integer|required|min:1',
+            'format'                   => 'required',
+            'zoom_link'                => 'required_if:format,' . Course::LIVE,
+            'is_cancellable'           => 'boolean',
             'days_before_cancellation' => 'required_if:is_cancellable,true',
-            'image_thumbnail' => 'required',
-            'video_path' => 'required_if:format,' . Course::ON_DEMAND
+            'image_thumbnail'          => 'required',
+            'video_path'               => 'required_if:format,' . Course::ON_DEMAND
         ];
 
         return $rules;
@@ -52,12 +52,12 @@ class CourseRequest extends FormRequest
     public function attributes()
     {
         $attributes = [
-            'course_category_id' => getTranslation('texts.category'),
-            'course_type_id' => getTranslation('texts.type'),
-            'image_thumbnail' => getTranslation('texts.class_image'),
-            'zoom_link' => getTranslation('texts.zoom_link'),
-            'video_path' => getTranslation('texts.video'),
-            'is_cancellable' => getTranslation('texts.cancellable'),
+            'category'                 => getTranslation('texts.category'),
+            'course_type_id'           => getTranslation('texts.type'),
+            'image_thumbnail'          => getTranslation('texts.class_image'),
+            'zoom_link'                => getTranslation('texts.zoom_link'),
+            'video_path'               => getTranslation('texts.video'),
+            'is_cancellable'           => getTranslation('texts.cancellable'),
             'days_before_cancellation' => getTranslation('texts.days')
         ];
 

@@ -1,9 +1,8 @@
 import { Link, usePage } from "@inertiajs/inertia-react";
-import { Menu as MenuIcon } from "@mui/icons-material"
-import { AppBar, Box, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemText, Stack, Toolbar, Typography, Grid, Tooltip, Button } from "@mui/material"
+import { AccountBalanceWallet, Menu as MenuIcon } from "@mui/icons-material"
+import { AppBar, Box, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemText, Stack, Toolbar, Typography, Button } from "@mui/material"
 import { useState } from "react"
 import routes from "../../helpers/routes.helper"
-import PointsIcon from '@mui/icons-material/WorkspacePremium'
 import LanguageNavbar from "./LanguageNavbar"
 
 const Navbar = () => {
@@ -61,7 +60,7 @@ const Navbar = () => {
 
     const authButtons = (isLoggedIn, ParentComponent = null, parentProps = {}, ButtonComponent = null) => authNavItems.map(item => {
 
-        const itemProps = item.method && { method: item.method }
+        let itemProps = item.method && { method: item.method }
 
         const output = (
             <Link
@@ -105,34 +104,29 @@ const Navbar = () => {
                 />
             </Toolbar>
             <Divider />
-
             <List>
-                { isLoggedIn && (
-                    <>
-                        <ListItem disablePadding>
-                            <ListItemButton>
-                                <Tooltip title={`${translatables.texts.points}`}>
-                                    <Box display="flex" alignItems="center">
-                                        <PointsIcon sx={{ color: '#FF6B09' }}/>
-                                        <Typography
-                                            variant="subtitle2"
-                                            sx={{ color: '#FF6B09' }}
-                                            children={`${auth.user.user_wallet.points}`}
-                                        />
-                                    </Box>
-                                </Tooltip>
-                            </ListItemButton>
-                        </ListItem>
-                        <ListItem disablePadding>
-                            <ListItemButton>
-                                <Typography
-                                    variant="subtitle2"
-                                    children={`${auth.user.roles[0].name.toUpperCase()}`}
-                                />
-                            </ListItemButton>
-                        </ListItem>
-                    </>
-                 )}
+                {
+                    isLoggedIn && (
+                        <>
+                            <ListItem>
+                                <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ width: '100%' }}>
+                                    <AccountBalanceWallet sx={{ mr: 'auto' }} />
+                                    <Typography children={ auth.user.user_wallet.points.toFixed(2) } />
+                                </Stack>
+                            </ListItem>
+                            <Divider sx={{ my: 1 }} />
+                            <ListItem disablePadding>
+                                <ListItemButton>
+                                    <Typography
+                                        variant="subtitle2"
+                                        children={`${auth.user.roles[0].name.toUpperCase()}`}
+                                    />
+                                </ListItemButton>
+                            </ListItem>
+                            <Divider sx={{ my: 1 }} />
+                        </>
+                    )
+                }
                 {navItems.map(item => (
                     <ListItem key={item.name} disablePadding>
                         <Link href={item.link} style={{ width: '100%' }}>
@@ -170,41 +164,33 @@ const Navbar = () => {
                 <LanguageNavbar locale={locale} />
                 <Toolbar>
                     <Typography variant="h6" sx={{ my: 3, mr: 4 }}>L-Earning Bazaar</Typography>
-                    <Stack direction="row" spacing={1} sx={{ mr: 'auto', display: { xs: "none", sm: "flex" } }}>
+                    <Stack direction="row" spacing={1} sx={{ mr: 'auto', display: { xs: "none", md: "flex" } }}>
                         <Nav />
                     </Stack>
                     <IconButton
                         color="inherit"
                         sx={{
-                            display: {xs: "flex", sm: "none"},
+                            display: {xs: "flex", md: "none"},
                             marginLeft: "auto"
                         }}
                         onClick={toggleDrawer}
                     >
                         <MenuIcon />
                     </IconButton>
-                    <Stack display={{ xs: 'none', md: 'flex' }} direction="row" spacing={1} >
-                        { isLoggedIn && (
-                            <>
-                                <Grid container alignItems={'center'} spacing={1}>
-                                    <Grid item>
-                                        <Typography
-                                            variant="subtitle2"
-                                            children={`${auth.user.roles[0].name.toUpperCase()}`}
-                                        />
-                                    </Grid>
-                                </Grid>
-                                <Tooltip title={`${translatables.texts.points}`}>
-                                    <Box display="flex" alignItems="center">
-                                        <PointsIcon/>
-                                        <Typography
-                                            variant="subtitle2"
-                                            children={`${auth.user.user_wallet.points}`}
-                                        />
-                                    </Box>
-                                </Tooltip>
-                            </>
-                        )}
+                    <Stack display={{ xs: 'none', md: 'flex' }} direction="row" spacing={1}>
+                        {
+                            isLoggedIn && (
+                                <Stack direction="row" spacing={1} alignItems="center" sx={{ mr: 2 }}>
+                                    <Typography
+                                        variant="subtitle2"
+                                        children={`${auth.user.roles[0].name.toUpperCase()}`}
+                                        sx={{ mr: 2 }}
+                                    />
+                                    <AccountBalanceWallet />
+                                    <Typography children={ auth.user.user_wallet.points.toFixed(2) } />
+                                </Stack>
+                            )
+                        }
                         { authButtons(isLoggedIn, null, {}, Button) }
                     </Stack>
                 </Toolbar>
@@ -219,7 +205,7 @@ const Navbar = () => {
                         keepMounted: true
                     }}
                     sx={{
-                        display: { xs: "block", sm: "none" },
+                        display: { xs: "block", md: "none" },
                         "& .MuiDrawer-paper": { boxSizing: 'border-box', width: drawerWidth }
                     }}
                 >

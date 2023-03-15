@@ -10,7 +10,7 @@ import { actions } from "../../../store/slices/ToasterSlice"
 import CourseScheduleList from "./components/CourseScheduleList";
 import { grey } from "@mui/material/colors";
 import Course from "../../../components/cards/Course";
-import TeacherInfo from "../../../components/cards/TeacherInfo"
+import User from "../../../components/cards/User";
 
 const Details = () => {
 
@@ -247,7 +247,6 @@ const Details = () => {
                 <Grid container spacing={2}>
                     <Grid item xs={12} md={8}>
                         <ClassInformation />
-                        <TeacherInfo user={course.professor}/>
                         <Card sx={{ mb: 2 }}>
                             <CardContent>
                                 <Typography variant="h4" children={course.title} sx={{ my: 1 }} />
@@ -256,6 +255,7 @@ const Details = () => {
                                 <div dangerouslySetInnerHTML={{ __html: course.description }} style={{ lineHeight: 1.8 }} />
                             </CardContent>
                         </Card>
+                        <User user={course.professor} condensed={false} />
                         <CourseScheduleList data={schedules} handleOnBook={handleBook} handleOnCancelBook={handleCancelBooking} />
                         <PackageInformation />
                     </Grid>

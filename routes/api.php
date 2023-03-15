@@ -9,6 +9,7 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\UserWalletController;
 use App\Http\Controllers\API\CourseApplicationController;
+use App\Http\Controllers\API\VoteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,4 +45,5 @@ Route::get('/countries',  function (Request $request) {
     return Country::all()->makeHidden(['created_at', 'updated_at']);
 });
 
+Route::post('/votes/register', [VoteController::class, 'register'])->name('votes.register');
 

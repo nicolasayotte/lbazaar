@@ -44,13 +44,13 @@ class RegisterStudentController extends Controller
     public function resendEmailVerification()
     {
         event(new Registered(auth()->user()));
-        return redirect()->back()->with('message', 'Verification link sent!');
+        return redirect()->back()->with('success', getTranslation('success.verification_sent'));
     }
 
     public function verificationHanlder(EmailVerificationRequest $request)
     {
         $request->fulfill();
-        return redirect('/');
+        return to_route('top')->with('success', getTranslation('success.user.verified'));
     }
 
     public function store(RegisterStudentRequest $request)

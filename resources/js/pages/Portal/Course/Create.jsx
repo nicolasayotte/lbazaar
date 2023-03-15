@@ -1,11 +1,11 @@
-import { Box, Breadcrumbs, Button, Card, CardContent, Container, FormControlLabel, Grid, Switch, Typography } from "@mui/material"
+import { Autocomplete, Box, Breadcrumbs, Button, Card, CardContent, Container, FormControlLabel, Grid, Switch, Typography } from "@mui/material"
 import Input from "../../../components/forms/Input"
 import TextEditorInput from "../../../components/forms/TextEditorInput"
 import { Stack } from "@mui/system"
 import FileInput from "../../../components/forms/CustomFileInput"
 import { Link, useForm, usePage } from "@inertiajs/inertia-react"
 import routes, { getRoute } from "../../../helpers/routes.helper"
-import { displaySelectOptions, handleOnChange } from "../../../helpers/form.helper"
+import { displaySelectOptions, handleEditorOnChange, handleOnChange } from "../../../helpers/form.helper"
 import { useState } from "react"
 import FormDialog from "../../../components/common/FormDialog"
 import { Inertia } from "@inertiajs/inertia"
@@ -34,7 +34,8 @@ const Create = () => {
         video_path: course && course.video_path ? course.video_path : '',
         is_cancellable: course && course.is_cancellable && course.is_cancellable > 0 ? true : false,
         days_before_cancellation: course && course.days_before_cancellation ? course.days_before_cancellation : 1,
-        course_package_id: course && course.course_package ? course.course_package.id : ''
+        course_package_id: course && course.course_package ? course.course_package.id : '',
+        category: course && course.course_category ? course.course_category.name : ''
     })
 
     const [imgPreview, setImgPreview] = useState(course && course.image_thumbnail ? course.image_thumbnail : null)
@@ -193,17 +194,26 @@ const Create = () => {
                                                 name="description"
                                                 value={data.description}
                                                 errors={errors}
+                                                onChange={value => handleEditorOnChange(value, setData, 'description')}
                                             />
                                         </Grid>
                                         <Grid item xs={12}>
-                                            <Input
-                                                select
-                                                label={translatables.texts.category}
-                                                name="course_category_id"
-                                                value={data.course_category_id}
-                                                onChange={e => handleOnChange(e, setData)}
-                                                children={displaySelectOptions(categories)}
-                                                errors={errors}
+                                            <Autocomplete
+                                                freeSolo
+                                                options={categories.map(category => category.name)}
+                                                fullWidth
+                                                size="small"
+                                                value={data.category}
+                                                inputValue={data.category}
+                                                onInputChange={(e, newValue) => setData('category', newValue)}
+                                                renderInput={params =>
+                                                    <Input
+                                                        {...params}
+                                                        label={translatables.texts.category}
+                                                        value={data.category}
+                                                        errors={errors}
+                                                    />
+                                                }
                                             />
                                         </Grid>
                                     </Grid>

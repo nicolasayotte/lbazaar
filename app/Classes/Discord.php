@@ -2,6 +2,9 @@
 
 namespace App\Classes;
 
+use App\Models\CourseApplication;
+use App\Models\TeacherApplication;
+use App\Models\Vote;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Log;
@@ -10,15 +13,20 @@ class Discord
 {
     private $webhook_url;
 
-    private $line_break = '---------------------------------------------------';
-
     public function __construct()
     {
         $this->webhook_url = env('DISCORD_WEBOOK_URL');
     }
 
-    public function sendMessage($data, $type = '')
+    public function sendMessage($data, $type)
     {
+        $buildMethods = [
+            CourseApplication::class => 'buildClassApplicationMessage',
+            TeacherApplication::class => 'buildTeacherApplicationMessage'
+        ];
+
+        $messageContent = $this->{$buildMethods[$type]}($data);
+
         try {
             $ch = curl_init();
 
@@ -29,7 +37,7 @@ class Discord
             curl_setopt($ch, CURLOPT_URL, $this->webhook_url . '?wait=true');
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
-                'embeds' => [$this->buildTeacherApplicationMessage($data)]
+                'embeds' => [$messageContent]
             ]));
 
             // Receive server response
@@ -47,7 +55,7 @@ class Discord
         }
     }
 
-    protected function addEmptyLines(&$message, $count = 1)
+    private function addEmptyLines(&$message, $count = 1)
     {
         for ($i = 0; $i < $count; $i++) {
             $message['fields'][] = [
@@ -57,15 +65,59 @@ class Discord
         }
     }
 
+    private function getVoteDescription($voteId)
+    {
+        $message = '';
+
+        $message .= '** Vote ID: ** ' . $voteId . PHP_EOL . PHP_EOL;
+        $message .= 'React ' . (Vote::OPTIONS[0]) . ' if you approve' . PHP_EOL . PHP_EOL;
+        $message .= 'React ' . (Vote::OPTIONS[1]) . ' if you disapprove' . PHP_EOL . PHP_EOL;
+        $message .= '*Note: Only the emojis above will be counted for the vote results*';
+
+        return $message;
+    }
+
+    private function buildClassApplicationMessage($data)
+    {
+        $contents = json_decode($data->data, true);
+        $message = [];
+
+        $message['title'] = 'New Class Application Created';
+        $message['description'] = $this->getVoteDescription($data->id);
+        $message['footer']['text'] = 'Voting period ends on ' . $data->end_date;
+
+        $content_keys = array_keys($contents);
+
+        foreach ($content_keys as $key) {
+
+            $field = [];
+            $fieldName = ucwords(str_replace('_', ' ', $key));
+
+            $field['name'] = $fieldName;
+
+            if ($key == 'description') {
+                $field['value'] = '>>> ' . $contents[$key];
+            } else {
+                $field['value'] = ucwords($contents[$key]);
+            }
+
+            $message['fields'][] = $field;
+        }
+
+        return $message;
+    }
+
     private function buildTeacherApplicationMessage($data)
     {
         $contents = json_decode($data->data, true);
         $message = [];
 
         $message['title'] = 'New Teacher Application Created';
-        $message['description'] = '**Vote ID:** ' . $data->vote_id;
+
+        $message['description'] = $this->getVoteDescription($data->id);
+
         $message['type'] = 'rich';
-        $message['footer']['text'] = 'Voting period ends on ' . $data->vote->end_date;
+        $message['footer']['text'] = 'Voting period ends on ' . $data->end_date;
 
         $keys = array_keys($contents);
 
@@ -119,6 +171,29 @@ class Discord
 
                         $field['name'] = $work['position'] . ' for ' . $work['company'] . " (" . $startDate . " - " . $endDate . ") ";
                         $field['value'] = '>>> ' . ($work['description'] ?? 'No description provided');
+
+                        $message['fields'][] = $field;
+                    }
+
+                    // Additional lines
+                    $this->addEmptyLines($message, 1);
+                }
+            } else if ($key == 'certification') {
+                if (!empty($contents[$key])) {
+                    // Additional lines
+                    $this->addEmptyLines($message, 2);
+
+                    $message['fields'][] = [
+                        'name' => 'Certification',
+                        'value' => ''
+                    ];
+
+                    foreach ($contents[$key] as $certification) {
+
+                        $awardedAt = Carbon::parse(@$certification['awarded_at'])->format('F Y');
+
+                        $field['name'] = $certification['awarded_by'] . " (" . $awardedAt . ") ";
+                        $field['value'] = $certification['title'];
 
                         $message['fields'][] = $field;
                     }

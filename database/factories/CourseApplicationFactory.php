@@ -6,6 +6,7 @@ use App\Models\CourseCategory;
 use App\Models\CourseType;
 use App\Models\Role;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -30,19 +31,17 @@ class CourseApplicationFactory extends Factory
             'title'              => fake()->sentence(),
             'description'        => fake()->paragraphs(4, true),
             'price'              => fake()->numberBetween(10, 100),
-            'language'           => fake()->randomElement(['English', 'Japanese']),
             'points_earned'      => 0,
-            'video_path'         => 'https://www.youtube.com/embed/'.self::YOUTUBE_CODES[fake()->numberBetween(0, count(self::YOUTUBE_CODES)-1)],
-            'video_link'         => 'https://www.youtube.com/embed/'.self::YOUTUBE_CODES[fake()->numberBetween(0, count(self::YOUTUBE_CODES)-1)],
-            'zoom_link'          => fake()->url(),
             'approved_at'        => null,
             'denied_at'          => null,
-            'created_at'         => fake()->dateTime(),
+            'created_at'         => Carbon::now(),
             'course_type_id'     => $this->getCourseType(CourseType::GENERAL),
             'professor_id'       => $user->id,
             'course_category_id' => $category->id,
-            'max_participant'    => 1000,
-            'is_live'            => fake()->randomElement([true, false])
+            'max_participant'    => fake()->randomNumber(3),
+            'is_live'            => fake()->randomElement([true, false]),
+            'lecture_frequency'  => 'daily',
+            'length'             => '01:00:00'
         ];
     }
 

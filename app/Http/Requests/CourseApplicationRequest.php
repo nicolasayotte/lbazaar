@@ -7,6 +7,7 @@ use App\Models\CourseType;
 use App\Models\Role;
 use App\Repositories\CourseTypeRepository;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class CourseApplicationRequest extends FormRequest
 {
@@ -27,46 +28,53 @@ class CourseApplicationRequest extends FormRequest
      */
     public function rules()
     {
+        $isPaid = $this->type == strtolower(CourseType::GENERAL) || $this->type == strtolower(CourseType::SPECIAL);
+        $isEarn = $this->type == strtolower(CourseType::EARN);
+
+        $priceRules = [
+            Rule::requiredIf($isPaid),
+            'integer',
+            'min:' . ($isPaid ? '1' : '0')
+        ];
+
+        $pointsRules = [
+            Rule::requiredIf($isEarn),
+            'integer',
+            'min:' . ($isEarn ? '1' : '0')
+        ];
+
         return [
-            'course_category_id'    => 'required',
-            'course_type_id'        => 'required',
-            'price'                 => 'required_if:course_type_id,'. CourseType::GENERAL_ID.','. CourseType::SPECIAL_ID.'|min:0|numeric',
-            'price_earned'          => 'required_if:course_type_id,' . CourseType::EARN_ID,
-            'title'                 => 'required',
-            'description'           => 'required',
-            'seats'                 => 'required|min:0|numeric',
-            'language'              => 'required',
-            'lecture_type'          => 'required'
+            'title'             => 'required',
+            'type'              => 'required',
+            'format'            => 'required',
+            'category'          => 'required',
+            'lecture_frequency' => 'required',
+            'length'            => 'required',
+            'price'             => $priceRules,
+            'points_earned'     => $pointsRules,
+            'seats'             => 'required|integer|min:1',
+            'description'       => 'required'
         ];
     }
 
-     /**
-     * Get the error messages for the defined validation rules
+    /**
+     * Get custom attributes for validator errors.
      *
      * @return array
      */
-    public function messages()
+    public function attributes()
     {
-        if (!empty($this->validationData()["course_type_id"])) {
-            $courseTypeRepository = new CourseTypeRepository();
-            $courseType =  $courseTypeRepository->getNameById($this->validationData()["course_type_id"]);
-        }
-
         return [
-            'course_category_id.required'       => trans('validation.required', ['attribute' => 'category']),
-            'price_earned.required'             => trans('validation.required', ['attribute' => 'price earn']),
-            'course_type_id.required'           => trans('validation.required', ['attribute' => 'type']),
-            'lecture_type.required'             => trans('validation.required', ['attribute' => 'lecture type']),
-            'price.required_if'                 => trans('validation.required_if', [
-                'attribute'                     => 'price' ,
-                'other'                         => 'course type',
-                'value'                         => $courseType,
-            ]),
-            'price_earned.required_if' => trans('validation.required_if', [
-                'attribute'                     => 'price earned' ,
-                'other'                         => 'course type',
-                'value'                         => $courseType,
-            ]),
+            'title'             => strtolower(getTranslation('texts.title')),
+            'type'              => strtolower(getTranslation('texts.type')),
+            'format'            => strtolower(getTranslation('texts.format')),
+            'category'          => strtolower(getTranslation('texts.category')),
+            'lecture_frequency' => strtolower(getTranslation('texts.frequency')),
+            'length'            => strtolower(getTranslation('texts.length')),
+            'price'             => strtolower(getTranslation('texts.price')),
+            'points_earned'     => strtolower(getTranslation('texts.points_earned')),
+            'seats'             => strtolower(getTranslation('texts.seats')),
+            'description'       => strtolower(getTranslation('texts.description'))
         ];
     }
 }
