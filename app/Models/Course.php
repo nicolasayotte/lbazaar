@@ -43,7 +43,8 @@ class Course extends Model
     protected $appends = [
         'overall_rating',
         'format',
-        'top_feedbacks'
+        'top_feedbacks',
+        'raw_description'
     ];
 
     protected $casts = [
@@ -170,5 +171,10 @@ class Course extends Model
                     ->orderBy('rating', 'desc')
                     ->orderBy('created_at', 'desc')
                     ->get();
+    }
+
+    public function getRawDescriptionAttribute()
+    {
+        return strip_tags($this->description);
     }
 }

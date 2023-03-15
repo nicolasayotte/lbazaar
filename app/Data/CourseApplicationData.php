@@ -249,7 +249,6 @@ class CourseApplicationData
 
         $courseData->setProfessorName($courseApplication->professor->fullname);
         $courseData->setProfessorEmail($courseApplication->professor->email);
-        $courseData->setProfessorClassification($courseApplication->professor->classification->name);
         $courseData->setProfessorCreatedAt(Carbon::parse($courseApplication->professor->created_at)->format('M j, Y'));
 
         $courseData->setPrice($courseApplication->price == 0 ? 'Free' : number_format($courseApplication->price, 2));

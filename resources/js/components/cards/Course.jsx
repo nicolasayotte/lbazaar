@@ -14,7 +14,7 @@ const Course = ({ course, schedule = null, showDescription = true, viewDetailId 
         <Typography
             variant="subtitle1"
             gutterBottom
-            children={course.description}
+            children={course.raw_description}
             sx={{
                 display: "-webkit-box",
                 WebkitLineClamp: 2,
@@ -85,10 +85,10 @@ const Course = ({ course, schedule = null, showDescription = true, viewDetailId 
                         maxHeight: (imagePosition == 'left' || imagePosition == 'right') ? 'unset' : '150px'
                     }}
                 />
-                <CardContent>
+                <CardContent sx={{ flexGrow: 1 }}>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
-                            <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+                            <Box display="flex" justifyContent="space-between" alignItems="center" mb={1} width="100%">
                                 <Chip label={course.course_category.name} size="small" />
                                 <Stack direction="row" spacing={1}>
                                     <Package />
@@ -100,7 +100,7 @@ const Course = ({ course, schedule = null, showDescription = true, viewDetailId 
                             <Description />
                         </Grid>
                         <Grid item xs={12}>
-                            <Box display="flex" justifyContent="space-between" alignItems="center">
+                            <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
                                 <Price />
                                 <Link href={getRoute('course.details', {id : course[viewDetailId]})}>
                                     <Button
