@@ -395,7 +395,7 @@ return [
         'question' => 'Question',
         'rating' => 'Rating',
         'recommended_size' => 'Recommended size',
-        'redirect_to_zoom' => 'Redirect to Zoom',
+        'redirect_to_live_class' => 'Redirect to Live class',
         'role' => 'Role',
         'save_changes' => 'Save Changes',
         'score' => 'Score',

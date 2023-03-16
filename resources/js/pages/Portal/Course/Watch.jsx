@@ -29,7 +29,7 @@ const Watch = () => {
                                         <a href={course.zoom_link} target="_blank" style={{ display: 'block' }}>
                                             <Button
                                                 variant="contained"
-                                                children={translatables.texts.redirect_to_zoom}
+                                                children={translatables.texts.redirect_to_live_class}
                                             />
                                         </a>
                                     </Box>

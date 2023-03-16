@@ -63,10 +63,10 @@ const ScheduleTable = ({ data, handleOnDelete }) => {
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell children="Date" />
-                        <TableCell align="center" children="Bookings" />
-                        <TableCell align="center" children="Status" />
-                        <TableCell align="center" children="Actions" />
+                        <TableCell children={translatables.texts.date} />
+                        <TableCell align="center" children={translatables.class_schedule.number_users_booked} />
+                        <TableCell align="center" children={translatables.texts.status} />
+                        <TableCell align="center" children={translatables.texts.actions} />
                     </TableRow>
                 </TableHead>
                 <TableBody children={displayTableData(data)} />

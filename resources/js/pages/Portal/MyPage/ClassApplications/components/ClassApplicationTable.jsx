@@ -59,12 +59,12 @@ const ClassApplicationTable = ({ data }) => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell children="Title"/>
-                            <TableCell align="center" children="Type"/>
-                            <TableCell align="center" children="Category"/>
-                            <TableCell align="center" children="Date Applied"/>
-                            <TableCell align="center" children="Status"/>
-                            <TableCell align="center" children="Actions"/>
+                            <TableCell children={translatables.texts.title}/>
+                            <TableCell align="center" children={translatables.texts.type}/>
+                            <TableCell align="center" children={translatables.texts.category}/>
+                            <TableCell align="center" children={translatables.texts.date_applied}/>
+                            <TableCell align="center" children={translatables.texts.status}/>
+                            <TableCell align="center" children={translatables.texts.actions}/>
                         </TableRow>
                     </TableHead>
                     <TableBody>
