@@ -26,7 +26,7 @@ const ScheduleTable = ({ data, handleOnDelete }) => {
             <Box>
                 <Typography variant="caption" color="primary" children={startDate[0]} display="block" />
                 <Typography variant="button" children={`${ startDate[1] } ${ startDate[2] } ${ startDate[3] }`} mr={1} />
-                <Typography variant="caption" children={`${ startDate[4] } ${ startDate[5] }`} />
+                <Typography variant="caption" children={`${ startDate[4] } ${ startDate[5] } ${startDate[6]}`} />
             </Box>
         )
 

@@ -10,9 +10,10 @@ This is to inform you that you booked a class titled **"{{ $course->title }}"**.
 <x-mail::table>
 |             |                                                 |
 | ----------- | ----------------------------------------------- |
-| Title       | {{ @$course->title }}                |
-| Type        | {{ @$course->courseType->name }}     |
-| Category    | {{ @$course->courseCategory->name }} |
+| Title       | {{ @$course->title }}                           |
+| Type        | {{ @$course->courseType->name }}                |
+| Category    | {{ @$course->courseCategory->name }}            |
+| Schedule    | {{ @$schedule->simple_start_datetime }}         |
 </x-mail::table>
 </x-mail::panel>
 <p>You may now attend the class!</p>
