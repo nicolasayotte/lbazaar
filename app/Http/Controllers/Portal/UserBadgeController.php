@@ -15,7 +15,8 @@ class UserBadgeController extends Controller
         return Inertia::render('Portal/MyPage/Badges/Index', [
             'page'           => @$request['page'] ?? 1,
             'user_badges'    => $userBadges,
-            'title'          => getTranslation('texts.mypage').' | '.getTranslation('texts.badges')
+            'title'          => getTranslation('texts.mypage').' | '.getTranslation('texts.badges'),
+            'hasButtons'     => true
         ])->withViewData([
             'title'          => getTranslation('texts.mypage').' | '.getTranslation('texts.badges')
         ]);

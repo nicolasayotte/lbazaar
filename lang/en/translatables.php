@@ -384,7 +384,7 @@ return [
         'package_information' => 'Package Information',
         'password_help' => 'Must have at least 8 characters',
         'password' => 'Password',
-        'password_temporary' => 'Password Temporary',
+        'change_password' => 'Change Password',
         'points' => 'Points',
         'points_earned' => 'Points Earned',
         'price' => 'Price',
@@ -457,6 +457,6 @@ return [
         'watch_video_description' => 'Watch the video to learn the contents of the class',
         'welcome' => 'Welcome',
         'work' => 'Work',
-        'zoom_link' => 'Zoom Link'
+        'class_url' => 'Class meeting URL'
     ]
 ];
