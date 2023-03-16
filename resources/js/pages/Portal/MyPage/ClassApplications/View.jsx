@@ -54,22 +54,24 @@ const View = () => {
 
     return (
         <Box>
-            <Grid container spacing={2} alignItems="center" justifyContent="space-between">
-                <Grid item xs={12} md="auto">
-                    <Typography variant="h5" children={translatables.title.class.applications.view} />
-                    <Breadcrumbs>
-                        <Link href={routes["mypage.course.applications.index"]} children={translatables.title.class.applications.index} />
-                        <Typography color="text.primary" children={translatables.title.class.applications.view} />
-                    </Breadcrumbs>
-                </Grid>
-                <Grid item xs={12} md={2}>
-                    <Link href={routes["mypage.course.applications.index"]} style={{ width: '100%' }}>
-                        <Button
-                            fullWidth
-                            children={translatables.texts.back}
-                            variant="contained"
-                        />
-                    </Link>
+            <Grid container spacing={2}>
+                <Grid item xs={12} container spacing={2} alignItems="center" justifyContent="space-between">
+                    <Grid item xs={12} md="auto">
+                        <Typography variant="h5" children={translatables.title.class.applications.view} />
+                        <Breadcrumbs>
+                            <Link href={routes["mypage.course.applications.index"]} children={translatables.title.class.applications.index} />
+                            <Typography color="text.primary" children={translatables.title.class.applications.view} />
+                        </Breadcrumbs>
+                    </Grid>
+                    <Grid item xs={12} md={2}>
+                        <Link href={routes["mypage.course.applications.index"]} style={{ width: '100%' }}>
+                            <Button
+                                fullWidth
+                                children={translatables.texts.back}
+                                variant="contained"
+                            />
+                        </Link>
+                    </Grid>
                 </Grid>
                 <Grid item xs={12} md={8}>
                     <TableContainer component={Paper} sx={{ mb: 2 }}>
