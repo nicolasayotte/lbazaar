@@ -272,24 +272,6 @@ const Create = () => {
                 </Stack>
                 <Divider sx={{ my: 2 }} />
                 <Grid container spacing={2}>
-                    <Grid item xs={12} md={2}>
-                        <Input
-                            type="number"
-                            placeholder={translatables.texts.points}
-                            label={translatables.texts.points}
-                            name="points"
-                            value={data.items[index].points}
-                            onChange={e => handleOnItemChange(e, index)}
-                            InputProps={{
-                                inputProps: {
-                                    min: 1,
-                                    max: 100
-                                }
-                            }}
-                            custom_name={`items.${index}.points`}
-                            errors={errors}
-                        />
-                    </Grid>
                     <Grid item xs={12}>
                         <Input
                             multiline

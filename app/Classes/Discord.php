@@ -22,7 +22,8 @@ class Discord
     {
         $buildMethods = [
             CourseApplication::class => 'buildClassApplicationMessage',
-            TeacherApplication::class => 'buildTeacherApplicationMessage'
+            TeacherApplication::class => 'buildTeacherApplicationMessage',
+            'exchange' => 'buildExchangePointsMessage'
         ];
 
         $messageContent = $this->{$buildMethods[$type]}($data);
@@ -73,6 +74,32 @@ class Discord
         $message .= 'React ' . (Vote::OPTIONS[0]) . ' if you approve' . PHP_EOL . PHP_EOL;
         $message .= 'React ' . (Vote::OPTIONS[1]) . ' if you disapprove' . PHP_EOL . PHP_EOL;
         $message .= '*Note: Only the emojis above will be counted for the vote results*';
+
+        return $message;
+    }
+
+    private function buildExchangePointsMessage($data)
+    {
+        $user = $data['user'];
+
+        $message = [];
+
+        $message['title'] = 'New Points Exchange Request';
+        $message['description'] = '** ' . $data['user']->fullname . '** wants to exchange **' . $data['points'] . '** points to NFT';
+        $message['fields'] = [
+            [
+                'name' => 'Name',
+                'value' => $user->fullname
+            ],
+            [
+                'name' => 'Email',
+                'value' => $user->email
+            ],
+            [
+                'name' => 'Points',
+                'value' => $data['points']
+            ]
+        ];
 
         return $message;
     }

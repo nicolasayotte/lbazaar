@@ -58,12 +58,12 @@ class CourseSchedule extends Model
 
     public function getFormattedStartDatetimeAttribute()
     {
-        return Carbon::parse($this->start_datetime, 'Asia/Tokyo')->format('l M d Y h:i A');
+        return Carbon::parse($this->start_datetime, 'Asia/Tokyo')->format('l M d Y h:i A T');
     }
 
     public function getSimpleStartDatetimeAttribute()
     {
-        return Carbon::parse($this->start_datetime)->format('M d, Y \a\t\ h:i A');
+        return Carbon::parse($this->start_datetime, env('APP_TIMEZONE'))->format('M d, Y \a\t\ h:i A T');
     }
 
     public function courseHistories()

@@ -104,7 +104,6 @@ const View = () => {
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <Paper sx={{ p: 2, minHeight: '200px' }}>
-                            <Typography variant="h6" sx={{ mb: 2 }} children={`${items[currentItem].points}pt${items[currentItem].points > 1 ? 's' : ''}`}/>
                             <Typography children={items[currentItem].question} />
                         </Paper>
                     </Grid>
@@ -146,10 +145,6 @@ const View = () => {
                         <TableRow>
                             <TableCell children={translatables.texts.total_items} />
                             <TableCell align="right" children={exam.items.length} />
-                        </TableRow>
-                        <TableRow>
-                            <TableCell children={translatables.texts.total_points} />
-                            <TableCell align="right" children={exam.total_points} />
                         </TableRow>
                         <TableRow>
                             <TableCell colSpan={2}>

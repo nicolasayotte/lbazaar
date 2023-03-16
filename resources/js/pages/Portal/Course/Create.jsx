@@ -14,10 +14,10 @@ const Create = () => {
 
     const { courseApplication, translatables, categories, course, packages } = usePage().props
 
-    const formatOptions = [
-        { name: 'Live', value: 'live' },
-        { name: 'On-Demand', value: 'on-demand' }
-    ]
+    const formatOptions = {
+        'live': 'Live',
+        'on-demand': 'On-Demand'
+    }
 
     const cancelRoute = course !== undefined
     ? getRoute('mypage.course.manage_class.schedules', { id: course.id })
@@ -29,13 +29,13 @@ const Create = () => {
 
     const { data, setData, post, errors } = useForm(course ? `EditClassForm:${course.id}` : 'CreateClassForm', {
         ...initialData,
-        format: (course && course.is_live !== undefined) ? (course.is_live ? 'live' : 'on-demand') : 'on-demand',
+        format: (initialData && initialData.is_live !== undefined) ? (initialData.is_live ? 'live' : 'on-demand') : 'on-demand',
         image_thumbnail: course && course.image_thumbnail ? course.image_thumbnail : '',
         video_path: course && course.video_path ? course.video_path : '',
         is_cancellable: course && course.is_cancellable && course.is_cancellable > 0 ? true : false,
         days_before_cancellation: course && course.days_before_cancellation ? course.days_before_cancellation : 1,
         course_package_id: course && course.course_package ? course.course_package.id : '',
-        category: course && course.course_category ? course.course_category.name : ''
+        category: initialData && initialData.course_category && initialData.course_category.name
     })
 
     const [imgPreview, setImgPreview] = useState(course && course.image_thumbnail ? course.image_thumbnail : null)
@@ -227,12 +227,12 @@ const Create = () => {
                                         </Grid>
                                         <Grid item xs={12}>
                                             <Input
-                                                select
                                                 label={translatables.texts.format}
                                                 name="format"
-                                                value={data.format}
-                                                onChange={e => handleOnChange(e, setData)}
-                                                children={displaySelectOptions(formatOptions, 'value')}
+                                                value={formatOptions[data.format]}
+                                                inputProps={{ readOnly: true }}
+                                                InputLabelProps={{ shrink: true }}
+                                                disabled
                                             />
                                         </Grid>
                                         {
@@ -277,6 +277,7 @@ const Create = () => {
                                                 label={translatables.texts.type}
                                                 value={data.course_type.name}
                                                 inputProps={{ readOnly: true }}
+                                                disabled
                                             />
                                         </Grid>
                                         <Grid item xs={12}>
@@ -284,6 +285,7 @@ const Create = () => {
                                                 label={translatables.texts.seats}
                                                 value={data.max_participant}
                                                 inputProps={{ readOnly: true }}
+                                                disabled
                                             />
                                         </Grid>
                                         <Grid item xs={12}>
@@ -334,6 +336,7 @@ const Create = () => {
                                                 value={data.price ? data.price : '0.00'}
                                                 inputProps={{ readOnly: true }}
                                                 InputLabelProps={{ shrink: true }}
+                                                disabled
                                             />
                                         </Grid>
                                         <Grid item xs={12}>
@@ -342,6 +345,7 @@ const Create = () => {
                                                 value={data.points_earned ? data.points_earned : '0.00'}
                                                 inputProps={{ readOnly: true }}
                                                 InputLabelProps={{ shrink: true }}
+                                                disabled
                                             />
                                         </Grid>
                                     </Grid>

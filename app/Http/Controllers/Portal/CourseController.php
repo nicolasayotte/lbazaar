@@ -139,7 +139,9 @@ class CourseController extends Controller
                 'course_id'          => $schedule->course->id,
                 'user_id'            => auth()->user()->id,
             ]);
-            $this->sendBookEmailCourse($schedule->course, $schedule_id);
+
+            $this->sendBookEmailCourse($schedule);
+
             if ($schedule->course->courseType->type != CourseType::FREE) {
 
                 $newUserPoints =  $userWallet->points - $schedule->course->price;
@@ -451,12 +453,14 @@ class CourseController extends Controller
         return $pointsToGive;
     }
 
-    public function sendBookEmailCourse($course, $schedule_id)
+    public function sendBookEmailCourse($schedule)
     {
         $user = auth()->user();
-        $url = env('APP_URL').'/'.'classes/'.$course->id.'/'.'attend/'.$schedule_id;
+
+        $url = route('course.attend.index', ['course_id' => $schedule->course->id, 'schedule_id' => $schedule->id]);
+
         try {
-            Mail::send(new CourseBooking($course, $user, $url));
+            Mail::send(new CourseBooking($schedule, $user, $url));
         } catch (\Exception $e) {
             Log::error($e);
         }

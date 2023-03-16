@@ -1,4 +1,5 @@
 import { Link, usePage } from "@inertiajs/inertia-react";
+import { CheckCircle, CheckCircleOutline } from "@mui/icons-material";
 import { Box, Button, Card, CardContent, Container, Grid, Typography } from "@mui/material";
 import { getRoute } from "../../../helpers/routes.helper";
 
@@ -12,13 +13,9 @@ const Result = () => {
                 <Grid item xs={12} md={4}>
                     <Card>
                         <CardContent>
-                            <Box my={4}>
-                                <Typography textAlign="center" children={translatables.texts.score} />
-                                <Typography
-                                    variant="h3"
-                                    children={`${result.total_score}/${result.exam.total_points}`}
-                                    textAlign="center"
-                                />
+                            <Box textAlign="center" mb={2}>
+                                <CheckCircleOutline color="success" sx={{ fontSize: '100px' }} />
+                                <Typography variant="h6" textAlign="center" children={translatables.success.exams.submit} />
                             </Box>
                             <Link href={getRoute('course.attend.index', { course_id: result.exam.course_id, schedule_id: result.course_schedule_id })}>
                                 <Button

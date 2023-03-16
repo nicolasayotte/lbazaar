@@ -8,15 +8,19 @@ use Carbon\Carbon;
 
 class VoteRepository extends BaseRepository
 {
+    private $settingsRepository;
+
     public function __construct()
     {
         parent::__construct(new Vote());
+
+        $this->settingsRepository = new SettingRepository();
     }
 
     public function generateNewId($applicationData)
     {
         $voteData = [
-            'end_date' => Carbon::now()->addDays(7)->format('Y-m-d'),
+            'end_date' => Carbon::now()->addDays($this->settingsRepository->getSetting('voting-days'))->format('Y-m-d'),
             'data' => $applicationData->data,
             'counted_option' => Vote::DEFAULT_OPTION,
             'options' => json_encode(Vote::OPTIONS)
@@ -79,7 +83,7 @@ class VoteRepository extends BaseRepository
             }
         }
 
-        if ($approveVotes > 0 && (($approveVotes / $totalNumberOfVotes) * 100) >= Vote::PASSING_PERCENTAGE) {
+        if ($approveVotes > 0 && (($approveVotes / $totalNumberOfVotes) * 100) >= $this->settingsRepository->getSetting('vote-passing-percentage')) {
             return true;
         }
 

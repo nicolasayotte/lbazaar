@@ -4,6 +4,7 @@ namespace App\Mail;
 
 use App\Models\Course;
 use App\Models\CourseApplication;
+use App\Models\CourseSchedule;
 use App\Repositories\SettingRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -17,9 +18,12 @@ class CourseBooking extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $schedule;
+
     public $course;
 
     public $user;
+
     public $settingsRepository;
 
     public $url;
@@ -29,12 +33,14 @@ class CourseBooking extends Mailable
      *
      * @return void
      */
-    public function __construct(Course $course, $user, $url)
+    public function __construct(CourseSchedule $schedule, $user, $url)
     {
         $this->settingsRepository = new SettingRepository();
-        $this->course  = $course;
-        $this->user  = $user;
-        $this->url  = $url;
+
+        $this->schedule = $schedule;
+        $this->course   = $schedule->course;
+        $this->user     = $user;
+        $this->url      = $url;
     }
 
     /**

@@ -11,6 +11,7 @@ use App\Repositories\UserRepository;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Http;
 use App\Facades\Asset;
+use App\Facades\Discord;
 
 class ProfileController extends Controller
 {
@@ -70,15 +71,16 @@ class ProfileController extends Controller
 
     public function exchangeToNFTRequest($exchange_amount)
     {
-        $response = Http::post(env('API_EXCHANGE_NFT_URL'), [
-            'email' => auth()->user()->email,
-            'points' => $exchange_amount,
-        ]);
-        if (!$response->successful()) {
+        $data = [
+            'user'   => auth()->user(),
+            'points' => $exchange_amount
+        ];
+
+        if (!Discord::sendMessage($data, 'exchange')) {
             return redirect()->back()->withErrors(['error' => getTranslation('error')]);
         }
-        return redirect()->back();
 
+        return redirect()->back();
     }
 
 }

@@ -29,7 +29,6 @@ class CreateExamRequest extends FormRequest
             'name'                => 'required',
             'items'               => 'required|array|min:1',
             'items.*.question'      => 'required',
-            'items.*.points'        => 'required|numeric|min:1|max:100',
             'items.*.correct_index' => 'required',
             'items.*.choices'       => 'array|min:2|max:4',
             'items.*.choices.*.value' => 'required'
