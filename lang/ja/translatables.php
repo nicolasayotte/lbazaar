@@ -400,7 +400,7 @@ return [
         'question'=> '質問',
         'rating'=> '評価',
         'recommended_size'=> '標準サイズ',
-        'redirect_to_zoom'=> '授業にアクセス',
+        'redirect_to_live_class'=> '授業にアクセス',
         'wallet_refund_details'=> 'ポイント返却',
         'role'=> '生徒／先生',
         'save_changes'=> '変更を保存',
