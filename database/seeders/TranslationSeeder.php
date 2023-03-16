@@ -70,7 +70,7 @@ class TranslationSeeder extends Seeder
 
         foreach ($array as $key => $value) {
 
-            $value = $value . ($locale === 'ja' ? ' (JA)' : '');
+            $value = $value . ($locale === 'ja' ? '' : '');
 
             if (array_key_exists($key, $resultArray)) {
                 $resultArray[$key][$locale] = $value;
