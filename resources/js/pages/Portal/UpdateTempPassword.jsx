@@ -6,7 +6,7 @@ import BasePasswordForm from "../../components/common/forms/BasePasswordForm"
 const UpdateTempPassword  = ({ errors, translatables }) => {
 
     const notification = (
-        <Typography variant="h5">{translatables.texts.password_temporary}</Typography>
+        <Typography variant="h5">{translatables.texts.change_password}</Typography>
     )
 
     return (
