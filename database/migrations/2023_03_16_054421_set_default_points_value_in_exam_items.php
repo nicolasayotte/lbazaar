@@ -26,7 +26,7 @@ return new class extends Migration
     public function down()
     {
         Schema::table('exam_items', function (Blueprint $table) {
-            $table->double('points')->nullabel(false)->change();
+            $table->double('points')->nullable(false)->change();
         });
     }
 };
