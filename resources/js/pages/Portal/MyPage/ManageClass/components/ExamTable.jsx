@@ -37,7 +37,6 @@ const ExamTable = ({ data, handleOnStatusToggle, handleOnDelete }) => {
             <TableRow key={index}>
                 <TableCell children={item.name} />
                 <TableCell align="center" children={item.total_items} />
-                <TableCell align="center" children={item.total_points} />
                 <TableCell align="center">
                     <Switch
                         checked={item.status === 'active'}
@@ -63,7 +62,6 @@ const ExamTable = ({ data, handleOnStatusToggle, handleOnDelete }) => {
                     <TableRow>
                         <TableCell children={translatables.texts.name} />
                         <TableCell align="center" children={translatables.texts.total_items} />
-                        <TableCell align="center" children={translatables.texts.total_points} />
                         <TableCell align="center" children={translatables.texts.status} />
                         <TableCell align="center" children={translatables.texts.actions} />
                     </TableRow>
