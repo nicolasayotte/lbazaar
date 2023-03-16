@@ -20,7 +20,7 @@ This is to inform you that you booked a class titled **"{{ $course->title }}"**.
 
 
 @if ($course->is_live)
-<x-mail::button :url="@$course->zoom_link">Zoom link</x-mail::button>
+<x-mail::button :url="@$course->zoom_link">Class meeting URL</x-mail::button>
 <x-mail::button :url="@$url">Attend Class</x-mail::button>
 @else
 <x-mail::button :url="@$url">Attend Class</x-mail::button>

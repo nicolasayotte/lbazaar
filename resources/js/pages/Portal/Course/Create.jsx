@@ -239,7 +239,7 @@ const Create = () => {
                                             data && data.format === 'live' &&
                                             <Grid item xs={12}>
                                                 <Input
-                                                    label={translatables.texts.zoom_link}
+                                                    label={translatables.texts.class_url}
                                                     name="zoom_link"
                                                     value={data.zoom_link}
                                                     onChange={e => handleOnChange(e, setData)}
