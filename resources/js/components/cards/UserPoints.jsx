@@ -12,14 +12,13 @@ import Input from "../forms/Input"
 
 const UserPoints = () => {
 
-    const { api, errors, auth, translatables } = usePage().props
-
-    const dispatch = useDispatch()
+    const { errors, auth, translatables } = usePage().props
 
     const [dialog, setDialog] = useState({
         open: false,
         title: '',
-        value: 0,
+        points: 0,
+        wallet_id: '',
         submitUrl: '',
         method: null,
         processing: false,
@@ -56,10 +55,19 @@ const UserPoints = () => {
                     label={translatables.texts.points}
                     type="number"
                     name="points"
-                    value={dialog.value}
-                    onChange={e => setDialog(dialog => ({ ...dialog, value: e.target.value }))}
-                    errors={errors.points}
+                    value={dialog.points}
+                    onChange={e => setDialog(dialog => ({ ...dialog, points: e.target.value }))}
                 />
+                {
+                    dialog.action == 'feed' &&
+                    <Input
+                        label="Wallet ID"
+                        name="wallet_id"
+                        value={dialog.wallet_id}
+                        onChange={e => setDialog(dialog => ({ ...dialog, wallet_id: e.target.value }))}
+                        sx={{ mt: 2 }}
+                    />
+                }
             </Box>
         )
     }
@@ -77,7 +85,7 @@ const UserPoints = () => {
         Inertia.visit(dialog.submitUrl, {
             method: dialog.method,
             data: {
-                points: dialog.value
+                points: dialog.points
             }
         })
     }
@@ -116,7 +124,11 @@ const UserPoints = () => {
                 handleClose={handleOnDialogClose}
                 handleSubmit={handleOnDialogSubmit}
                 children={dialogForm()}
-                disableSubmit={(dialog.value <= 0 || dialog.value.length <= 0)}
+                disableSubmit={
+                    dialog.action == 'feed'
+                    ? (dialog.points <= 0 || dialog.points.length <= 0) && dialog.wallet_id.length <= 0
+                    : (dialog.points <= 0 || dialog.points.length <= 0)
+                }
             />
         </>
     );
