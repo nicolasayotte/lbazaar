@@ -247,7 +247,7 @@ return [
         'number_users_booked'=> 'ユーザーは予約されました'
     ],
     'top_page'=> [
-        'description'=> 'learning bazaar welcome description (JA)'
+        'description'=> 'To provide educational opportunities for all (JA)'
     ],
     'wallet_history'=> [
         'id'=> 'Transaction ID',

@@ -55,7 +55,7 @@ class CourseRequest extends FormRequest
             'category'                 => getTranslation('texts.category'),
             'course_type_id'           => getTranslation('texts.type'),
             'image_thumbnail'          => getTranslation('texts.class_image'),
-            'zoom_link'                => getTranslation('texts.zoom_link'),
+            'zoom_link'                => getTranslation('texts.class_url'),
             'video_path'               => getTranslation('texts.video'),
             'is_cancellable'           => getTranslation('texts.cancellable'),
             'days_before_cancellation' => getTranslation('texts.days')

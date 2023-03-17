@@ -251,7 +251,7 @@ return [
         'id' => 'Transaction ID',
     ],
     'top_page' => [
-        'description' => 'learning bazaar welcome description',
+        'description' => 'To provide educational opportunities for all',
     ],
     'texts' => [
         'actions' => 'Actions',
