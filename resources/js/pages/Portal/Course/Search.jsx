@@ -80,7 +80,7 @@ const SearchCourse = () => {
                     <Typography variant="h4" children={translatables.texts.browse_classes} textAlign="center" />
                 </Container>
             </Header>
-            <Container sx={{ mt: 2 }}>
+            <Container sx={{ mb: 3 }}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} sm={4}>
                         <Card>

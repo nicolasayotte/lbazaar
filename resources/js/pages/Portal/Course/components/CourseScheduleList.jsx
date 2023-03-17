@@ -30,8 +30,6 @@ const CourseScheduleList = ({ data, handleOnBook, handleOnCancelBook }) => {
 
         const isCompleted = auth.user.completed_schedules.includes(row.id)
 
-        console.log(isCompleted)
-
         const ScheduleDate = () => (
             <Box>
                 <Typography variant="caption" color="primary" children={startDate[0]} display="block" />

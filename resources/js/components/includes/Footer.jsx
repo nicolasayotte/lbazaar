@@ -14,8 +14,7 @@ const Footer = () => {
                 textAlign: "center",
                 justifyContent: "center",
                 backgroundColor: "primary.main",
-                py: 2,
-                mt: 5
+                py: 2
             }}
             component="footer"
             id="appFooter"

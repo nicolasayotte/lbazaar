@@ -15,7 +15,7 @@ const Layout = ({ children }) => {
         <>
             <Head title={title} />
             <Navbar />
-            <Container sx={{ py: 4 }}>
+            <Container sx={{ py: 4, minHeight: '100vh' }}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} md={3}>
                         <MyPageSideBar />
