@@ -244,7 +244,12 @@ Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function()
     Route::post('/profile', [PortalProfileController::class, 'update'])->name('profile.update');
     Route::patch('/password/update', [PortalProfileController::class, 'updatePassword'])->name('profile.password.update');
     Route::patch('/base-password/update', [PortalProfileController::class, 'updateBasePassword'])->name('profile.base.password.update');
-    Route::post('/profile/exchange-points/{exchange_amount}', [PortalProfileController::class, 'exchangeToNFTRequest'])->name('profile.exchange.points');
+
+    # Points
+    Route::prefix('/points')->name('points.')->group(function() {
+        Route::post('/feed', [PortalProfileController::class, 'feedPointsToWallet'])->name('feed');
+        Route::post('/exchange', [PortalProfileController::class, 'exchangeToNFTRequest'])->name('exchange');
+    });
 
     # Class History
     Route::get('/class-history', [CourseHistoryController::class, 'index'])->name('course.history.index');

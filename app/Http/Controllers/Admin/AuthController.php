@@ -34,10 +34,11 @@ class AuthController extends Controller
             'password'  => $request['password'],
             fn ($query) => $query->whereRoleIs(Role::ADMIN)
         ])) {
+            session()->flash('success', getTranslation('success.user.login'));
             return redirect()->intended('admin/profile');
         }
 
-        return redirect()->back()->withErrors(['email' => 'Invalid credentials']);
+        return redirect()->back()->withErrors(['email' => trans('auth.failed')]);
     }
 
     public function logout(Request $request)
@@ -45,6 +46,8 @@ class AuthController extends Controller
         auth()->logout();
 
         $request->session()->invalidate();
+
+        session()->flash('success', getTranslation('success.user.logout'));
 
         return redirect()->route('top');
     }

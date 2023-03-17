@@ -51,7 +51,7 @@ class AuthPortalController extends Controller
             }
             return redirect()->intended('/');
         }
-        return redirect()->back()->withErrors(['email' => 'Invalid credentials']);
+        return redirect()->back()->withErrors(['email' => trans('auth.failed')]);
     }
     public function verifyEmail()
     {
@@ -72,6 +72,8 @@ class AuthPortalController extends Controller
         auth()->logout();
 
         $request->session()->invalidate();
+
+        session()->flash('success', getTranslation('success.user.logout'));
 
         return redirect()->route('top');
     }

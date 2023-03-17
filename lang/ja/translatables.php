@@ -351,6 +351,7 @@ return [
         'export_items'=> 'エクスポート項目',
         'featured_classes'=> '新しいクラス',
         'featured_teachers'=> '新しい先生',
+        'feed_points' => 'Feed Points (JA)',
         'filter'=> 'フィルター',
         'first_name'=> '名',
         'forgot_password'=> 'パスワード忘れ',

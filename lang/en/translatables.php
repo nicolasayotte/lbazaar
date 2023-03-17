@@ -346,6 +346,7 @@ return [
         'export_csv' => 'Export CSV',
         'export_items' => 'Export items',
         'featured_classes' => 'Featured Classes',
+        'feed_points' => 'Feed Points',
         'filter' => 'Filter',
         'first_name' => 'First Name',
         'forgot_password' => 'Forgot Password',
