@@ -43,8 +43,6 @@ class User extends Authenticatable implements MustVerifyEmail
        ['id' => self::EXPORT_OPTIONS_WALLET_TRANSACTION_ID , 'name' => 'Wallet Transactions'],
     ];
 
-    protected $appends = ['fullname'];
-
     /**
      * The attributes that are mass assignable.
      *
@@ -85,6 +83,16 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+    ];
+
+    /**
+     * The attributes that should be appended.
+     *
+     * @var array<string, string>
+     */
+    protected $appends = [
+        'fullname',
+        'completed_schedules'
     ];
 
     public function getFullnameAttribute()
@@ -206,5 +214,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getImageAttribute($path)
     {
         return @$path ? Asset::get($path) : null;
+    }
+
+    public function getCompletedSchedulesAttribute()
+    {
+        return $this->courseHistories()->where('completed_at', '!=', NULL)->pluck('course_schedule_id');
     }
 }

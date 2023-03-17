@@ -28,6 +28,10 @@ const CourseScheduleList = ({ data, handleOnBook, handleOnCancelBook }) => {
 
         const availableSlots = row.course.max_participant - row.course_history.filter(booking => booking.is_cancelled != true).length
 
+        const isCompleted = auth.user.completed_schedules.includes(row.id)
+
+        console.log(isCompleted)
+
         const ScheduleDate = () => (
             <Box>
                 <Typography variant="caption" color="primary" children={startDate[0]} display="block" />
@@ -35,6 +39,65 @@ const CourseScheduleList = ({ data, handleOnBook, handleOnCancelBook }) => {
                 <Typography variant="caption" children={`${ startDate[4] } ${ startDate[5] } ${ startDate[6] }`} />
             </Box>
         )
+
+        const ScheduleButton = () => {
+
+            if (!isLoggedIn) return
+
+            // Book Button
+            if (!isBooked && !isFullyBooked) {
+                return (
+                    <Button
+                        fullWidth
+                        variant="contained"
+                        children={`${translatables.texts.book_class} ${row.course.course_type && row.course.course_type.type == 'General' ? row.course.price : 'Free'}`}
+                        onClick={() => handleOnBook(row.id)}
+                        size="large"
+                    />
+                )
+            }
+
+            // Cancel Button
+            if (!isBooked && row.status == 'Upcoming') {
+                return (
+                    <Button
+                        fullWidth
+                        variant="contained"
+                        disabled={!row.is_cancellable}
+                        children={translatables.texts.cancel_class_booking}
+                        onClick={() => handleOnCancelBook(row.id)}
+                        size="large"
+                    />
+                )
+            }
+
+            // Attend Button
+            if (isBooked && row.status == 'Ongoing' && !isCompleted) {
+                return (
+                    <Link href={getRoute('course.attend.index', { course_id: row.course_id, schedule_id: row.id })}>
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            children={translatables.texts.attend_class}
+                            size="large"
+                        />
+                    </Link>
+                )
+            }
+
+            // Complete Button
+            if (isBooked && row.status == 'Ongoing' && isCompleted) {
+                return (
+                    <Button
+                        fullWidth
+                        variant="contained"
+                        disabled
+                        children={translatables.texts.complete}
+                        size="large"
+                    />
+                )
+            }
+        }
 
         return (
             <Grid key={index} item xs={12}>
@@ -53,43 +116,9 @@ const CourseScheduleList = ({ data, handleOnBook, handleOnCancelBook }) => {
                                 </Box>
                             </Stack>
                         </Grid>
-                        {
-                            isLoggedIn &&
-                            <Grid item xs={12} md={4}>
-                                {
-                                    !isBooked && !isFullyBooked &&
-                                        <Button
-                                            fullWidth
-                                            variant="contained"
-                                            children={`${translatables.texts.book_class} ${row.course.course_type && row.course.course_type.type == 'General' ? row.course.price : 'Free'}`}
-                                            onClick={() => handleOnBook(row.id)}
-                                            size="large"
-                                        />
-                                }
-                                {
-                                    isBooked && row.status == 'Upcoming' &&
-                                    <Button
-                                        fullWidth
-                                        variant="contained"
-                                        disabled={!row.is_cancellable}
-                                        children={translatables.texts.cancel_class_booking}
-                                        onClick={() => handleOnCancelBook(row.id)}
-                                        size="large"
-                                    />
-                                }
-                                {
-                                    isBooked && row.status == 'Ongoing' &&
-                                    <Link href={getRoute('course.attend.index', { course_id: row.course_id, schedule_id: row.id })}>
-                                        <Button
-                                            fullWidth
-                                            variant="contained"
-                                            children={translatables.texts.attend_class}
-                                            size="large"
-                                        />
-                                    </Link>
-                                }
-                            </Grid>
-                        }
+                        <Grid item xs={12} md={4}>
+                            <ScheduleButton />
+                        </Grid>
                     </Grid>
                 </Paper>
             </Grid>
