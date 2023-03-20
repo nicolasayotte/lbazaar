@@ -98,6 +98,10 @@ class Discord
             [
                 'name' => 'Points',
                 'value' => $data['points']
+            ],
+            [
+                'name' => 'Wallet ID',
+                'value' => $data['wallet_id']
             ]
         ];
 

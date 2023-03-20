@@ -58,16 +58,13 @@ const UserPoints = () => {
                     value={dialog.points}
                     onChange={e => setDialog(dialog => ({ ...dialog, points: e.target.value }))}
                 />
-                {
-                    dialog.action == 'feed' &&
-                    <Input
-                        label="Wallet ID"
-                        name="wallet_id"
-                        value={dialog.wallet_id}
-                        onChange={e => setDialog(dialog => ({ ...dialog, wallet_id: e.target.value }))}
-                        sx={{ mt: 2 }}
-                    />
-                }
+                <Input
+                    label="Wallet ID"
+                    name="wallet_id"
+                    value={dialog.wallet_id}
+                    onChange={e => setDialog(dialog => ({ ...dialog, wallet_id: e.target.value }))}
+                    sx={{ mt: 2 }}
+                />
             </Box>
         )
     }
@@ -85,7 +82,8 @@ const UserPoints = () => {
         Inertia.visit(dialog.submitUrl, {
             method: dialog.method,
             data: {
-                points: dialog.points
+                points: dialog.points,
+                wallet_id: dialog.wallet_id
             }
         })
     }
@@ -126,8 +124,8 @@ const UserPoints = () => {
                 children={dialogForm()}
                 disableSubmit={
                     dialog.action == 'feed'
-                    ? (dialog.points <= 0 || dialog.points.length <= 0) && dialog.wallet_id.length <= 0
-                    : (dialog.points <= 0 || dialog.points.length <= 0)
+                    ? (dialog.points <= 0 || dialog.points.length <= 0 || dialog.wallet_id.length <= 0)
+                    : (dialog.points <= 0 || dialog.points.length <= 0 || dialog.wallet_id.length <= 0 || dialog.points > auth.user.user_wallet.points)
                 }
             />
         </>

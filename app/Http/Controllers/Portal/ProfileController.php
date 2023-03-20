@@ -106,7 +106,8 @@ class ProfileController extends Controller
 
         $data = [
             'user'   => auth()->user(),
-            'points' => $request['points']
+            'points' => $request['points'],
+            'wallet_id' => $request['wallet_id']
         ];
 
         if (!Discord::sendMessage($data, 'exchange')) {
