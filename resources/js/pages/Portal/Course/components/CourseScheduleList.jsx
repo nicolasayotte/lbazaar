@@ -28,7 +28,7 @@ const CourseScheduleList = ({ data, handleOnBook, handleOnCancelBook }) => {
 
         const availableSlots = row.course.max_participant - row.course_history.filter(booking => booking.is_cancelled != true).length
 
-        const isCompleted = auth.user.completed_schedules.includes(row.id)
+        const isCompleted = isLoggedIn ? auth.user.completed_schedules.includes(row.id) : false
 
         const ScheduleDate = () => (
             <Box>
