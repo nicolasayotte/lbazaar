@@ -18,29 +18,6 @@ const ClassApplicationTable = ({ data, handleOnApprove, handleOnDeny }) => {
             'Denied'  : 'error'
         }
 
-        const actionButtons = (id, disabled) => {
-            return (
-                <>
-                    <IconButton
-                        size="small"
-                        title={translatables.texts.enable}
-                        disabled={disabled}
-                        onClick={() => handleOnApprove(id)}
-                    >
-                        <Check fontSize="inherit" color={disabled ? 'inherit' : 'success'}/>
-                    </IconButton>
-                    <IconButton
-                        size="small"
-                        title={translatables.texts.disable}
-                        disabled={disabled}
-                        onClick={() => handleOnDeny(id)}
-                    >
-                        <Block fontSize="inherit" color={disabled ? 'inherit' : 'error'} />
-                    </IconButton>
-                </>
-            )
-        }
-
         return (
             <TableRow key={index}>
                 <TableCell children={row.title}/>
@@ -59,7 +36,6 @@ const ClassApplicationTable = ({ data, handleOnApprove, handleOnDeny }) => {
                                 <Search fontSize="inherit"/>
                             </IconButton>
                         </Link>
-                        {actionButtons(row.id, !isPending)}
                     </Stack>
                 </TableCell>
             </TableRow>
