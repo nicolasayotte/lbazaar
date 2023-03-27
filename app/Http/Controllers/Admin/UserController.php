@@ -51,24 +51,27 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $title = TranslationRepository::getTranslation('title.users.index');
+
         $roleDropDown = $this->roleRepository->getDropdownData();
+
         $filteredRoleDropDown = $roleDropDown->filter(function($role) {
             return $role['name'] !== ucfirst(Role::ADMIN);
         });
+
         return Inertia::render('Admin/Users/Index', [
-            'users'         => $this->userRepository->get($request->all()),
-            'roleOptions'   => $filteredRoleDropDown,
-            'statusOptions' => $this->userRepository->getStatusFilterData(),
-            'keyword'       => @$request['keyword'] ?? '',
-            'role'          => @$request['role'] ?? '',
-            'status'        => @$request['status'] ?? '',
-            'sort'          => @$request['sort'] ?? 'created_at:desc',
-            'page'          => @$request['page'] ?? 1,
-            'export_type'   => @$request['export_type'] ?? 1,
-            'export_options'=> User::EXPORT_OPTIONS,
-            'title'         => $title
+            'users'          => $this->userRepository->get($request->all()),
+            'roleOptions'    => $filteredRoleDropDown,
+            'statusOptions'  => $this->userRepository->getStatusFilterData(),
+            'keyword'        => @$request['keyword'] ?? '',
+            'role'           => @$request['role'] ?? '',
+            'status'         => @$request['status'] ?? '',
+            'sort'           => @$request['sort'] ?? 'created_at:desc',
+            'page'           => @$request['page'] ?? 1,
+            'export_type'    => @$request['export_type'] ?? 1,
+            'export_options' => User::EXPORT_OPTIONS,
+            'title'          => $title
         ])->withViewData([
-            'title' => $title
+            'title'          => $title
         ]);
     }
 
