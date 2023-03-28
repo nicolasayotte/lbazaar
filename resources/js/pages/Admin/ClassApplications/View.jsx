@@ -178,13 +178,6 @@ const View = () => {
                                         children={courseApplication.category}
                                     />
                                 </TableRow>
-                                <TableRow>
-                                    <TableCell width="10%" children={translatables.texts.language} />
-                                    <TableCell
-                                        sx={generalInformationStyle}
-                                        children={courseApplication.language}
-                                    />
-                                </TableRow>
                             </TableBody>
                         </Table>
                     </TableContainer>

@@ -1,5 +1,5 @@
-import { useForm, usePage, Link } from "@inertiajs/inertia-react"
-import { Box, Button, Card, CardContent, Grid, Pagination, Typography } from "@mui/material"
+import { useForm, usePage } from "@inertiajs/inertia-react"
+import { Box, Button, Card, CardContent, Grid, Menu, MenuItem, Pagination, Typography } from "@mui/material"
 import Input from "../../../components/forms/Input"
 import { displaySelectOptions, handleOnChange, handleOnSelectChange } from "../../../helpers/form.helper"
 import UserTable from "./components/UserTable"
@@ -18,6 +18,8 @@ const Index = () => {
 
     const { users, roleOptions, statusOptions, status, keyword, role, sort, translatables, page, export_type, export_options } = usePage().props
 
+    const [showExportDropdown, setShowExportDropdown] = useState(null)
+
     const [dialog, setDialog] = useState({
         open: false,
         title: translatables.title.users.index,
@@ -25,7 +27,7 @@ const Index = () => {
         url: ''
     })
 
-    const { data: filters, setData: setFilters, get, transform, processing, post } = useForm({
+    const { data: filters, setData: setFilters, get, transform, processing } = useForm({
         keyword,
         status,
         role,
@@ -43,7 +45,7 @@ const Index = () => {
 
     const handleFilterSubmit = e => {
         e.preventDefault()
-        console.log(e.target.value)
+
         if (e.target.value == 'export') {
             get(routes["admin.users.export"], {
                 data: filters
@@ -114,14 +116,55 @@ const Index = () => {
         })
     }
 
+    const handleOnShowExportDropdown = e => {
+        setShowExportDropdown(e.currentTarget)
+    }
+
+    const handleOnCloseExportDropdown = () => {
+        setShowExportDropdown(null)
+    }
+
+    const exportButton = () => {
+
+        const MenuItems = () => export_options && export_options.map((exportOption, index) => (
+            <MenuItem key={index}>
+                <a
+                    href={`${routes["admin.users.export"]}?${new URLSearchParams(filters).toString()}&export_type=${exportOption.id}`}
+                    children={exportOption.name}
+                />
+            </MenuItem>
+        ))
+
+        return (
+            <>
+                <Button
+                    size="large"
+                    variant="contained"
+                    children={translatables.texts.export_csv}
+                    onClick={handleOnShowExportDropdown}
+                />
+                <Menu
+                    anchorEl={showExportDropdown}
+                    open={Boolean(showExportDropdown)}
+                    onClose={handleOnCloseExportDropdown}
+                >
+                    <MenuItems />
+                </Menu>
+            </>
+        )
+    }
+
     return (
         <Box>
-            <Grid container alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
-                <Grid item xs={12} md={6}>
+            <Grid container alignItems="center" justifyContent="space-between" sx={{ mb: 2 }} spacing={2}>
+                <Grid item xs={12} md="auto">
                     <Typography
                         variant="h4"
                         children={translatables.title.users.index}
                     />
+                </Grid>
+                <Grid item xs={12} md="auto">
+                    { exportButton() }
                 </Grid>
             </Grid>
             <Card sx={{ mb: 2 }}>
@@ -186,33 +229,6 @@ const Index = () => {
                                     fullWidth
                                     onClick={handleFilterSubmit}
                                 />
-                            </Grid>
-                            <Grid item xs={12} md={12} mt={2}>
-                                <Grid container justifyContent="flex-end" spacing={2}>
-                                    <Grid item>
-                                        <Input
-                                            label={translatables.texts.export_items}
-                                            select
-                                            name="export_type"
-                                            value={filters.export_type}
-                                            InputLabelProps={{
-                                                shrink: true
-                                            }}
-                                            onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
-                                        >
-                                            {displaySelectOptions(export_options, 'id', 'name')}
-                                        </Input>
-                                    </Grid>
-                                    <Grid item>
-                                        <a href={getRoute(["admin.users.export"])+"?"+(new URLSearchParams(filters).toString())}>
-                                            <Button
-                                                variant="contained"
-                                                children={translatables.texts.export_csv}
-                                                value="export"
-                                            />
-                                        </a>
-                                    </Grid>
-                                </Grid>
                             </Grid>
                         </Grid>
                     </form>

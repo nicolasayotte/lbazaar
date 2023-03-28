@@ -4,7 +4,7 @@ import { Chip, IconButton, Paper, Stack, Table, TableBody, TableCell, TableConta
 import EmptyCard from "../../../../components/common/EmptyCard"
 import { getRoute } from "../../../../helpers/routes.helper"
 
-const ClassApplicationTable = ({ data, handleOnApprove, handleOnDeny }) => {
+const ClassApplicationTable = ({ data }) => {
 
     const { translatables } = usePage().props
 
@@ -16,29 +16,6 @@ const ClassApplicationTable = ({ data, handleOnApprove, handleOnDeny }) => {
             'Pending' : 'default',
             'Approved': 'success',
             'Denied'  : 'error'
-        }
-
-        const actionButtons = (id, disabled) => {
-            return (
-                <>
-                    <IconButton
-                        size="small"
-                        title={translatables.texts.enable}
-                        disabled={disabled}
-                        onClick={() => handleOnApprove(id)}
-                    >
-                        <Check fontSize="inherit" color={disabled ? 'inherit' : 'success'}/>
-                    </IconButton>
-                    <IconButton
-                        size="small"
-                        title={translatables.texts.disable}
-                        disabled={disabled}
-                        onClick={() => handleOnDeny(id)}
-                    >
-                        <Block fontSize="inherit" color={disabled ? 'inherit' : 'error'} />
-                    </IconButton>
-                </>
-            )
         }
 
         return (
@@ -59,7 +36,6 @@ const ClassApplicationTable = ({ data, handleOnApprove, handleOnDeny }) => {
                                 <Search fontSize="inherit"/>
                             </IconButton>
                         </Link>
-                        {actionButtons(row.id, !isPending)}
                     </Stack>
                 </TableCell>
             </TableRow>

@@ -30,12 +30,16 @@ class User extends Authenticatable implements MustVerifyEmail
     public const COMMISSION = [
         Role::ADMIN => 20,
         Role::TEACHER => 80,
-      ];
+    ];
 
     public const EXPORT_OPTIONS_CLASS_HISTORY_ID = 0;
+
     public const EXPORT_OPTIONS_TEACHING_HISTORY_ID = 1;
+
     public const EXPORT_OPTIONS_BADGES_HISTORY_ID = 2;
+
     public const EXPORT_OPTIONS_WALLET_TRANSACTION_ID = 3;
+
     public const EXPORT_OPTIONS = [
        ['id' => self::EXPORT_OPTIONS_CLASS_HISTORY_ID , 'name' => 'Class History'],
        ['id' => self::EXPORT_OPTIONS_TEACHING_HISTORY_ID , 'name' => 'Teaching History'],
