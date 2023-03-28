@@ -129,7 +129,7 @@ const Index = () => {
         const MenuItems = () => export_options && export_options.map((exportOption, index) => (
             <MenuItem key={index}>
                 <a
-                    href={`${routes["admin.users.export"]}?export_type=${exportOption.id}`}
+                    href={`${routes["admin.users.export"]}?${new URLSearchParams(filters).toString()}&export_type=${exportOption.id}`}
                     children={exportOption.name}
                 />
             </MenuItem>
