@@ -4,7 +4,7 @@ import { Chip, IconButton, Paper, Stack, Table, TableBody, TableCell, TableConta
 import EmptyCard from "../../../../components/common/EmptyCard"
 import { getRoute } from "../../../../helpers/routes.helper"
 
-const ClassApplicationTable = ({ data, handleOnApprove, handleOnDeny }) => {
+const ClassApplicationTable = ({ data }) => {
 
     const { translatables } = usePage().props
 
