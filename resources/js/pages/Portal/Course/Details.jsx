@@ -91,6 +91,7 @@ const Details = () => {
         const CourseFeedbacks = () => feedbacks && feedbacks.length > 0 && feedbacks.map(feedback => (
             <Feedback
                 key={feedback.id}
+                auth={auth}
                 showUser={auth && auth.user && auth.user.id == course.professor_id}
                 feedback={feedback}
             />
