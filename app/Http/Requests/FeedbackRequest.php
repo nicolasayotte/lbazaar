@@ -21,6 +21,20 @@ class FeedbackRequest extends FormRequest
     }
 
     /**
+     * Get data to be validated from the request.
+     *
+     * @return array
+     */
+    public function validationData()
+    {
+        $inputs = parent::all();
+
+        $inputs['content'] = strip_tags($inputs['comments']);
+
+        return $inputs;
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, mixed>
@@ -28,8 +42,21 @@ class FeedbackRequest extends FormRequest
     public function rules()
     {
         return [
-            'rating'        => 'required|numeric|min:0|max:100',
-            'comments'      => 'required'
+            'rating'   => 'required|numeric|min:0|max:100',
+            'content' => 'required'
+        ];
+    }
+
+    /**
+     * Get custom attributes for validator errors.
+     *
+     * @return array
+     */
+    public function attributes()
+    {
+        return [
+            'rating'  => strtolower(getTranslation('texts.rating')),
+            'content' => strtolower(getTranslation('texts.content'))
         ];
     }
 }

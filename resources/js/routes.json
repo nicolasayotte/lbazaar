@@ -48,6 +48,8 @@
     "course.details": "\/classes\/{id}",
     "course.book": "\/classes\/{schedule_id}\/book",
     "course.cancel": "\/classes\/{schedule_id}\/cancel",
+    "course.feedbacks.edit": "\/classes\/feedbacks\/{id}\/edit",
+    "course.feedbacks.update": "\/classes\/feedbacks\/{id}\/update",
     "course.edit": "\/classes\/{id}\/edit",
     "course.update": "\/classes\/{id}\/update",
     "course.create": "\/classes\/{id}\/create",
