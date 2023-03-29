@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Portal;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CourseScheduleRequest;
 use App\Models\CourseSchedule;
+use App\Models\CourseType;
 use App\Models\Role;
+use App\Models\Setting;
+use App\Models\WalletTransactionHistory;
 use App\Repositories\CourseRepository;
 use App\Repositories\CourseScheduleRepository;
 use App\Repositories\TranslationRepository;
@@ -15,6 +18,7 @@ use DateTime;
 use DateTimeZone;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use PhpOffice\PhpSpreadsheet\Settings;
 
 class CourseScheduleController extends Controller
 {
@@ -109,6 +113,7 @@ class CourseScheduleController extends Controller
         return Inertia::render('Portal/CourseSchedules/Create', [
             'course'       => $this->courseRepository->findByIdManageClass($id),
             'current_date' => Carbon::parse(new DateTime('now', new DateTimeZone(env('APP_TIMEZONE')))),
+            'schedule_fee' => Setting::where('slug', 'free-class-schedule-fee')->first(),
             'title'        => $this->baseTitle . getTranslation('title.schedules.create')
         ])->withViewData(([
             'title'        => $this->baseTitle . getTranslation('title.schedules.create')
@@ -118,11 +123,32 @@ class CourseScheduleController extends Controller
     public function store($id, CourseScheduleRequest $request)
     {
         $course = $this->courseRepository->findOrFail($id);
-
+        $isFree = $course->courseType->type == CourseType::FREE;
         $inputs = $request->all();
-
+        $userWallet = auth()->user()->userWallet()->first();
+        $adminWallet = $this->userRepository->getAdmin()->userWallet()->first();
         $inputs['user_id'] = auth()->user()->id;
         $inputs['end_datetime'] = Carbon::parse($inputs['start_datetime'])->addDays(7);
+        $scheduleFeeSettings = Setting::where('slug', 'free-class-schedule-fee')->first();
+
+        if ($isFree) {
+            if ($userWallet->points >= $scheduleFeeSettings->value) {
+                $newUserPoints =  $userWallet->points - $scheduleFeeSettings->value;
+                $courseSchedule = $course->schedules()->create($inputs);
+                $this->updateWalletHistory($userWallet, WalletTransactionHistory::SCHEDULE_FEE, $newUserPoints, $courseSchedule);
+                $this->updateWallet($userWallet, $newUserPoints);
+
+                $newAdminPoints =  $adminWallet->points + $scheduleFeeSettings->value;
+                $this->updateWalletHistory($adminWallet, WalletTransactionHistory::COMMISSION, $newAdminPoints, $courseSchedule);
+                $this->updateWallet($adminWallet, $newAdminPoints);
+
+                return to_route('mypage.course.manage_class.schedules', ['id' => $id])->with('success', getTranslation('success.schedules.create'));
+            } else {
+                return redirect()->back()->with([
+                    'error' => getTranslation('error')
+                ]);
+            }
+        }
 
         $course->schedules()->create($inputs);
 
@@ -145,5 +171,22 @@ class CourseScheduleController extends Controller
         $courseSchedule->update(['is_completed' => true]);
 
         return redirect()->back()->with('success', getTranslation('success.schedules.update'));
+    }
+
+    public function updateWalletHistory($userWallet, $transactionType, $newUserPoints, $courseSchedule) {
+        WalletTransactionHistory::create([
+            'user_wallet_id' => $userWallet->id,
+            'course_schedule_id' => isset($courseSchedule->id) ? $courseSchedule->id : null,
+            'type' => $transactionType,
+            'points_before' => $userWallet->points,
+            'points_after' => $newUserPoints,
+        ]);
+    }
+
+    public function updateWallet($userWallet, $newUserPoints)
+    {
+        $userWallet->update([
+            'points' => $newUserPoints
+        ]);
     }
 }

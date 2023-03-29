@@ -6,7 +6,7 @@ import routes, { getRoute } from "../../../helpers/routes.helper"
 
 const Create = () => {
 
-    const { translatables, course, current_date } = usePage().props
+    const { translatables, course, current_date, schedule_fee } = usePage().props
 
     const minDate = current_date.slice(0, 16)
 
@@ -14,7 +14,7 @@ const Create = () => {
         start_datetime: minDate,
         max_participant: course.max_participant
     })
-
+    const isFreeClass = course.course_type.type  == 'Free'
     const handleOnSubmit = e => {
         e.preventDefault()
 
@@ -58,6 +58,7 @@ const Create = () => {
                     </Grid>
                     <Grid item xs={12}>
                         <Paper sx={{ p: 2 }}>
+                        { isFreeClass && <Typography variant="subtitle2" children={`${translatables.texts.schedule_fee_note} ${schedule_fee.value}`} /> }
                             <InputBase
                                 type="datetime-local"
                                 fullWidth

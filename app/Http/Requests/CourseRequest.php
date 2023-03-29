@@ -32,7 +32,7 @@ class CourseRequest extends FormRequest
             'description'              => 'required',
             'category'                 => 'required',
             'course_type_id'           => 'required',
-            'max_participant'          => 'integer|required|min:1',
+            'max_participant'          => 'integer|required|min:0',
             'format'                   => 'required',
             'zoom_link'                => 'required_if:format,' . Course::LIVE,
             'is_cancellable'           => 'boolean',

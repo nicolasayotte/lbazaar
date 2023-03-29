@@ -20,7 +20,7 @@ const ScheduleTable = ({ data, handleOnDelete }) => {
     const displayTableData = schedules => schedules.map((schedule, index) => {
 
         const startDate = schedule.formatted_start_datetime.split(' ')
-
+        const isLive = schedule.course.is_live
         const ScheduleDate = () => (
             <Box>
                 <Typography variant="caption" color="primary" children={startDate[0]} display="block" />
@@ -33,7 +33,9 @@ const ScheduleTable = ({ data, handleOnDelete }) => {
             <TableRow key={index}>
                 <TableCell children={<ScheduleDate />} />
                 <TableCell children={schedule.course.title} />
-                <TableCell align="center" children={`${schedule.total_bookings} / ${schedule.max_participant}`} />
+                <TableCell align="center">
+                    { isLive?  schedule.total_bookings +  ' / ' + schedule.max_participant : schedule.total_bookings }
+                </TableCell>
                 <TableCell align="center">
                     <Chip color={statusColors[schedule.status]} label={schedule.status} />
                 </TableCell>

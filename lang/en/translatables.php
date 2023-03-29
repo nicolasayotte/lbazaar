@@ -51,7 +51,8 @@ return [
             'create' => 'Class successfully created',
             'update' => 'Class successfully updated',
             'delete' => 'Class successfully deleted',
-            'completed' => 'Class successfully completed'
+            'completed' => 'Class successfully completed',
+            'donated' => 'Succesfully donated to teacher'
         ],
         'category' => [
             'update' => 'Category successfully updated',
@@ -303,8 +304,9 @@ return [
         'coming_soon' => 'Coming Soon',
         'complete' => 'Complete',
         'complete_class' => 'Complete Class',
+        'complete_class_confirmation_message' => 'If you have enjoyed our classes and would like to support our continued efforts to provide you with the best online learning experience, we would greatly appreciate any donations you would like to make.',
         'complete_class_description' => 'Congratulations! You have successfully completed this class',
-        'complete_class_earn_badge' => 'Complete this class to earn a badge',
+        'complete_class_earn_badge' => 'Complete this class and pass the exam to earn a badge',
         'complete_classes_earn_badge' => 'Complete these classes to earn a badge',
         'correct_value' => 'Correct Value',
         'country' => 'Country',
@@ -331,6 +333,7 @@ return [
         'description' => 'Description',
         'disable' => 'Disable',
         'done_watching' => 'Done Watching',
+        'donate_points' => 'Donate Points',
         'edit' => 'Edit',
         'edit_category' => 'Edit Category',
         'edit_class' => 'Edit Class',
@@ -400,6 +403,7 @@ return [
         'role' => 'Role',
         'save_changes' => 'Save Changes',
         'score' => 'Score',
+        'schedule_fee_note' => 'Free class needs points as payment per schedule, Points needed:',
         'search' => 'Search',
         'search_class_name' => 'Search for class name',
         'search_name' => 'Search for name',
@@ -449,15 +453,21 @@ return [
         'wallet_balance' => 'Wallet balance',
         'wallet_book_details' => 'Booked class',
         'wallet_commission_details' => 'Points commissioned in class',
+        'wallet_donate_points_from' => 'You reacieved donation points from',
+        'wallet_donate_points_to' => 'You send donation points to',
         'wallet_earn_details' => 'Earned from class',
         'wallet_exchange_details' => 'Points Exchanged to NFT',
         'wallet_feed_details' => 'Points Feed to wallet',
         'wallet_history' => 'Wallet History',
         'wallet_refund_details' => 'Refunded points from class',
+        'wallet_schedule_fee' => 'Payed points to schedule class',
         'watch_video' => 'Watch Video',
         'watch_video_description' => 'Watch the video to learn the contents of the class',
         'welcome' => 'Welcome',
         'work' => 'Work',
-        'class_url' => 'Class meeting URL'
+        'class_url' => 'Class meeting URL',
+        'class_feedback' => 'Class Feedback',
+        'feedback_rating' => 'Rating',
+        'comments' => 'Comments'
     ]
 ];

@@ -30,7 +30,7 @@ class CourseApplicationRequest extends FormRequest
     {
         $isPaid = $this->type == strtolower(CourseType::GENERAL) || $this->type == strtolower(CourseType::SPECIAL);
         $isEarn = $this->type == strtolower(CourseType::EARN);
-
+        $isLive = $this->get('format') == Course::LIVE;
         $priceRules = [
             Rule::requiredIf($isPaid),
             'integer',
@@ -43,16 +43,22 @@ class CourseApplicationRequest extends FormRequest
             'min:' . ($isEarn ? '1' : '0')
         ];
 
+        $seatsRules = [
+            Rule::requiredIf($isLive),
+            'integer',
+            'min:' . ($isLive ? '1' : '0')
+        ];
+
         return [
             'title'             => 'required',
             'type'              => 'required',
-            'format'            => 'required',
+            'format'            => ['required', Rule::in(['live', 'on-demand'])],
             'category'          => 'required',
             'lecture_frequency' => 'required',
             'length'            => 'required',
             'price'             => $priceRules,
             'points_earned'     => $pointsRules,
-            'seats'             => 'required|integer|min:1',
+            'seats'             => $seatsRules,
             'description'       => 'required'
         ];
     }

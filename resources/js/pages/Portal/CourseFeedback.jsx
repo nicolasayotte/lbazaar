@@ -48,14 +48,14 @@ const CourseFeedback = () => {
                     <Grid item xs={12} md={8} mx="auto" py={5}>
                         <Card>
                             <CardContent sx={{ p: 3 }}>
-                                <Typography variant="h4">Class Feedback</Typography>
+                                <Typography variant="h4">{translatables.texts.class_feedback}</Typography>
                                 <Typography variant="h5">{course.title}</Typography>
                                 <Typography variant="subtitle1">{course.professor.fullname}</Typography>
 
                                 <Divider sx={{ my: 2 }} />
                                 <Grid container spacing={2}>
                                     <Grid item xs={9} sm={9}>
-                                        <Typography variant="h6">Rating</Typography>
+                                        <Typography variant="h6">{translatables.texts.feedback_rating}</Typography>
                                         <Slider
                                             value={data.rating}
                                             name="rating"
@@ -84,7 +84,7 @@ const CourseFeedback = () => {
                                         />
                                     </Grid>
                                     <Grid item xs={12} sm={12}>
-                                        <Typography variant="h6">Comments</Typography>
+                                        <Typography variant="h6">{translatables.texts.comments}</Typography>
                                         <TextEditorInput
                                             name="comments"
                                             value={data.comments}
@@ -100,7 +100,7 @@ const CourseFeedback = () => {
                                                 onClick={handleSubmit}
                                                 variant="contained"
                                                 disabled={processing}
-                                            >Submit</Button>
+                                            >{translatables.texts.submit}</Button>
                                         </Stack>
                                     </Grid>
                                 </Grid>

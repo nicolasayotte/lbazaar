@@ -17,9 +17,14 @@ class WalletTransactionHistory extends Model
     public const BOOK = 'book';
     public const REFUND = 'refund';
 
+    public const DONATE = 'donate';
+
+    public const SCHEDULE_FEE = 'schedule fee';
     protected $fillable = [
         'user_wallet_id',
         'course_history_id',
+        'course_schedule_id',
+        'user_id',
         'type',
         'points_before',
         'points_after',
@@ -37,11 +42,17 @@ class WalletTransactionHistory extends Model
         return $this->hasOne(CourseHistory::class, 'id', 'course_history_id');
     }
 
+    public function courseSchedule()
+    {
+        return $this->hasOne(CourseSchedule::class, 'id', 'course_schedule_id');
+    }
     public function getCourseNameAttribute()
     {
         if($this->courseHistory()->first() != null)
         {
             return $this->courseHistory()->first()->course()->first()->title;
+        } else if ($this->courseSchedule()->first() != null) {
+            return $this->courseSchedule()->first()->course()->first()->title;
         }
 
         return "";
@@ -72,6 +83,18 @@ class WalletTransactionHistory extends Model
                 break;
             case(self::REFUND):
                 $transactionDetails = getTranslation('texts.wallet_refund_details') ." ". $this->getCourseNameAttribute();
+                break;
+            case(self::SCHEDULE_FEE):
+                $transactionDetails = getTranslation('texts.wallet_schedule_fee') ." ". $this->getCourseNameAttribute();
+                break;
+            case(self::DONATE):
+                if($this->points_before > $this->points_after) {
+                    $teacher = User::where('id', $this->user_id)->first()->toArray();
+                    $transactionDetails = getTranslation('texts.wallet_donate_points_to') ." ". $teacher['fullname'];
+                } else {
+                    $user = User::where('id', $this->user_id)->first()->toArray();
+                    $transactionDetails = getTranslation('texts.wallet_donate_points_from') ." ". $user['fullname'];
+                }
                 break;
             default:
                 $transactionDetails = 'transaction type not exist';
