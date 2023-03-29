@@ -51,24 +51,27 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $title = TranslationRepository::getTranslation('title.users.index');
+
         $roleDropDown = $this->roleRepository->getDropdownData();
+
         $filteredRoleDropDown = $roleDropDown->filter(function($role) {
             return $role['name'] !== ucfirst(Role::ADMIN);
         });
+
         return Inertia::render('Admin/Users/Index', [
-            'users'         => $this->userRepository->get($request->all()),
-            'roleOptions'   => $filteredRoleDropDown,
-            'statusOptions' => $this->userRepository->getStatusFilterData(),
-            'keyword'       => @$request['keyword'] ?? '',
-            'role'          => @$request['role'] ?? '',
-            'status'        => @$request['status'] ?? '',
-            'sort'          => @$request['sort'] ?? 'created_at:desc',
-            'page'          => @$request['page'] ?? 1,
-            'export_type'   => @$request['export_type'] ?? 1,
-            'export_options'=> User::EXPORT_OPTIONS,
-            'title'         => $title
+            'users'          => $this->userRepository->get($request->all()),
+            'roleOptions'    => $filteredRoleDropDown,
+            'statusOptions'  => $this->userRepository->getStatusFilterData(),
+            'keyword'        => @$request['keyword'] ?? '',
+            'role'           => @$request['role'] ?? '',
+            'status'         => @$request['status'] ?? '',
+            'sort'           => @$request['sort'] ?? 'created_at:desc',
+            'page'           => @$request['page'] ?? 1,
+            'export_type'    => @$request['export_type'] ?? 1,
+            'export_options' => User::EXPORT_OPTIONS,
+            'title'          => $title
         ])->withViewData([
-            'title' => $title
+            'title'          => $title
         ]);
     }
 
@@ -152,22 +155,24 @@ class UserController extends Controller
             $users = $this->userRepository->search($request->all());
         }
 
+        $currentDate = Carbon::now()->format('Y-m-d');
+
         if($request->has('export_type')) {
             switch($request->get('export_type')) {
                 case(User::EXPORT_OPTIONS_WALLET_TRANSACTION_ID):
-                    $excel = Excel::download(new ExportWalletHistory($users), 'Wallet History.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+                    $excel = Excel::download(new ExportWalletHistory($users), "Wallet History $currentDate.xlsx", \Maatwebsite\Excel\Excel::XLSX);
                     break;
                 case(User::EXPORT_OPTIONS_CLASS_HISTORY_ID):
-                    $excel = Excel::download(new ExportCourseHistory($users), 'Class History.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+                    $excel = Excel::download(new ExportCourseHistory($users), "Class History $currentDate.xlsx", \Maatwebsite\Excel\Excel::XLSX);
                     break;
                 case(User::EXPORT_OPTIONS_TEACHING_HISTORY_ID):
-                    $excel = Excel::download(new ExportTeachingHistory($users), 'Teaching History.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+                    $excel = Excel::download(new ExportTeachingHistory($users), "Teaching History $currentDate.xlsx", \Maatwebsite\Excel\Excel::XLSX);
                     break;
                 case(User::EXPORT_OPTIONS_BADGES_HISTORY_ID):
-                    $excel = Excel::download(new ExportBadges($users), 'Badges.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+                    $excel = Excel::download(new ExportBadges($users), "Badges $currentDate.xlsx", \Maatwebsite\Excel\Excel::XLSX);
                     break;
                 default:
-                    $excel = Excel::download(new ExportCourseHistory($users), 'Class History.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+                    $excel = Excel::download(new ExportCourseHistory($users), "Class History $currentDate.xlsx", \Maatwebsite\Excel\Excel::XLSX);
             }
         }
 

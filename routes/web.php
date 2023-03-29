@@ -149,12 +149,19 @@ Route::prefix('classes')->name('course.')->group(function() {
     Route::get('/{id}', [CourseController::class, 'details'])->name('details');
 
     Route::middleware('auth')->group(function() {
+
         # Course Booking
         Route::post('/{schedule_id}/book', [CourseController::class, 'book'])->name('book');
         Route::post('/{schedule_id}/cancel', [CourseController::class, 'cancel'])->name('cancel');
 
         #send donation
         Route::post('/send-donation', [CourseController::class, 'sendDonation'])->name('send.donation');
+
+        # Feedback Edit/Update
+        Route::prefix('/feedbacks')->name('feedbacks.')->group(function() {
+            Route::get('/{id}/edit', [CourseFeedbackController::class, 'edit'])->name('edit');
+            Route::patch('/{id}/update', [CourseFeedbackController::class, 'update'])->name('update');
+        });
 
         Route::middleware(['auth', 'teacher'])->group(function() {
             # Edit Course
@@ -351,7 +358,7 @@ Route::prefix('classes/{course_id}/attend/{schedule_id}')->middleware(['auth'])-
     });
 
     # Course Feedback
-    Route::get('/feedback', [CourseFeedbackController::class, 'index'])->name('feedback.create');
+    Route::get('/feedback', [CourseFeedbackController::class, 'create'])->name('feedback.create');
     Route::post('/feedback', [CourseFeedbackController::class, 'store'])->name('feedback.store');
 
     # Complete

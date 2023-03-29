@@ -128,7 +128,12 @@ const AdminNavbar = ({ drawerWidth, window }) => {
             as="span"
             method="post"
             href={routes["admin.logout"]}
-            style={{ width: '100%' }}
+            style={{
+                cursor: 'pointer',
+                width: '100%',
+                whiteSpace: 'nowrap',
+                textAlign: 'center',
+            }}
         >
             <ListItemButton>
                 <ListItemIcon children={<Logout />} sx={{ display: { md: 'none' } }} />
@@ -140,9 +145,14 @@ const AdminNavbar = ({ drawerWidth, window }) => {
     const profileBtn = (
         <Link
             href={routes["admin.profile.index"]}
-            style={{ width: '100%' }}
+            style={{
+                cursor: 'pointer',
+                width: '100%',
+                whiteSpace: 'nowrap',
+                textAlign: 'center'
+            }}
         >
-            <ListItemButton selected={component.startsWith('Admin/Profile')}>
+            <ListItemButton>
                 <ListItemIcon children={<AccountCircle />} sx={{ display: { md: 'none' } }} />
                 <ListItemText primary={translatables.texts.mypage} />
             </ListItemButton>
@@ -185,6 +195,12 @@ const AdminNavbar = ({ drawerWidth, window }) => {
         >
             <Toolbar sx={{ minHeight: navbarHeight }}/>
             <List>
+                <ListItem>
+                    <ListItemButton>
+                        <ListItemIcon children={<AccountBalanceWallet />} />
+                        <ListItemText primary={auth && auth.user && auth.user.user_wallet && auth.user.user_wallet.points.toFixed(2)} />
+                    </ListItemButton>
+                </ListItem>
                 <ListItem key="profile">
                     {profileBtn}
                 </ListItem>
@@ -216,20 +232,24 @@ const AdminNavbar = ({ drawerWidth, window }) => {
                         children={translatables.texts.admin}
                     />
                     <Box sx={{ ml: 'auto' }}>
-                        <Grid container sx={{ display: { xs: 'none', md: 'flex' } }} alignItems={'center'}>
-                            <Grid item>
-                                <Box  display="flex" justifyContent="space-between" alignItems="center">
-                                    <AccountBalanceWallet />
-                                    <Typography children={ auth.user.user_wallet.points } />
-                                </Box>
-                            </Grid>
-                            <Grid item>
-                                {profileBtn}
-                            </Grid>
-                            <Grid item>
-                                {logoutBtn}
-                            </Grid>
-                        </Grid>
+                        <Stack
+                            direction="row"
+                            alignItems={'center'}
+                            spacing={1}
+                            sx={{ display: { xs: 'none', md: 'flex' } }}
+                        >
+                            <Stack
+                                direction="row"
+                                alignItems="center"
+                                spacing={0.5}
+                                px={2}
+                            >
+                                <AccountBalanceWallet />
+                                <Typography children={ auth.user.user_wallet.points.toFixed(2) } />
+                            </Stack>
+                            {profileBtn}
+                            {logoutBtn}
+                        </Stack>
                         <IconButton
                             color="white"
                             sx={{ display: { xs: 'inline-block', md: 'none' } }}

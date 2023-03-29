@@ -4,18 +4,17 @@ import { actions } from '../../store/slices/ToasterSlice'
 import { useDispatch } from "react-redux"
 import { getRoute } from "../../helpers/routes.helper"
 import Input from "../../components/forms/Input"
-import ReactQuill from 'react-quill';
 import { handleOnChange, handleEditorOnChange } from "../../helpers/form.helper";
 import TextEditorInput from "../../components/forms/TextEditorInput"
-import BackButton from "../../components/common/BackButton"
+import { Inertia } from "@inertiajs/inertia"
 
 const CourseFeedback = () => {
 
     const dispatch = useDispatch()
 
-    const { translatables, course, schedule, feedback, errors } = usePage().props;
+    const { translatables, course, schedule, feedback, errors, return_url } = usePage().props;
 
-    const { data, setData, post, processing, reset, clearErrors } = useForm({
+    const { data, setData, processing, reset, clearErrors } = useForm({
         rating: feedback.rating ?? 0,
         comments: feedback.comments ?? ''
     })
@@ -23,11 +22,25 @@ const CourseFeedback = () => {
     const handleSubmit = (e) => {
         e.preventDefault()
 
-        post(getRoute('course.attend.feedback.store', { course_id: course.id, schedule_id: schedule.id }), {
-            onError: () => dispatch(actions.error({
-                message: translatables.error
-            }))
-        });
+        if (feedback) {
+            Inertia.patch(
+                getRoute('course.feedbacks.update', { id: feedback.id }),
+                data,
+                {
+                    onError: () => dispatch(actions.error({ message: translatables.error }))
+                }
+            )
+
+            return
+        }
+
+        Inertia.post(
+            getRoute('course.attend.feedback.store', { course_id: course.id, schedule_id: schedule.id }),
+            data,
+            {
+                onError: () => dispatch(actions.error({ message: translatables.error }))
+            }
+        )
     }
 
     const marks = [
@@ -42,11 +55,11 @@ const CourseFeedback = () => {
     ];
 
     return (
-        <Box sx={{ minHeight: '80.75vh' }}>
+        <Box>
             <Container>
-                <Grid container>
-                    <Grid item xs={12} md={8} mx="auto" py={5}>
-                        <Card>
+                <Grid container sx={{ minHeight: '100vh' }} alignItems="center">
+                    <Grid item xs={12} md={8} mx="auto">
+                        <Card sx={{ mt: -10 }}>
                             <CardContent sx={{ p: 3 }}>
                                 <Typography variant="h4">{translatables.texts.class_feedback}</Typography>
                                 <Typography variant="h5">{course.title}</Typography>
@@ -66,7 +79,7 @@ const CourseFeedback = () => {
                                             onChange={e => handleOnChange(e, setData)} />
 
                                     </Grid>
-                                    <Grid item xs={3} sm={3} sx={{mt:3}}>
+                                    <Grid item xs={12} md={2}>
                                         <Input
                                             value={data.rating}
                                             size="small"
@@ -78,30 +91,27 @@ const CourseFeedback = () => {
                                                 min: 0,
                                                 max: 100,
                                                 type: 'number',
-                                                    'aria-labelledby': 'input-slider',
+                                                'aria-labelledby': 'input-slider',
+                                                style: {
+                                                    textAlign: 'center'
+                                                }
                                             }}
-
                                         />
                                     </Grid>
                                     <Grid item xs={12} sm={12}>
                                         <Typography variant="h6">{translatables.texts.comments}</Typography>
                                         <TextEditorInput
-                                            name="comments"
+                                            name="content"
                                             value={data.comments}
                                             onChange={(value) => handleEditorOnChange(value, setData, 'comments')}
-                                            style={{height: '200px'}}
                                             errors={errors}
-                                            />
-                                    </Grid>
+                                        />
                                     <Grid item xs={12}>
-                                        <Stack direction="row" spacing={1} justifyContent="end">
-                                            <BackButton processing={processing}/>
                                             <Button
                                                 onClick={handleSubmit}
                                                 variant="contained"
                                                 disabled={processing}
                                             >{translatables.texts.submit}</Button>
-                                        </Stack>
                                     </Grid>
                                 </Grid>
                             </CardContent>

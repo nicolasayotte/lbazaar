@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FeedbackRequest;
-use App\Models\CourseFeedback;
 use App\Repositories\CourseFeedbackRepository;
 use App\Repositories\CourseRepository;
 use App\Repositories\CourseScheduleRepository;
@@ -28,7 +27,7 @@ class CourseFeedbackController extends Controller
         $this->courseScheduleRepository = new CourseScheduleRepository;
     }
 
-    public function index($course_id, $schedule_id)
+    public function create($course_id, $schedule_id)
     {
         if (!Auth::user()->isCourseBooked($course_id))
         {
@@ -36,12 +35,13 @@ class CourseFeedbackController extends Controller
         }
 
         return Inertia::render('Portal/CourseFeedback', [
-            'course'    => $this->courseRepository->findOrFail($course_id)->load('professor'),
-            'schedule'  => $this->courseScheduleRepository->findOrFail($schedule_id),
-            'feedback'  => $this->courseFeedbackRepository->findByUserAndCourseID(Auth::user()->id, $course_id),
-            'title'     => 'Class Feedback'
+            'course'     => $this->courseRepository->findOrFail($course_id)->load('professor'),
+            'schedule'   => $this->courseScheduleRepository->findOrFail($schedule_id),
+            'feedback'   => $this->courseFeedbackRepository->findByUserAndCourseID(Auth::user()->id, $course_id),
+            'title'      => getTranslation('title.feedbacks'),
+            'return_url' => route('course.attend.index', ['course_id' => $course_id, 'schedule_id' => $schedule_id])
         ])->withViewData([
-            'title'     => 'Class Feedback'
+            'title'      => getTranslation('title.feedbacks')
         ]);
     }
 
@@ -61,5 +61,32 @@ class CourseFeedbackController extends Controller
             'success',
             getTranslation('success.feedback')
         ]);
+    }
+
+    public function edit($id)
+    {
+        $feedback = $this->courseFeedbackRepository->with(['course'])->findOrFail($id);
+
+        if (!auth()->user() || auth()->user()->id != $feedback->user_id) {
+            return redirect()->back()->with('error', getTranslation('error'));
+        }
+
+        return Inertia::render('Portal/CourseFeedback', [
+            'course'     => $feedback->course,
+            'feedback'   => $feedback,
+            'title'      => getTranslation('title.feedbacks'),
+            'return_url' => route('course.details', ['id' => $feedback->course_id])
+        ])->withViewData([
+            'title'      => getTranslation('title.feedbacks')
+        ]);
+    }
+
+    public function update($id, FeedbackRequest $request)
+    {
+        $feedback = $this->courseFeedbackRepository->findOrFail($id);
+
+        $feedback->update($request->all());
+
+        return to_route('course.details', ['id' => $feedback->course_id])->with('success', getTranslation('success.feedback'));
     }
 }

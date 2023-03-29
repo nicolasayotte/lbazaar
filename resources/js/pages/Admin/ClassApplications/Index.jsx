@@ -66,30 +66,6 @@ const Index = () => {
         handleFilterSubmit(e)
     }
 
-    const handleOnApprove = (id) => {
-        setDialog(dialog => ({
-            ...dialog,
-            open: true,
-            text: translatables.confirm.class.applications.approve,
-            url: getRoute('admin.class.applications.status.update', {
-                id,
-                status: 'approve'
-            })
-        }))
-    }
-
-    const handleOnDeny = (id) => {
-        setDialog(dialog => ({
-            ...dialog,
-            open: true,
-            text: translatables.confirm.class.applications.deny,
-            url: getRoute('admin.class.applications.status.update', {
-                id,
-                status: 'deny'
-            })
-        }))
-    }
-
     const handleOnDialogClose = () => {
 
         if (dialog.processing) {
@@ -213,7 +189,7 @@ const Index = () => {
             {
                 processing
                 ? <TableLoader />
-                : <ClassApplicationTable data={courseApplications.data} handleOnApprove={handleOnApprove} handleOnDeny={handleOnDeny}/>
+                : <ClassApplicationTable data={courseApplications.data}/>
             }
             <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
                 <Pagination
