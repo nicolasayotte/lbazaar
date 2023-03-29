@@ -13,7 +13,7 @@ class WalletTransactionHistory extends Model
     public const FEED = 'feed';
     public const EXCHANGE = 'exchange';
     public const EARN = 'earn';
-    public const COMMISSION = 'commision';
+    public const COMMISSION = 'commission';
     public const BOOK = 'book';
     public const REFUND = 'refund';
 

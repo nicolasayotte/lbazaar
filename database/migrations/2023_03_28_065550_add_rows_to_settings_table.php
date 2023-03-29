@@ -21,6 +21,13 @@ return new class extends Migration
             'type'     => 'number',
             'category' => 'general',
             'value'    => 20
+        ],
+        [
+            'name'     => 'Class exam passing %',
+            'slug'     => 'exam-passing-percentage',
+            'type'     => 'number',
+            'category' => 'general',
+            'value'    => 75
         ]
     ];
 

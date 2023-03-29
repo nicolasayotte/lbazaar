@@ -307,7 +307,7 @@ return [
         'complete_class_confirmation_message' => 'If you have enjoyed our classes and would like to support our continued efforts to provide you with the best online learning experience, we would greatly appreciate any donations you would like to make.',
         'complete_class_description' => 'Congratulations! You have successfully completed this class',
         'complete_class_earn_badge' => 'Complete this class and pass the exam to earn a badge',
-        'complete_classes_earn_badge' => 'Complete these classes to earn a badge',
+        'complete_classes_earn_badge' => 'Complete these  and pass the exams to earn a badge',
         'correct_value' => 'Correct Value',
         'country' => 'Country',
         'create_account' => 'Create Account',

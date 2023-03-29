@@ -478,7 +478,6 @@ class CourseController extends Controller
         return Inertia::render('Portal/CourseCompleteConfirmation', [
             'course'    => $this->courseRepository->findOrFail($course_id)->load('professor'),
             'schedule'  => $this->courseScheduleRepository->findOrFail($schedule_id),
-            'feedback'  => $this->courseFeedbackRepository->findByUserAndCourseID(auth()->user()->id, $course_id),
             'title'     =>  getTranslation('texts.complete_class')
         ])->withViewData([
             'title'     => getTranslation('texts.complete_class')
@@ -497,16 +496,16 @@ class CourseController extends Controller
         if ($userWallet->points >= $inputs['points']) {
 
             $newUserPoints =  $userWallet->points - $inputs['points'];
-            $this->updateWalletHistory($userWallet, WalletTransactionHistory::DONATE, $newUserPoints, null, $schedule->id, $schedule->course->professor()->first());
+            $this->updateWalletHistory($userWallet, WalletTransactionHistory::DONATE, $newUserPoints, null, $schedule, $schedule->course->professor()->first());
             $this->updateWallet($userWallet, $newUserPoints);
 
             $adminCommission = (int)($inputs['points'] / 100 * $DonationCommissionSettings->value);
             $newAdminPoints =  $adminWallet->points + $adminCommission;
-            $this->updateWalletHistory($adminWallet, WalletTransactionHistory::COMMISSION, $newAdminPoints,  null, $schedule->id);
+            $this->updateWalletHistory($adminWallet, WalletTransactionHistory::COMMISSION, $newAdminPoints,  null, $schedule);
             $this->updateWallet($adminWallet, $newAdminPoints);
 
             $newTeacherPoints = $teacherWallet->points + ($inputs['points'] - $adminCommission);
-            $this->updateWalletHistory($teacherWallet, WalletTransactionHistory::DONATE, $newTeacherPoints,  null, $schedule->id, auth()->user());
+            $this->updateWalletHistory($teacherWallet, WalletTransactionHistory::DONATE, $newTeacherPoints,  null, $schedule, auth()->user());
             $this->updateWallet($teacherWallet, $newTeacherPoints);
 
         } else {

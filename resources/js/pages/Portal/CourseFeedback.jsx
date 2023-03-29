@@ -15,8 +15,8 @@ const CourseFeedback = () => {
     const { translatables, course, schedule, feedback, errors, return_url } = usePage().props;
 
     const { data, setData, processing, reset, clearErrors } = useForm({
-        rating: feedback.rating ?? 0,
-        comments: feedback.comments ?? ''
+        rating: feedback ? feedback.rating ??  0 : 0,
+        comments: feedback ? feedback.comments ?? '' : ''
     })
 
     const handleSubmit = (e) => {
@@ -106,6 +106,7 @@ const CourseFeedback = () => {
                                             onChange={(value) => handleEditorOnChange(value, setData, 'comments')}
                                             errors={errors}
                                         />
+                                    </Grid>
                                     <Grid item xs={12}>
                                             <Button
                                                 onClick={handleSubmit}
