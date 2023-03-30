@@ -11,7 +11,9 @@ use App\Mail\CourseApplicationUpdate;
 use App\Mail\WalletUpdateNotification;
 use App\Mail\AdminCreateUserNotification;
 use App\Mail\DeniedTeacherApplication;
+use App\Mail\ExamCleared;
 use App\Models\TeacherApplication;
+use App\Models\UserExam;
 use Exception;
 
 class EmailService
@@ -52,5 +54,18 @@ class EmailService
         } catch (\Exception $e) {
             Log::error($e);
         }
+    }
+
+    public function sendExamClearedNotification(UserExam $userExam)
+    {
+        try {
+            Mail::send(new ExamCleared($userExam));
+        } catch(\Exception $e) {
+            Log::error($e->getMessage());
+
+            return false;
+        }
+
+        return true;
     }
 }

@@ -7,6 +7,8 @@ use App\Http\Requests\CreateExamRequest;
 use App\Models\UserExam;
 use App\Repositories\CourseRepository;
 use App\Repositories\ExamRepository;
+use App\Repositories\UserExamRepository;
+use App\Services\API\EmailService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -16,12 +18,19 @@ class ExamController extends Controller
 
     private $courseRepository;
 
+    private $userExamRepository;
+
+    private $emailService;
+
     private $baseTitle;
 
     public function __construct()
     {
-        $this->examRepository   = new ExamRepository();
-        $this->courseRepository = new CourseRepository();
+        $this->examRepository     = new ExamRepository();
+        $this->courseRepository   = new CourseRepository();
+        $this->userExamRepository = new UserExamRepository();
+
+        $this->emailService = new EmailService();
 
         $this->baseTitle = getTranslation('title.class.manage.view') . ' - ';
     }
@@ -147,5 +156,19 @@ class ExamController extends Controller
         ])->withViewData([
             'title'  => $result->exam->name
         ]);
+    }
+
+    public function deleteUserExam($id)
+    {
+        $userExam = $this->userExamRepository->with(['user', 'exam', 'course'])->findOrFail($id);
+
+        if (!$this->emailService->sendExamClearedNotification($userExam)) {
+            return redirect()->back()->with('error', getTranslation('error'));
+        }
+
+        $userExam->answers()->delete();
+        $userExam->delete();
+
+        return redirect()->back()->with('success', getTranslation('success.exams.cleared'));
     }
 }

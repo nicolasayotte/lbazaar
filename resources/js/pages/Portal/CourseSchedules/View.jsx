@@ -29,9 +29,10 @@ const View = () => {
 
     const [dialog, setDialog] = useState({
         open: false,
-        title: translatables.title.schedules.index,
-        text: translatables.confirm.schedules.update,
-        submitUrl: getRoute('schedules.status.update', { id: schedule.id })
+        title: '',
+        text: '',
+        submitUrl: '',
+        method: '',
     })
 
     const handleOnPaginate = (e, page) => {
@@ -52,7 +53,22 @@ const View = () => {
     const handleOnDone = () => {
         setDialog(dialog => ({
             ...dialog,
-            open: true
+            open: true,
+            title: translatables.title.schedules.index,
+            text: translatables.confirm.schedules.update,
+            method: 'patch',
+            submitUrl: getRoute('schedules.status.update', { id: schedule.id })
+        }))
+    }
+
+    const handleOnClearExam = id => {
+        setDialog(dialog => ({
+            ...dialog,
+            open: true,
+            title: translatables.title.clear_exam,
+            text: translatables.confirm.exams.answers.delete,
+            method: 'delete',
+            submitUrl: getRoute('exams.answers.delete', { id })
         }))
     }
 
@@ -64,7 +80,9 @@ const View = () => {
     }
 
     const handleOnDialogSubmit = () => {
-        Inertia.patch(dialog.submitUrl, undefined, {
+        Inertia.visit(dialog.submitUrl, {
+            method: dialog.method,
+            data: null,
             onSuccess: () => handleOnDialogClose()
         })
     }
@@ -176,7 +194,15 @@ const View = () => {
                         {
                             processing
                             ? <TableLoader />
-                            : <StudentsTable data={students.data} exams={course.exams} course={course} schedule={schedule} />
+                            : (
+                                <StudentsTable
+                                    data={students.data}
+                                    exams={course.exams}
+                                    course={course}
+                                    schedule={schedule}
+                                    handleOnClear={handleOnClearExam}
+                                />
+                            )
                         }
                     </Grid>
                     <Grid item xs={12}>
