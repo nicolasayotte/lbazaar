@@ -49,7 +49,8 @@ return [
             'create'=> 'Examは正常に作成されました',
             'delete'=> 'Examは正常に消去されました',
             'submit'=> 'Exam提出完了',
-            'update'=> 'Exam更新完了'
+            'update'=> 'Exam更新完了',
+            'cleared' => 'Exam successfully cleared (JA)'
         ],
         'feedback'=> 'フィードバックは正常に保存されました',
         'inquiry'=> 'お問い合わせは正常に送信されました',
@@ -126,7 +127,10 @@ return [
             'delete'=> 'この区分を消去しますか？'
         ],
         'exams'=> [
-            'delete'=> 'このテストを消去しますか？'
+            'delete'=> 'このテストを消去しますか？',
+            'answers' => [
+                'delete' => 'Are you sure you want to clear the exam for this student? (JA)'
+            ]
         ],
         'schedules'=> [
             'delete'=> 'このスケジュールを消去しますか？',
@@ -159,6 +163,7 @@ return [
             ]
         ],
         'classifications'=> '区分',
+        'clear_exam' => 'Clear Exam (JA)',
         'schedules'=> [
             'create'=> 'スケジュール作成',
             'index'=> 'スケジュール',
@@ -298,6 +303,7 @@ return [
         'classes'=> 'クラス',
         'classes_booked'=> 'クラス予約済',
         'classification'=> '区分',
+        'clear' => 'Clear (JA)',
         'coming_soon'=> '近日公開予定',
         'commission_rate'=> 'Commission Rate',
         'complete'=> '終了 (JA)',

@@ -103,6 +103,7 @@
     "exams.update": "\/exams\/{id}\/update",
     "exams.status.toggle": "\/exams\/{id}\/status\/{status}",
     "exams.delete": "\/exams\/{id}\/delete",
+    "exams.answers.delete": "\/exams\/answers\/{id}\/delete",
     "schedules.view": "\/schedules\/{id}",
     "schedules.create": "\/schedules\/{id}\/create",
     "schedules.store": "\/schedules\/{id}",
