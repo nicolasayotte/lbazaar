@@ -94,6 +94,10 @@ or check official [docs](https://laravel.com/docs/9.x/sail)
     - `ssh -i test-lebazaar-key.pem ubuntu@18.178.42.141`
 - Go to project docker-build directory:
     - `cd /var/www/groundfloor/docker-build`
+- run as root
+    - `sudo su`
+- allow docker not load cache
+    - `export DOCKER_BUILDKIT=0`
 - Execute build script. It will as for Github username and token (generated from step 1)
     - `./staging.sh`
 - Check https://stage.l-e-bazaar.com/ to make sure changes have been applied

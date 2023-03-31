@@ -87,6 +87,8 @@ const View = () => {
         })
     }
 
+    const isLive = course.is_live
+
     return (
         <>
             <ConfirmationDialog
@@ -139,7 +141,11 @@ const View = () => {
                         <Paper sx={{ p: 2 }}>
                             <Stack direction="row" display="flex" alignItems="center" spacing={2}>
                                 <PeopleAlt fontSize="large" />
-                                <Box children={`${schedule.total_bookings} / ${ schedule.max_participant }`} />
+                                <Box>
+                                    {
+                                        isLive? schedule.total_bookings + '/' + schedule.max_participant : schedule.total_bookings
+                                    }
+                                </Box>
                             </Stack>
                         </Paper>
                     </Grid>

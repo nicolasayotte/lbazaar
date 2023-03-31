@@ -124,11 +124,10 @@ class CourseController extends Controller
 
     public function book($schedule_id)
     {
-        //TODO ongoing cannot booked
         $schedule = CourseSchedule::find($schedule_id)->load('course');
         $isBooked = count($this->courseHistoryRepository->findByUserAndCourseScheduleID(auth()->user()->id, $schedule_id)) > 0;
-        $isFullyBooked = count($this->courseHistoryRepository->findByCourseScheduleID($schedule_id)) == $schedule->max_participant;
         $isLive = $schedule->course->is_live;
+        $isFullyBooked = $isLive ? count($this->courseHistoryRepository->findByCourseScheduleID($schedule_id)) == $schedule->max_participant : false;
         $userWallet = auth()->user()->userWallet()->first();
         $adminWallet = $this->userRepository->getAdmin()->userWallet()->first();
         $teacherWallet = $schedule->course->professor()->first()->userWallet()->first();
@@ -283,10 +282,12 @@ class CourseController extends Controller
         return redirect()->back()->with('success', getTranslation('success.class.delete'));
     }
 
-    public function updateWalletHistory($userWallet, $transactionType, $newUserPoints, $courseHistory) {
+    public function updateWalletHistory($userWallet, $transactionType, $newUserPoints, $courseHistory, $courseSchedule = null, $user = null) {
         WalletTransactionHistory::create([
             'user_wallet_id' => $userWallet->id,
             'course_history_id' => isset($courseHistory->id) ? $courseHistory->id : null,
+            'course_schedule_id' => isset($courseSchedule->id) ? $courseSchedule->id : null,
+            'user_id' => isset($user->id) ? $user->id : null,
             'type' => $transactionType,
             'points_before' => $userWallet->points,
             'points_after' => $newUserPoints,
@@ -336,7 +337,7 @@ class CourseController extends Controller
         // Check if user already given a feedback
         $feedbackGiven = $this->courseFeedbackRepository->isUserHasFeedback(auth()->user()->id, $course_id);
 
-        if (@$feedbackGiven && $activeStep == $course->exams->count() + 1) $activeStep++;
+        if (@$feedbackGiven && $activeStep == $course->examsPublished->count() + 1) $activeStep++;
 
         return Inertia::render('Portal/Course/Attend', [
             'course'      => $course,
@@ -464,5 +465,54 @@ class CourseController extends Controller
         } catch (\Exception $e) {
             Log::error($e);
         }
+    }
+
+    public function completeConfirmation($course_id, $schedule_id)
+    {
+        if (!auth()->user()->isCourseBooked($course_id))
+        {
+            return redirect()->route('course.details', ['id' => $course_id]);
+        }
+
+        return Inertia::render('Portal/CourseCompleteConfirmation', [
+            'course'    => $this->courseRepository->findOrFail($course_id)->load('professor'),
+            'schedule'  => $this->courseScheduleRepository->findOrFail($schedule_id),
+            'title'     =>  getTranslation('texts.complete_class')
+        ])->withViewData([
+            'title'     => getTranslation('texts.complete_class')
+        ]);
+    }
+
+    public function sendDonation(Request $request)
+    {
+        $inputs = $request->all();
+        $schedule = CourseSchedule::find($inputs['schedule_id'])->load('course');
+        $teacherWallet = $schedule->course->professor()->first()->userWallet()->first();
+        $userWallet = auth()->user()->userWallet()->first();
+        $donationCommissionSettings = Setting::where('slug', 'donate-commission')->first();
+        $adminWallet = $this->userRepository->getAdmin()->userWallet()->first();
+
+        if ($userWallet->points >= $inputs['points']) {
+
+            $newUserPoints =  $userWallet->points - $inputs['points'];
+            $this->updateWalletHistory($userWallet, WalletTransactionHistory::DONATE, $newUserPoints, null, $schedule, $schedule->course->professor()->first());
+            $this->updateWallet($userWallet, $newUserPoints);
+
+            $adminCommission = (int)($inputs['points'] / 100 * $donationCommissionSettings->value);
+            $newAdminPoints =  $adminWallet->points + $adminCommission;
+            $this->updateWalletHistory($adminWallet, WalletTransactionHistory::COMMISSION, $newAdminPoints,  null, $schedule);
+            $this->updateWallet($adminWallet, $newAdminPoints);
+
+            $newTeacherPoints = $teacherWallet->points + ($inputs['points'] - $adminCommission);
+            $this->updateWalletHistory($teacherWallet, WalletTransactionHistory::DONATE, $newTeacherPoints,  null, $schedule, auth()->user());
+            $this->updateWallet($teacherWallet, $newTeacherPoints);
+
+        } else {
+            return redirect()->back()->withErrors([
+                'error' => getTranslation('error')
+            ]);
+        }
+
+        return redirect()->back()->with('success', getTranslation('success.class.donated'));
     }
 }

@@ -165,18 +165,21 @@ const Create = () => {
                                     errors={errors}
                                 />
                             </Grid>
-                            <Grid item xs={12}>
-                                <Input
-                                    type="number"
-                                    label={translatables.texts.seats}
-                                    name="seats"
-                                    value={data.seats}
-                                    onChange={e => handleOnChange(e, setData)}
-                                    inputProps={{ min: 1 }}
-                                    InputLabelProps={{ shrink: true }}
-                                    errors={errors}
+                            {
+                                data.format === 'live' &&
+                                <Grid item xs={12}>
+                                    <Input
+                                        type="number"
+                                        label={translatables.texts.seats}
+                                        name="seats"
+                                        value={data.seats}
+                                        onChange={e => handleOnChange(e, setData)}
+                                        inputProps={{ min: 1 }}
+                                        InputLabelProps={{ shrink: true }}
+                                        errors={errors}
                                 />
-                            </Grid>
+                                </Grid>
+                            }
                             <Grid item xs={12}>
                                 <Input
                                     label={translatables.texts.length}

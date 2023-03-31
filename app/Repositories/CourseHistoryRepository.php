@@ -119,11 +119,29 @@ class CourseHistoryRepository extends BaseRepository
                     ->first();
     }
 
+    public function findByCourseIdAndIsCompleted($courseId)
+    {
+        return $this->model
+                    ->where('user_id', auth()->user()->id)
+                    ->where('course_id', $courseId)
+                    ->where('completed_at','!=', null)
+                    ->get();
+
+    }
+
     public function feedBadge($courseHistoryId)
     {
         $courseHistory = $this->with(['course', 'course.coursePackage', 'course.coursePackage.courses'])->findOrFail($courseHistoryId);
 
         if (!@$courseHistory->course->coursePackage) {
+
+            $userExams = auth()->user()->exams()->where('course_schedule_id', $courseHistory->course_schedule_id)->count();
+            $userPassedExams = auth()->user()->exams()->where(['course_schedule_id' => $courseHistory->course_schedule_id, 'is_passed' => 1])->count();
+
+            if ($userExams != $userPassedExams) {
+                return false;
+            }
+
             $badge = Badge::where([
                 'name' => Badge::COMPLETION . ' - ' . $courseHistory->course->title,
                 'type' => 'student',
@@ -142,9 +160,9 @@ class CourseHistoryRepository extends BaseRepository
                     'badge_id' => $badge->id,
                     'course_history_id' => $courseHistory->id,
                 ]);
-            }
 
-            return true;
+                return true;
+            }
         }
 
         if (
@@ -152,20 +170,40 @@ class CourseHistoryRepository extends BaseRepository
             $courseHistory->course->coursePackage->courses &&
             $courseHistory->course->coursePackage->courses->count() > 0
         ) {
-
             $packageCoursesCompleted = 0;
+            $isPassedCoursesExam = array();
 
             foreach ($courseHistory->course->coursePackage->courses as $course) {
 
-                $booking = $this->findByCourseId($course->id);
+                $bookingsCompleted = $this->findByCourseIdAndIsCompleted($course->id);
+                $isPassedCourseBookingsExam = array();
 
-                if (@$booking && @$booking->completed_at != null) {
+                if (count($bookingsCompleted) > 0) {
                     $packageCoursesCompleted++;
                 }
+
+                foreach ($bookingsCompleted as $booking) {
+
+                    $schedule = $booking->courseSchedule()->first();
+                    $userExams = auth()->user()->exams()->where(['course_schedule_id' => $schedule->id])->count();
+                    $userPassedExams = auth()->user()->exams()->where(['course_schedule_id' => $schedule->id, 'is_passed' => 1])->count();
+
+                    array_push($isPassedCourseBookingsExam, $userExams == $userPassedExams);
+                }
+
+                $isPassedCourseExams = array_reduce($isPassedCourseBookingsExam, function ($carry, $examResult) {
+                    return $carry || $examResult;
+                }, false);
+
+                array_push($isPassedCoursesExam, $isPassedCourseExams);
             }
 
-            // Check if completed all package courses
-            if ($packageCoursesCompleted == $courseHistory->course->coursePackage->courses->count()) {
+            $isPassedCourses = array_reduce($isPassedCoursesExam, function ($carry, $examResult) {
+                return $carry && $examResult;
+            }, true);
+
+            // Check if completed all package courses and passed all exams
+            if ($packageCoursesCompleted == $courseHistory->course->coursePackage->courses->count() && $isPassedCourses) {
                 $badge = Badge::where([
                     'name' => Badge::COMPLETION . ' - ' . $courseHistory->course->coursePackage->name,
                     'type' => 'student',
@@ -183,10 +221,11 @@ class CourseHistoryRepository extends BaseRepository
                         'badge_id' => $badge->id,
                         'course_package_id' => $courseHistory->course->coursePackage->id,
                     ]);
+
+                    return true;
                 }
             }
         }
-
         return false;
     }
 }

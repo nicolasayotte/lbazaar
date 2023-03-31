@@ -30,9 +30,10 @@ const Attend = () => {
                 method: 'get'
             })
         }
+        let  course_exams_published = course.exams.filter((exam) => exam.published_at != null)
 
-        if (course.exams && course.exams.length > 0) {
-            course.exams.map(exam => {
+        if (course_exams_published && course_exams_published.length > 0) {
+            course_exams_published.map(exam => {
                 steps.push({
                     label: exam.name,
                     description: translatables.texts.take_exam_description,
@@ -43,6 +44,10 @@ const Attend = () => {
                 })
             })
         }
+
+        const isFreeClass = course.course_type.type  == 'Free'
+        const defaultCompleteUrl = booking.completed_at ? getRoute('course.details', { id: course.id }) : getRoute('course.attend.complete', { course_id: course.id, schedule_id: schedule.id })
+        const freeClassCompleteUrl =  booking.completed_at ? getRoute('course.details', { id: course.id }) : getRoute('course.attend.complete.confirmation', { course_id: course.id, schedule_id: schedule.id })
 
         steps.push({
             label: translatables.texts.give_feedback,
@@ -56,10 +61,10 @@ const Attend = () => {
         steps.push({
             label: translatables.texts.complete_class,
             description: translatables.texts.complete_class_description,
-            url: booking.completed_at ? getRoute('course.details', { id: course.id }) : getRoute('course.attend.complete', { course_id: course.id, schedule_id: schedule.id }),
+            url: isFreeClass ? freeClassCompleteUrl : defaultCompleteUrl,
             buttonText: translatables.texts.complete,
             disableButton: false,
-            method: booking.completed_at ? 'get' : 'post'
+            method: booking.completed_at || isFreeClass ? 'get' : 'post'
         })
 
         return steps

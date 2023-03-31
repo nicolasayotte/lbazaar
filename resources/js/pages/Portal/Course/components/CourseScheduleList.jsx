@@ -23,8 +23,8 @@ const CourseScheduleList = ({ data, handleOnBook, handleOnCancelBook }) => {
         const userBookedCourses = isLoggedIn ? auth.user.course_histories.filter(booking => booking.is_cancelled != true) : []
 
         const isBooked = userBookedCourses.filter(booking => booking.course_schedule_id === row.id).length > 0
-
-        const isFullyBooked = row.course_history.filter(booking => booking.is_cancelled != true).length == row.course.max_participant
+        const isLive = row.course.is_live
+        const isFullyBooked = isLive ? row.course_history.filter(booking => booking.is_cancelled != true).length == row.course.max_participant : false
 
         const availableSlots = row.course.max_participant - row.course_history.filter(booking => booking.is_cancelled != true).length
 
@@ -56,7 +56,7 @@ const CourseScheduleList = ({ data, handleOnBook, handleOnCancelBook }) => {
             }
 
             // Cancel Button
-            if (!isBooked && row.status == 'Upcoming') {
+            if (isBooked && row.status == 'Upcoming') {
                 return (
                     <Button
                         fullWidth
@@ -107,9 +107,10 @@ const CourseScheduleList = ({ data, handleOnBook, handleOnCancelBook }) => {
                                 <Box>
                                     <ScheduleDate />
                                     {
+                                        isLive ? (
                                         availableSlots > 0
                                         ? <Typography variant="caption" color="GrayText" children={`${availableSlots} ${translatables.texts.seats_available}`} />
-                                        : <Typography variant="caption" color="GrayText" children={translatable.texts.fully_booked} />
+                                        : <Typography variant="caption" color="GrayText" children={translatables.texts.fully_booked} /> ) : ''
                                     }
                                 </Box>
                             </Stack>

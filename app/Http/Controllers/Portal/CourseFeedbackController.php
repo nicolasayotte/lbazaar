@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FeedbackRequest;
+use App\Models\CourseFeedback;
 use App\Repositories\CourseFeedbackRepository;
 use App\Repositories\CourseRepository;
 use App\Repositories\CourseScheduleRepository;
@@ -37,7 +38,7 @@ class CourseFeedbackController extends Controller
         return Inertia::render('Portal/CourseFeedback', [
             'course'     => $this->courseRepository->findOrFail($course_id)->load('professor'),
             'schedule'   => $this->courseScheduleRepository->findOrFail($schedule_id),
-            'feedback'   => $this->courseFeedbackRepository->findByUserAndCourseID(Auth::user()->id, $course_id),
+            'feedback'   => CourseFeedback::where(['user_id' => Auth::user()->id, 'course_id' => $course_id])->first(),
             'title'      => getTranslation('title.feedbacks'),
             'return_url' => route('course.attend.index', ['course_id' => $course_id, 'schedule_id' => $schedule_id])
         ])->withViewData([

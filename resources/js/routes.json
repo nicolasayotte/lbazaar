@@ -48,6 +48,7 @@
     "course.details": "\/classes\/{id}",
     "course.book": "\/classes\/{schedule_id}\/book",
     "course.cancel": "\/classes\/{schedule_id}\/cancel",
+    "course.send.donation": "\/classes\/send-donation",
     "course.feedbacks.edit": "\/classes\/feedbacks\/{id}\/edit",
     "course.feedbacks.update": "\/classes\/feedbacks\/{id}\/update",
     "course.edit": "\/classes\/{id}\/edit",
@@ -117,5 +118,6 @@
     "course.attend.exams.result": "\/classes\/{course_id}\/attend\/{schedule_id}\/exams\/{id}\/result",
     "course.attend.feedback.create": "\/classes\/{course_id}\/attend\/{schedule_id}\/feedback",
     "course.attend.feedback.store": "\/classes\/{course_id}\/attend\/{schedule_id}\/feedback",
-    "course.attend.complete": "\/classes\/{course_id}\/attend\/{schedule_id}\/complete"
+    "course.attend.complete": "\/classes\/{course_id}\/attend\/{schedule_id}\/complete",
+    "course.attend.complete.confirmation": "\/classes\/{course_id}\/attend\/{schedule_id}\/complete-confirmation"
 }

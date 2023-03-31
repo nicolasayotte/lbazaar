@@ -124,6 +124,11 @@ class Course extends Model
         return $this->hasMany(Exam::class, 'course_id');
     }
 
+    public function examsPublished()
+    {
+        return $this->exams()->where('published_at','!=', null);
+    }
+
     public function getPriceAttribute($value) {
         if (@$value) {
             return number_format($value, 2);

@@ -154,6 +154,9 @@ Route::prefix('classes')->name('course.')->group(function() {
         Route::post('/{schedule_id}/book', [CourseController::class, 'book'])->name('book');
         Route::post('/{schedule_id}/cancel', [CourseController::class, 'cancel'])->name('cancel');
 
+        #send donation
+        Route::post('/send-donation', [CourseController::class, 'sendDonation'])->name('send.donation');
+
         # Feedback Edit/Update
         Route::prefix('/feedbacks')->name('feedbacks.')->group(function() {
             Route::get('/{id}/edit', [CourseFeedbackController::class, 'edit'])->name('edit');
@@ -366,4 +369,7 @@ Route::prefix('classes/{course_id}/attend/{schedule_id}')->middleware(['auth'])-
 
     # Complete
     Route::post('/complete', [CourseController::class, 'complete'])->name('complete');
+
+     # complete confirmation
+     Route::get('/complete-confirmation', [CourseController::class, 'completeConfirmation'])->name('complete.confirmation');
 });

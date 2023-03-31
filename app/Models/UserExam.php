@@ -13,7 +13,8 @@ class UserExam extends Model
         'exam_id',
         'user_id',
         'course_schedule_id',
-        'total_score'
+        'total_score',
+        'is_passed'
     ];
 
     public function exam()

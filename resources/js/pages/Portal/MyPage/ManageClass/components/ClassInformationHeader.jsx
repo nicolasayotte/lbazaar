@@ -10,7 +10,7 @@ const ClassInformationHeader = () => {
 
     const isEarn = course.course_type.type == 'Earn'
     const isFree = course.course_type.type == 'Free'
-
+    const isLive = course.is_live
     const price = (isEarn || isFree) ? translatables.texts.free : course.price
 
     const typeColors = {
@@ -74,10 +74,13 @@ const ClassInformationHeader = () => {
                         <Typography variant="span" mr={1} children={translatables.texts.category} />
                         <Chip size="small" label={course.course_category && course.course_category.name} />
                     </Box>
-                    <Box width={{ xs: '50%', md: 'auto' }}>
-                        <Typography variant="span" mr={1} children={translatables.texts.seats} />
-                        <Chip size="small" label={course.max_participant} />
-                    </Box>
+                    {
+                        isLive &&
+                        <Box width={{ xs: '50%', md: 'auto' }}>
+                            <Typography variant="span" mr={1} children={translatables.texts.seats} />
+                            <Chip size="small" label={course.max_participant} />
+                        </Box>
+                    }
                     <Box width={{ xs: '50%', md: 'auto' }}>
                         <Typography variant="span" mr={1} children={translatables.texts.price} />
                         <Chip size="small" label={price} />

@@ -67,7 +67,8 @@ class CourseApplicationController extends Controller
         $inputs = $request->all();
 
         $inputs['is_live'] = $inputs['format'] == Course::LIVE ? true : false;
-        $inputs['max_participant'] = $inputs['seats'];
+
+        $inputs['max_participant'] =  $inputs['is_live']? $inputs['seats'] : 0;
         $inputs['data'] = json_encode($request->all());
 
         $inputs['professor_id'] = auth()->user()->id;
