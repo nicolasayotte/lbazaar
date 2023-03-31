@@ -61,14 +61,14 @@ const CourseFeedback = () => {
                     <Grid item xs={12} md={8} mx="auto">
                         <Card sx={{ mt: -10 }}>
                             <CardContent sx={{ p: 3 }}>
-                                <Typography variant="h4">{translatables.texts.class_feedback}</Typography>
-                                <Typography variant="h5">{course.title}</Typography>
-                                <Typography variant="subtitle1">{course.professor.fullname}</Typography>
+                                <Typography variant="h4" children={translatables.texts.give_feedback} gutterBottom />
+                                <Typography children={`${translatables.texts.title}: ${course.title}`} />
+                                <Typography variant="caption" color="GrayText" children={course.professor.fullname} />
 
                                 <Divider sx={{ my: 2 }} />
-                                <Grid container spacing={2}>
-                                    <Grid item xs={9} sm={9}>
-                                        <Typography variant="h6">{translatables.texts.feedback_rating}</Typography>
+                                <Grid container spacing={2} alignItems="center">
+                                    <Grid item xs={12} md={10}>
+                                        <Typography variant="body1" children={translatables.texts.rating} />
                                         <Slider
                                             value={data.rating}
                                             name="rating"
@@ -99,7 +99,7 @@ const CourseFeedback = () => {
                                         />
                                     </Grid>
                                     <Grid item xs={12} sm={12}>
-                                        <Typography variant="h6">{translatables.texts.comments}</Typography>
+                                        <Typography variant="body1" children={translatables.texts.content} />
                                         <TextEditorInput
                                             name="content"
                                             value={data.comments}
@@ -108,11 +108,17 @@ const CourseFeedback = () => {
                                         />
                                     </Grid>
                                     <Grid item xs={12}>
-                                            <Button
-                                                onClick={handleSubmit}
-                                                variant="contained"
-                                                disabled={processing}
-                                            >{translatables.texts.submit}</Button>
+                                        <Stack direction="row" spacing={1} justifyContent="end">
+                                                <Link href={return_url}>
+                                                    <Button children={translatables.texts.back} />
+                                                </Link>
+                                                <Button
+                                                    onClick={handleSubmit}
+                                                    variant="contained"
+                                                    disabled={processing}
+                                                    children={translatables.texts.submit}
+                                                />
+                                        </Stack>
                                     </Grid>
                                 </Grid>
                             </CardContent>

@@ -477,7 +477,6 @@ return [
         'work' => 'Work',
         'class_url' => 'Class meeting URL',
         'class_feedback' => 'Class Feedback',
-        'feedback_rating' => 'Rating',
         'comments' => 'Comments'
     ]
 ];

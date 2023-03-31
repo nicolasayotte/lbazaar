@@ -52,7 +52,7 @@ class CourseApplicationRequest extends FormRequest
         return [
             'title'             => 'required',
             'type'              => 'required',
-            'format'            => ['required', Rule::in(['live', 'on-demand'])],
+            'format'            => ['required', Rule::in([Course::LIVE, Course::ON_DEMAND])],
             'category'          => 'required',
             'lecture_frequency' => 'required',
             'length'            => 'required',
