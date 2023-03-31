@@ -1,10 +1,10 @@
 import { Link, usePage } from "@inertiajs/inertia-react"
 import { RadioButtonUnchecked, Search, TaskAlt } from "@mui/icons-material"
-import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
+import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from "@mui/material"
 import EmptyCard from "../../../../components/common/EmptyCard"
 import { getRoute } from "../../../../helpers/routes.helper"
 
-const StudentsTable = ({ data, exams, course, schedule }) => {
+const StudentsTable = ({ data, exams, course, schedule, handleOnClear }) => {
 
     const { translatables } = usePage().props
 
@@ -18,13 +18,22 @@ const StudentsTable = ({ data, exams, course, schedule }) => {
             const { exams: userExams } = student.user
 
             return exams && exams.length > 0 && exams.map((exam, index) => {
-                const hasUserExam = userExams.find(userExam => userExam.exam_id === exam.id) !== undefined
+                const userExam = userExams.find(userExam => userExam.exam_id == exam.id && userExam.course_schedule_id == schedule.id) || null
 
                 return (
                     <TableCell align="center" key={index}>
                         {
-                            hasUserExam
-                            ? <TaskAlt fontSize="small" color="success" />
+                            userExam !== null
+                            ? (
+                                <Tooltip title="Clear">
+                                    <TaskAlt
+                                        fontSize="small"
+                                        color="success"
+                                        sx={{ cursor: 'pointer' }}
+                                        onClick={() => handleOnClear(userExam.id)}
+                                    />
+                                </Tooltip>
+                            )
                             : <RadioButtonUnchecked fontSize="small" color="disabled" />
                         }
                     </TableCell>

@@ -71,7 +71,8 @@ return [
             'update_status' => 'Exam status successfully updated',
             'delete' => 'Exam successfully deleted',
             'update' => 'Exam successfully updated',
-            'submit' => 'Exam successfully submitted'
+            'submit' => 'Exam successfully submitted',
+            'cleared' => 'Exam successfully cleared'
         ],
         'schedules' => [
             'create' => 'Schedule successfully created',
@@ -132,7 +133,10 @@ return [
             'update' => 'Are you sure you want to update these translations?'
         ],
         'exams' => [
-            'delete' => 'Are you sure you want to delete this exam?'
+            'delete' => 'Are you sure you want to delete this exam?',
+            'answers' => [
+                'delete' => 'Are you sure you want to clear the exam for this student?'
+            ]
         ],
         'schedules' => [
             'delete' => 'Are you sure you want to delete this schedule?',
@@ -174,6 +178,7 @@ return [
         'translations' => 'Translations',
         'settings' => 'Settings',
         'exams' => 'Exams',
+        'clear_exam' => 'Clear Exam',
         'feedbacks' => 'Feedbacks',
         'schedules' => [
             'index'  => 'Schedules',
@@ -295,6 +300,7 @@ return [
         'class_type' => 'Class Type',
         'classification' => 'Classification',
         'claim_all' => 'Claim all',
+        'clear' => 'Clear',
         'commission_rate' => 'Commission Rate',
         'confirm' => 'Confirm',
         'confirm_password' => 'Confirm Password',
