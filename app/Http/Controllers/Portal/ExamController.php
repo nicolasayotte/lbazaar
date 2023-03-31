@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateExamRequest;
+use App\Models\Setting;
 use App\Models\UserExam;
 use App\Repositories\CourseRepository;
 use App\Repositories\ExamRepository;
@@ -138,10 +139,12 @@ class ExamController extends Controller
     public function result($course_id, $schedule_id, $id)
     {
         $result = UserExam::with('exam')->findOrFail($id);
+        $examPassingPercentage = Setting::where('slug', 'exam-passing-percentage')->first();
 
         return Inertia::render('Portal/Exams/Result', [
             'title'       => $result->exam->name,
             'result'      => $result,
+            'passing_percentage' => $examPassingPercentage->value,
             'course_id'   => $course_id,
             'schedule_id' => $schedule_id
         ])->withViewData([

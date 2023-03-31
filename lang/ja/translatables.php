@@ -462,12 +462,16 @@ return [
         'class_url'=> 'クラスリンク',
         'wallet_schedule_fee' => 'Payed points to schedule class (JA)',
         'schedule_fee_note' => 'ree class needs points as payment per schedule, Points needed: (JA)',
-        'class_feedback' => 'Class Feedback',
-        'feedback_rating' => 'Rating',
-        'comments' => 'Comments',
-        'complete_class_confirmation_message' => 'If you have enjoyed our classes and would like to support our continued efforts to provide you with the best online learning experience, we would greatly appreciate any donations you would like to make.',
-        'donate_points' => 'Donate Points',
-        'wallet_donate_points_from' => 'You reacieved donation points from',
-        'wallet_donate_points_to' => 'You send donation points to'
+        'class_feedback' => 'Class Feedback (JA)',
+        'feedback_rating' => 'Rating (JA)',
+        'comments' => 'Comments (JA)',
+        'complete_class_confirmation_message' => 'If you have enjoyed our classes and would like to support our continued efforts to provide you with the best online learning experience, we would greatly appreciate any donations you would like to make. (JA)',
+        'donate_points' => 'Donate Points (JA)',
+        'wallet_donate_points_from' => 'You reacieved donation points from (JA)',
+        'wallet_donate_points_to' => 'You send donation points to (JA)',
+        'exam_passed' => 'Congratulations for passing the exam! (JA)',
+        'exam_failed' => 'Unfortunately, you did not pass the exam. You may request a retake by clicking Request retake. (JA)',
+        'request_retake' => 'Request retake (JA)',
+        'exam_passing_percentage' => 'Exam passing percentage is (JA)'
     ]
 ];

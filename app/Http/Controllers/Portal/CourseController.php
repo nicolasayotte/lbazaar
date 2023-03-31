@@ -24,7 +24,6 @@ use App\Repositories\CourseRepository;
 use App\Repositories\CourseTypeRepository;
 use App\Repositories\TranslationRepository;
 use App\Repositories\UserRepository;
-use Illuminate\Foundation\Auth\User;
 use Inertia\Inertia;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
@@ -338,7 +337,7 @@ class CourseController extends Controller
         // Check if user already given a feedback
         $feedbackGiven = $this->courseFeedbackRepository->isUserHasFeedback(auth()->user()->id, $course_id);
 
-        if (@$feedbackGiven && $activeStep == $course->exams->count() + 1) $activeStep++;
+        if (@$feedbackGiven && $activeStep == $course->examsPublished->count() + 1) $activeStep++;
 
         return Inertia::render('Portal/Course/Attend', [
             'course'      => $course,
@@ -490,7 +489,7 @@ class CourseController extends Controller
         $schedule = CourseSchedule::find($inputs['schedule_id'])->load('course');
         $teacherWallet = $schedule->course->professor()->first()->userWallet()->first();
         $userWallet = auth()->user()->userWallet()->first();
-        $DonationCommissionSettings = Setting::where('slug', 'donate-commission')->first();
+        $donationCommissionSettings = Setting::where('slug', 'donate-commission')->first();
         $adminWallet = $this->userRepository->getAdmin()->userWallet()->first();
 
         if ($userWallet->points >= $inputs['points']) {
@@ -499,7 +498,7 @@ class CourseController extends Controller
             $this->updateWalletHistory($userWallet, WalletTransactionHistory::DONATE, $newUserPoints, null, $schedule, $schedule->course->professor()->first());
             $this->updateWallet($userWallet, $newUserPoints);
 
-            $adminCommission = (int)($inputs['points'] / 100 * $DonationCommissionSettings->value);
+            $adminCommission = (int)($inputs['points'] / 100 * $donationCommissionSettings->value);
             $newAdminPoints =  $adminWallet->points + $adminCommission;
             $this->updateWalletHistory($adminWallet, WalletTransactionHistory::COMMISSION, $newAdminPoints,  null, $schedule);
             $this->updateWallet($adminWallet, $newAdminPoints);

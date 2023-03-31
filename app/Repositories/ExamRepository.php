@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Data\ExamData;
 use App\Models\Exam;
+use App\Models\Setting;
 use App\Models\Status;
 use App\Models\User;
 use App\Models\UserExam;
@@ -116,8 +117,12 @@ class ExamRepository extends BaseRepository
 
             $userExam->answers()->create($answer);
         }
-
-        $userExam->update(['total_score' => $totalPoints]);
+        $examPassingPercentage = Setting::where('slug', 'exam-passing-percentage')->first();
+        $isPass = ($totalPoints / count($answers) * 100) >= $examPassingPercentage->value;
+        $userExam->update([
+            'total_score' => $totalPoints,
+            'is_passed' => $isPass
+        ]);
 
         return $userExam;
     }

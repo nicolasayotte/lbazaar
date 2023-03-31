@@ -30,9 +30,10 @@ const Attend = () => {
                 method: 'get'
             })
         }
+        let  course_exams_published = course.exams.filter((exam) => exam.published_at != null)
 
-        if (course.exams && course.exams.length > 0) {
-            course.exams.map(exam => {
+        if (course_exams_published && course_exams_published.length > 0) {
+            course_exams_published.map(exam => {
                 steps.push({
                     label: exam.name,
                     description: translatables.texts.take_exam_description,
