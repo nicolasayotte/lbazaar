@@ -28,7 +28,8 @@ class CourseSchedule extends Model
         'formatted_start_datetime',
         'simple_start_datetime',
         'is_deletable',
-        'is_cancellable'
+        'is_cancellable',
+        'is_bookable'
     ];
 
     public function professor()
@@ -126,5 +127,24 @@ class CourseSchedule extends Model
         if (!$course->is_cancellable) return false;
 
         return $now->addDays($course->days_before_cancellation)->gt($start) ? false : true;
+    }
+
+    public function getIsBookableAttribute()
+    {
+        $course = $this->course()->first();
+
+        if ($course->format == ucwords(Course::ON_DEMAND, '-') && $this->status != ucwords(Status::COMPLETED)) {
+            return true;
+        }
+
+        if (
+            $course->format == ucwords(Course::LIVE) &&
+            $this->status == ucwords(Status::UPCOMING) &&
+            $this->total_bookings < $course->max_participant
+        ) {
+            return true;
+        }
+
+        return false;
     }
 }

@@ -23,7 +23,9 @@ const CourseScheduleList = ({ data, handleOnBook, handleOnCancelBook }) => {
         const userBookedCourses = isLoggedIn ? auth.user.course_histories.filter(booking => booking.is_cancelled != true) : []
 
         const isBooked = userBookedCourses.filter(booking => booking.course_schedule_id === row.id).length > 0
+
         const isLive = row.course.is_live
+
         const isFullyBooked = isLive ? row.course_history.filter(booking => booking.is_cancelled != true).length == row.course.max_participant : false
 
         const availableSlots = row.course.max_participant - row.course_history.filter(booking => booking.is_cancelled != true).length
@@ -43,13 +45,48 @@ const CourseScheduleList = ({ data, handleOnBook, handleOnCancelBook }) => {
             if (!isLoggedIn) return
 
             // Book Button
-            if (!isBooked && !isFullyBooked) {
+            if (!isBooked) {
+
+                const bookBtnText = `${translatables.texts.book_class} ${row.course.course_type && row.course.course_type.type == 'General' ? row.course.price : 'Free'}`
+
+                // Live
+                if (isLive) {
+
+                    // Fully Booked
+                    if (isFullyBooked) {
+                        return (
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                children={translatables.texts.fully_booked}
+                                disabled={true}
+                                size="large"
+                            />
+                        )
+                    }
+
+                    // Ongoing
+                    if (row.status == 'Ongoing') {
+                        return (
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                children={bookBtnText}
+                                disabled={true}
+                                size="large"
+                            />
+                        )
+                    }
+                }
+
+                // Book Button
                 return (
                     <Button
                         fullWidth
                         variant="contained"
-                        children={`${translatables.texts.book_class} ${row.course.course_type && row.course.course_type.type == 'General' ? row.course.price : 'Free'}`}
+                        children={bookBtnText}
                         onClick={() => handleOnBook(row.id)}
+                        disabled={!row.is_bookable}
                         size="large"
                     />
                 )
