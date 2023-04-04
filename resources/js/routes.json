@@ -87,6 +87,7 @@
     "mypage.wallet.history.index": "\/mypage\/wallet-history",
     "mypage.badges.claimAll": "\/mypage\/badges\/claimAll",
     "mypage.badges.index": "\/mypage\/badges",
+    "mypage.user_exam.retake": "\/mypage\/user-exam\/{user_exam_id}\/retake",
     "mypage.schedules": "\/mypage\/schedules",
     "mypage.course.applications.index": "\/mypage\/class-application",
     "mypage.course.applications.create": "\/mypage\/class-application\/create",

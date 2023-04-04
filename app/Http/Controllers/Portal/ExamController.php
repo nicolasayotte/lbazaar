@@ -174,4 +174,15 @@ class ExamController extends Controller
 
         return redirect()->back()->with('success', getTranslation('success.exams.cleared'));
     }
+    public function sendRetakeRequestUserExam($user_exam_id)
+    {
+        $userExam = $this->userExamRepository->with(['user', 'exam', 'course'])->findOrFail($user_exam_id);
+
+        if (!$this->emailService->sendRequestRetakeNotification($userExam)) {
+            return redirect()->back()->with('error', getTranslation('error'));
+        }
+
+        return redirect()->back()->with('success', getTranslation('success.exams.request_retake'));
+    }
+
 }

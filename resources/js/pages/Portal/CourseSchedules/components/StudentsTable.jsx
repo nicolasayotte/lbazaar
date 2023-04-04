@@ -1,5 +1,5 @@
 import { Link, usePage } from "@inertiajs/inertia-react"
-import { RadioButtonUnchecked, Search, TaskAlt } from "@mui/icons-material"
+import { RadioButtonUnchecked, Search, TaskAlt, HighlightOff } from "@mui/icons-material"
 import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from "@mui/material"
 import EmptyCard from "../../../../components/common/EmptyCard"
 import { getRoute } from "../../../../helpers/routes.helper"
@@ -19,6 +19,7 @@ const StudentsTable = ({ data, exams, course, schedule, handleOnClear }) => {
 
             return exams && exams.length > 0 && exams.map((exam, index) => {
                 const userExam = userExams.find(userExam => userExam.exam_id == exam.id && userExam.course_schedule_id == schedule.id) || null
+                const isPassedExam = userExam ? userExam.is_passed : 0
 
                 return (
                     <TableCell align="center" key={index}>
@@ -26,12 +27,19 @@ const StudentsTable = ({ data, exams, course, schedule, handleOnClear }) => {
                             userExam !== null
                             ? (
                                 <Tooltip title="Clear">
-                                    <TaskAlt
-                                        fontSize="small"
-                                        color="success"
-                                        sx={{ cursor: 'pointer' }}
-                                        onClick={() => handleOnClear(userExam.id)}
-                                    />
+                                    { isPassedExam ?
+                                        <TaskAlt
+                                            fontSize="small"
+                                            color="success"
+                                            sx={{ cursor: 'pointer' }}
+                                            onClick={() => handleOnClear(userExam.id)}
+                                        /> :
+                                        <HighlightOff
+                                            fontSize="small"
+                                            sx={{ cursor: 'pointer', color:'#ef5350' }}
+                                            onClick={() => handleOnClear(userExam.id)}
+                                        />
+                                    }
                                 </Tooltip>
                             )
                             : <RadioButtonUnchecked fontSize="small" color="disabled" />
