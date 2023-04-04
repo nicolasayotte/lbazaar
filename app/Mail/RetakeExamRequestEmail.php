@@ -42,7 +42,6 @@ class RetakeExamRequestEmail extends Mailable
      */
     public function envelope()
     {
-        // dd($this->userExam->course->professor->email);
         return new Envelope(
             subject: 'Exam Retake Request from '.$this->userExam->user->first_name . ' ' . $this->userExam->user->last_name,
             from: new Address($this->settingsRepository->getSetting('no-reply-email')),

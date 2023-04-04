@@ -147,7 +147,6 @@ class ExamController extends Controller
 
     public function result($course_id, $schedule_id, $id)
     {
-
         $result = UserExam::with('exam')->findOrFail($id);
         $examPassingPercentage = Setting::where('slug', 'exam-passing-percentage')->first();
 

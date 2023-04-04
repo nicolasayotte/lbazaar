@@ -19,7 +19,6 @@ const StudentsTable = ({ data, exams, course, schedule, handleOnClear }) => {
 
             return exams && exams.length > 0 && exams.map((exam, index) => {
                 const userExam = userExams.find(userExam => userExam.exam_id == exam.id && userExam.course_schedule_id == schedule.id) || null
-                console.log(userExam)
                 const isPassedExam = userExam ? userExam.is_passed : 0
 
                 return (

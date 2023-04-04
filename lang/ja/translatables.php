@@ -51,7 +51,7 @@ return [
             'submit'=> 'Exam提出完了',
             'update'=> 'Exam更新完了',
             'cleared' => 'Exam successfully cleared (JA)',
-            'request_retake' => 'Exam Retake successfully sent (JA)'
+            'request_retake' => 'Exam Retake request successfully sent (JA)'
         ],
         'feedback'=> 'フィードバックは正常に保存されました',
         'inquiry'=> 'お問い合わせは正常に送信されました',
