@@ -29,21 +29,22 @@ const Result = () => {
                                 <Typography variant="subtitle2" textAlign="center" children={`${translatables.texts.exam_passing_percentage} ${passing_percentage}%`} />
 
                             </Box>
-                            <Box display="flex" justifyContent="space-between" alignItems="center" mb={1} width="100%">
+                            <Box display="flex" justifyContent={ isPassed ? 'center' : 'space-between' } alignItems="center" mb={1} width="100%">
                                 <Link href={getRoute('course.attend.index', { course_id: result.exam.course_id, schedule_id: result.course_schedule_id })}>
                                     <Button
                                         variant="contained"
                                         children={translatables.texts.back_to_class}
                                     />
                                 </Link>
-                                <Link href={getRoute('course.attend.index', { course_id: result.exam.course_id, schedule_id: result.course_schedule_id })}>
-                                    <Button
-                                        variant="contained"
-                                        children={translatables.texts.request_retake}
-                                    />
-                                </Link>
+                                { !isPassed &&
+                                    <Link href={getRoute('mypage.user_exam.retake', { user_exam_id: result.id })}>
+                                        <Button
+                                            variant="contained"
+                                            children={translatables.texts.request_retake}
+                                        />
+                                    </Link>
+                                }
                             </Box>
-
                         </CardContent>
                     </Card>
                 </Grid>

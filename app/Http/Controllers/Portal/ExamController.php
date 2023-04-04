@@ -147,6 +147,7 @@ class ExamController extends Controller
 
     public function result($course_id, $schedule_id, $id)
     {
+
         $result = UserExam::with('exam')->findOrFail($id);
         $examPassingPercentage = Setting::where('slug', 'exam-passing-percentage')->first();
 
@@ -174,4 +175,15 @@ class ExamController extends Controller
 
         return redirect()->back()->with('success', getTranslation('success.exams.cleared'));
     }
+    public function sendRetakeRequestUserExam($user_exam_id)
+    {
+        $userExam = $this->userExamRepository->with(['user', 'exam', 'course'])->findOrFail($user_exam_id);
+
+        if (!$this->emailService->sendRequestRetakeNotification($userExam)) {
+            return redirect()->back()->with('error', getTranslation('error'));
+        }
+
+        return redirect()->back()->with('success', getTranslation('success.exams.request_retake'));
+    }
+
 }

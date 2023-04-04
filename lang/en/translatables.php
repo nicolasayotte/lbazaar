@@ -73,7 +73,8 @@ return [
             'delete' => 'Exam successfully deleted',
             'update' => 'Exam successfully updated',
             'submit' => 'Exam successfully submitted',
-            'cleared' => 'Exam successfully cleared'
+            'cleared' => 'Exam successfully cleared',
+            'request_retake' => 'Exam Retake successfully sent'
         ],
         'schedules' => [
             'create' => 'Schedule successfully created',

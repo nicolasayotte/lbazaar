@@ -274,6 +274,9 @@ Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function()
     });
 
 
+    # request retake User exam
+    Route::get('/user-exam/{user_exam_id}/retake', [ExamController::class, 'sendRetakeRequestUserExam'])->name('user_exam.retake');
+
     # teacher schedule
     Route::get('/schedules', [CourseScheduleController::class, 'teacherSchedules'])->name('schedules');
 

@@ -2,6 +2,7 @@
 
 namespace App\Services\API;
 
+use App\Mail\RetakeExamRequestEmail;
 use App\Models\UserWallet;
 use App\Models\WalletTransactionHistory;
 use Illuminate\Foundation\Auth\User;
@@ -60,6 +61,19 @@ class EmailService
     {
         try {
             Mail::send(new ExamCleared($userExam));
+        } catch(\Exception $e) {
+            Log::error($e->getMessage());
+
+            return false;
+        }
+
+        return true;
+    }
+
+    public function sendRequestRetakeNotification(UserExam $userExam)
+    {
+        try {
+            Mail::send(new RetakeExamRequestEmail($userExam));
         } catch(\Exception $e) {
             Log::error($e->getMessage());
 
