@@ -1,6 +1,6 @@
 import { Box, Container, Grid, Typography, Tooltip, Avatar, Stack, Chip, useMediaQuery, useTheme } from "@mui/material"
 import { usePage } from "@inertiajs/inertia-react"
-import { CalendarMonth, LocationOn, LibraryBooks, TipsAndUpdates, FormatQuote, School, Work, Verified, WorkspacePremium } from "@mui/icons-material"
+import { CalendarMonth, LocationOn, LibraryBooks, TipsAndUpdates, FormatQuote, School, Work, Verified } from "@mui/icons-material"
 import { Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineSeparator, timelineItemClasses } from "@mui/lab"
 
 const View  = () => {
@@ -39,7 +39,7 @@ const View  = () => {
             {
                 label: translatables.texts.badges,
                 value: user.badges && user.badges.length > 0 ? user.badges.length : 0,
-                icon: <WorkspacePremium fontSize="small" color="warning" />,
+                icon: <Verified fontSize="small" color="warning" />,
                 roles: ['teacher', 'student']
             }
         ]
