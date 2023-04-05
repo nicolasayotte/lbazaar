@@ -1,4 +1,4 @@
-import { Box, Container, Grid, Typography, Tooltip, Avatar, Stack, Chip, useMediaQuery, useTheme } from "@mui/material"
+import { Box, Container, Grid, Typography, Tooltip, Avatar, Stack, Chip, useMediaQuery, useTheme, Divider } from "@mui/material"
 import { usePage } from "@inertiajs/inertia-react"
 import { CalendarMonth, LocationOn, LibraryBooks, TipsAndUpdates, FormatQuote, School, Work, Verified } from "@mui/icons-material"
 import { Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineSeparator, timelineItemClasses } from "@mui/lab"
@@ -108,18 +108,20 @@ const View  = () => {
             ))
 
             return (
-                <Grid item xs={12}>
-                    <Typography variant="h5" display="flex" alignItems="center" justifyContent="center">
-                        <Icon fontSize="large" sx={{ mr: 1 }} />
-                        <span>{ title }</span>
-                    </Typography>
+                <Grid item xs={12} justifyContent="center">
+                    <Divider>
+                        <Typography variant="h5" display="flex" children={title} />
+                    </Divider>
                     <Timeline
-                        sx={useMediaQuery(theme.breakpoints.down('md')) && {
-                            [`& .${timelineItemClasses.root}:before`]: {
-                                flex: 0,
-                                padding: 0,
+                        sx={useMediaQuery(theme.breakpoints.down('md'))
+                            ? {
+                                [`& .${timelineItemClasses.root}:before`]: {
+                                    flex: 0,
+                                    padding: 0,
+                                }
                             }
-                        }}
+                            : {}
+                        }
                         position={useMediaQuery(theme.breakpoints.down('md')) ? 'right' : 'alternate'}
                         children={children}
                     />
@@ -130,7 +132,7 @@ const View  = () => {
 
     const UserEducation = () => {
 
-        if (!is_teacher) return
+        if (!is_teacher || (user.user_education && user.user_education.length <= 0)) return
 
         const userEducation = user.user_education && user.user_education.length > 0 && user.user_education.map(education => (
             <>
@@ -145,7 +147,7 @@ const View  = () => {
 
     const UserWorkHistory = () => {
 
-        if (!is_teacher) return
+        if (!is_teacher || (user.user_work_history && user.user_work_history.length <= 0)) return
 
         const userWorkHistory = user.user_work_history && user.user_work_history.length > 0 && user.user_work_history.map(workHistory => (
             <>
@@ -164,7 +166,7 @@ const View  = () => {
 
     const UserCertification = () => {
 
-        if (!is_teacher) return
+        if (!is_teacher || (user.user_certification && user.user_certification.length <= 0)) return
 
         const userCertification = user.user_certification && user.user_certification.length > 0 && user.user_certification.map(certification => (
             <>
@@ -180,36 +182,34 @@ const View  = () => {
     return (
         <Box py={5}>
             <Container>
-                <Grid container minHeight="100vh">
-                    <Grid item xs={12} container spacing={useMediaQuery(theme.breakpoints.down('md')) ? 2 : 4} justifyContent="center">
-                        <Grid item xs={12} textAlign="center">
-                            <Avatar
-                                src={user.image}
-                                variant="circular"
-                                sx={{
-                                    width: 200,
-                                    height: 200,
-                                    maxWidth: '100%',
-                                    mx: 'auto'
-                                }}
-                            />
-                            <Typography variant="h4" children={user.fullname} sx={{ mt: 2 }} />
-                            <Typography variant="caption" color="primary" sx={{ display: 'block' }}>
-                                <a href={`mailto:${user.email}`} target="_blank" children={user.email} />
-                            </Typography>
-                            <UserInformation />
-                        </Grid>
-                        {
-                            is_teacher && (
-                                <>
-                                    <About />
-                                    <UserEducation />
-                                    <UserWorkHistory />
-                                    <UserCertification />
-                                </>
-                            )
-                        }
+                <Grid container minHeight="100vh" justifyContent="center" spacing={useMediaQuery(theme.breakpoints.down('md')) ? 2 : 4}>
+                    <Grid item xs={12} textAlign="center">
+                        <Avatar
+                            src={user.image}
+                            variant="circular"
+                            sx={{
+                                width: 200,
+                                height: 200,
+                                maxWidth: '100%',
+                                mx: 'auto'
+                            }}
+                        />
+                        <Typography variant="h4" children={user.fullname} sx={{ mt: 2 }} />
+                        <Typography variant="caption" color="primary" sx={{ display: 'block' }}>
+                            <a href={`mailto:${user.email}`} target="_blank" children={user.email} />
+                        </Typography>
+                        <UserInformation />
                     </Grid>
+                    {
+                        is_teacher && (
+                            <>
+                                <About />
+                                <UserEducation />
+                                <UserWorkHistory />
+                                <UserCertification />
+                            </>
+                        )
+                    }
                 </Grid>
             </Container>
         </Box>
