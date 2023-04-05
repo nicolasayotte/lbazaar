@@ -155,12 +155,12 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function userEducation()
     {
-        return $this->hasMany(UserEducation::class, 'user_id', 'id')->orderBy('end_date', 'desc');
+        return $this->hasMany(UserEducation::class, 'user_id', 'id');
     }
 
     public function userWorkHistory()
     {
-        return $this->hasMany(UserWorkHistory::class, 'user_id', 'id')->orderBy('end_date', 'desc');
+        return $this->hasMany(UserWorkHistory::class, 'user_id', 'id');
     }
 
     public function userWallet()
