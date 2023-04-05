@@ -88,7 +88,7 @@ class CourseScheduleRepository extends BaseRepository
         $sortBy    = $sortFilterArr[0];
         $sortOrder = $sortFilterArr[1];
 
-        return CourseHistory::with(['user.exams', 'user.feedbacks'])
+        return CourseHistory::with(['user.exams', 'user.feedbacks', 'user.country'])
                     ->select([
                         'users.id',
                         'users.id as user_id',

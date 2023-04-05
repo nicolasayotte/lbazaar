@@ -1,7 +1,7 @@
 
 import routes from "../../helpers/routes.helper"
 import { Typography, Box, Card, List, IconButton, Drawer, ListItem, ListItemButton, ListItemIcon, Stack, Toolbar, Divider} from "@mui/material"
-import { Article, Logout, History, MenuBook, ManageAccounts, Menu, Wallet, LocalPolice as Badge, HistoryEdu as Teaching } from "@mui/icons-material"
+import { Article, Logout, History, MenuBook, ManageAccounts, Menu, Wallet, Verified as Badge, HistoryEdu as Teaching } from "@mui/icons-material"
 import { useState } from "react"
 import { Link, usePage } from "@inertiajs/inertia-react"
 

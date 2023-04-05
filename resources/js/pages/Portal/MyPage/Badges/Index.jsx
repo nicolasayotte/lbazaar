@@ -1,14 +1,12 @@
 
 import routes from "../../../../helpers/routes.helper"
 import { useForm, usePage } from "@inertiajs/inertia-react"
-import { Box, Grid, Pagination, Button, Typography } from "@mui/material"
+import { Box, Grid, Pagination, Typography } from "@mui/material"
 import TableLoader from "../../../../components/common/TableLoader"
 import BadgesTable from "./components/BadgesTable"
-import { Link } from "@inertiajs/inertia-react"
-import { getRoute } from "../../../../helpers/routes.helper"
-import { LocalPolice as Badge } from "@mui/icons-material"
+import { Verified as Badge } from "@mui/icons-material"
 
-const Index = ({ errors }) => {
+const Index = () => {
 
     const { user_badges, page, translatables, auth, title } = usePage().props
     const { get, processing, transform } = useForm({
@@ -42,12 +40,12 @@ const Index = ({ errors }) => {
                     </Grid>
                     <Grid item xs={12} md='auto'>
                         <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
-
                             <Badge />
                             <Typography
-                                    variant="h6"
-                                    sx={{ display: { xs: 'none', md: 'inline-block' } }}
-                                    children={` ${translatables.texts.total_badges} : ${auth.user.badges.length}`}
+                                variant="h6"
+                                sx={{ display: { xs: 'none', md: 'inline-block' } }}
+                                ml={1}
+                                children={` ${translatables.texts.total_badges} : ${auth.user.badges.length}`}
                             />
                         </Box>
                     </Grid>

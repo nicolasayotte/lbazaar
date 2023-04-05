@@ -78,15 +78,16 @@ class CourseScheduleController extends Controller
         $courseSchedule = $this->courseScheduleRepository->with(['course', 'course.exams'])->findOrFail($id);
 
         return Inertia::render('Portal/CourseSchedules/View', [
-            'course'   => @$courseSchedule->course,
-            'schedule' => @$courseSchedule,
-            'students' => $this->courseScheduleRepository->getStudents($id, $request->all()),
-            'page'     => @$request['page'] ?? 1,
-            'sort'     => @$request['sort'] ?? 'fullname:asc',
-            'keyword'  => @$request['keyword'] ?? '',
-            'title'    => $this->baseTitle . getTranslation('title.schedules.view')
+            'course'     => @$courseSchedule->course,
+            'schedule'   => @$courseSchedule,
+            'students'   => $this->courseScheduleRepository->getStudents($id, $request->all()),
+            'page'       => @$request['page'] ?? 1,
+            'sort'       => @$request['sort'] ?? 'fullname:asc',
+            'keyword'    => @$request['keyword'] ?? '',
+            'title'      => $this->baseTitle . getTranslation('title.schedules.view'),
+            'return_url' => @$request['return_url'] ?? ''
         ])->withViewData([
-            'title'    => $this->baseTitle . getTranslation('title.schedules.view')
+            'title'      => $this->baseTitle . getTranslation('title.schedules.view')
         ]);
     }
 

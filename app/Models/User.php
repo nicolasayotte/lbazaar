@@ -150,7 +150,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function userCertification()
     {
-        return $this->hasMany(UserCertification::class, 'user_id', 'id');
+        return $this->hasMany(UserCertification::class, 'user_id', 'id')->orderBy('awarded_at', 'desc');
     }
 
     public function userEducation()
@@ -212,7 +212,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function badges()
     {
-        return $this->hasMany(UserBadge::class);
+        return $this->hasMany(UserBadge::class, 'user_id', 'id');
     }
 
     public function getImageAttribute($path)

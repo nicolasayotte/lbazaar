@@ -21,6 +21,7 @@
         "@inertiajs/inertia-react": "^0.8.1",
         "@inertiajs/progress": "^0.2.7",
         "@mui/icons-material": "^5.10.9",
+        "@mui/lab": "^5.0.0-alpha.124",
         "@mui/material": "^5.10.12",
         "@mui/x-date-pickers": "^5.0.10",
         "@reduxjs/toolkit": "^1.9.1",

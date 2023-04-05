@@ -4,7 +4,7 @@ import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHe
 import EmptyCard from "../../../../components/common/EmptyCard"
 import { getRoute } from "../../../../helpers/routes.helper"
 
-const StudentsTable = ({ data, exams, course, schedule, handleOnClear }) => {
+const StudentsTable = ({ data, exams, course, schedule, handleOnClear, handleOnView }) => {
 
     const { translatables } = usePage().props
 
@@ -73,11 +73,16 @@ const StudentsTable = ({ data, exams, course, schedule, handleOnClear }) => {
                 { displayUserExams() }
                 { displayUserFeedback() }
                 <TableCell align="center">
-                    <Link href={getRoute('schedules.student.view', { id: schedule.id, student_id: student.id })}>
+                    {/* <Link href={getRoute('schedules.student.view', { id: schedule.id, student_id: student.id })}>
                         <IconButton title={translatables.texts.view}>
                             <Search fontSize="small" />
                         </IconButton>
-                    </Link>
+                    </Link> */}
+                    <Tooltip title={translatables.texts.view}>
+                        <IconButton onClick={() => handleOnView(student.user)}>
+                            <Search fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
                 </TableCell>
             </TableRow>
         )

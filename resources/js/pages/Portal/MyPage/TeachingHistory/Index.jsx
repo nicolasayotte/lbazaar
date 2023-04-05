@@ -4,13 +4,12 @@ import { useForm, usePage } from "@inertiajs/inertia-react"
 import { Box, Grid, Pagination, Card, CardContent, Button } from "@mui/material"
 import TableLoader from "../../../../components/common/TableLoader"
 import ScheduleTable from "./components/ScheduleTable"
-import { useEffect, useState } from "react"
 import Input from "../../../../components/forms/Input"
 import { displaySelectOptions, handleOnSelectChange } from "../../../../helpers/form.helper"
 
-const Index = ({ errors }) => {
+const Index = () => {
 
-    const { schedules, translatables, course, from, to, page, status, sort } = usePage().props
+    const { schedules, translatables, from, to, page, status, sort } = usePage().props
 
     const statusOptions = [
         { name: 'All', value: '' },

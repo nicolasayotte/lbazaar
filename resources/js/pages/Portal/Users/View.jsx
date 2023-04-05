@@ -1,232 +1,216 @@
-import { Box, Card, CardContent, Container, Divider, Grid, Typography, Tooltip, Avatar } from "@mui/material"
-import CertificationTable from "./components/CertificationTable"
-import EducationTable from "./components/EducationTable"
-import WorkHistoryTable from "./components/WorkHistoryTable"
+import { Box, Container, Grid, Typography, Tooltip, Avatar, Stack, Chip, useMediaQuery, useTheme, Divider } from "@mui/material"
 import { usePage } from "@inertiajs/inertia-react"
-import PlayCircleIcon from "@mui/icons-material/PlayCircle"
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
-import LocationOnIcon from '@mui/icons-material/LocationOn'
-import { Email } from "@mui/icons-material"
+import { CalendarMonth, LocationOn, LibraryBooks, TipsAndUpdates, FormatQuote, School, Work, Verified } from "@mui/icons-material"
+import { Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineSeparator, timelineItemClasses } from "@mui/lab"
 
 const View  = () => {
 
     const { user, is_teacher, translatables } = usePage().props
-    const name = (
-        <Typography
-            color = {'grey'}
-            variant="h5"
-            children={`${user.first_name} ${user.last_name}`}
-            style={{ flex: 1 }}
-        />
+
+    const theme = useTheme()
+
+    const UserInformation = () => {
+
+        const items = [
+            {
+                label: translatables.user.specialty,
+                value: user.specialty,
+                icon: <TipsAndUpdates fontSize="small" color="warning" />,
+                roles: ['teacher']
+            },
+            {
+                label: translatables.texts.country,
+                value: user.country.name,
+                icon: <LocationOn fontSize="small" color="primary" />,
+                roles: ['teacher', 'student']
+            },
+            {
+                label: translatables.texts.date_joined,
+                value: user.created_at,
+                icon: <CalendarMonth fontSize="small" color="error" />,
+                roles: ['teacher', 'student']
+            },
+            {
+                label: translatables.texts.classes,
+                value: `${ user.created_courses.length } ${translatables.texts.classes}`,
+                icon: <LibraryBooks fontSize="small" color="success" />,
+                roles: ['teacher']
+            },
+            {
+                label: translatables.texts.badges,
+                value: user.badges && user.badges.length > 0 ? user.badges.length : 0,
+                icon: <Verified fontSize="small" color="warning" />,
+                roles: ['teacher', 'student']
+            }
+        ]
+
+        const informationItems = () => items.map((item, index) => {
+
+            const matchedRoles = user.roles.filter(role => item.roles.includes(role.name))
+
+            if (matchedRoles.length > 0) {
+                return (
+                    <Tooltip key={index} title={item.label}>
+                        <Chip
+                            variant="outlined"
+                            icon={item.icon}
+                            label={item.value}
+                            sx={{
+                                width: { xs: '100%', md: 'auto' }
+                            }}
+                        />
+                    </Tooltip>
+                )
+            }
+        })
+
+        return (
+            <Stack
+                direction={{
+                    xs: 'column',
+                    md: 'row'
+                }}
+                spacing={1}
+                alignItems="center"
+                justifyContent="center"
+                children={informationItems()}
+                sx={{ my: 2 }}
+            />
+        )
+    }
+
+    const About = () => user.about && (
+        <Grid item xs={12}>
+            <Stack direction={{ xs: 'column', md: 'row' }} alignItems="center" spacing={2}>
+                <FormatQuote sx={{ fontSize: { xs: '50px', md: '100px' } }} color="action" />
+                <Typography variant="body1" children={user.about} sx={{ fontStyle: 'italic', textAlign: 'left' }} />
+            </Stack>
+        </Grid>
     )
 
-    const roles = (user) => user.roles && user.roles.length > 0 && user.roles.map((role, index) => (
-        <Typography
-            color = {'primary'}
-            key={index}
-            variant="subtitle2"
-            children={`${role.name.charAt(0).toUpperCase() + role.name.slice(1)}`}
-        />
-    ))
+    const UserInfoTimeLine = ({ data, title, Icon }) => {
 
-    const email = (
-        <Typography
-            color = {'grey'}
-            variant="subtitle2"
-            children={user.email}
-            ml={1}
-        />
-    )
+        if (is_teacher && data && data.length > 0) {
 
-    const country = (
-        <Typography
-            color = {'grey'}
-            variant="subtitle2"
-            children={user.country.name}
-            ml={1}
-        />
-    )
+            const children = data.map((content, index) => (
+                <TimelineItem key={index}>
+                    <TimelineSeparator>
+                        <TimelineDot>
+                            <Icon />
+                        </TimelineDot>
+                        {
+                            index + 1 < data.length &&
+                            <TimelineConnector />
+                        }
+                    </TimelineSeparator>
+                    <TimelineContent children={content} />
+                </TimelineItem>
+            ))
 
-    const joined_date = (
-        <Typography
-            color = {'grey'}
-            variant="subtitle2"
-            children={`Member since ${user.created_at}`}
-            ml={1}
-        />
-    )
+            return (
+                <Grid item xs={12} justifyContent="center">
+                    <Divider>
+                        <Typography variant="h5" display="flex" children={title} />
+                    </Divider>
+                    <Timeline
+                        sx={useMediaQuery(theme.breakpoints.down('md'))
+                            ? {
+                                [`& .${timelineItemClasses.root}:before`]: {
+                                    flex: 0,
+                                    padding: 0,
+                                }
+                            }
+                            : {}
+                        }
+                        position={useMediaQuery(theme.breakpoints.down('md')) ? 'right' : 'alternate'}
+                        children={children}
+                    />
+                </Grid>
+            )
+        }
+    }
 
-    const class_count = (
-        <Typography
-            color = {'grey'}
-            variant="subtitle2"
-            children={`${user.created_courses.length} ${translatables.texts.classes}`}
-            ml={1}
-        />
-    )
+    const UserEducation = () => {
 
-    const class_attending_count = (
-        <Typography
-            color = {'grey'}
-            variant="subtitle2"
-            children={`${user.courses.length} ${translatables.texts.classes_booked}`}
-        />
-    )
+        if (!is_teacher || (user.user_education && user.user_education.length <= 0)) return
 
-    const Certification = (
-        <Typography
-            color = {'grey'}
-            variant="h5"
-            children={translatables.texts.certification}
-            gutterBottom
-        />
-    )
+        const userEducation = user.user_education && user.user_education.length > 0 && user.user_education.map(education => (
+            <>
+                <Typography variant="h6" children={education.degree} />
+                <Typography variant="subtitle1" color="primary" children={education.school} />
+                <Typography variant="caption" color="GrayText" children={`${education.start_date} — ${education.end_date}`} />
+            </>
+        ))
 
-    const Education = (
-        <Typography
-            color = {'grey'}
-            variant="h5"
-            children={translatables.texts.education}
-            gutterBottom
-        />
-    )
-    const Work = (
-        <Typography
-            color = {'grey'}
-            variant="h5"
-            children={translatables.texts.work}
-            gutterBottom
-        />
-    )
+        return <UserInfoTimeLine title={translatables.education.background} data={userEducation} Icon={School} />
+    }
 
-    const about_data = (
-        <Typography
-            color = {'grey'}
-            variant="subtitle2"
-            children={user.about}
-            lineHeight={1.8}
-            gutterBottom
-        />
-    )
+    const UserWorkHistory = () => {
 
-    const About = (
-        <Typography
-            color = {'grey'}
-            variant="h6"
-            children={translatables.user.about}
-            gutterBottom
-            textAlign={{ xs: 'center', md: 'left' }}
-        />
-    )
+        if (!is_teacher || (user.user_work_history && user.user_work_history.length <= 0)) return
 
-    const specialization_data = (
-        <Typography
-            color = {'grey'}
-            variant="subtitle2"
-            children={user.specialty}
-        />
-    )
+        const userWorkHistory = user.user_work_history && user.user_work_history.length > 0 && user.user_work_history.map(workHistory => (
+            <>
+                <Typography variant="h6" children={workHistory.position} />
+                <Typography variant="subtitle1" color="primary" children={workHistory.company} />
+                <Typography variant="caption" color="GrayText" children={`${workHistory.start_date} — ${workHistory.end_date}`} />
+                {
+                    workHistory.description &&
+                    <Typography variant="body2" children={workHistory.description} />
+                }
+            </>
+        ))
 
-    const Specialty = (
-        <Typography
-            color = {'grey'}
-            variant="h6"
-            children={translatables.user.specialty}
-        />
-    )
+        return <UserInfoTimeLine title={translatables.work.history} data={userWorkHistory} Icon={Work} />
+    }
+
+    const UserCertification = () => {
+
+        if (!is_teacher || (user.user_certification && user.user_certification.length <= 0)) return
+
+        const userCertification = user.user_certification && user.user_certification.length > 0 && user.user_certification.map(certification => (
+            <>
+                <Typography variant="h6" children={certification.title} />
+                <Typography variant="subtitle1" color="primary" children={certification.awarded_by} />
+                <Typography variant="caption" color="GrayText" children={certification.awarded_at} />
+            </>
+        ))
+
+        return <UserInfoTimeLine title={translatables.texts.certification} data={userCertification} Icon={Verified} />
+    }
 
     return (
-        <Box sx={{ minHeight: '80.75vh', py: 5 }}>
+        <Box py={5}>
             <Container>
-                <Card>
-                    <CardContent>
-                        <Grid container>
-                            <Grid item xs={12} md={11} mx="auto" py={4}>
-                                <Grid container alignItems="center" spacing={{ xs: 2, md: 5 }}>
-                                    <Grid item xs={12} md={3}>
-                                        <Avatar
-                                            src={user.image}
-                                            variant="circular"
-                                            sx={{
-                                                width: 200,
-                                                height: 200,
-                                                maxWidth: '100%',
-                                                mx: 'auto'
-                                            }}
-                                        />
-                                        <Box textAlign="center" my={2}>
-                                            { name }
-                                            { specialization_data }
-                                            { roles(user) }
-                                        </Box>
-                                    </Grid>
-                                    <Grid item xs={12} md={9}>
-                                        { About }
-                                        { about_data }
-                                        <Divider sx={{ my: 2 }}/>
-                                        <Box display="flex" alignItems="center" mb={1}>
-                                            <Tooltip title="country" arrow>
-                                                <LocationOnIcon/>
-                                            </Tooltip>
-                                            { country }
-                                        </Box>
-                                        <Box display="flex" alignItems="center" mb={1}>
-                                            <Tooltip title="Date Joined" arrow>
-                                                <CalendarMonthIcon/>
-                                            </Tooltip>
-                                            { joined_date }
-                                        </Box>
-                                        <Box display="flex" alignItems="center" mb={1}>
-                                            <Tooltip title="Email" arrow>
-                                                <Email/>
-                                            </Tooltip>
-                                            { email }
-                                        </Box>
-                                        {
-                                            is_teacher &&
-                                            <Box  display="flex" alignItems="center" mb={1}>
-                                                <Tooltip title="Classes" arrow>
-                                                    <PlayCircleIcon/>
-                                                </Tooltip>
-                                                { class_count }
-                                            </Box>
-                                        }
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-                            { is_teacher && (
-                                <Grid item xs={12} md={11} mx="auto" py={1}>
-                                    <Grid container>
-                                        <Grid item xs={12} mx="auto" py={1}>
-                                            <Grid container>
-                                                <Grid item xs={12} mx="auto">
-                                                    { Certification }
-                                                    <CertificationTable data={user.user_certification}/>
-                                                </Grid>
-                                            </Grid>
-                                        </Grid>
-                                        <Grid item xs={12} mx="auto" py={1}>
-                                            <Grid container>
-                                                <Grid item xs={12} mx="auto">
-                                                    { Work }
-                                                    <WorkHistoryTable data={user.user_work_history}/>
-                                                </Grid>
-                                            </Grid>
-                                        </Grid>
-                                        <Grid item xs={12} mx="auto" py={5}>
-                                            <Grid container>
-                                                <Grid item xs={12} mx="auto">
-                                                    { Education }
-                                                    <EducationTable data={user.user_education}/>
-                                                </Grid>
-                                            </Grid>
-                                        </Grid>
-                                    </Grid>
-                                </Grid>
-                            )}
-                        </Grid>
-                    </CardContent>
-                </Card>
+                <Grid container minHeight="100vh" justifyContent="center" spacing={useMediaQuery(theme.breakpoints.down('md')) ? 2 : 4}>
+                    <Grid item xs={12} textAlign="center">
+                        <Avatar
+                            src={user.image}
+                            variant="circular"
+                            sx={{
+                                width: 200,
+                                height: 200,
+                                maxWidth: '100%',
+                                mx: 'auto'
+                            }}
+                        />
+                        <Typography variant="h4" children={user.fullname} sx={{ mt: 2 }} />
+                        <Typography variant="caption" color="primary" sx={{ display: 'block' }}>
+                            <a href={`mailto:${user.email}`} target="_blank" children={user.email} />
+                        </Typography>
+                        <UserInformation />
+                    </Grid>
+                    {
+                        is_teacher && (
+                            <>
+                                <About />
+                                <UserEducation />
+                                <UserWorkHistory />
+                                <UserCertification />
+                            </>
+                        )
+                    }
+                </Grid>
             </Container>
         </Box>
     )

@@ -9,10 +9,11 @@ import Input from "../../../components/forms/Input"
 import { displaySelectOptions, handleOnChange, handleOnSelectChange } from "../../../helpers/form.helper"
 import routes, { getRoute } from "../../../helpers/routes.helper"
 import StudentsTable from "./components/StudentsTable"
+import UserDialog from "../../../components/common/UserDialog"
 
 const View = () => {
 
-    const { students, course, translatables, schedule, keyword, sort, page } = usePage().props
+    const { students, course, translatables, schedule, keyword, sort, page, return_url } = usePage().props
 
     const sortOptions = [
         { name: translatables.filters.name.asc, value: 'fullname:asc' },
@@ -24,7 +25,8 @@ const View = () => {
     const { data: filters, setData: setFilters, transform, processing, get } = useForm({
         keyword,
         sort,
-        page
+        page,
+        return_url
     })
 
     const [dialog, setDialog] = useState({
@@ -33,6 +35,8 @@ const View = () => {
         text: '',
         submitUrl: '',
         method: '',
+        type: '',
+        user: null
     })
 
     const handleOnPaginate = (e, page) => {
@@ -50,6 +54,15 @@ const View = () => {
         get(getRoute('schedules.view', { id: schedule.id }))
     }
 
+    const handleOnViewUser = user => {
+        setDialog(dialog => ({
+            ...dialog,
+            user,
+            open: true,
+            type: 'view-user'
+        }))
+    }
+
     const handleOnDone = () => {
         setDialog(dialog => ({
             ...dialog,
@@ -57,7 +70,8 @@ const View = () => {
             title: translatables.title.schedules.index,
             text: translatables.confirm.schedules.update,
             method: 'patch',
-            submitUrl: getRoute('schedules.status.update', { id: schedule.id })
+            submitUrl: getRoute('schedules.status.update', { id: schedule.id }),
+            type: 'mark-done'
         }))
     }
 
@@ -68,7 +82,8 @@ const View = () => {
             title: translatables.title.clear_exam,
             text: translatables.confirm.exams.answers.delete,
             method: 'delete',
-            submitUrl: getRoute('exams.answers.delete', { id })
+            submitUrl: getRoute('exams.answers.delete', { id }),
+            type: 'clear-exam'
         }))
     }
 
@@ -89,13 +104,31 @@ const View = () => {
 
     const isLive = course.is_live
 
-    return (
-        <>
+    const returnUrl = return_url || getRoute('mypage.course.manage_class.schedules', { id: course.id })
+
+    const Dialogs = () => {
+
+        if (dialog.type === 'view-user') {
+            return (
+                <UserDialog
+                    {...dialog}
+                    handleClose={handleOnDialogClose}
+                />
+            )
+        }
+
+        return (
             <ConfirmationDialog
                 {...dialog}
                 handleClose={handleOnDialogClose}
                 handleConfirm={handleOnDialogSubmit}
             />
+        )
+    }
+
+    return (
+        <>
+            <Dialogs />
             <Container sx={{ py: 5, minHeight: '100vh' }}>
                 <Grid container spacing={2} alignItems="center">
                     <Grid item xs={12} md={schedule.is_completed ? 10 : 8}>
@@ -111,7 +144,7 @@ const View = () => {
                     </Grid>
                     <Grid item xs={12} md={schedule.is_completed ? 2 : 4}>
                         <Stack direction={{ xs: 'column-reverse', md: 'row' }} spacing={2} alignItems="center">
-                            <Link href={getRoute('mypage.course.manage_class.schedules', { id: course.id })} style={{ width: '100%' }}>
+                            <Link href={returnUrl} style={{ width: '100%' }}>
                                 <Button
                                     variant="outlined"
                                     children={translatables.texts.back}
@@ -207,6 +240,7 @@ const View = () => {
                                     course={course}
                                     schedule={schedule}
                                     handleOnClear={handleOnClearExam}
+                                    handleOnView={handleOnViewUser}
                                 />
                             )
                         }
