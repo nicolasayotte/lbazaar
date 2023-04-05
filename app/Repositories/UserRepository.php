@@ -78,7 +78,7 @@ class UserRepository extends BaseRepository
 
     public function getOne(int $id)
     {
-        return $this->model->with('courses', 'createdCourses', 'userEducation', 'userCertification', 'userWorkHistory', 'roles', 'country', 'userWallet')->findOrFail($id);
+        return $this->model->with('courses', 'createdCourses', 'userEducation', 'userCertification', 'userWorkHistory', 'roles', 'country', 'userWallet', 'badges')->findOrFail($id);
     }
 
     public function getStudents(int $id)

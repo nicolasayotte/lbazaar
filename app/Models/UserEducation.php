@@ -25,6 +25,6 @@ class UserEducation extends Model
 
     public function getEndDateAttribute($value)
     {
-        return Carbon::parse($value)->format('M j, Y');
+        return @$value ? Carbon::parse($value)->format('M j, Y') : 'Current';
     }
 }
