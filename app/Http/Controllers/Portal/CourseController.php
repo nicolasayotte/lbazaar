@@ -10,6 +10,7 @@ use App\Mail\CourseBooking;
 use App\Models\CourseHistory;
 use App\Models\CourseSchedule;
 use App\Models\Setting;
+use App\Models\UserExam;
 use App\Models\WalletTransactionHistory;
 use App\Models\CourseType;
 use App\Models\Status;
