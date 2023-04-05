@@ -12,7 +12,7 @@ import StudentsTable from "./components/StudentsTable"
 
 const View = () => {
 
-    const { students, course, translatables, schedule, keyword, sort, page } = usePage().props
+    const { students, course, translatables, schedule, keyword, sort, page, return_url } = usePage().props
 
     const sortOptions = [
         { name: translatables.filters.name.asc, value: 'fullname:asc' },
@@ -24,7 +24,8 @@ const View = () => {
     const { data: filters, setData: setFilters, transform, processing, get } = useForm({
         keyword,
         sort,
-        page
+        page,
+        return_url
     })
 
     const [dialog, setDialog] = useState({
@@ -89,6 +90,8 @@ const View = () => {
 
     const isLive = course.is_live
 
+    const returnUrl = return_url || getRoute('mypage.course.manage_class.schedules', { id: course.id })
+
     return (
         <>
             <ConfirmationDialog
@@ -111,7 +114,7 @@ const View = () => {
                     </Grid>
                     <Grid item xs={12} md={schedule.is_completed ? 2 : 4}>
                         <Stack direction={{ xs: 'column-reverse', md: 'row' }} spacing={2} alignItems="center">
-                            <Link href={getRoute('mypage.course.manage_class.schedules', { id: course.id })} style={{ width: '100%' }}>
+                            <Link href={returnUrl} style={{ width: '100%' }}>
                                 <Button
                                     variant="outlined"
                                     children={translatables.texts.back}

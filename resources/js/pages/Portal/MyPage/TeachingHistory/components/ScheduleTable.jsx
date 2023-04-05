@@ -41,7 +41,7 @@ const ScheduleTable = ({ data, handleOnDelete }) => {
                 </TableCell>
                 <TableCell>
                     <Stack direction="row" spacing={2} justifyContent="center">
-                        <Link href={getRoute('schedules.view', { id: schedule.id })}>
+                        <Link href={getRoute('schedules.view', { id: schedule.id }) + `?return_url=${encodeURIComponent(window.location.href)}`}>
                             <IconButton size="small" title={translatables.texts.view}>
                                 <Search fontSize="inherit" />
                             </IconButton>
