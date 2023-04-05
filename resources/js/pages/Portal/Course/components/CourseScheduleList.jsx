@@ -44,6 +44,20 @@ const CourseScheduleList = ({ data, handleOnBook, handleOnCancelBook }) => {
 
             if (!isLoggedIn) return
 
+            // View Schedule Button
+            if (isLoggedIn && auth.user.id == row.course.professor_id) {
+                return (
+                    <Link href={getRoute('schedules.view', { id: row.id }) + `?return_url=${encodeURIComponent(window.location.href)}` }>
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            children={translatables.title.schedules.view}
+                            size="large"
+                        />
+                    </Link>
+                )
+            }
+
             // Book Button
             if (!isBooked) {
 

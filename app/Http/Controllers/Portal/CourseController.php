@@ -125,13 +125,21 @@ class CourseController extends Controller
     public function book($schedule_id)
     {
         $schedule = CourseSchedule::find($schedule_id)->load('course');
-        $isBooked = count($this->courseHistoryRepository->findByUserAndCourseScheduleID(auth()->user()->id, $schedule_id)) > 0;
-        $isLive = $schedule->course->is_live;
+
+        if ($schedule->course->professor_id == auth()->user()->id) {
+            return redirect()->back()->with('error', getTranslation('error'));
+        }
+
+        $isBooked      = count($this->courseHistoryRepository->findByUserAndCourseScheduleID(auth()->user()->id, $schedule_id)) > 0;
+        $isLive        = $schedule->course->is_live;
         $isFullyBooked = $isLive ? count($this->courseHistoryRepository->findByCourseScheduleID($schedule_id)) == $schedule->max_participant : false;
-        $userWallet = auth()->user()->userWallet()->first();
-        $adminWallet = $this->userRepository->getAdmin()->userWallet()->first();
+
+        $userWallet    = auth()->user()->userWallet()->first();
+        $adminWallet   = $this->userRepository->getAdmin()->userWallet()->first();
         $teacherWallet = $schedule->course->professor()->first()->userWallet()->first();
+
         $adminCommissionSettings = Setting::where('slug', 'admin-commission')->first();
+
         if (!$isBooked && !$isFullyBooked && ($userWallet->points >= $schedule->course->price)) {
             $courseHistory = CourseHistory::create([
                 'course_schedule_id' => $schedule->id,
