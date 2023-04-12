@@ -100,4 +100,26 @@ or check official [docs](https://laravel.com/docs/9.x/sail)
     - `export DOCKER_BUILDKIT=0`
 - Execute build script. It will as for Github username and token (generated from step 1)
     - `./staging.sh`
-- Check https://stage.l-e-bazaar.com/ to make sure changes have been applied
+- Check https://stage.l-e-bazaar.com/ to make sure changes have been
+
+## Production Deployment
+- First, create a Github token [here](https://github.com/settings/tokens). (One time only)
+    - Tokens(Classic)
+    - Make sure expiration is long enough or no expiration at all
+- SSH into the server (Ask Admin for pem file)
+    - `ssh -i prod-lebazaar.pem ubuntu@54.249.86.195`
+- Go to project docker-build directory:
+    - `cd /var/www/groundfloor/docker-build`
+- run as root
+    - `sudo su`
+- allow docker not load cache
+    - `export DOCKER_BUILDKIT=0`
+- Execute build script. It will as for Github username and token (generated from step 1)
+    - for patch `./production.sh -v patch`
+    - for minor changes `./production.sh -v minor`
+    - for major changes `./production.sh -v major`
+- Check https://stage.l-e-bazaar.com/ to make sure changes have been
+
+
+
+git tag -a v1.0.0 -m "git log —pretty=format:%s v1.0.0..HEAD --no-merges"
