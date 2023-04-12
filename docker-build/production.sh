@@ -54,7 +54,7 @@ NEEDS_TAG=`git describe --contains $GIT_COMMIT 2>/dev/null`
 
 #only tag if no tag already
 if [ -z "$NEEDS_TAG" ]; then
-  git tag -a $NEW_TAG -m "Version $NEW_TAG release" -m "git log —pretty=format:%s $CURRENT_VERSION --no-merges"
+  git tag -a $NEW_TAG -m "Version $NEW_TAG release" -m `git log --pretty=format:%s $CURRENT_VERSION --no-merges`
   echo "Tagged with $NEW_TAG"
   git push --tags
   git push
