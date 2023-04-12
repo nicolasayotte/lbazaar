@@ -7,7 +7,7 @@ services:
             - 443:443
         volumes:
             - /var/.secrets/.env.production:/app/.env:ro
-            - ../nginx/vhost.conf:/opt/docker/etc/nginx/vhost.conf
+            - ./nginx/vhost.conf:/opt/docker/etc/nginx/vhost.conf
             - /var/log/app:/app/storage/logs
             - /var/log/nginx/:/var/log/nginx
         environment:
