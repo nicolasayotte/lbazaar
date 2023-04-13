@@ -19,7 +19,7 @@ const TopPage = () => {
             imagePosition={imagePosition}
         />
     ))
-
+    const hasCourses = courses.length > 0
     const displayTeachers = teachers => teachers && teachers.length > 0 && teachers.map(teacher => (
         <User key={teacher.id} user={teacher}/>
     ))
@@ -59,24 +59,28 @@ const TopPage = () => {
                 </Container>
             </Header>
             <Container>
-                <Grid container spacing={2}>
-                    <Grid item xs={12} md={8}>
-                        <Typography variant="h5" gutterBottom children={translatables.texts.featured_classes} />
-                        { displayCourses(courses) }
-                        <Box textAlign="center">
-                            <Link href={routes["course.index"]}>
-                                <Button sx={{mt: 2, mb: 2}} variant="contained" disableElevation>
-                                   { translatables.texts.browse_classes }
-                                </Button>
-                            </Link>
-                        </Box>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                        <Typography variant="h5" gutterBottom children={translatables.texts.coming_soon} />
-                        { displayCourses(upcomingCourses, false, 'id', 'top') }
-                        <Typography variant="h5" gutterBottom children={translatables.texts.featured_teachers} />
-                        { displayTeachers(teachers) }
-                    </Grid>
+                <Grid container spacing={2} sx={{ minHeight: { xs: '150px', md: '400px' }}}>
+                    { hasCourses &&
+                        <Grid item xs={12} md={8}>
+                            <Typography variant="h5" gutterBottom children={translatables.texts.featured_classes} />
+                            { displayCourses(courses) }
+                            <Box textAlign="center">
+                                <Link href={routes["course.index"]}>
+                                    <Button sx={{mt: 2, mb: 2}} variant="contained" disableElevation>
+                                    { translatables.texts.browse_classes }
+                                    </Button>
+                                </Link>
+                            </Box>
+                        </Grid>
+                    }
+                    { hasCourses &&
+                        <Grid item xs={12} md={4}>
+                            <Typography variant="h5" gutterBottom children={translatables.texts.coming_soon} />
+                            { displayCourses(upcomingCourses, false, 'id', 'top') }
+                            <Typography variant="h5" gutterBottom children={translatables.texts.featured_teachers} />
+                            { displayTeachers(teachers) }
+                        </Grid>
+                    }
                 </Grid>
             </Container>
         </Box>
