@@ -118,8 +118,5 @@ or check official [docs](https://laravel.com/docs/9.x/sail)
     - for patch `./production.sh -v patch`
     - for minor changes `./production.sh -v minor`
     - for major changes `./production.sh -v major`
-- Check https://stage.l-e-bazaar.com/ to make sure changes have been
+- Check https://l-e-bazaar.com/ to make sure changes have been
 
-
-
-git tag -a v1.0.0 -m "git log —pretty=format:%s v1.0.0..HEAD --no-merges"
