@@ -93,10 +93,9 @@ class CourseController extends Controller
                 'status'                => @$request['status'] ?? '',
                 'language'              => @$request['language'] ?? '',
                 'professor_id'          => @$request['professor_id'] ?? '',
-                'title'                 => 'Browse Courses'
+                'title'                 => getTranslation('texts.browse_classes')
             ])->withViewData([
-                'title'       => 'Browse Courses',
-                'description' => 'Course Lists'
+                'title'                 => getTranslation('texts.browse_classes'),
             ]);
     }
 
@@ -114,12 +113,17 @@ class CourseController extends Controller
             'feedbacks'        => $feedbacks,
             'isBooked'         => auth()->user() && auth()->user()->isCourseBooked($id),
             'hasFeedback'      => auth()->user() && auth()->user()->hasFeedback($id),
-            'title'            => $course->title,
             'feedbackCount'    => $feedbackCount,
-            'feedbacksPerPage' => CourseFeedbackRepository::PER_PAGE
+            'feedbacksPerPage' => CourseFeedbackRepository::PER_PAGE,
+            'title'            => $course->title,
+            'description'      => $course->raw_description,
+            'author'           => $course->professor->fullname,
+            'keywords'         => implode(', ', [$course->title, $course->courseCategory->name])
         ])->withViewData([
             'title'            => $course->title,
-            'description'      => 'Course Details'
+            'description'      => $course->raw_description,
+            'author'           => $course->professor->fullname,
+            'keywords'         => implode(', ', [$course->title, $course->courseCategory->name])
         ]);
     }
 

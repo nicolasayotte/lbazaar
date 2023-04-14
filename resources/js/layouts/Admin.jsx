@@ -5,19 +5,20 @@ import { useState } from "react"
 import AdminNavbar from "../components/includes/AdminNavbar"
 import Toaster from "../components/includes/Toaster"
 import AdminTheme from "../themes/admin.theme"
+import Meta from "../components/common/Meta"
 
 const Admin = ({children}) => {
 
     const [drawerWidth, setDrawerWidth] = useState(300)
 
-    const { isLoggedIn, title } = usePage().props
+    const { isLoggedIn } = usePage().props
 
     const Layout = ({ children }) => {
 
         if (isLoggedIn) {
             return (
                 <>
-                    <Head title={title} />
+                    <Meta />
                     <ThemeProvider theme={AdminTheme}>
                         <AdminNavbar
                             drawerWidth={drawerWidth}
@@ -41,7 +42,7 @@ const Admin = ({children}) => {
 
         return (
             <>
-                <Head title={title} />
+                <Meta />
                 {children}
                 <Toaster />
             </>

@@ -4,6 +4,7 @@ import Navbar from "../components/includes/Navbar";
 import Toaster from "../components/includes/Toaster";
 import MyPageSideBar from "../components/includes/MyPageSideBar"
 import { Head, usePage } from "@inertiajs/inertia-react"
+import Meta from "../components/common/Meta";
 
 const Layout = ({ children }) => {
 
@@ -13,7 +14,7 @@ const Layout = ({ children }) => {
 
     return (
         <>
-            <Head title={title} />
+            <Meta titleProps={myPageTitle} />
             <Navbar />
             <Container sx={{ py: 4, minHeight: '100vh' }}>
                 <Grid container spacing={2}>
