@@ -23,13 +23,14 @@ class ExportCourseHistory implements WithMultipleSheets
     public function sheets(): array
     {
         $sheets = [];
-
+        $courseHistoryData = new Collection();
         foreach($this->users as $user) {
-            $courseHistoryData = new Collection();
+            // $courseHistoryData = new Collection();
             $courseHistories = $this->courseHistoryRepository->search(new Request(), $user->id);
 
             foreach ($courseHistories as $courseHistory) {
                 $courseHistoryData->add([
+                    'Email' => $user->email,
                     'Classes'=> $courseHistory['title'],
                     'Type'=>$courseHistory['type'],
                     'Category'=>$courseHistory['category'],
@@ -40,9 +41,10 @@ class ExportCourseHistory implements WithMultipleSheets
                 ]);
             }
             if (count($courseHistories) > 0 ) {
-                $sheets[] = new ExportCourseHistorySheet($courseHistoryData, $user->email);
+                // $sheets[] = new ExportCourseHistorySheet($courseHistoryData, $user->email);
             }
         }
+        $sheets[] = new ExportCourseHistorySheet($courseHistoryData, 'Class History');
         if (!(count($sheets)  > 0)) {
             $sheets[] = new ExportCourseHistorySheet(new Collection(), 'no data');
         }
