@@ -160,19 +160,19 @@ class UserController extends Controller
         if($request->has('export_type')) {
             switch($request->get('export_type')) {
                 case(User::EXPORT_OPTIONS_WALLET_TRANSACTION_ID):
-                    $excel = Excel::download(new ExportWalletHistory($users), "Wallet History $currentDate.xlsx", \Maatwebsite\Excel\Excel::XLSX);
+                    $excel = Excel::download(new ExportWalletHistory($users), "Wallet History $currentDate.csv", \Maatwebsite\Excel\Excel::CSV);
                     break;
                 case(User::EXPORT_OPTIONS_CLASS_HISTORY_ID):
-                    $excel = Excel::download(new ExportCourseHistory($users), "Class History $currentDate.xlsx", \Maatwebsite\Excel\Excel::XLSX);
+                    $excel = Excel::download(new ExportCourseHistory($users), "Class History $currentDate.csv", \Maatwebsite\Excel\Excel::CSV);
                     break;
                 case(User::EXPORT_OPTIONS_TEACHING_HISTORY_ID):
-                    $excel = Excel::download(new ExportTeachingHistory($users), "Teaching History $currentDate.xlsx", \Maatwebsite\Excel\Excel::XLSX);
+                    $excel = Excel::download(new ExportTeachingHistory($users), "Teaching History $currentDate.csv", \Maatwebsite\Excel\Excel::CSV);
                     break;
                 case(User::EXPORT_OPTIONS_BADGES_HISTORY_ID):
-                    $excel = Excel::download(new ExportBadges($users), "Badges $currentDate.xlsx", \Maatwebsite\Excel\Excel::XLSX);
+                    $excel = Excel::download(new ExportBadges($users), "Badges $currentDate.csv", \Maatwebsite\Excel\Excel::CSV);
                     break;
                 default:
-                    $excel = Excel::download(new ExportCourseHistory($users), "Class History $currentDate.xlsx", \Maatwebsite\Excel\Excel::XLSX);
+                    $excel = Excel::download(new ExportCourseHistory($users), "Class History $currentDate.csv", \Maatwebsite\Excel\Excel::CSV);
             }
         }
 

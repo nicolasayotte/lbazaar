@@ -25,13 +25,14 @@ class ExportTeachingHistory implements WithMultipleSheets
     public function sheets(): array
     {
         $sheets = [];
-
+        $teachingHistoryData = new Collection();  //comment to make each tab per user
         foreach($this->users as $user) {
-            $teachingHistoryData = new Collection();
+            // $teachingHistoryData = new Collection(); // uncomment to make each tab per user
             $teachingHistories = $this->courseScheduleRepository->get(null, new Request, $user->id);;
 
             foreach ($teachingHistories as $teachingHistory) {
                 $teachingHistoryData->add([
+                    'Email' => $user->email,
                     'Date'=> $teachingHistory['formatted_start_datetime'],
                     'Class Name'=>$teachingHistory['course']['title'],
                     'Users Booked'=>$teachingHistory['total_bookings'],
@@ -39,10 +40,10 @@ class ExportTeachingHistory implements WithMultipleSheets
                 ]);
             }
             if (count($teachingHistories) > 0 ) {
-                $sheets[] = new ExportTeachingHistorySheet($teachingHistoryData, $user->email);
+                // $sheets[] = new ExportTeachingHistorySheet($teachingHistoryData, $user->email);
             }
         }
-
+        $sheets[] = new ExportTeachingHistorySheet($teachingHistoryData, 'Teaching History');
         if (!(count($sheets)  > 0)) {
             $sheets[] = new ExportTeachingHistorySheet(new Collection(), 'no data');
         }
