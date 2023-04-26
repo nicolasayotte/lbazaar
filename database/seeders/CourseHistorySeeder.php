@@ -43,7 +43,7 @@ class CourseHistorySeeder extends Seeder
                         'course_schedule_id' => $coursesSchedule->id,
                         'course_id'          => $course->id,
                         'user_id'            => $student->id,
-                        'completed_at'       => fake()->randomElement([null, Carbon::now(), null])
+                        'completed_at'       => null
                     ]);
                     if ($course->courseType->name != CourseType::FREE) {
 

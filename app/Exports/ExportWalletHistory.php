@@ -19,13 +19,14 @@ class ExportWalletHistory implements WithMultipleSheets
     public function sheets(): array
     {
         $sheets = [];
-
+        $walletData = new Collection();
         foreach($this->users as $user) {
-            $walletData = new Collection();
+            // $walletData = new Collection();
             $walletTransactionHistory = $user->userWallet()->first()->userWalletTransactions()->orderBy('id', 'DESC')->get()->toArray();
 
             foreach ($walletTransactionHistory as $walletTransaction) {
                 $walletData->add([
+                    'Email' => $user->email,
                     'Transaction ID'=> $walletTransaction['id'],
                     'Transaction Type'=>$walletTransaction['type'],
                     'Points +-'=>$walletTransaction['amount'],
@@ -35,9 +36,10 @@ class ExportWalletHistory implements WithMultipleSheets
                 ]);
             }
             if (count($walletTransactionHistory) > 0 ) {
-                $sheets[] = new ExportWalletHistorySheet($walletData, $user->email);
+                // $sheets[] = new ExportWalletHistorySheet($walletData, $user->email);
             }
         }
+        $sheets[] = new ExportWalletHistorySheet($walletData, 'Wallet History');
         if (!(count($sheets)  > 0)) {
             $sheets[] = new ExportWalletHistorySheet(new Collection(), 'no data');
         }
