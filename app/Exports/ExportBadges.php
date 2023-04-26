@@ -29,6 +29,7 @@ class ExportBadges implements WithMultipleSheets
 
             foreach ($user->badges()->get() as $badge) {
                 $badgeData->add([
+                    'Email' => $user->email,
                     'Type'=> $badge['type'],
                     'Badge Name'=>$badge['name'],
                     'Date'=>$badge['formatted_datetime'],
