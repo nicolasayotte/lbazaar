@@ -218,7 +218,7 @@ Route::prefix('portal')->name('portal.')->group(function() {
 
 # Email verification
 Route::get('/email/verify', [RegisterStudentController::class, 'verifyEmail'])->name('verify.email');
-Route::get('/email/verify/{id}/{hash}', [RegisterStudentController::class, 'verificationHanlder'])->middleware(['auth', 'signed'])->name('verification.verify');
+Route::get('/email/verify/{id}/{hash}', [RegisterStudentController::class, 'verificationHanlder'])->middleware(['signed'])->name('verification.verify');
 Route::get('/email/resend', [RegisterStudentController::class, 'resendEmailVerification'])->name('resend.email')->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
 # Forgot Password
