@@ -11,7 +11,7 @@ use App\Models\User;
 use App\Models\UserWallet;
 use Exception;
 use Illuminate\Auth\Events\Registered;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use App\Http\Requests\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;

@@ -75,6 +75,9 @@ const Index = () => {
                     value={data.types[index]}
                     onChange={handleOnChange}
                     errors={errors}
+                    InputProps={{
+                        readOnly: true,
+                      }}
                 />
             </TableCell>
         </TableRow>
