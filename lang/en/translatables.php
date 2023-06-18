@@ -464,6 +464,7 @@ return [
         'wallet_balance' => 'Wallet balance',
         'wallet_book_details' => 'Booked class',
         'wallet_commission_details' => 'Points commissioned in class',
+        'wallet_connect' => 'Connect Wallet',
         'wallet_donate_points_from' => 'You reacieved donation points from',
         'wallet_donate_points_to' => 'You send donation points to',
         'wallet_earn_details' => 'Earned from class',

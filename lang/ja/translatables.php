@@ -399,6 +399,7 @@ return [
         'points'=> 'ポイント',
         'wallet_commission_details'=> 'コミッション',
         'points_earned'=> 'ポイント追加',
+        'wallet_connect'=> 'ウォレットを接続する',
         'wallet_exchange_details'=> 'NFT変更ポイント',
         'wallet_feed_details'=> 'Walletに追加されたポイント',
         'points_to_convert_to_nft'=> 'ポイントNFT変換',
