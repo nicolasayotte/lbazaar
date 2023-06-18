@@ -8,6 +8,7 @@
     "points.teachers.create": "\/api\/applications\/teachers\/create",
     "points.class.create": "\/api\/applications\/class\/create",
     "votes.register": "\/api\/votes\/register",
+    "wallet.info": "\/api\/wallet\/info",
     "top": "\/\/",
     "language.set": "\/lang\/{locale}",
     "inquiries.index": "\/inquiries",

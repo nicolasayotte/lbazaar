@@ -10,6 +10,7 @@ use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\UserWalletController;
 use App\Http\Controllers\API\CourseApplicationController;
 use App\Http\Controllers\API\VoteController;
+use App\Http\Controllers\API\Web3WalletController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,6 +32,10 @@ Route::post('/auth/login', [AuthController::class, 'authenticate']);
 Route::prefix('/points')->name('points.')->group(function() {
     Route::post('/feed', [UserWalletController::class, 'feed'])->name('feed');
     Route::post('/exchange', [UserWalletController::class, 'exchange'])->name('exchange');
+});
+
+Route::prefix('/wallet')->name('wallet.')->group(function() {
+    Route::post('/info', [Web3WalletController::class, 'info'])->name('info');
 });
 
 Route::prefix('/applications')->name('points.')->group(function() {

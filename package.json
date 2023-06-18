@@ -13,6 +13,7 @@
         "vite": "^3.0.0"
     },
     "dependencies": {
+        "@blockfrost/blockfrost-js": "^5.3.1",
         "@date-io/moment": "^2.16.1",
         "@emotion/react": "^11.10.5",
         "@emotion/styled": "^11.10.5",
@@ -27,6 +28,7 @@
         "@mui/x-date-pickers": "^5.0.10",
         "@reduxjs/toolkit": "^1.9.1",
         "@vitejs/plugin-react": "^2.2.0",
+        "axois": "^0.0.1-security",
         "bootstrap": "^5.2.2",
         "dayjs": "^1.11.7",
         "moment": "^2.29.4",

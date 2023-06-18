@@ -13,6 +13,7 @@ import SvgIcon from '@mui/material/SvgIcon';
 import EternlLogo from '../../../img/eternl-logo.jpg';
 import FlintLogo from '../../../img/flint-logo.svg';
 import NamiLogo from '../../../img/nami-logo.svg';
+import axios from "axios";
 
 const WalletConnector = () => {
 
@@ -26,24 +27,27 @@ const WalletConnector = () => {
                                                     src : '',
                                                     w : 0,
                                                     h :0} | undefined);
-    const [walletBalance, setWalletWalletBalance] = useState(undefined);
+    const [walletBalance, setWalletBalance] = useState(undefined);
     
 
     useEffect(() => {
         const checkWallet = async () => {
-          setWalletIsEnabled(await checkIfWalletFound());
+            if (await checkIfWalletFound()) {
+                setWalletIsEnabled(await enableWallet());
+            }
+            //setWalletIsEnabled(await checkIfWalletFound());
         }
         checkWallet();
     }, [whichWalletSelected]);
 
-    useEffect(() => {
-    const enableSelectedWallet = async () => {
-            if (walletIsEnabled) {
-                await enableWallet();
-            }
-        }
-        enableSelectedWallet();
-    }, [walletIsEnabled]);
+    //useEffect(() => {
+    //const enableSelectedWallet = async () => {
+    //        if (walletIsEnabled) {
+    //            await enableWallet();
+    //        }
+    //    }
+    //    enableSelectedWallet();
+    //}, [walletIsEnabled]);
 
     useEffect(() => {
         const getBalance = async () => {
@@ -53,6 +57,20 @@ const WalletConnector = () => {
                 }
             }
             getBalance();
+    }, [walletIsEnabled]);
+
+    useEffect(() => {
+        const walletInfo = async () => {
+                if (walletIsEnabled && walletAPI) {
+                    //const balance = await walletAPI.getBalance();
+                    //console.log("balance: ", balance);
+                    console.log("useEffect: walletAPI", walletAPI);
+                    const hexChangeAddr = await walletAPI.getChangeAddress();
+                    console.log("useEffect: hexChangeAddr ", hexChangeAddr);
+                    getWalletInfo(hexChangeAddr);
+                }
+            }
+            walletInfo();
     }, [walletIsEnabled]);
 
 
@@ -76,7 +94,7 @@ const WalletConnector = () => {
         const resetWalletSelect = () => {
             setWhichWalletSelected(undefined);
             setWalletIsEnabled(false);
-            setWalletAPI(false);
+            setWalletAPI(undefined);
         };
       
         return (
@@ -114,31 +132,62 @@ const WalletConnector = () => {
             if (walletChoice === "eternl") {
                 const walletAPI = await window.cardano.eternl.enable();
                 setWalletAPI(walletAPI);
+                return true;
             } else if (walletChoice === "flint") {
                 const walletAPI = await window.cardano.flint.enable();
                 setWalletAPI(walletAPI);
+                return true;
             } else if (walletChoice === "nami") {
                 const walletAPI = await window.cardano.nami.enable();
                 setWalletAPI(walletAPI);
+                return true;
             }
+            return false;
+            
             } catch (err) {
                 alert("Please make sure your wallet dapp connector is turned on");
                 console.error('enableWallet error', err);
                 setWhichWalletSelected(undefined);
-                setWalletIsEnabled(false);
+                return false;
             }
+    }
+
+    const getWalletInfo = async (hexChangeAddr) => {
+     
+        //const response = Inertia.visit(routes["wallet.info"], {
+        //    method: 'post',
+        //    data: {
+        //        changeAddr: changeAddress
+        //    }
+        //});
+
+        await axios.post('/api/wallet/info', {
+            changeAddr: hexChangeAddr
+        })
+        .then(async response => {
+            console.log("getWalletInfo: response", response);
+            await setWalletBalance(Number(response.data[0]) / 1000000);   
+        })
+        .catch(error => {
+            throw console.error("getWalletInfo: ", error);
+        });   
     }
 
     return (
         <>
             {walletIsEnabled && <Card>
                 <CardContent>  
-                    <Stack direction="row" alignItems="left" spacing={1} ml={0.5}>
+                    <Stack direction="column" alignItems="left" spacing={1}>
                         <Box display="flex" alignItems="center">
                             <WalletIconStatus/>
                             <Typography variant="h5" color="BlackText">
                             Connected   
-                            </Typography> 
+                            </Typography>
+                        </Box>
+                        <Box display="flex" alignItems="center" paddingLeft={0.5}>
+                                {walletBalance && 
+                                <Typography> Wallet Balance &nbsp;&nbsp;₳&nbsp;{walletBalance.toLocaleString()} 
+                                </Typography>}
                         </Box>
                     </Stack>
                 </CardContent>
