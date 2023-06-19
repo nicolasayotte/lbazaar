@@ -33,7 +33,8 @@ const WalletConnector = () => {
                                                     h :0} | undefined);
     const [walletBalance, setWalletBalance] = useState(undefined);
     const [walletVerify, setWalletVerify] = useState(false);
-    const [walletStakeAddrHex, setWalletStakeAddrHex] = useState(undefined);
+    const [walletStakeHex, setWalletStakeHex] = useState(undefined);
+    const [walletStakeHexDisplay, setWalletStakeHexDisplay] = useState(undefined);
     const [walletStakeAddrBech32, setWalletStakeAddrBech32] = useState(undefined);
     
 
@@ -111,6 +112,7 @@ const WalletConnector = () => {
             if (walletChoice === "eternl") {
                 const walletAPI = await window.cardano.eternl.enable();
                 setWalletAPI(walletAPI);
+                console.log("enableWallet: walletAPI: ", walletAPI);
                 return true;
             } else if (walletChoice === "flint") {
                 const walletAPI = await window.cardano.flint.enable();
@@ -140,8 +142,12 @@ const WalletConnector = () => {
             const respObj = await JSON.parse(response.data);
             console.log("getWalletInfo: response", respObj);
             setWalletBalance(Number(respObj.accountAmt) / 1000000);
-            setWalletStakeAddrHex(respObj.stakeAddrHex);
-            setWalletStakeAddrBech32(respObj.stakeAddrBech32);    
+            setWalletStakeHex(respObj.stakeAddrHex);
+            setWalletStakeAddrBech32(respObj.stakeAddrBech32);
+            const addrHex =respObj.stakeAddrHex
+            const displayHex = addrHex.substring(0,6)
+                            + "..." + addrHex.substring(addrHex.length - 6, addrHex.length);
+            setWalletStakeHexDisplay(displayHex);
         })
         .catch(error => {
             throw console.error("getWalletInfo: ", error);
@@ -159,9 +165,9 @@ const WalletConnector = () => {
         }
 
         try {
-            console.log("walletStakeAddrHex: ", walletStakeAddrHex);
+            console.log("walletStakeHex: ", walletStakeHex);
             console.log("hexMessage: ", hexMessage);
-            const { signature, key } = await walletAPI.signData(walletStakeAddrHex, hexMessage);
+            const { signature, key } = await walletAPI.signData(walletStakeHex, hexMessage);
             console.log(signature, key);
             console.log("(signature, key)");
             console.log(verifySignature(signature, key)); // true
@@ -198,8 +204,11 @@ const WalletConnector = () => {
                         </Box>
                         <Box display="flex" alignItems="center" paddingLeft={0.5}>
                                 {walletBalance && 
-                                <Typography> Wallet Balance &nbsp;&nbsp;₳&nbsp;{walletBalance.toLocaleString()} 
-                                </Typography>}
+                                <Typography> 
+                                    Wallet Balance &nbsp;&nbsp;₳&nbsp;{walletBalance.toLocaleString()} 
+                                    <br></br>Staking ID &nbsp;{walletStakeHexDisplay}
+                                </Typography>
+                                }
                         </Box>
                     </Stack>
                 </CardContent>
