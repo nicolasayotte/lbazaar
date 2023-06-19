@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\API;
+namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\Web3WalletRequest;
+use App\Models\UserWallet;
 use App\Models\User;
 use App\Models\Role;
 use Exception;
@@ -43,6 +44,8 @@ class Web3WalletController extends Controller
         try {
             $inputs = $request->all();
             Log::debug($inputs);
+            $userId = Auth::user()->id;
+            Log::debug($userId);
             //$user = User::where('email', $inputs['email'])->first();
             //$userWallet = $user->userWallet()->first();
             //$walletTransactionHistory = $this->walletService->feed($userWallet, $inputs['points']);
@@ -61,9 +64,9 @@ class Web3WalletController extends Controller
                 // Only update user_wallets table with stake key only
                 // it has been successfully verified
                 $userId = Auth::user()->id;
-                $user_wallets = UserWallets::where('user_id', $userId)
+                $user_wallets = UserWallet::where('user_id', $userId)
                 ->update(['stake_key_hash' => $responseJSON->stakeKeyHash,
-                            'timestamp' => $responseJSON->date]);
+                            'updated_at' => $responseJSON->date]);
             }
                 
             return [

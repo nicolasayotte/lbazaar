@@ -135,19 +135,19 @@ const WalletConnector = () => {
 
     const getWalletInfo = async (hexChangeAddr) => {
      
-        await axios.post('/api/wallet/info', {
+        await axios.post('/wallet/info', {
             changeAddr: hexChangeAddr
         })
         .then(async response => {
             const respObj = await JSON.parse(response.data);
             console.log("getWalletInfo: response", respObj);
             setWalletBalance(Number(respObj.accountAmt) / 1000000);
-            setWalletStakeHex(respObj.stakeAddrHex);
+            setWalletStakeHex(respObj.stakestakeKey);
             setWalletStakeAddrBech32(respObj.stakeAddrBech32);
-            const addrHex =respObj.stakeAddrHex
-            const displayHex = addrHex.substring(0,6)
-                            + "..." + addrHex.substring(addrHex.length - 6, addrHex.length);
-            setWalletStakeHexDisplay(displayHex);
+            const stakeKey =respObj.stakeKeyHash;
+            const displayStakeKey = stakeKey.substring(0,6)
+                            + "..." + stakeKey.substring(stakeKey.length - 6, stakeKey.length);
+            setWalletStakeHexDisplay(displayStakeKey);
         })
         .catch(error => {
             throw console.error("getWalletInfo: ", error);

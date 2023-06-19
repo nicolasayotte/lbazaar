@@ -24,12 +24,30 @@ const main = async () => {
         const stakeAddr = StakeAddress.fromAddress(changeAddr);
         const accountInfo = API.accounts(stakeAddr.toBech32());
         const accountAmt = (await accountInfo).controlled_amount;
+        const timestamp = new Date().toISOString();
+
+        const date = new Date(); // Create a new Date object with the current date and time
+
+        // Get the individual date and time components
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Add leading zero if necessary
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+
+        // Create the formatted date string
+        const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+        //console.log(formattedDate); // Output: YYYY-MM-DD HH:MM:SS
+
 
         const returnObj = {
             status: 200,
             accountAmt: accountAmt,
-            stakeAddrHex: bytesToHex(stakeAddr.bytes),
-            stakeAddrBech32: stakeAddr.toBech32()
+            stakeKeyHash: bytesToHex(stakeAddr.bytes),
+            stakeAddrBech32: stakeAddr.toBech32(),
+            date: formattedDate
         }
         console.error(returnObj);
         process.stdout.write(JSON.stringify(returnObj));

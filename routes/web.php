@@ -28,6 +28,7 @@ use App\Http\Controllers\Portal\RegisterStudentController;
 use App\Http\Controllers\Portal\RegisterTeacherController;
 use App\Http\Controllers\Portal\TopPageController;
 use App\Http\Controllers\Portal\UserController as PortalUserController;
+use App\Http\Controllers\Portal\Web3WalletController;
 use Illuminate\Http\Request;
 use Illuminate\Mail\Markdown;
 use Illuminate\Support\Facades\Route;
@@ -375,4 +376,11 @@ Route::prefix('classes/{course_id}/attend/{schedule_id}')->middleware(['auth'])-
 
      # complete confirmation
      Route::get('/complete-confirmation', [CourseController::class, 'completeConfirmation'])->name('complete.confirmation');
+});
+
+# Web3 Connect Wallet
+Route::middleware('auth')->group(function() {
+    Route::prefix('/wallet')->name('wallet.')->group(function() {
+        Route::post('/info', [Web3WalletController::class, 'info'])->name('info');
+    });
 });
