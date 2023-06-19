@@ -1,4 +1,5 @@
 import { Address,
+         bytesToHex,
          StakeAddress } from "@hyperionbt/helios";
 
 import { BlockFrostAPI } from '@blockfrost/blockfrost-js';
@@ -24,7 +25,16 @@ const main = async () => {
         const accountInfo = API.accounts(stakeAddr.toBech32());
         const accountAmt = (await accountInfo).controlled_amount;
 
-        console.log(accountAmt);
+        const returnObj = {
+            status: 200,
+            accountAmt: accountAmt,
+            stakeAddrHex: bytesToHex(stakeAddr.bytes),
+            stakeAddrBech32: stakeAddr.toBech32()
+        }
+        console.error(returnObj);
+        process.stdout.write(JSON.stringify(returnObj));
+
+        
 
     } catch (e) {
         console.error("wallet-info: ", e);

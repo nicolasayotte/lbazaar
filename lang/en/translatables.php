@@ -473,6 +473,8 @@ return [
         'wallet_history' => 'Wallet History',
         'wallet_refund_details' => 'Refunded points from class',
         'wallet_schedule_fee' => 'Payed points to schedule class',
+        'wallet_switch' => 'Switch Connected Wallets',
+        'wallet_verify' => 'Verify Wallet Ownership',
         'watch_video' => 'Watch Video',
         'watch_video_description' => 'Watch the video to learn the contents of the class',
         'welcome' => 'Welcome',

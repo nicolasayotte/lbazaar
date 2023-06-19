@@ -402,6 +402,8 @@ return [
         'wallet_connect'=> 'ウォレットを接続する',
         'wallet_exchange_details'=> 'NFT変更ポイント',
         'wallet_feed_details'=> 'Walletに追加されたポイント',
+        'wallet_switch' => 'Switch Connected Wallets',
+        'wallet_verify' => 'Verify Wallet Ownership',
         'points_to_convert_to_nft'=> 'ポイントNFT変換',
         'price'=> 'ポイント',
         'pricing_information'=> 'ポイント上布',

@@ -6,7 +6,9 @@ import { useDispatch } from "react-redux"
 import { usePage } from "@inertiajs/inertia-react"
 import { Inertia } from "@inertiajs/inertia"
 import { actions } from "../../store/slices/ToasterSlice"
-import { AccountBalanceWallet, AddCard, Cached, DownloadForOffline, DownloadForOfflineOutlined, SwapVerticalCircle, SwapVerticalCircleOutlined } from "@mui/icons-material"
+import { AccountBalanceWallet, AddCard, Cached, DoneOutline, DownloadForOffline, DownloadForOfflineOutlined, SwapVerticalCircle, SwapVerticalCircleOutlined } from "@mui/icons-material"
+import ChangeCircleIcon from '@mui/icons-material/ChangeCircle';
+import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import FormDialog from "../common/FormDialog"
 import Input from "../forms/Input"
 import SvgIcon from '@mui/material/SvgIcon';
@@ -14,6 +16,8 @@ import EternlLogo from '../../../img/eternl-logo.jpg';
 import FlintLogo from '../../../img/flint-logo.svg';
 import NamiLogo from '../../../img/nami-logo.svg';
 import axios from "axios";
+import verifySignature from "@cardano-foundation/cardano-verify-datasignature";
+
 
 const WalletConnector = () => {
 
@@ -28,6 +32,9 @@ const WalletConnector = () => {
                                                     w : 0,
                                                     h :0} | undefined);
     const [walletBalance, setWalletBalance] = useState(undefined);
+    const [walletVerify, setWalletVerify] = useState(false);
+    const [walletStakeAddrHex, setWalletStakeAddrHex] = useState(undefined);
+    const [walletStakeAddrBech32, setWalletStakeAddrBech32] = useState(undefined);
     
 
     useEffect(() => {
@@ -35,19 +42,9 @@ const WalletConnector = () => {
             if (await checkIfWalletFound()) {
                 setWalletIsEnabled(await enableWallet());
             }
-            //setWalletIsEnabled(await checkIfWalletFound());
         }
         checkWallet();
     }, [whichWalletSelected]);
-
-    //useEffect(() => {
-    //const enableSelectedWallet = async () => {
-    //        if (walletIsEnabled) {
-    //            await enableWallet();
-    //        }
-    //    }
-    //    enableSelectedWallet();
-    //}, [walletIsEnabled]);
 
     useEffect(() => {
         const getBalance = async () => {
@@ -62,8 +59,6 @@ const WalletConnector = () => {
     useEffect(() => {
         const walletInfo = async () => {
                 if (walletIsEnabled && walletAPI) {
-                    //const balance = await walletAPI.getBalance();
-                    //console.log("balance: ", balance);
                     console.log("useEffect: walletAPI", walletAPI);
                     const hexChangeAddr = await walletAPI.getChangeAddress();
                     console.log("useEffect: hexChangeAddr ", hexChangeAddr);
@@ -81,28 +76,12 @@ const WalletConnector = () => {
         };
       
         return (
+            
             <IconButton
                 aria-label={name}
                 color="primary"
                 onClick={handleWalletSelect}>
                 <img src={src} alt={name} width={w} height={h}/>
-            </IconButton>
-        );
-      };
-      
-    const WalletIconStatus = () => {
-        const resetWalletSelect = () => {
-            setWhichWalletSelected(undefined);
-            setWalletIsEnabled(false);
-            setWalletAPI(undefined);
-        };
-      
-        return (
-            <IconButton
-                aria-label="change wallet"
-                color="primary"
-                onClick={resetWalletSelect}>
-                <img src={whichWalletSelected.src} alt={whichWalletSelected.name} width={whichWalletSelected.w} height={whichWalletSelected.h}/>
             </IconButton>
         );
       };
@@ -154,23 +133,54 @@ const WalletConnector = () => {
 
     const getWalletInfo = async (hexChangeAddr) => {
      
-        //const response = Inertia.visit(routes["wallet.info"], {
-        //    method: 'post',
-        //    data: {
-        //        changeAddr: changeAddress
-        //    }
-        //});
-
         await axios.post('/api/wallet/info', {
             changeAddr: hexChangeAddr
         })
         .then(async response => {
-            console.log("getWalletInfo: response", response);
-            await setWalletBalance(Number(response.data[0]) / 1000000);   
+            const respObj = await JSON.parse(response.data);
+            console.log("getWalletInfo: response", respObj);
+            setWalletBalance(Number(respObj.accountAmt) / 1000000);
+            setWalletStakeAddrHex(respObj.stakeAddrHex);
+            setWalletStakeAddrBech32(respObj.stakeAddrBech32);    
         })
         .catch(error => {
             throw console.error("getWalletInfo: ", error);
         });   
+    }
+
+    const handleWalletVerify = async () => {
+    
+        let timestamp = Date.now();
+        let message = 'verification signature' + timestamp.toString();
+        let hexMessage = '';
+
+        for (var i = 0, l = message.length; i < l; i++) {
+            hexMessage += message.charCodeAt(i).toString(16);
+        }
+
+        try {
+            console.log("walletStakeAddrHex: ", walletStakeAddrHex);
+            console.log("hexMessage: ", hexMessage);
+            const { signature, key } = await walletAPI.signData(walletStakeAddrHex, hexMessage);
+            console.log(signature, key);
+            console.log("(signature, key)");
+            console.log(verifySignature(signature, key)); // true
+            console.log("(signature, key, message)");
+            console.log(verifySignature(signature, key, message)); // true
+            console.log("(signature, key, message, address)");
+            console.log(verifySignature(signature, key, message, walletStakeAddrBech32)); // true
+            setWalletVerify(true);
+        } catch (error) {
+            console.warn(error);
+            alert('wallet signature not completed')
+        }
+    }
+
+    const handleWalletSwitch = () => {
+        setWhichWalletSelected(undefined);
+        setWalletIsEnabled(false);
+        setWalletAPI(undefined);
+        setWalletVerify(false);
     }
 
     return (
@@ -179,9 +189,11 @@ const WalletConnector = () => {
                 <CardContent>  
                     <Stack direction="column" alignItems="left" spacing={1}>
                         <Box display="flex" alignItems="center">
-                            <WalletIconStatus/>
+                            <Icon>
+                                <img src={whichWalletSelected.src} alt={whichWalletSelected.name} width={whichWalletSelected.w} height={whichWalletSelected.h}/> 
+                            </Icon>
                             <Typography variant="h5" color="BlackText">
-                            Connected   
+                            &nbsp;Connected   
                             </Typography>
                         </Box>
                         <Box display="flex" alignItems="center" paddingLeft={0.5}>
@@ -191,6 +203,27 @@ const WalletConnector = () => {
                         </Box>
                     </Stack>
                 </CardContent>
+                <CardActions disableSpacing>
+                        {!walletVerify && <Tooltip title={translatables.texts.wallet_verify} sx={{ ml: 'auto' }}>
+                            <IconButton
+                                color="primary"
+                                onClick={handleWalletVerify}
+                                children={<TaskAltIcon fontSize="inherit" color="disabled"/>}/>
+                            </Tooltip>}
+                        {walletVerify && <Tooltip title={translatables.texts.wallet_verify} sx={{ ml: 'auto' }}>
+                            <IconButton
+                                color="primary"
+                                onClick={handleWalletVerify}
+                                children={<TaskAltIcon fontSize="inherit"/>}/>
+                            </Tooltip>}
+                    <Tooltip title={translatables.texts.wallet_switch}>
+                        <IconButton
+                            color="success"
+                            onClick={handleWalletSwitch}
+                            children={<ChangeCircleIcon fontSize="inherit" />}
+                        />
+                    </Tooltip>
+                </CardActions>
                 </Card>
             }
             {!walletIsEnabled && <Card>
