@@ -1,7 +1,7 @@
 
 import { Button, Typography, Tooltip, Grid, IconButton, Stack, Box, Paper, Divider, Icon, CardContent, Card, CardActions} from "@mui/material"
 import routes from "../../helpers/routes.helper"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useDispatch } from "react-redux"
 import { usePage } from "@inertiajs/inertia-react"
 import { Inertia } from "@inertiajs/inertia"
@@ -10,15 +10,23 @@ import { AccountBalanceWallet, AddCard, Cached, DownloadForOffline, DownloadForO
 import FormDialog from "../common/FormDialog"
 import Input from "../forms/Input"
 
-const UserPoints = () => {
+const UserPoints = ({walletStakeKeyHash}) => {
 
+    useEffect(() => {
+        const checkStakeKey = async () => {
+            console.log("UserPoints: walletStakeKeyHash: ", walletStakeKeyHash);
+        }
+        checkStakeKey();
+    }, [walletStakeKeyHash]);
+
+    
     const { errors, auth, translatables } = usePage().props
-
+    
     const [dialog, setDialog] = useState({
         open: false,
         title: '',
         points: 0,
-        wallet_id: '',
+        wallet_id: walletStakeKeyHash,
         submitUrl: '',
         method: null,
         processing: false,
@@ -32,7 +40,8 @@ const UserPoints = () => {
             title: translatables.texts.feed_points,
             submitUrl: routes["mypage.points.feed"],
             method: 'post',
-            action: 'feed'
+            action: 'feed',
+            wallet_id: walletStakeKeyHash,
         }))
     }
 
@@ -43,7 +52,8 @@ const UserPoints = () => {
             title: translatables.texts.exchange_points,
             submitUrl: routes["mypage.points.exchange"],
             method: 'post',
-            action: 'exchange'
+            action: 'exchange',
+            wallet_id: walletStakeKeyHash
         }))
     }
 
@@ -62,7 +72,7 @@ const UserPoints = () => {
                     label="Wallet ID"
                     name="wallet_id"
                     value={dialog.wallet_id}
-                    onChange={e => setDialog(dialog => ({ ...dialog, wallet_id: e.target.value }))}
+                    //onChange={e => setDialog(dialog => ({ ...dialog, wallet_id: e.target.value }))}
                     sx={{ mt: 2 }}
                 />
             </Box>
@@ -89,7 +99,7 @@ const UserPoints = () => {
     }
 
     return (
-        <>
+        <>  {console.log("walletStakeKeyHash: ", walletStakeKeyHash)}
             <Card>
                 <CardContent>
                     <Stack direction="row" alignItems="center" spacing={1}>

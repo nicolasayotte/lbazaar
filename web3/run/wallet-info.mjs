@@ -16,6 +16,7 @@ const main = async () => {
 
         const args = process.argv;
         const hexChangeAddr = args[2];
+        const stakeKeyHashDB = args[3];
 
         // Get the change address from the wallet
         const changeAddr = Address.fromHex(hexChangeAddr);
@@ -47,6 +48,7 @@ const main = async () => {
             stakeKeyAddr: stakeAddr.toHex(),
             stakeAddrBech32: stakeAddr.toBech32(),
             stakeKeyHash: stakeAddr.stakingHash.hex,
+            verified: stakeAddr.stakingHash.hex === stakeKeyHashDB,
             date: formattedDate
         }
         console.error(returnObj);

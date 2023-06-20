@@ -34,23 +34,15 @@ class Web3WalletController extends Controller
             Log::debug($inputs);
             $userId = Auth::user()->id;
             Log::debug($userId);
+            $user = UserWallet::where('user_id', $userId)->first();
+            Log::debug('stake_key: ' . $user->stake_key_hash);
             $changeAddr = $request->input('changeAddr'); 
-            $cmd = '(cd ../web3/;node ./run/wallet-info.mjs '.escapeshellarg($changeAddr).') 2>> ../storage/logs/web3.log'; 
+            $stakeKeyHash = $user->stake_key_hash;
+
+            $cmd = '(cd ../web3/;node ./run/wallet-info.mjs '.escapeshellarg($changeAddr).' '.escapeshellarg($stakeKeyHash).') 2>> ../storage/logs/web3.log'; 
             
             $response = exec($cmd);
             $responseJSON = json_decode($response, false);
-
-            /*
-            if ($responseJSON->status == 200)
-            {
-                // Only update user_wallets table with stake key only
-                // it has been successfully verified
-                $userId = Auth::user()->id;
-                $user_wallets = UserWallet::where('user_id', $userId)
-                ->update(['stake_key_hash' => $responseJSON->stakeKeyHash,
-                            'updated_at' => $responseJSON->date]);
-            }
-            */
                 
             return [
                 $response
@@ -98,7 +90,8 @@ class Web3WalletController extends Controller
                 $user_wallets = UserWallet::where('user_id', $userId)
                 ->update(['stake_key_hash' => $responseJSON->stakeKeyHash,
                           'updated_at' => $responseJSON->date]);
-                return [
+                
+                          return [
                     $response
                 ];
             } else {

@@ -5,8 +5,11 @@ import PasswordForm from "../../../../components/common/forms/PasswordForm"
 import UserPoints from "../../../../components/cards/UserPoints"
 import WalletConnector from "../../../../components/cards/WalletConnector"
 import { Box, Grid } from "@mui/material"
+import { useState } from "react"
 
 const Index = ({ auth, countries, errors, translatables }) => {
+
+    const [walletStakeKeyDisplay, setwalletStakeKeyDisplay] = useState(undefined);
 
     return (
         <Grid container spacing={2}>
@@ -29,11 +32,11 @@ const Index = ({ auth, countries, errors, translatables }) => {
             </Grid>
             <Grid item xs={12} md={4}>
                 <Box mb={2}>
-                    <WalletConnector />
+                    <WalletConnector onStakeKeyHash={setwalletStakeKeyDisplay}/>
                 </Box>
-                <Box mb={2}>
-                    <UserPoints />
-                </Box>
+                { walletStakeKeyDisplay && <Box mb={2}>
+                    <UserPoints walletStakeKeyHash={walletStakeKeyDisplay} />
+                </Box>}
                 
             </Grid>
 

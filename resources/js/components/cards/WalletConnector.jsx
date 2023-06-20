@@ -19,7 +19,7 @@ import axios from "axios";
 import verifySignature from "@cardano-foundation/cardano-verify-datasignature";
 
 
-const WalletConnector = () => {
+const WalletConnector = ({onStakeKeyHash}) => {
 
     const { errors, auth, translatables } = usePage().props
 
@@ -148,6 +148,13 @@ const WalletConnector = () => {
             const displayStakeKey = stakeKeyHash.substring(0,6)
                             + "..." + stakeKeyHash.substring(stakeKeyHash.length - 6, stakeKeyHash.length);
             setwalletStakeKeyDisplay(displayStakeKey);
+            //const stakeKeyHashVerified = auth.user.user_wallet.stake_key_hash;
+            console.log("respObj.verified: ", respObj.verified);
+            console.log("stakeKeyHash: ", stakeKeyHash);
+            if (respObj.verified) {
+                setWalletVerify(true);
+                onStakeKeyHash([displayStakeKey]);
+            }
         })
         .catch(error => {
             throw console.error("getWalletInfo: ", error);
@@ -170,12 +177,12 @@ const WalletConnector = () => {
             const { signature, key } = await walletAPI.signData(walletStakeAddr, hexMessage);
             console.log(signature, key);
             
-            console.log("(signature, key)");
-            console.log(verifySignature(signature, key)); // true
-            console.log("(signature, key, message)");
-            console.log(verifySignature(signature, key, message)); // true
-            console.log("(signature, key, message, address)");
-            console.log(verifySignature(signature, key, message, walletStakeAddrBech32)); // true
+            //console.log("(signature, key)");
+            //console.log(verifySignature(signature, key)); // true
+            //console.log("(signature, key, message)");
+            //console.log(verifySignature(signature, key, message)); // true
+            //console.log("(signature, key, message, address)");
+            //console.log(verifySignature(signature, key, message, walletStakeAddrBech32)); // true
             
             await axios.post('/wallet/verify', {
                 signature: signature,
@@ -188,8 +195,10 @@ const WalletConnector = () => {
                 console.log("getWalletVerify: response", respObj);
                 if (respObj.status == 200) {
                     setWalletVerify(true);
+                    onStakeKeyHash([walletStakeKeyDisplay]);
                 } else {
                     setWalletVerify(false);
+                    onStakeKeyHash(undefined);
                     alert("Verifying Wallet Not Successful");
                 }
             })
@@ -207,6 +216,11 @@ const WalletConnector = () => {
         setWalletIsEnabled(false);
         setWalletAPI(undefined);
         setWalletVerify(false);
+        setwalletStakeAddr(undefined);
+        setwalletStakeKeyDisplay(undefined);
+        setWalletStakeAddrBech32(undefined);
+        onStakeKeyHash(undefined);
+
     }
 
     return (
@@ -226,7 +240,7 @@ const WalletConnector = () => {
                                 {walletBalance && 
                                 <Typography> 
                                     Wallet Balance &nbsp;&nbsp;₳&nbsp;{walletBalance.toLocaleString()} 
-                                    <br></br>Staking ID &nbsp;{walletStakeKeyDisplay}
+                                    <br></br>Wallet ID &nbsp;{walletStakeKeyDisplay}
                                 </Typography>
                                 }
                         </Box>
