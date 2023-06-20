@@ -24,8 +24,6 @@ const main = async () => {
         const stakeAddr = StakeAddress.fromAddress(changeAddr);
         const accountInfo = API.accounts(stakeAddr.toBech32());
         const accountAmt = (await accountInfo).controlled_amount;
-        const timestamp = new Date().toISOString();
-
         const date = new Date(); // Create a new Date object with the current date and time
 
         // Get the individual date and time components
@@ -45,8 +43,10 @@ const main = async () => {
         const returnObj = {
             status: 200,
             accountAmt: accountAmt,
-            stakeKeyHash: bytesToHex(stakeAddr.bytes),
+            //stakeKeyHash: bytesToHex(stakeAddr.bytes),
+            stakeKeyAddr: stakeAddr.toHex(),
             stakeAddrBech32: stakeAddr.toBech32(),
+            stakeKeyHash: stakeAddr.stakingHash.hex,
             date: formattedDate
         }
         console.error(returnObj);

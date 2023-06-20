@@ -9,6 +9,7 @@
     "points.class.create": "\/api\/applications\/class\/create",
     "votes.register": "\/api\/votes\/register",
     "wallet.info": "\/wallet\/info",
+    "wallet.verify": "\/wallet\/verify",
     "top": "\/\/",
     "language.set": "\/lang\/{locale}",
     "inquiries.index": "\/inquiries",

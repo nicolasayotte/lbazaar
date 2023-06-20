@@ -382,5 +382,6 @@ Route::prefix('classes/{course_id}/attend/{schedule_id}')->middleware(['auth'])-
 Route::middleware('auth')->group(function() {
     Route::prefix('/wallet')->name('wallet.')->group(function() {
         Route::post('/info', [Web3WalletController::class, 'info'])->name('info');
+        Route::post('/verify', [Web3WalletController::class, 'verify'])->name('verify');
     });
 });

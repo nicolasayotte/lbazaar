@@ -33,8 +33,8 @@ const WalletConnector = () => {
                                                     h :0} | undefined);
     const [walletBalance, setWalletBalance] = useState(undefined);
     const [walletVerify, setWalletVerify] = useState(false);
-    const [walletStakeHex, setWalletStakeHex] = useState(undefined);
-    const [walletStakeHexDisplay, setWalletStakeHexDisplay] = useState(undefined);
+    const [walletStakeAddr, setwalletStakeAddr] = useState(undefined);
+    const [walletStakeKeyDisplay, setwalletStakeKeyDisplay] = useState(undefined);
     const [walletStakeAddrBech32, setWalletStakeAddrBech32] = useState(undefined);
     
 
@@ -142,12 +142,12 @@ const WalletConnector = () => {
             const respObj = await JSON.parse(response.data);
             console.log("getWalletInfo: response", respObj);
             setWalletBalance(Number(respObj.accountAmt) / 1000000);
-            setWalletStakeHex(respObj.stakestakeKey);
+            setwalletStakeAddr(respObj.stakeKeyAddr);
             setWalletStakeAddrBech32(respObj.stakeAddrBech32);
-            const stakeKey =respObj.stakeKeyHash;
-            const displayStakeKey = stakeKey.substring(0,6)
-                            + "..." + stakeKey.substring(stakeKey.length - 6, stakeKey.length);
-            setWalletStakeHexDisplay(displayStakeKey);
+            const stakeKeyHash =respObj.stakeKeyHash;
+            const displayStakeKey = stakeKeyHash.substring(0,6)
+                            + "..." + stakeKeyHash.substring(stakeKeyHash.length - 6, stakeKeyHash.length);
+            setwalletStakeKeyDisplay(displayStakeKey);
         })
         .catch(error => {
             throw console.error("getWalletInfo: ", error);
@@ -156,8 +156,7 @@ const WalletConnector = () => {
 
     const handleWalletVerify = async () => {
     
-        let timestamp = Date.now();
-        let message = 'verification signature' + timestamp.toString();
+        let message = 'Wallet Verification Message ' + Date().toString();
         let hexMessage = '';
 
         for (var i = 0, l = message.length; i < l; i++) {
@@ -165,20 +164,41 @@ const WalletConnector = () => {
         }
 
         try {
-            console.log("walletStakeHex: ", walletStakeHex);
+            
+            console.log("walletStakeKey: ", walletStakeAddr);
             console.log("hexMessage: ", hexMessage);
-            const { signature, key } = await walletAPI.signData(walletStakeHex, hexMessage);
+            const { signature, key } = await walletAPI.signData(walletStakeAddr, hexMessage);
             console.log(signature, key);
+            
             console.log("(signature, key)");
             console.log(verifySignature(signature, key)); // true
             console.log("(signature, key, message)");
             console.log(verifySignature(signature, key, message)); // true
             console.log("(signature, key, message, address)");
             console.log(verifySignature(signature, key, message, walletStakeAddrBech32)); // true
-            setWalletVerify(true);
+            
+            await axios.post('/wallet/verify', {
+                signature: signature,
+                stake_key: key,
+                message: message,
+                stake_addr: walletStakeAddrBech32
+            })
+            .then(async response => {
+                const respObj = await JSON.parse(response.data);
+                console.log("getWalletVerify: response", respObj);
+                if (respObj.status == 200) {
+                    setWalletVerify(true);
+                } else {
+                    setWalletVerify(false);
+                    alert("Verifying Wallet Not Successful");
+                }
+            })
+            .catch(error => {
+                throw console.error("getWalletVerify: ", error);
+            }); 
         } catch (error) {
             console.warn(error);
-            alert('wallet signature not completed')
+            alert('wallet signature not verified')
         }
     }
 
@@ -206,7 +226,7 @@ const WalletConnector = () => {
                                 {walletBalance && 
                                 <Typography> 
                                     Wallet Balance &nbsp;&nbsp;₳&nbsp;{walletBalance.toLocaleString()} 
-                                    <br></br>Staking ID &nbsp;{walletStakeHexDisplay}
+                                    <br></br>Staking ID &nbsp;{walletStakeKeyDisplay}
                                 </Typography>
                                 }
                         </Box>

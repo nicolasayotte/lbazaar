@@ -14,18 +14,6 @@ use Illuminate\Support\Facades\Auth;
 
 class Web3WalletController extends Controller
 {
-
-
-    //protected $emailService;
-
-    //protected $walletService;
-
-    //public function __construct(EmailService $emailService, WalletService $walletService)
-    //{
-    //    $this->emailService = $emailService;
-    //    $this->walletService = $walletService;
-    //}
-
     /**
      * Apply middleware to all of these routes
      */
@@ -35,7 +23,7 @@ class Web3WalletController extends Controller
 
     /**
      * web3 wallet info
-     * @param UserWalletRequest $request
+     * @param Web3WalletRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function info(Web3WalletRequest $request)
@@ -43,13 +31,6 @@ class Web3WalletController extends Controller
         try {
             $inputs = $request->all();
             Log::debug($inputs);
-            //$user = User::where('email', $inputs['email'])->first();
-            //$userWallet = $user->userWallet()->first();
-            //$walletTransactionHistory = $this->walletService->feed($userWallet, $inputs['points']);
-            //$this->emailService->sendEmailNotificationWalletUpdate($user, $walletTransactionHistory);
-            //return response()->json([
-            //    'message' => getTranslation('success.wallet.feed'),
-            //], 200);
             $changeAddr = $request->input('changeAddr'); 
             $cmd = '(cd ../web3/;node ./run/wallet-info.mjs '.escapeshellarg($changeAddr).') 2>> ../storage/logs/web3.log'; 
             
