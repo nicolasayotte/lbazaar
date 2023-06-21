@@ -6,27 +6,27 @@ use App\Models\WalletTransactionHistory;
 
 class WalletService
 {
-    public function feed(UserWallet $wallet, $points)
+    public function feed(UserWallet $wallet, $points, $txId)
     {
         $oldPoints = $wallet->points;
         $wallet->update([
             'points' => $oldPoints + $points,
         ]);
         $newPoints = $wallet->points;
-        return $this->updateWalletTransaction($wallet, WalletTransactionHistory::FEED, $oldPoints, $newPoints);
+        return $this->updateWalletTransaction($wallet, WalletTransactionHistory::FEED, $oldPoints, $newPoints, $txId);
     }
 
-    public function exchange(UserWallet $wallet, $points)
+    public function exchange(UserWallet $wallet, $points, $txId)
     {
         $oldPoints = $wallet->points;
         $wallet->update([
             'points' => $oldPoints - $points,
         ]);
         $newPoints = $wallet->points;
-        return $this->updateWalletTransaction($wallet, WalletTransactionHistory::EXCHANGE, $oldPoints, $newPoints);
+        return $this->updateWalletTransaction($wallet, WalletTransactionHistory::EXCHANGE, $oldPoints, $newPoints, $txId);
     }
 
-    public function updateWalletTransaction(UserWallet $wallet, $transactionType, $oldPoints, $newPoints, $courseHistory = null)
+    public function updateWalletTransaction(UserWallet $wallet, $transactionType, $oldPoints, $newPoints, $txId, $courseHistory = null)
     {
         return WalletTransactionHistory::create([
             'user_wallet_id' => $wallet->id,
@@ -34,6 +34,7 @@ class WalletService
             'type' => $transactionType,
             'points_before' => $oldPoints,
             'points_after' => $newPoints,
+            'tx_id' => $txId
         ]);
     }
 }

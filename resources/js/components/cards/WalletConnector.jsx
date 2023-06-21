@@ -19,11 +19,11 @@ import axios from "axios";
 import verifySignature from "@cardano-foundation/cardano-verify-datasignature";
 
 
-const WalletConnector = ({onStakeKeyHash}) => {
+const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
 
     const { errors, auth, translatables } = usePage().props
 
-    const [walletAPI, setWalletAPI] = useState(undefined);
+    //const [walletAPI, setWalletAPI] = useState(undefined);
     const [walletIsEnabled, setWalletIsEnabled] = useState(false);
     const [whichWalletSelected, setWhichWalletSelected] = 
                                                 useState({
@@ -111,16 +111,16 @@ const WalletConnector = ({onStakeKeyHash}) => {
             const walletChoice = whichWalletSelected.name;
             if (walletChoice === "eternl") {
                 const walletAPI = await window.cardano.eternl.enable();
-                setWalletAPI(walletAPI);
+                onWalletAPI(walletAPI);
                 console.log("enableWallet: walletAPI: ", walletAPI);
                 return true;
             } else if (walletChoice === "flint") {
                 const walletAPI = await window.cardano.flint.enable();
-                setWalletAPI(walletAPI);
+                onWalletAPI(walletAPI);
                 return true;
             } else if (walletChoice === "nami") {
                 const walletAPI = await window.cardano.nami.enable();
-                setWalletAPI(walletAPI);
+                onWalletAPI(walletAPI);
                 return true;
             }
             return false;
@@ -214,7 +214,7 @@ const WalletConnector = ({onStakeKeyHash}) => {
     const handleWalletSwitch = () => {
         setWhichWalletSelected(undefined);
         setWalletIsEnabled(false);
-        setWalletAPI(undefined);
+        onWalletAPI(undefined);
         setWalletVerify(false);
         setwalletStakeAddr(undefined);
         setwalletStakeKeyDisplay(undefined);

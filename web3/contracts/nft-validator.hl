@@ -1,0 +1,15 @@
+spending nftValidator
+
+enum Redeemer {
+    Spend
+}
+
+// Contract parameters 
+const OWNER_PKH: ByteArray = #
+const ownerPKH: PubKeyHash = PubKeyHash::new(OWNER_PKH)
+const VERSION: ByteArray = #
+
+func main(_, _, ctx: ScriptContext) -> Bool {
+
+    ctx.tx.is_signed_by(ownerPKH).trace("NFT_V1: ")
+}

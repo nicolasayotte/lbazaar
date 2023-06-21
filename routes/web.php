@@ -380,8 +380,11 @@ Route::prefix('classes/{course_id}/attend/{schedule_id}')->middleware(['auth'])-
 
 # Web3 Connect Wallet
 Route::middleware('auth')->group(function() {
-    Route::prefix('/wallet')->name('wallet.')->group(function() {
+    Route::prefix('/wallet')->name('wallet')->group(function() {
         Route::post('/info', [Web3WalletController::class, 'info'])->name('info');
         Route::post('/verify', [Web3WalletController::class, 'verify'])->name('verify');
+        Route::post('/build-exchange-tx', [Web3WalletController::class, 'buildExchangeTx'])->name('buildExchangeTx');
+        Route::post('/submit-tx', [Web3WalletController::class, 'submitTx'])->name('submitTx');
+        Route::post('/feed', [Web3WalletController::class, 'feed'])->name('feed');
     });
 });

@@ -10,6 +10,7 @@ import { useState } from "react"
 const Index = ({ auth, countries, errors, translatables }) => {
 
     const [walletStakeKeyDisplay, setwalletStakeKeyDisplay] = useState(undefined);
+    const [walletAPI, setWalletAPI] = useState(undefined);
 
     return (
         <Grid container spacing={2}>
@@ -32,10 +33,13 @@ const Index = ({ auth, countries, errors, translatables }) => {
             </Grid>
             <Grid item xs={12} md={4}>
                 <Box mb={2}>
-                    <WalletConnector onStakeKeyHash={setwalletStakeKeyDisplay}/>
+                    <WalletConnector onStakeKeyHash={setwalletStakeKeyDisplay}
+                                     walletAPI={walletAPI}
+                                     onWalletAPI={setWalletAPI}/>
                 </Box>
                 { walletStakeKeyDisplay && <Box mb={2}>
-                    <UserPoints walletStakeKeyHash={walletStakeKeyDisplay} />
+                    <UserPoints walletStakeKeyHash={walletStakeKeyDisplay}
+                                walletAPI={walletAPI}/>
                 </Box>}
                 
             </Grid>

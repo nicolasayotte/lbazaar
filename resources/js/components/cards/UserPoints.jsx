@@ -9,8 +9,9 @@ import { actions } from "../../store/slices/ToasterSlice"
 import { AccountBalanceWallet, AddCard, Cached, DownloadForOffline, DownloadForOfflineOutlined, SwapVerticalCircle, SwapVerticalCircleOutlined } from "@mui/icons-material"
 import FormDialog from "../common/FormDialog"
 import Input from "../forms/Input"
+import axios from "axios"
 
-const UserPoints = ({walletStakeKeyHash}) => {
+const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
 
     useEffect(() => {
         const checkStakeKey = async () => {
@@ -18,6 +19,13 @@ const UserPoints = ({walletStakeKeyHash}) => {
         }
         checkStakeKey();
     }, [walletStakeKeyHash]);
+
+    useEffect(() => {
+        const checkWalletAPI = async () => {
+            console.log("UserPoints: walletAPI: ", walletAPI);
+        }
+        checkWalletAPI();
+    }, [walletAPI]);
 
     
     const { errors, auth, translatables, ada_to_points, points_to_nft } = usePage().props
@@ -55,7 +63,7 @@ const UserPoints = ({walletStakeKeyHash}) => {
             points: points_to_nft,
             open: true,
             title: translatables.texts.exchange_points,
-            submitUrl: routes["mypage.points.exchange"],
+            submitUrl: routes["wallet.exchange"],
             method: 'post',
             action: 'exchange',
             wallet_id: walletStakeKeyHash
@@ -120,7 +128,7 @@ const UserPoints = ({walletStakeKeyHash}) => {
         }))
     }
 
-    const handleOnDialogSubmit = e => {
+    const handleOnDialogSubmitFeed = e => {
         e.preventDefault()
 
         Inertia.visit(dialog.submitUrl, {
@@ -130,6 +138,77 @@ const UserPoints = ({walletStakeKeyHash}) => {
                 wallet_id: dialog.wallet_id
             }
         })
+    }
+
+    const handleOnDialogSubmitExchange = async (e) => {
+        e.preventDefault()
+
+        //Inertia.visit(dialog.submitUrl, {
+        //    method: dialog.method,
+        //    data: {
+        //        points: dialog.points,
+        //        wallet_id: dialog.wallet_id
+        //    }
+        //})
+
+        try {
+            // get the UTXOs from wallet,
+            const cborUtxos = await walletAPI.getUtxos();
+
+            // Get the change address from the wallet
+            const hexChangeAddr = await walletAPI.getChangeAddress();
+
+            await axios.post('/wallet/build-exchange-tx', {
+                changeAddr: hexChangeAddr,
+                utxos: cborUtxos
+            })
+            .then(async response => {
+                const exchangeTx = await JSON.parse(response.data);
+
+                if (exchangeTx.status == 200) {
+
+                    // Get user to sign the transaction
+                    console.log("Get wallet signature");
+                    var walletSig;
+                    try {
+                        walletSig = await walletAPI.signTx(exchangeTx.cborTx, true);
+                    } catch (err) {
+                        console.error(err);
+                        return
+                    }
+
+                    console.log("Submit transaction...");
+                    await axios.post('/wallet/submit-tx', {
+                        cborSig: walletSig,
+                        cborTx: exchangeTx.cborTx
+                    })
+                    .then(async response => {
+                
+                        const submitTx = await JSON.parse(response.data);
+                        if (submitTx.status == 200) {
+                            console.log("submitTx Success: ", submitTx.txId);
+                        } else {
+                            console.error("Exchange transaction could not be submitted");
+                            alert ('Exchange transaction could not be submitted, please try again');
+                        }
+                    })
+                    .catch(error => {
+                        console.error("submit-tx: ", error);
+                        alert ('Exchange transaction could not be submitted, please try again');
+                    });
+
+                } else {
+                    console.error("Exchange transaction could not be submitted");
+                    alert ('Exchange transaction could not be submitted, please try again');
+                }
+            })
+            .catch(error => {
+                console.error("submit-tx: ", error);
+                alert ('Exchange transaction could not be submitted, please try again');
+            });
+        } catch (err) {
+            console.error(err);
+        }
     }
 
     return (
@@ -164,7 +243,10 @@ const UserPoints = ({walletStakeKeyHash}) => {
             <FormDialog
                 {...dialog}
                 handleClose={handleOnDialogClose}
-                handleSubmit={handleOnDialogSubmit}
+                handleSubmit={
+                    dialog.action == 'feed'
+                    ? handleOnDialogSubmitFeed
+                    : handleOnDialogSubmitExchange}
                 children={
                     dialog.action == 'feed'
                     ? dialogFormFeed()
