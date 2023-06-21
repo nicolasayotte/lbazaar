@@ -7,6 +7,7 @@ use App\Http\Requests\ProfileRequest;
 use App\Http\Requests\UpdatePasswordRequest;
 use App\Http\Requests\UpdateBasePasswordRequest;
 use App\Models\Country;
+use App\Models\Setting;
 use App\Repositories\UserRepository;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Http;
@@ -35,9 +36,13 @@ class ProfileController extends Controller
     public function index()
     {
         $countries = Country::all();
+        $ada_to_points = Setting::where('slug', 'ada-to-points')->first();
+        $points_to_nft = Setting::where('slug', 'points-to-nft')->first();
 
         return Inertia::render('Portal/MyPage/Profile/Index', [
             'countries' => $countries,
+            'ada_to_points' =>  $ada_to_points->value,
+            'points_to_nft' => $points_to_nft->value,
             'title' => getTranslation('texts.mypage').' | '.getTranslation('texts.profile')
         ])->withViewData([
             'title' => getTranslation('texts.mypage').' | '.getTranslation('texts.profile')

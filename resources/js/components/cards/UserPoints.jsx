@@ -20,8 +20,11 @@ const UserPoints = ({walletStakeKeyHash}) => {
     }, [walletStakeKeyHash]);
 
     
-    const { errors, auth, translatables } = usePage().props
-    
+    const { errors, auth, translatables, ada_to_points, points_to_nft } = usePage().props
+
+    //console.log("UserPoints: general_settings: ", usePage().props)
+    //console.log("UserPoints: translatables: ", translatables)
+
     const [dialog, setDialog] = useState({
         open: false,
         title: '',
@@ -36,6 +39,7 @@ const UserPoints = ({walletStakeKeyHash}) => {
     const handleOnFeed = () => {
         setDialog(dialog => ({
             ...dialog,
+            points: 0,
             open: true,
             title: translatables.texts.feed_points,
             submitUrl: routes["mypage.points.feed"],
@@ -48,6 +52,7 @@ const UserPoints = ({walletStakeKeyHash}) => {
     const handleExchange = () => {
         setDialog(dialog => ({
             ...dialog,
+            points: points_to_nft,
             open: true,
             title: translatables.texts.exchange_points,
             submitUrl: routes["mypage.points.exchange"],
@@ -57,7 +62,7 @@ const UserPoints = ({walletStakeKeyHash}) => {
         }))
     }
 
-    const dialogForm = () => {
+    const dialogFormFeed = () => {
 
         return (
             <Box mt={1}>
@@ -66,7 +71,36 @@ const UserPoints = ({walletStakeKeyHash}) => {
                     type="number"
                     name="points"
                     value={dialog.points}
-                    onChange={e => setDialog(dialog => ({ ...dialog, points: e.target.value }))}
+                    onChange={e => setDialog(dialog => ({ ...dialog, points: Math.abs(e.target.value) }))}
+                />
+                <Input
+                    label="Ada Amount"
+                    name="ada_amount"
+                    value={dialog.points * Number(ada_to_points)}
+                    //onChange={e => setDialog(dialog => ({ ...dialog, wallet_id: e.target.value }))}
+                    sx={{ mt: 2 }}
+                />
+                <Input
+                    label="Wallet ID"
+                    name="wallet_id"
+                    value={dialog.wallet_id}
+                    //onChange={e => setDialog(dialog => ({ ...dialog, wallet_id: e.target.value }))}
+                    sx={{ mt: 2 }}
+                />
+            </Box>
+        )
+    }
+
+    const dialogFormExchange = () => {
+
+        return (
+            <Box mt={1}>
+                <Input
+                    label={translatables.texts.points}
+                    //type="number"
+                    name="points"
+                    value={dialog.points}
+                    //onChange={e => setDialog(dialog => ({ ...dialog, points: e.target.value }))}
                 />
                 <Input
                     label="Wallet ID"
@@ -99,7 +133,7 @@ const UserPoints = ({walletStakeKeyHash}) => {
     }
 
     return (
-        <>  {console.log("walletStakeKeyHash: ", walletStakeKeyHash)}
+        <>  
             <Card>
                 <CardContent>
                     <Stack direction="row" alignItems="center" spacing={1}>
@@ -131,7 +165,10 @@ const UserPoints = ({walletStakeKeyHash}) => {
                 {...dialog}
                 handleClose={handleOnDialogClose}
                 handleSubmit={handleOnDialogSubmit}
-                children={dialogForm()}
+                children={
+                    dialog.action == 'feed'
+                    ? dialogFormFeed()
+                    : dialogFormExchange()}
                 disableSubmit={
                     dialog.action == 'feed'
                     ? (dialog.points <= 0 || dialog.points.length <= 0 || dialog.wallet_id.length <= 0)
