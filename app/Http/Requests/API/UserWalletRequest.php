@@ -3,10 +3,12 @@
 namespace App\Http\Requests\API;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Foundation\Events\RequestHandled;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class UserWalletRequest extends FormRequest
+//class UserWalletRequest extends FormRequest
+class UserWalletRequest extends RequestHandled
 {
 
     /**
@@ -16,10 +18,11 @@ class UserWalletRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'email' => 'required|exists:users,email',
-            'points' => 'required|min:0|numeric'
-        ];
+        //return [
+        //    'email' => 'required|exists:users,email',
+        //    'points' => 'required|min:0|numeric'
+        //];
+        return [];
     }
 
     protected function failedValidation(Validator $validator)

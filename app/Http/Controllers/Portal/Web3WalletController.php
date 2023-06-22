@@ -17,7 +17,6 @@ use Illuminate\Support\Facades\Auth;
 class Web3WalletController extends Controller
 {
     protected $emailService;
-
     protected $walletService;
 
     /**
@@ -131,8 +130,7 @@ class Web3WalletController extends Controller
             $changeAddr = $request->input('changeAddr');
             $utxos = $request->input('utxos');
             $strUtxos = implode(",",$utxos);
-            // TODO - get nft token name from settings
-            
+           
             Log::debug('skateKeyHash: ' . $skateKeyHash);
             Log::debug('changeAddr: ' . $changeAddr);
             Log::debug('strUtxos: ' . $strUtxos);
@@ -198,7 +196,7 @@ class Web3WalletController extends Controller
                     try {
                         $userEmail = $user->email;
                         Log::debug('txId: ' . $responseJSON->txId);
-                        $walletTransactionHistory = $this->walletService->exchange($userWallet, $pointsToNFT, $responseJSON->txId);
+                        $walletTransactionHistory = $this->walletService->exchange($userWallet, $pointsToNFT, $responseJSON->txId, 'pending');
                         $this->emailService->sendEmailNotificationWalletUpdate($user, $walletTransactionHistory);
 
                         return [
@@ -319,7 +317,7 @@ class Web3WalletController extends Controller
                     $points = $adaAmount / $adaToPoints;
                  
                     Log::debug('txId: ' . $responseJSON->txId);
-                    $walletTransactionHistory = $this->walletService->feed($userWallet, $points, $responseJSON->txId);
+                    $walletTransactionHistory = $this->walletService->feed($userWallet, $points, $responseJSON->txId, 'pending');
                     $this->emailService->sendEmailNotificationWalletUpdate($user, $walletTransactionHistory);
 
                     return [

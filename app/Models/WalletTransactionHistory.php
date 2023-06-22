@@ -28,7 +28,8 @@ class WalletTransactionHistory extends Model
         'type',
         'points_before',
         'points_after',
-        'tx_id'
+        'tx_id',
+        'status'
     ];
 
     protected $appends = [
