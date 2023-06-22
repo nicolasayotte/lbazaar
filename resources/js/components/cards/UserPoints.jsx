@@ -128,16 +128,75 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
         }))
     }
 
-    const handleOnDialogSubmitFeed = e => {
+    const handleOnDialogSubmitFeed = async (e) => {
         e.preventDefault()
 
-        Inertia.visit(dialog.submitUrl, {
-            method: dialog.method,
-            data: {
-                points: dialog.points,
-                wallet_id: dialog.wallet_id
-            }
-        })
+        //Inertia.visit(dialog.submitUrl, {
+        //    method: dialog.method,
+        //    data: {
+        //        points: dialog.points,
+        //        wallet_id: dialog.wallet_id
+        //    }
+        //})
+        try {
+            // get the UTXOs from wallet,
+            const cborUtxos = await walletAPI.getUtxos();
+
+            // Get the change address from the wallet
+            const hexChangeAddr = await walletAPI.getChangeAddress();
+
+            await axios.post('/wallet/build-feed-tx', {
+                changeAddr: hexChangeAddr,
+                utxos: cborUtxos,
+                points: dialog.points
+            })
+            .then(async response => {
+                const feedTx = await JSON.parse(response.data);
+
+                if (feedTx.status == 200) {
+
+                    // Get user to sign the transaction
+                    console.log("Get wallet signature");
+                    var walletSig;
+                    try {
+                        walletSig = await walletAPI.signTx(feedTx.cborTx, true);
+                    } catch (err) {
+                        console.error(err);
+                        return
+                    }
+
+                    console.log("Submit transaction...");
+                    await axios.post('/wallet/submit-feed-tx', {
+                        cborSig: walletSig,
+                        cborTx: feedTx.cborTx
+                    })
+                    .then(async response => {
+                
+                        const submitTx = await JSON.parse(response.data);
+                        if (submitTx.status == 200) {
+                            console.log("submitFeedTx Success: ", submitTx.txId);
+                        } else {
+                            console.error("Feed transaction could not be submitted");
+                            alert ('Feed transaction could not be submitted, please try again');
+                        }
+                    })
+                    .catch(error => {
+                        console.error("submit-tx: ", error);
+                        alert ('Feed transaction could not be submitted, please try again');
+                    });
+
+                } else {
+                    console.error("Exchange transaction could not be submitted");
+                    alert ('Feed transaction could not be submitted, please try again');
+                }
+            })
+            .catch(error => {
+                console.error("submit-tx: ", error);
+                alert ('Feed transaction could not be submitted, please try again');
+            });
+        } catch (err) {
+            console.error(err);
+        }
     }
 
     const handleOnDialogSubmitExchange = async (e) => {
@@ -178,7 +237,7 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
                     }
 
                     console.log("Submit transaction...");
-                    await axios.post('/wallet/submit-tx', {
+                    await axios.post('/wallet/submit-exchange-tx', {
                         cborSig: walletSig,
                         cborTx: exchangeTx.cborTx
                     })
@@ -186,7 +245,7 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
                 
                         const submitTx = await JSON.parse(response.data);
                         if (submitTx.status == 200) {
-                            console.log("submitTx Success: ", submitTx.txId);
+                            console.log("submitExchangeTx Success: ", submitTx.txId);
                         } else {
                             console.error("Exchange transaction could not be submitted");
                             alert ('Exchange transaction could not be submitted, please try again');

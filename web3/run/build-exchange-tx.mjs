@@ -120,15 +120,20 @@ const main = async () => {
         //tx.addSigner(changeAddr.stakingHash);
 
         // Attached the metadata for the minting transaction
+
+        console.error("addr: ", changeAddr.toBech32());
+        
         tx.addMetadata(721, {"map": [[nftTokenMPH.hex, 
                                 {"map": [[nftTokenName,
                                     {
-                                    "map": [["address", changeAddr.toBech32()]]
+                                    "map": [["pub_key_hash", changeAddr.pubKeyHash.hex],
+                                            ["stake_key_hash", changeAddr.stakingHash.hex]]
                                     }
                                 ]]}
                             ]]}
                         ); 
                         
+         
         // Network Params
         const networkParamsPreview = await getNetworkParams(network);
         const networkParams = new NetworkParams(JSON.parse(networkParamsPreview));
