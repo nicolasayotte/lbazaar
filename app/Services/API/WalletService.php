@@ -22,12 +22,7 @@ class WalletService
             ]);
             $wallet->save();
             return $this->updateWalletTransaction($wallet, WalletTransactionHistory::FEED, $oldPoints, $newPoints, $txId, $status);
-        
-        } else if ($status == 'rollback') {
-            $oldPoints = $wallet->points;
-            $newPoints = $oldPoints + $points;
-            return $this->updateWalletTransaction($wallet, WalletTransactionHistory::FEED, $oldPoints, $newPoints, $txId, $status);
-        }
+        } 
     }
 
     public function exchange(UserWallet $wallet, $points, $txId, $status)
@@ -46,16 +41,7 @@ class WalletService
             $newPoints = $wallet->points;
             $oldPoints = $newPoints + $points;
             return $this->updateWalletTransaction($wallet, WalletTransactionHistory::EXCHANGE, $oldPoints, $newPoints, $txId, $status);
-        
-        } else if ($status == 'rollback') {
-            $newPoints = $wallet->points;
-            $oldPoints = $newPoints + $points;
-            $wallet->update([
-                'points' => $oldPoints,
-            ]);
-            $wallet->save();
-            return $this->updateWalletTransaction($wallet, WalletTransactionHistory::EXCHANGE, $oldPoints, $newPoints, $txId, $status);
-        }
+        } 
     }
 
     public function updateWalletTransaction(UserWallet $wallet, $transactionType, $oldPoints, $newPoints, $txId, $status, $courseHistory = null)
@@ -72,7 +58,7 @@ class WalletService
                 'status' => $status
             ]);
         
-        } else if ($status == 'confirmed' || $status == 'rollback') {
+        } else if ($status == 'confirmed') {
 
             $walletTransHistory = WalletTransactionHistory::where('tx_id', $txId)->first();
             $walletTransHistory->points_before = $oldPoints;

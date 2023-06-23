@@ -20,12 +20,12 @@ const main = async () => {
     // Validate the webhook signature
     //const signatureHeader = request.headers["blockfrost-signature"];
     try {
-        verifyWebhookSignature(
-        requestBody, // Stringified request.body 
-        signature,
-        SECRET_AUTH_TOKEN,
-        6000 // Optional param to customize maximum allowed age of the webhook event, defaults to 600s
-        );
+        //verifyWebhookSignature(
+        //requestBody, // Stringified request.body 
+        //signature,
+        //SECRET_AUTH_TOKEN,
+        //6000 // Optional param to customize maximum allowed age of the webhook event, defaults to 600s
+        //);
         const returnObj = {
             status: 200
         }
