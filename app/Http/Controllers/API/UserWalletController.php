@@ -56,6 +56,9 @@ class UserWalletController extends Controller
                 if (!$userWalletTrans->user_wallet_id) {
                     throw new \Exception("Wallet ID not found");
                 }
+                if ($userWalletTrans->status == 'confirmed') {
+                    throw new \Exception("Tx has already been confirmed");
+                }
                 $points = $userWalletTrans->points_after - $userWalletTrans->points_before;
                 if ($points < 1) {
                     throw new \Exception("Negative points not allowed");
@@ -114,7 +117,10 @@ class UserWalletController extends Controller
                 Log::debug('$txId: ' . $txId);
                 $userWalletTrans = WalletTransactionHistory::where('tx_id', $txId)->first();
                 if (!$userWalletTrans->user_wallet_id) {
-                    throw new \Exception("Wallet ID not found");
+                    throw new \Exception("Tx ID not found");
+                }
+                if ($userWalletTrans->status == 'confirmed') {
+                    throw new \Exception("Tx has already been confirmed");
                 }
                 $points = $userWalletTrans->points_before - $userWalletTrans->points_after;
                 if ($points < 1) {
