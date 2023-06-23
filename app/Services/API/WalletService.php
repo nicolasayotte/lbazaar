@@ -7,29 +7,55 @@ use App\Models\WalletTransactionHistory;
 class WalletService
 {
     public function feed(UserWallet $wallet, $points, $txId, $status)
-    {
-        $oldPoints = $wallet->points;
-        // Only update the user wallet table if the web3 tx
-        // has been confirmed
-        if ($status == 'confirmed') {
-            $wallet->update([
-                'points' => $oldPoints + $points,
-            ]);
-            $new_points = $oldPoints + $points;
-        }
+    { 
+        // Only update the user wallet table if the tx has been confirmed
+        if ($status == 'pending') {
+            $oldPoints = $wallet->points;
+            $newPoints = $oldPoints + $points;
+            return $this->updateWalletTransaction($wallet, WalletTransactionHistory::FEED, $oldPoints, $newPoints, $txId, $status);
         
-        $newPoints = $wallet->points;
-        return $this->updateWalletTransaction($wallet, WalletTransactionHistory::FEED, $oldPoints, $newPoints, $txId, $status);
+        } else if ($status == 'confirmed') {
+            $oldPoints = $wallet->points;
+            $newPoints = $oldPoints + $points;
+            $wallet->update([
+                'points' => $newPoints,
+            ]);
+            $wallet->save();
+            return $this->updateWalletTransaction($wallet, WalletTransactionHistory::FEED, $oldPoints, $newPoints, $txId, $status);
+        
+        } else if ($status == 'rollback') {
+            $oldPoints = $wallet->points;
+            $newPoints = $oldPoints + $points;
+            return $this->updateWalletTransaction($wallet, WalletTransactionHistory::FEED, $oldPoints, $newPoints, $txId, $status);
+        }
     }
 
     public function exchange(UserWallet $wallet, $points, $txId, $status)
     {
-        $oldPoints = $wallet->points;
-        $wallet->update([
-            'points' => $oldPoints - $points,
-        ]);
-        $newPoints = $oldPoints - $points;
-        return $this->updateWalletTransaction($wallet, WalletTransactionHistory::EXCHANGE, $oldPoints, $newPoints, $txId, $status);
+        // Update the user wallet table and undo the tx for rollback
+        if ($status == 'pending') {
+            $oldPoints = $wallet->points;
+            $newPoints = $oldPoints - $points;
+            $wallet->update([
+                'points' => $newPoints,
+            ]);
+            $wallet->save();
+            return $this->updateWalletTransaction($wallet, WalletTransactionHistory::EXCHANGE, $oldPoints, $newPoints, $txId, $status);
+        
+        } else if ($status == 'confirmed') {
+            $newPoints = $wallet->points;
+            $oldPoints = $newPoints + $points;
+            return $this->updateWalletTransaction($wallet, WalletTransactionHistory::EXCHANGE, $oldPoints, $newPoints, $txId, $status);
+        
+        } else if ($status == 'rollback') {
+            $newPoints = $wallet->points;
+            $oldPoints = $newPoints + $points;
+            $wallet->update([
+                'points' => $oldPoints,
+            ]);
+            $wallet->save();
+            return $this->updateWalletTransaction($wallet, WalletTransactionHistory::EXCHANGE, $oldPoints, $newPoints, $txId, $status);
+        }
     }
 
     public function updateWalletTransaction(UserWallet $wallet, $transactionType, $oldPoints, $newPoints, $txId, $status, $courseHistory = null)
@@ -45,14 +71,14 @@ class WalletService
                 'tx_id' => $txId,
                 'status' => $status
             ]);
-        } else if ($status == 'confirmed') {
+        
+        } else if ($status == 'confirmed' || $status == 'rollback') {
 
             $walletTransHistory = WalletTransactionHistory::where('tx_id', $txId)->first();
             $walletTransHistory->points_before = $oldPoints;
             $walletTransHistory->points_after = $newPoints;
-            $walletTransHistory->status = 'confirmed';
+            $walletTransHistory->status = $status;
             $walletTransHistory->save();
-            
             return $walletTransHistory;
         }
     }
