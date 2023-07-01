@@ -50,7 +50,7 @@ const main = async () => {
         const changeAddr = Address.fromHex(hexChangeAddr);
 
         if (!(stakeKeyHash === changeAddr.stakingHash.hex)) {
-            throw console.error("exchange-tx.mjs: stake key hash does not match");
+            throw console.error("exchange-tx.mjs: stake key hash does not match with verified stake key");
         }
 
         // Get UTXOs from wallet

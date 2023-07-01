@@ -49,8 +49,9 @@ const main = async () => {
         const changeAddr = Address.fromHex(hexChangeAddr);
 
         if (!(stakeKeyHash === changeAddr.stakingHash.hex)) {
-            throw console.error("build-feed-tx.mjs: stake key hash does not match");
+            throw console.error("build-feed-tx.mjs: stake key hash does not match verified stake key");
         }
+        console.error("build-feed-tx.mjs: stake keys match OK")
 
         // Get UTXOs from wallet
         const walletUtxos = cborUtxos.map(u => UTxO.fromCbor(hexToBytes(u)));

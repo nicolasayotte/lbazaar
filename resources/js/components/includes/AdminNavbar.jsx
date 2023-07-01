@@ -1,5 +1,5 @@
 import { Link, usePage } from "@inertiajs/inertia-react"
-import { Wallet, AccountBalanceWallet, AccountCircle, Article, ExpandLess, ExpandMore, GTranslate, Inbox, LibraryBooks, LocalOffer, Logout, Mail, ManageAccounts, Menu, People, Settings, DisplaySettings } from "@mui/icons-material"
+import { Wallet, AccountBalanceWallet, AccountCircle, Article, ExpandLess, ExpandMore, GTranslate, Inbox, LibraryBooks, LocalOffer, Logout, Mail, ManageAccounts, Menu, People, Redeem, Settings, DisplaySettings } from "@mui/icons-material"
 import { AppBar, Box, Collapse, Divider, Drawer, Grid, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar, Typography, Stack } from "@mui/material"
 import { useState } from "react"
 import routes from "../../helpers/routes.helper"
@@ -62,6 +62,12 @@ const AdminNavbar = ({ drawerWidth, window }) => {
             link: routes["admin.settings.course_types.index"],
             icon: <LibraryBooks />,
             active: component.startsWith('Admin/Settings/CourseTypes')
+        },
+        {
+            name: translatables.title.nft,
+            link: routes["admin.settings.nft.index"],
+            icon: <Redeem />,
+            active: component.startsWith('Admin/Settings/Nft')
         },
         {
             name: translatables.title.translations,

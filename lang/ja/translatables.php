@@ -141,6 +141,9 @@ return [
             'disable'=> 'この生徒を無効にしますか？',
             'enable'=> 'この生徒を有効化しますか？'
         ],
+        'nft'=> [
+            'delete'=> 'このNFTを削除してもよろしいですか？'
+        ],
         'translations'=> [
             'update'=> '翻訳を更新して良いですか？'
         ],
@@ -183,6 +186,7 @@ return [
             'view'=> 'ユーザー'
         ],
         'settings'=> '設定',
+        'nft'=> 'エヌエフティー',
         'translations'=> '翻訳',
         'password'=> [
             'update'=> 'パスワード更新'
@@ -322,6 +326,7 @@ return [
         'create_category'=> 'カテゴリー作成',
         'create_classification'=> '区分作成',
         'create_exam'=> 'Exam作成',
+        'create_nft'=> 'NFTを作成する',
         'create_package'=> 'パッケージ作成',
         'current_password'=> '現在のPassword',
         'date'=> '日付',
@@ -336,6 +341,7 @@ return [
         'delete_category'=> 'カテゴリー消去',
         'delete_class'=> 'クラス消去',
         'delete_classification'=> '分類消去',
+        'delete_nft'=> 'NFTの削除',
         'delete_schedule'=> 'スケジュール消去',
         'deny'=> 'Deny (JA)',
         'description'=> '概要',
@@ -347,6 +353,7 @@ return [
         'edit_class'=> 'クラス修正',
         'edit_classification'=> 'Edit Classification (JA)',
         'edit_exam'=> 'Exam修正',
+        'edit_nft'=> 'NFTの編集',
         'edit_profile'=> 'Profile修正',
         'education'=> '学歴',
         'email'=> 'Eメール',
@@ -362,6 +369,7 @@ return [
         'feed_points' => 'Feed Points (JA)',
         'filter'=> 'フィルター',
         'first_name'=> '名',
+        'for_sale' => '販売中',
         'forgot_password'=> 'パスワード忘れ',
         'format'=> '受講タイプ',
         'free'=> 'フリークラス',
@@ -371,6 +379,7 @@ return [
         'general_information'=> '基本情報',
         'give_feedback'=> 'フィードバック',
         'home'=> 'Home',
+        'image_url'=> '画像のURL',
         'keyword'=> 'キーワード',
         'language'=> '言語',
         'last_name'=> '姓',
@@ -388,6 +397,7 @@ return [
         'new_category'=> '新しいカテゴリ',
         'new_password'=> '新パスワード',
         'next_question'=> '次の質問',
+        'nft' => 'エヌエフティー',
         'no_file_selected'=> 'ファイルが選択されていません',
         'no_records_found'=> 'レコードがありません',
         'no_schedules_available'=> 'スケジュールがありません',

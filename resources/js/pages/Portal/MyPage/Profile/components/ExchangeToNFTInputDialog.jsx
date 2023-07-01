@@ -3,7 +3,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Dialog
 import Input from "../../../../../components/forms/Input"
 import { useState } from "react"
 
-const ExchangeToNFTInputDialog = ({ open, title, exchange_item, handleClose, handleConfirm, processing = false, cancelButtonText = '', confirmButtonText = '' }) => {
+const ExchangeToNftInputDialog = ({ open, title, exchange_item, handleClose, handleConfirm, processing = false, cancelButtonText = '', confirmButtonText = '' }) => {
 
     const { translatables, auth } = usePage().props
     const [isDisabled, setDisabled] = useState(true)
@@ -67,4 +67,4 @@ const ExchangeToNFTInputDialog = ({ open, title, exchange_item, handleClose, han
     )
 }
 
-export default ExchangeToNFTInputDialog
+export default ExchangeToNftInputDialog

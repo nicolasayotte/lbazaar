@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\CourseCategoryController;
 use App\Http\Controllers\Admin\CourseTypeController;
 use App\Http\Controllers\Admin\InquiriesController as AdminInquiriesController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\NftController;
 use App\Http\Controllers\Admin\TranslationController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\SettingsController;
@@ -125,6 +126,14 @@ Route::prefix('admin')->name('admin.')->group(function() {
                 Route::post('/', [ClassificationController::class, 'store'])->name('store');
                 Route::patch('/{id}/update', [ClassificationController::class, 'update'])->name('update');
                 Route::delete('/{id}/delete', [ClassificationController::class, 'delete'])->name('delete');
+            });
+
+            # NFT
+            Route::prefix('nft')->name('nft.')->group(function() {
+                Route::get('/', [NftController::class, 'index'])->name('index');
+                Route::post('/', [NftController::class, 'store'])->name('store');
+                Route::patch('/{id}', [NftController::class, 'update'])->name('update');
+                Route::delete('/{id}', [NftController::class, 'delete'])->name('delete');
             });
 
             # Translations

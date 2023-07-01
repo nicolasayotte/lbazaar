@@ -131,6 +131,9 @@ return [
         'classification' => [
             'delete' => 'Are you sure you want to delete this classification?'
         ],
+        'nft' => [
+            'delete' => 'Are you sure you want to delete this NFT?'
+        ],
         'translations' => [
             'update' => 'Are you sure you want to update these translations?'
         ],
@@ -177,6 +180,7 @@ return [
         ],
         'login' => 'Login',
         'general' => 'General',
+        'nft' => 'NFT',
         'translations' => 'Translations',
         'settings' => 'Settings',
         'exams' => 'Exams',
@@ -321,6 +325,7 @@ return [
         'create_category' => 'Create Category',
         'create_classification' => 'Create Classification',
         'create_exam' => 'Create Exam',
+        'create_nft' => 'Create NFT',
         'create_package' => 'Create Package',
         'current_password' => 'Current Password',
         'days' => 'Days',
@@ -336,6 +341,7 @@ return [
         'delete_category' => 'Delete Category',
         'delete_class' => 'Delete Class',
         'delete_classification' => 'Delete Classification',
+        'delete_nft' => 'Delete NFT',
         'delete_schedule' => 'Delete Schedule',
         'description' => 'Description',
         'disable' => 'Disable',
@@ -346,6 +352,7 @@ return [
         'edit_class' => 'Edit Class',
         'edit_classification' => 'Edit Classification',
         'edit_exam' => 'Edit Exam',
+        'edit_nft' => 'Edit NFT',
         'edit_profile' => 'Edit Profile',
         'education' => 'Education',
         'email' => 'Email',
@@ -362,6 +369,7 @@ return [
         'feed_points' => 'Feed Points',
         'filter' => 'Filter',
         'first_name' => 'First Name',
+        'for_sale' => 'For Sale',
         'forgot_password' => 'Forgot Password',
         'format' => 'Format',
         'free' => 'Free',
@@ -373,6 +381,7 @@ return [
         'give_feedback' => 'Give Feedback',
         'give_feedback_description' => 'Let us know what you think of this class',
         'home' => 'Home',
+        'image_url' => 'Image URL',
         'inquiry_help' => 'Must be less than 200 characters',
         'keyword' => 'Keyword',
         'language' => 'Language',
@@ -389,6 +398,7 @@ return [
         'new_category'  => 'New Category',
         'new_password' => 'New Password',
         'next_question' => 'Next Question',
+        'nft' => 'NFT',
         'no_file_selected' => 'No file selected',
         'no_records_found' => 'No Records Found',
         'no_schedules_available' => 'No Schedules Available',

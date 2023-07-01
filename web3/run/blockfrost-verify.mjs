@@ -15,17 +15,16 @@ const main = async () => {
 
     // You will find your webhook secret auth token in your webhook settings in the Blockfrost Dashboard
     const SECRET_AUTH_TOKEN = process.env.WEBHOOK_AUTH_TOKEN;
-    //const SECRET_AUTH_TOKEN = "250b8b23-ff69-455f-a5dc-5766cfe81504";
     console.error("SECRET_AUTH_TOKEN: ", SECRET_AUTH_TOKEN);
+    
     // Validate the webhook signature
-    //const signatureHeader = request.headers["blockfrost-signature"];
     try {
-        //verifyWebhookSignature(
-        //requestBody, // Stringified request.body 
-        //signature,
-        //SECRET_AUTH_TOKEN,
-        //6000 // Optional param to customize maximum allowed age of the webhook event, defaults to 600s
-        //);
+        verifyWebhookSignature(
+        requestBody, // Stringified request.body 
+        signature,
+        SECRET_AUTH_TOKEN,
+        6000 // Optional param to customize maximum allowed age of the webhook event, defaults to 600s
+        );
         const returnObj = {
             status: 200
         }
