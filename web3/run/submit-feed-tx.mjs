@@ -42,8 +42,7 @@ const main = async () => {
         tx.addSignatures(signatures);
 
         const txId = await submitTx(tx);
-        //const txId = "abc123"
-        var timestamp = new Date().toISOString();
+        const timestamp = new Date().toISOString();
         const returnObj = {
             status: 200,
             txId: txId,
@@ -55,12 +54,13 @@ const main = async () => {
         process.stdout.write(JSON.stringify(returnObj));
 
     } catch (err) {
+        const timestamp = new Date().toISOString();
         const returnObj = {
             status: 500,
-            date: timestamp
+            date: timestamp,
+            error: err
         }
         // Log tx submission failure
-        var timestamp = new Date().toISOString();
         console.error(returnObj);
         process.stdout.write(JSON.stringify(returnObj));
     }

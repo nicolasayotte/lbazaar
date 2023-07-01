@@ -8,6 +8,7 @@ use App\Http\Requests\UpdatePasswordRequest;
 use App\Http\Requests\UpdateBasePasswordRequest;
 use App\Models\Country;
 use App\Models\Setting;
+use App\Models\Nft;
 use App\Repositories\UserRepository;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Http;
@@ -37,12 +38,14 @@ class ProfileController extends Controller
     {
         $countries = Country::all();
         $ada_to_points = Setting::where('slug', 'ada-to-points')->first();
-        $points_to_nft = Setting::where('slug', 'points-to-nft')->first();
+        //$points_to_nft = Setting::where('slug', 'points-to-nft')->first();
+        $nfts = Nft::all();
 
         return Inertia::render('Portal/MyPage/Profile/Index', [
             'countries' => $countries,
             'ada_to_points' =>  $ada_to_points->value,
-            'points_to_nft' => $points_to_nft->value,
+            //'points_to_nft' => $points_to_nft->value,
+            'nfts' => $nfts,
             'title' => getTranslation('texts.mypage').' | '.getTranslation('texts.profile')
         ])->withViewData([
             'title' => getTranslation('texts.mypage').' | '.getTranslation('texts.profile')

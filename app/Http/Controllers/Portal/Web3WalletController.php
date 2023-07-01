@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Web3WalletRequest;
+use App\Models\Nft;
 use App\Models\UserWallet;
 use App\Models\User;
 use App\Models\Role;
@@ -128,16 +129,22 @@ class Web3WalletController extends Controller
             
             $skateKeyHash = UserWallet::where('user_id', $userId)->first()->stake_key_hash;
             $changeAddr = $request->input('changeAddr');
+            $nft = $request->input('nft');
             $utxos = $request->input('utxos');
             $strUtxos = implode(",",$utxos);
            
             Log::debug('skateKeyHash: ' . $skateKeyHash);
             Log::debug('changeAddr: ' . $changeAddr);
+            Log::debug('nft: ' . $nft);
             Log::debug('strUtxos: ' . $strUtxos);
+
+            // check that nft name is in the order table
+            // check that nft is available for sale
 
             $cmd = '(cd ../web3/;node ./run/build-exchange-tx.mjs '
                         .escapeshellarg($skateKeyHash).' '
                         .escapeshellarg($changeAddr).' '
+                        .escapeshellarg($nft).' '
                         .escapeshellarg($strUtxos).') 2>> ../storage/logs/web3.log'; 
             
             $response = exec($cmd);
@@ -176,8 +183,14 @@ class Web3WalletController extends Controller
             $user = User::where('id', $userId)->first();
             $userWallet = $user->userWallet()->first();
             // We will minted one NFT, so find how many points are needed to pay for it
-            $pointsToNFT = Setting::where('slug', 'points-to-nft')->first()->value;
+            //$pointsToNFT = Setting::where('slug', 'points-to-nft')->first()->value;
             
+            // Find out many points will be used to by the nft selected
+            $nft = $request->input('nft');
+            Log::debug("nft: ". $nft);
+            // TODO - Check that the nft name matches the order table, if so calc points
+            $pointsToNFT = Nft::where('name', $nft)->first()->points;
+
             // Only submit if there is enought points to cover the cost
             if ($userWallet->points > $pointsToNFT) {
             

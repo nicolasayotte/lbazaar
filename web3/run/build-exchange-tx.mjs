@@ -25,13 +25,16 @@ import { getNetworkParams } from "../common/network.mjs"
 
 /**
  * Main calling function via the command line 
- * Usage: node exchange-tx.js cBorChangeAddr [cborUtxo1,cborUtxo2,...]
+ * Usage: node exchange-tx.js stakeKeyHash cBorChangeAddr [cborUtxo1,cborUtxo2,...]
  * @params {string, string, string[]}
  * @output {string} cborTx
  */
 const main = async () => {
 
     try {
+        const args = process.argv;
+        console.error("build-exchange-tx: args: ", args);
+        
         // Set the Helios compiler optimizer flag
         const optimize = (process.env.OPTIMIZE === 'true');
         const network = process.env.NETWORK;
@@ -40,11 +43,11 @@ const main = async () => {
         const maxTxFee = BigInt(process.env.MAX_TX_FEE);
         const minChangeAmt = BigInt(process.env.MIN_CHANGE_AMT);
         const minUTXOVal = new Value(minAda + maxTxFee + minChangeAmt);
-        const args = process.argv;
         const stakeKeyHash = args[2]
         const hexChangeAddr = args[3];
-        const cborUtxos = args[4].split(',');
-        const nftTokenName = process.env.NFT_TOKEN_NAME;
+        const nftTokenName = args[4];
+        const cborUtxos = args[5].split(',');
+        //const nftTokenName = process.env.NFT_TOKEN_NAME;
   
         // Get the change address from the wallet
         const changeAddr = Address.fromHex(hexChangeAddr);
@@ -121,8 +124,6 @@ const main = async () => {
 
         // Attached the metadata for the minting transaction
 
-        console.error("addr: ", changeAddr.toBech32());
-        
         tx.addMetadata(721, {"map": [[nftTokenMPH.hex, 
                                 {"map": [[nftTokenName,
                                     {
@@ -153,12 +154,12 @@ const main = async () => {
         process.stdout.write(JSON.stringify(returnObj));
 
     } catch (err) {
+        const timestamp = new Date().toISOString();
         const returnObj = {
-            status: 500
+            status: 500,
+            date: timestamp,
+            error: err
         }
-        var timestamp = new Date().toISOString();
-        console.error(timestamp);
-        console.error("exchange-tx: ", err);
         process.stdout.write(JSON.stringify(returnObj));
     }
 }

@@ -9,12 +9,13 @@ import { verifyWebhookSignature } from "@blockfrost/blockfrost-js";
 const main = async () => {
 
     const args = process.argv;
-    console.error("args: ", args);
+    console.error("blockfrost-verify: args: ", args);
     const signature  = args[2].replace(/\"/g,'');
     const requestBody = args[3];
+    const webhook = args[4];
 
     // You will find your webhook secret auth token in your webhook settings in the Blockfrost Dashboard
-    const SECRET_AUTH_TOKEN = process.env.WEBHOOK_AUTH_TOKEN;
+    const SECRET_AUTH_TOKEN = webhook === "feed" ? process.env.FEED_WEBHOOK_AUTH_TOKEN : process.env.EXCHANGE_WEBHOOK_AUTH_TOKEN;
     console.error("SECRET_AUTH_TOKEN: ", SECRET_AUTH_TOKEN);
     
     // Validate the webhook signature

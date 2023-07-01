@@ -88,12 +88,13 @@ const main = async () => {
         process.stdout.write(JSON.stringify(returnObj));
 
     } catch (err) {
+        const timestamp = new Date().toISOString();
         const returnObj = {
-            status: 500
+            status: 500,
+            date: timestamp,
+            error: err
         }
-        var timestamp = new Date().toISOString();
-        console.error(timestamp);
-        console.error("build-feed-tx: ", err);
+  
         process.stdout.write(JSON.stringify(returnObj));
     }
 }

@@ -37,7 +37,7 @@ const Index = ({ auth, countries, errors, translatables }) => {
                                      walletAPI={walletAPI}
                                      onWalletAPI={setWalletAPI}/>
                 </Box>
-                { walletStakeKeyDisplay && <Box mb={2}>
+                {walletStakeKeyDisplay && <Box mb={2}>
                     <UserPoints walletStakeKeyHash={walletStakeKeyDisplay}
                                 walletAPI={walletAPI}/>
                 </Box>}

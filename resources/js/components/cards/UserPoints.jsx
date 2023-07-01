@@ -28,7 +28,7 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
     }, [walletAPI]);
 
     
-    const { errors, auth, translatables, ada_to_points, points_to_nft } = usePage().props
+    const { errors, auth, translatables, ada_to_points, nfts } = usePage().props
 
     //console.log("UserPoints: general_settings: ", usePage().props)
     //console.log("UserPoints: translatables: ", translatables)
@@ -36,6 +36,7 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
     const [dialog, setDialog] = useState({
         open: false,
         title: '',
+        nftName: '',
         points: 0,
         wallet_id: walletStakeKeyHash,
         submitUrl: '',
@@ -60,7 +61,7 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
     const handleExchange = () => {
         setDialog(dialog => ({
             ...dialog,
-            points: points_to_nft,
+            nfts: nfts,
             open: true,
             title: translatables.texts.exchange_points,
             submitUrl: routes["wallet.exchange"],
@@ -99,16 +100,48 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
         )
     }
 
+    const handleSelectChange = (event) => {
+        const selectedValues = event.target.value.split(',');
+        const points = selectedValues[0];
+        const name = selectedValues[1];
+        setDialog(dialog => ({ ...dialog,
+                                nftName: name,
+                                points: Math.abs(points)}));
+        // Do something with the values
+      };
+
     const dialogFormExchange = () => {
 
         return (
+            
             <Box mt={1}>
+                
                 <Input
-                    label={translatables.texts.points}
-                    //type="number"
+                    select
+                    label={translatables.texts.nft}
+                    InputLabelProps={{
+                        shrink: true
+                    }}
+                    name="nft"
+                    //value={filters.category}
+                    //onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
+                    //value={dialog.points}
+                    onChange={handleSelectChange}
+                    //onChange={e => setDialog(dialog => ({ ...dialog, points: Math.abs(e.target.value[0]) }))}
+                >
+                    <option value="">Select an NFT</option>
+                    {nfts.map((item) => (
+                    <option key={item.id} value={[item.points, item.name]}>
+                        {item.name}
+                    </option>
+                    ))}
+                </Input>
+                <Input
+                    label="Points"
                     name="points"
                     value={dialog.points}
-                    //onChange={e => setDialog(dialog => ({ ...dialog, points: e.target.value }))}
+                    //onChange={e => setDialog(dialog => ({ ...dialog, wallet_id: e.target.value }))}
+                    sx={{ mt: 2 }}
                 />
                 <Input
                     label="Wallet ID"
@@ -219,7 +252,8 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
 
             await axios.post('/wallet/build-exchange-tx', {
                 changeAddr: hexChangeAddr,
-                utxos: cborUtxos
+                nft: dialog.nftName,
+                utxos: cborUtxos,
             })
             .then(async response => {
                 const exchangeTx = await JSON.parse(response.data);
@@ -239,7 +273,8 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
                     console.log("Submit transaction...");
                     await axios.post('/wallet/submit-exchange-tx', {
                         cborSig: walletSig,
-                        cborTx: exchangeTx.cborTx
+                        cborTx: exchangeTx.cborTx,
+                        nft: dialog.nftName // TODO change to order ID
                     })
                     .then(async response => {
                 
