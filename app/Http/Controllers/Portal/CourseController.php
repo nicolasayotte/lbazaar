@@ -110,12 +110,14 @@ class CourseController extends Controller
         $feedbackCount = @$request['feedback_count'] ?? CourseFeedbackRepository::PER_PAGE;
 
         $course = $this->courseRepository->findById($id);
+        $nftId = $course['nft_id'];
+        $nft = isset($nftId) ? $this->nftRepository->getNftById($nftId): null;
         $schedules = $this->courseScheduleRepository->findByCourseId($course->id);
         $feedbacks = $this->courseFeedbackRepository->loadByCourseId($id, $feedbackCount);
 
         return Inertia::render('Portal/Course/Details', [
             'course'           => $course,
-            'nft'              => $course->nft,
+            'nft'              => $nft,
             'schedules'        => $schedules,
             'feedbacks'        => $feedbacks,
             'isBooked'         => auth()->user() && auth()->user()->isCourseBooked($id),

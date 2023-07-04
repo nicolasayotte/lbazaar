@@ -46,8 +46,8 @@ class CourseScheduleController extends Controller
     public function index($id, Request $request)
     {
         $course = $this->courseRepository->findByIdManageClass($id);
-        $nft = $course->nft;
-        //$nft = $this->nftRepository->getNftById($course->nft_id);
+        $nftId = $course['nft_id'];
+        $nft = isset($nftId) ? $this->nftRepository->getNftById($nftId): null;
         return Inertia::render('Portal/MyPage/ManageClass/Schedules', [
             //'course'    => $this->courseRepository->findByIdManageClass($id),
             'course'    => $course,

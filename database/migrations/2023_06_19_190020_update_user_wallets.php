@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('user_wallets', function (Blueprint $table) {
-            $table->string('stake_key_hash')->after('credit');
+            $table->string('stake_key_hash')->after('credit')->nullable();
         });
     }
 

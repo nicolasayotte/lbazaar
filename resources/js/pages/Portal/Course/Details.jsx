@@ -18,6 +18,7 @@ const Details = () => {
 
     const { auth, course, nft, schedules, feedbacks, translatables, feedbackCount, feedbacksPerPage } = usePage().props
 
+    console.log("nft: ", nft);
     const [dialog, setDialog] = useState({
         open: false,
         title: '',

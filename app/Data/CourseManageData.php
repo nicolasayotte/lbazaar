@@ -166,7 +166,6 @@ class CourseManageData
         $courseManageData->setType($course->courseType->name);
         $courseManageData->setPublishedDate(Carbon::parse($course->created_at)->format('M j, Y'));
         $courseManageData->setCategory($course->courseCategory->name);
-        
         if($course->nft) {
             $courseManageData->setNftId($course->nft->id);
         }
