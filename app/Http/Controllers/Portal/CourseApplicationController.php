@@ -9,6 +9,7 @@ use App\Models\Course;
 use App\Repositories\CourseApplicationRepository;
 use App\Repositories\CourseCategoryRepository;
 use App\Repositories\CourseTypeRepository;
+use App\Repositories\NftRepository;
 use App\Repositories\VoteRepository;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -28,6 +29,7 @@ class CourseApplicationController extends Controller
         $this->courseApplicationRepository = new CourseApplicationRepository();
         $this->courseCategoryRepository    = new CourseCategoryRepository();
         $this->courseTypeRepository        = new CourseTypeRepository();
+        $this->nftRepository               = new NftRepository();
         $this->voteRepository              = new VoteRepository();
     }
 
@@ -36,6 +38,7 @@ class CourseApplicationController extends Controller
         return Inertia::render('Portal/MyPage/ClassApplications/Index', [
             'courseApplications' => $this->courseApplicationRepository->getMyCourseApplications($request->all()),
             'categoryOptions'    => $this->courseCategoryRepository->getDropdownData(),
+            'nftOptions'         => $this->nftRepository->getDropdownData(),
             'typeOptions'        => $this->courseTypeRepository->getDropdownData(),
             'keyword'            => @$request['keyword'] ?? '',
             'course_type'        => @$request['course_type'] ?? '',
@@ -54,6 +57,7 @@ class CourseApplicationController extends Controller
     {
         return Inertia::render('Portal/MyPage/ClassApplications/Create', [
             'categoryOptions'    => $this->courseCategoryRepository->getDropdownData(),
+            'nftOptions'         => $this->nftRepository->getDropdownData(),
             'typeOptions'        => $this->courseTypeRepository->getDropdownData(),
             'title'              => getTranslation('texts.mypage').' | '.getTranslation('title.class.applications.create'),
             'hasButtons'         => true
@@ -64,17 +68,17 @@ class CourseApplicationController extends Controller
 
     public function store(CourseApplicationRequest $request)
     {
+        
         $inputs = $request->all();
-
         $inputs['is_live'] = $inputs['format'] == Course::LIVE ? true : false;
-
         $inputs['max_participant'] =  $inputs['is_live']? $inputs['seats'] : 0;
         $inputs['data'] = json_encode($request->all());
-
         $inputs['professor_id'] = auth()->user()->id;
         $inputs['course_type_id'] = $this->courseTypeRepository->findByName($inputs['type'])->id;
         $inputs['course_category_id'] = $this->courseCategoryRepository->firstOrCreate($inputs['category'])->id;
-
+        if ($inputs['nft_name']) {
+            $inputs['nft_id'] = $this->nftRepository->findByName($inputs['nft_name'])->id;
+        }
         $courseApplication = $this->courseApplicationRepository->create($inputs);
 
         $vote = $this->voteRepository->generateNewId($courseApplication);
@@ -90,13 +94,27 @@ class CourseApplicationController extends Controller
 
     public function view($id)
     {
-        return Inertia::render('Portal/MyPage/ClassApplications/View',[
-            'courseApplication'     => CourseApplicationData::fromModel($this->courseApplicationRepository->with(['professor.classification'])->findOrFail($id)),
-            'title'                 => getTranslation('texts.mypage').' | '.getTranslation('title.class.applications.view'),
-            'hasButtons'            => true
-        ])->withViewData([
-            'title'                 => getTranslation('texts.mypage').' | '.getTranslation('title.class.applications.view')
-        ]);
+        $courseApplication = CourseApplicationData::fromModel($this->courseApplicationRepository->with(['professor.classification'])->findOrFail($id));
+        $nftId = $courseApplication['nft_id'];
+
+        if ($nftId) {
+            return Inertia::render('Portal/MyPage/ClassApplications/View',[
+                'courseApplication'     => CourseApplicationData::fromModel($this->courseApplicationRepository->with(['professor.classification'])->findOrFail($id)),
+                'nft'                   => $this->nftRepository->getNftById($nftId),
+                'title'                 => getTranslation('texts.mypage').' | '.getTranslation('title.class.applications.view'),
+                'hasButtons'            => true
+            ])->withViewData([
+                'title'                 => getTranslation('texts.mypage').' | '.getTranslation('title.class.applications.view')
+            ]);
+        } else {
+            return Inertia::render('Portal/MyPage/ClassApplications/View',[
+                'courseApplication'     => CourseApplicationData::fromModel($this->courseApplicationRepository->with(['professor.classification'])->findOrFail($id)),
+                'title'                 => getTranslation('texts.mypage').' | '.getTranslation('title.class.applications.view'),
+                'hasButtons'            => true
+            ])->withViewData([
+                'title'                 => getTranslation('texts.mypage').' | '.getTranslation('title.class.applications.view')
+            ]);
+        }
     }
 
 }

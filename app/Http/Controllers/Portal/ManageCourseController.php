@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CourseUpdateRequest;
 use App\Models\CourseHistory;
 use App\Repositories\CourseCategoryRepository;
+use App\Repositories\NftRepository;
 use App\Repositories\CourseFeedbackRepository;
 use App\Repositories\CourseHistoryRepository;
 use App\Repositories\CourseRepository;
@@ -18,6 +19,7 @@ class ManageCourseController extends Controller
 {
     public $courseTypeRepository;
     public $courseCategoryRepository;
+    public $nftRepository;
     public $courseRepository;
     public $courseHistoryRepository;
     public $courseFeedbackRepository;
@@ -28,6 +30,7 @@ class ManageCourseController extends Controller
     {
         $this->courseTypeRepository = new CourseTypeRepository();
         $this->courseCategoryRepository = new CourseCategoryRepository();
+        $this->nftRepository = new NftRepository();
         $this->courseRepository = new CourseRepository();
         $this->courseHistoryRepository = new CourseHistoryRepository();
         $this->courseFeedbackRepository = new CourseFeedbackRepository();
@@ -41,6 +44,7 @@ class ManageCourseController extends Controller
         return Inertia::render('Portal/MyPage/ManageClass/Index', [
             'courses'         => $this->courseRepository->getMyCourses($request->all()),
             'categoryOptions' => $this->courseCategoryRepository->getDropdownData(),
+            'nftOptions'      => $this->nftRepository->getDropdownData(),
             'typeOptions'     => $this->courseTypeRepository->getDropdownData(),
             'keyword'         => @$request['keyword'] ?? '',
             'course_type'     => @$request['course_type'] ?? '',

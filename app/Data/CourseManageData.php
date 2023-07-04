@@ -19,6 +19,8 @@ class CourseManageData
 
     private $category;
 
+    private $nftId;
+
     private $createdDate;
 
     private $publishedDate;
@@ -55,6 +57,12 @@ class CourseManageData
     public function setCategory($category)
     {
         $this->category = $category;
+        return $this;
+    }
+
+    public function setNftId($nftId)
+    {
+        $this->nftId = $nftId;
         return $this;
     }
 
@@ -119,6 +127,11 @@ class CourseManageData
         return $this->category;
     }
 
+    public function getNftId()
+    {
+        return $this->nftId;
+    }
+
     public function getCreatedDate()
     {
         return $this->createdDate;
@@ -153,6 +166,10 @@ class CourseManageData
         $courseManageData->setType($course->courseType->name);
         $courseManageData->setPublishedDate(Carbon::parse($course->created_at)->format('M j, Y'));
         $courseManageData->setCategory($course->courseCategory->name);
+        
+        if($course->nft) {
+            $courseManageData->setNftId($course->nft->id);
+        }
         $courseManageData->setFormat(ucwords($course->is_live ? Course::LIVE : Course::ON_DEMAND, '-'));
         $courseManageData->setIsDeletable($course->active_schedules->count() <= 0);
 

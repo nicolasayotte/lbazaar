@@ -398,6 +398,7 @@ return [
         'new_category'  => 'New Category',
         'new_password' => 'New Password',
         'next_question' => 'Next Question',
+        'nft' => 'Select NFT',
         'nft' => 'NFT',
         'no_file_selected' => 'No file selected',
         'no_records_found' => 'No Records Found',

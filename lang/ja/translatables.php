@@ -397,6 +397,7 @@ return [
         'new_category'=> '新しいカテゴリ',
         'new_password'=> '新パスワード',
         'next_question'=> '次の質問',
+        'nft' => 'NFTを選択する',
         'nft' => 'エヌエフティー',
         'no_file_selected'=> 'ファイルが選択されていません',
         'no_records_found'=> 'レコードがありません',

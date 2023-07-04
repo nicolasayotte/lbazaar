@@ -27,6 +27,7 @@ class Course extends Model
         "language",
         "image_thumbnail",
         "course_category_id",
+        "nft_id",
         "course_type_id",
         "video_path",
         "zoom_link",
@@ -73,6 +74,11 @@ class Course extends Model
     public function courseCategory()
     {
         return $this->belongsTo(CourseCategory::class)->withTrashed();
+    }
+
+    public function nft()
+    {
+        return $this->belongsTo(Nft::class)->withTrashed();
     }
 
     public function coursePackage()

@@ -11,6 +11,7 @@ use App\Models\Setting;
 use App\Models\WalletTransactionHistory;
 use App\Repositories\CourseRepository;
 use App\Repositories\CourseScheduleRepository;
+use App\Repositories\NftRepository;
 use App\Repositories\TranslationRepository;
 use App\Repositories\UserRepository;
 use Carbon\Carbon;
@@ -26,6 +27,8 @@ class CourseScheduleController extends Controller
 
     private $courseScheduleRepository;
 
+    private $nftRepository;
+
     private $baseTitle;
 
     private $userRepository;
@@ -34,6 +37,7 @@ class CourseScheduleController extends Controller
     {
         $this->courseRepository         = new CourseRepository();
         $this->courseScheduleRepository = new CourseScheduleRepository();
+        $this->nftRepository            = new NftRepository();
         $this->userRepository           = new UserRepository();
 
         $this->baseTitle = getTranslation('title.class.manage.view') . ' - ';
@@ -41,8 +45,13 @@ class CourseScheduleController extends Controller
 
     public function index($id, Request $request)
     {
+        $course = $this->courseRepository->findByIdManageClass($id);
+        $nft = $course->nft;
+        //$nft = $this->nftRepository->getNftById($course->nft_id);
         return Inertia::render('Portal/MyPage/ManageClass/Schedules', [
-            'course'    => $this->courseRepository->findByIdManageClass($id),
+            //'course'    => $this->courseRepository->findByIdManageClass($id),
+            'course'    => $course,
+            'nft'       => $nft,
             'schedules' => $this->courseScheduleRepository->get($id, $request),
             'from'      => @$request['from'] ?? '',
             'to'        => @$request['to'] ?? '',

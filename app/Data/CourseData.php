@@ -13,6 +13,8 @@ class CourseData
 
     private $categoryId;
 
+    private $nftId;
+
     private $title;
 
     private $description;
@@ -79,6 +81,13 @@ class CourseData
     {
         $this->categoryId = $categoryId;
 
+        return $this;
+    }
+
+    public function setNftId($nftId)
+    {
+        $this->nftId = $nftId;
+        
         return $this;
     }
 
@@ -151,6 +160,11 @@ class CourseData
         return $this->categoryId;
     }
 
+    public function getNftId()
+    {
+        return $this->nft_id;
+    }
+
     public function getTypeId()
     {
         return $this->typeId;
@@ -186,7 +200,10 @@ class CourseData
         $courseManageData->setDescription($course->description);
         $courseManageData->setType($course->courseType->name);
         $courseManageData->setCategory($course->courseCategory->name);
-        $courseManageData->setLanguage($course->language);
+        
+        if($course->nft) {
+            $courseManageData->setNftId($course->nft->id);
+        }$courseManageData->setLanguage($course->language);
         $courseManageData->setPrice($course->price == null ? 0 : $course->price);
         $courseManageData->setPointsEarned($course->points_earned == null ? 0 : $course->points_earned);
         $courseManageData->setStatus(ucwords($course->status->name));

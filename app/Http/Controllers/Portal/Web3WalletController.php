@@ -138,8 +138,11 @@ class Web3WalletController extends Controller
             Log::debug('nft: ' . $nft);
             Log::debug('strUtxos: ' . $strUtxos);
 
-            // check that nft name is in the order table
-            // check that nft is available for sale
+            // TODO
+            // check that nft name is in the transaction table
+            // check that nft is available for sale in the nfts table
+            // check that user has enough points to cover the cost in user table
+            // add new draft entry in the transaction table
 
             $cmd = '(cd ../web3/;node ./run/build-exchange-tx.mjs '
                         .escapeshellarg($skateKeyHash).' '
@@ -182,10 +185,9 @@ class Web3WalletController extends Controller
             Log::debug($userId);
             $user = User::where('id', $userId)->first();
             $userWallet = $user->userWallet()->first();
-            // We will minted one NFT, so find how many points are needed to pay for it
-            //$pointsToNFT = Setting::where('slug', 'points-to-nft')->first()->value;
-            
-            // Find out many points will be used to by the nft selected
+
+            // TODO, pull the points for the NFT from the transaction table
+            // indexed by trans id and user
             $nft = $request->input('nft');
             Log::debug("nft: ". $nft);
             // TODO - Check that the nft name matches the order table, if so calc points

@@ -196,9 +196,7 @@ class CourseRepository extends BaseRepository
         $inputs = $request->all();
 
         $inputs['course_category_id'] = CourseCategory::firstOrCreate(['name' => $inputs['category']])->id;
-
         $isLive = $inputs['format'] == Course::LIVE ? true : false;
-
         $inputs['course_application_id'] = $courseApplication->id;
         $inputs['professor_id'] = auth()->user()->id;
         $inputs['is_live'] = $isLive;

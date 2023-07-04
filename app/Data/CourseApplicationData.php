@@ -25,6 +25,8 @@ class CourseApplicationData
 
 	private $category;
 
+	private $nft_id;
+
 	private $created_at;
 
 	private $status;
@@ -93,6 +95,12 @@ class CourseApplicationData
 	public function setCategory($category)
 	{
 		$this->category = $category;
+		return $this;
+	}
+
+	public function setNftId($nft_id)
+	{
+		$this->nft_id = $nft_id;
 		return $this;
 	}
 
@@ -191,6 +199,11 @@ class CourseApplicationData
 		return $this->category;
 	}
 
+	public function getNftId()
+	{
+		return $this->nft_id;
+	}
+
 	public function getCreatedAt()
 	{
 		return $this->created_at;
@@ -244,7 +257,11 @@ class CourseApplicationData
         $courseData->setTitle($courseApplication->title);
 		$courseData->setType($courseApplication->courseType->name);
         $courseData->setCategory($courseApplication->courseCategory->name);
-        $courseData->setLanguage($courseApplication->language);
+		
+		if($courseApplication->nft) {
+			$courseData->setNftId($courseApplication->nft->id);
+		}
+    	$courseData->setLanguage($courseApplication->language);
         $courseData->setDescription($courseApplication->description);
 
         $courseData->setProfessorName($courseApplication->professor->fullname);

@@ -16,7 +16,7 @@ const Details = () => {
 
     const dispatch = useDispatch()
 
-    const { auth, course, schedules, feedbacks, translatables, feedbackCount, feedbacksPerPage } = usePage().props
+    const { auth, course, nft, schedules, feedbacks, translatables, feedbackCount, feedbacksPerPage } = usePage().props
 
     const [dialog, setDialog] = useState({
         open: false,
@@ -199,7 +199,7 @@ const Details = () => {
 
         return (
             <Grid container spacing={2} sx={{ mb: 2 }}>
-                {
+                {   !nft &&
                     classInfos.map((info, index) => (
                         <Grid item xs={12} md={4} key={index}>
                             <Paper sx={{ p: 2 }}>
@@ -219,6 +219,25 @@ const Details = () => {
                             </Paper>
                         </Grid>
                     ))
+                }
+                {   nft &&
+                    <Grid item xs={12} md={4}>
+                        <Paper sx={{ p: 2 }}>
+                            <Typography
+                                variant="button"
+                                textAlign="center"
+                                display="block"
+                                children={nft.name}
+                            />
+                            <Typography
+                                variant="caption"
+                                textAlign="center"
+                                display="block"
+                                color="GrayText"
+                                children={nft.points}
+                            />
+                        </Paper>
+                    </Grid>
                 }
             </Grid>
         )

@@ -29,9 +29,9 @@ class NftRepository extends BaseRepository
                         return [
                             'id' => $item->id,
                             'name' => $item->name,
+                            'image_url' => $item->image_url,
                             'points' => $item->points,
                             'for_sale' => $item->for_sale,
-                            'image_url' => $item->image_url,
                             'created_at' => Carbon::parse($item->created_at)->format('Y-m-d')
                         ];
                     });
@@ -40,18 +40,39 @@ class NftRepository extends BaseRepository
     public function getDropdownData()
     {
         return $this->model->all()->map(function($data) {
-            return [
-                'id'   => $data->id,
-                'name' => $data->name
-            ];
+            
+            if($data->for_sale) {
+                return [
+                    'id'   => $data->id,
+                    'name' => $data->name
+                ];
+            } else {
+                return [];
+            }
         });
     }
 
     public function firstOrCreate($nft)
     {
         return $this->model->firstOrCreate(['name' => $nft->name,
+                                            'image_url' => $nft->image_url,
                                             'points' => $nft->points,
                                             'for_sale' => $nft->for_sale,
-                                            'image_url' => $nft->image_url]);
+                                            ]);
+    }
+    
+    public function getNameById($id)
+    {
+        return $this->model->find($id)->name;
+    }
+
+    public function getNftById($id)
+    {
+        return $this->model->find($id);
+    }
+
+    public function findByName($name)
+    {
+        return $this->model->where('name', $name)->first();
     }
 }

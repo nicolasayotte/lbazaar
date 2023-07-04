@@ -79,7 +79,6 @@ class CourseHistoryData
         return $this;
     }
 
-
     public function setIsPackage($isPackage)
     {
         $this->isPackage = $isPackage;
@@ -153,7 +152,6 @@ class CourseHistoryData
         return $this->hasFeedback;
     }
 
-
     public function getIsPackage()
     {
         return $this->isPackage;
@@ -168,8 +166,6 @@ class CourseHistoryData
     {
         return get_object_vars($this);
     }
-
-
 
     public static function fromModel(CourseHistory $courseHistory)
     {

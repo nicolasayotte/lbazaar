@@ -7,7 +7,7 @@ import routes from "../../../../helpers/routes.helper"
 
 const Create = () => {
 
-    const { translatables, categoryOptions } = usePage().props
+    const { translatables, categoryOptions, nftOptions } = usePage().props
 
     const typeOptions = [
         { name: 'General', value: 'general' },
@@ -32,6 +32,7 @@ const Create = () => {
         type: 'general',
         format: 'live',
         category: '',
+        nft_name: '',
         lecture_frequency: 'daily',
         length: '',
         price: 0,
@@ -42,6 +43,8 @@ const Create = () => {
 
     const handleOnSubmit = e => {
         e.preventDefault()
+
+        console.log("handleOnSubmit e: ", e);
 
         post(routes["mypage.course.applications.store"])
     }
@@ -111,7 +114,7 @@ const Create = () => {
                                 </Grid>
                             }
                             {
-                                (data.type === 'general' || data.type === 'special') &&
+                                data.type === 'general' &&
                                 <Grid item xs={12} md={4}>
                                     <Input
                                         label={translatables.texts.price}
@@ -119,6 +122,28 @@ const Create = () => {
                                         value={data.price}
                                         onChange={e => handleOnChange(e, setData)}
                                         errors={errors}
+                                    />
+                                </Grid>
+                            }
+                            {
+                                data.type === 'special' &&
+                                <Grid item xs={12} md={4}>
+                                    <Autocomplete
+                                    freeSolo
+                                    options={nftOptions.map(nft => nft.name)}
+                                    fullWidth
+                                    size="small"
+                                    value={data.nft_name}
+                                    inputValue={data.nft_name}
+                                    onInputChange={(e, newValue) => setData('nft_name', newValue)}
+                                    renderInput={params =>
+                                        <Input
+                                            {...params}
+                                            label={translatables.texts.nft}
+                                            value={data.nft_name}
+                                            errors={errors}
+                                        />
+                                        }
                                     />
                                 </Grid>
                             }

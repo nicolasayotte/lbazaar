@@ -28,9 +28,15 @@ class CourseApplicationRequest extends FormRequest
      */
     public function rules()
     {
-        $isPaid = $this->type == strtolower(CourseType::GENERAL) || $this->type == strtolower(CourseType::SPECIAL);
+        $isPaid = $this->type == strtolower(CourseType::GENERAL);
         $isEarn = $this->type == strtolower(CourseType::EARN);
         $isLive = $this->get('format') == Course::LIVE;
+        $isSpecial = $this->type == strtolower(CourseType::SPECIAL);
+        
+        $nftRules = [
+            Rule::requiredIf($isSpecial),
+            'required'
+        ];
         $priceRules = [
             Rule::requiredIf($isPaid),
             'integer',
@@ -45,7 +51,7 @@ class CourseApplicationRequest extends FormRequest
 
         $seatsRules = [
             Rule::requiredIf($isLive),
-            'integer',
+            'required',
             'min:' . ($isLive ? '1' : '0')
         ];
 
@@ -54,6 +60,7 @@ class CourseApplicationRequest extends FormRequest
             'type'              => 'required',
             'format'            => ['required', Rule::in([Course::LIVE, Course::ON_DEMAND])],
             'category'          => 'required',
+            'nft_name'          => $nftRules,
             'lecture_frequency' => 'required',
             'length'            => 'required',
             'price'             => $priceRules,
@@ -75,6 +82,7 @@ class CourseApplicationRequest extends FormRequest
             'type'              => strtolower(getTranslation('texts.type')),
             'format'            => strtolower(getTranslation('texts.format')),
             'category'          => strtolower(getTranslation('texts.category')),
+            'nft_name'          => strtolower(getTranslation('texts.nft')),
             'lecture_frequency' => strtolower(getTranslation('texts.frequency')),
             'length'            => strtolower(getTranslation('texts.length')),
             'price'             => strtolower(getTranslation('texts.price')),

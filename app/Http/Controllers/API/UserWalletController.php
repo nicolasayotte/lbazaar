@@ -31,7 +31,6 @@ class UserWalletController extends Controller
      * @param UserWalletRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    //public function feed(UserWalletRequest $request)
     public function feed(Request $request)
     {
         Log::debug('Request: ' . $request);

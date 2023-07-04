@@ -9,7 +9,7 @@ const View = () => {
 
     const dispatch = useDispatch()
 
-    const { courseApplication, translatables } = usePage().props
+    const { courseApplication, translatables, nft } = usePage().props
 
     const [dialog, setDialog] = useState({
         open: false,
@@ -147,21 +147,30 @@ const View = () => {
                         </Table>
                     </TableContainer>
                     <TableContainer component={Paper}>
-                        <Table>
+                    <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell colSpan={2} children={translatables.texts.pricing_information}/>
+                                    {!nft  && <TableCell colSpan={2} children={translatables.texts.pricing_information} />}
+                                    {nft && <TableCell colSpan={2} children={translatables.texts.nft} />}
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                <TableRow>
-                                    <TableCell width="50%" children={translatables.texts.price}/>
+                                {!nft && <TableRow>
+                                    <TableCell width="50%" children={translatables.texts.price} />
                                     <TableCell align="right" children={courseApplication.price}/>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell width="50%" children={translatables.texts.points_earned}/>
+                                </TableRow>}
+                                {nft && <TableRow>
+                                    <TableCell width="50%" children={translatables.texts.name} />
+                                    <TableCell align="right" children={nft.name}/>
+                                </TableRow>}
+                                {!nft && <TableRow>
+                                    <TableCell width="50%" children={translatables.texts.points_earned} />
                                     <TableCell align="right" children={courseApplication.points_earned}/>
-                                </TableRow>
+                                </TableRow>}
+                                {nft && <TableRow>
+                                    <TableCell width="50%" children={translatables.texts.points} />
+                                    <TableCell align="right" children={nft.points}/>
+                                </TableRow>}
                             </TableBody>
                         </Table>
                     </TableContainer>

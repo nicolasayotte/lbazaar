@@ -29,6 +29,7 @@ class CourseApplication extends Model
         'professor_id',
         'course_category_id',
         'course_type_id',
+        'nft_id',
         'price',
         'points_earned',
         'title',
@@ -57,6 +58,11 @@ class CourseApplication extends Model
     public function courseCategory()
     {
         return $this->belongsTo(CourseCategory::class)->withTrashed();
+    }
+
+    public function nft()
+    {
+        return $this->belongsTo(Nft::class)->withTrashed();
     }
 
     public function course()

@@ -130,7 +130,7 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
                     //onChange={e => setDialog(dialog => ({ ...dialog, points: Math.abs(e.target.value[0]) }))}
                 >
                     <option value="">Select an NFT</option>
-                    {nfts.map((item) => (
+                    {nfts && nfts.map((item) => (
                     <option key={item.id} value={[item.points, item.name]}>
                         {item.name}
                     </option>

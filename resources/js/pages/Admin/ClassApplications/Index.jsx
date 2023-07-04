@@ -16,7 +16,7 @@ const Index = () => {
 
     const dispatch = useDispatch()
 
-    const { courseApplications, categoryOptions, typeOptions, keyword, course_type, category, status, sort, page, translatables } = usePage().props
+    const { courseApplications, categoryOptions, nftOptions, typeOptions, keyword, course_type, category, status, sort, page, translatables } = usePage().props
 
     const [dialog, setDialog] = useState({
         open: false,

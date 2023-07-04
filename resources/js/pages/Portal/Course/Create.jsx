@@ -12,7 +12,9 @@ import { Inertia } from "@inertiajs/inertia"
 
 const Create = () => {
 
-    const { courseApplication, translatables, categories, course, packages } = usePage().props
+    const { courseApplication, translatables, categories, nft, course, packages } = usePage().props
+
+    console.log("Create: nft: ", nft);
 
     const formatOptions = {
         'live': 'Live',
@@ -325,7 +327,8 @@ const Create = () => {
                                 </CardContent>
                             </Card>
                             <Card sx={{ mb: 2 }}>
-                                <CardContent>
+                                {
+                                !nft && <CardContent>
                                     <Grid container spacing={2}>
                                         <Grid item xs={12}>
                                             <Typography children={translatables.texts.pricing_information} gutterBottom />
@@ -349,7 +352,35 @@ const Create = () => {
                                             />
                                         </Grid>
                                     </Grid>
-                                </CardContent>
+                                </CardContent> 
+                                }
+                                {
+                                nft && <CardContent>
+                                    <Grid container spacing={2}>
+                                        <Grid item xs={12}>
+                                            <Typography children={translatables.texts.nft} gutterBottom />
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <Input
+                                                label={translatables.title.nft}
+                                                value={nft.name}
+                                                inputProps={{ readOnly: true }}
+                                                InputLabelProps={{ shrink: true }}
+                                                disabled
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <Input
+                                                label={translatables.texts.points}
+                                                value={nft.points}
+                                                inputProps={{ readOnly: true }}
+                                                InputLabelProps={{ shrink: true }}
+                                                disabled
+                                            />
+                                        </Grid>
+                                    </Grid>
+                                </CardContent> 
+                                }
                             </Card>
                             <Card sx={{ mb: 2 }}>
                                 <CardContent>

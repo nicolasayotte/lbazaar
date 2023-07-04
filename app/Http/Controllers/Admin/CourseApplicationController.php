@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\CourseApplicationUpdate;
 use App\Repositories\CourseApplicationRepository;
 use App\Repositories\CourseCategoryRepository;
+use App\Repositories\NftRepository;
 use App\Repositories\CourseTypeRepository;
 use Exception;
 use Illuminate\Http\Request;
@@ -28,6 +29,7 @@ class CourseApplicationController extends Controller
     {
         $this->courseApplicationRepository = new CourseApplicationRepository();
         $this->courseCategoryRepository    = new CourseCategoryRepository();
+        $this->nftRepository               = new NftRepository();
         $this->courseTypeRepository        = new CourseTypeRepository();
     }
 
@@ -36,6 +38,7 @@ class CourseApplicationController extends Controller
         return Inertia::render('Admin/ClassApplications/Index', [
             'courseApplications' => $this->courseApplicationRepository->get($request->all()),
             'categoryOptions'    => $this->courseCategoryRepository->getDropdownData(),
+            'nftOptions'         => $this->nftRepository->getDropdownData(),
             'typeOptions'        => $this->courseTypeRepository->getDropdownData(),
             'keyword'            => @$request['keyword'] ?? '',
             'course_type'        => @$request['course_type'] ?? '',
@@ -51,12 +54,25 @@ class CourseApplicationController extends Controller
 
     public function view($id)
     {
-        return Inertia::render('Admin/ClassApplications/View',[
-            'courseApplication' => CourseApplicationData::fromModel($this->courseApplicationRepository->with(['professor.classification'])->findOrFail($id)),
-            'title' => $this->title
-        ])->withViewData([
-            'title' => $this->title
-        ]);
+        $courseApplication = CourseApplicationData::fromModel($this->courseApplicationRepository->with(['professor.classification'])->findOrFail($id));
+        $nftId = $courseApplication['nft_id'];
+        
+        if ($nftId) {
+            return Inertia::render('Admin/ClassApplications/View',[
+                'courseApplication' => $courseApplication,
+                'nft' => $this->nftRepository->getNftById($nftId),
+                'title' => $this->title
+            ])->withViewData([
+                'title' => $this->title
+            ]);
+        } else {
+            return Inertia::render('Admin/ClassApplications/View',[
+               'courseApplication' => $courseApplication,
+                'title' => $this->title
+            ])->withViewData([
+                'title' => $this->title
+            ]);
+        }
     }
 
     public function updateStatus($id, $status)

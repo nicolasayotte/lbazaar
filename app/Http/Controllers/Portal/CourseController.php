@@ -23,6 +23,7 @@ use App\Repositories\CoursePackageRepository;
 use App\Repositories\WalletTransactionHistoryRepository;
 use App\Repositories\CourseRepository;
 use App\Repositories\CourseTypeRepository;
+use App\Repositories\NftRepository;
 use App\Repositories\TranslationRepository;
 use App\Repositories\UserRepository;
 use Inertia\Inertia;
@@ -43,6 +44,8 @@ class CourseController extends Controller
 
     public $courseScheduleRepository;
 
+    public $nftRepository;
+
     public $userRepository;
 
     public $courseApplicationRepository;
@@ -61,6 +64,7 @@ class CourseController extends Controller
         $this->courseCategoryRepository = new CourseCategoryRepository();
         $this->courseRepository = new CourseRepository();
         $this->courseScheduleRepository = new CourseScheduleRepository();
+        $this->nftRepository = new NftRepository();
         $this->userRepository = new UserRepository();
         $this->courseApplicationRepository = new CourseApplicationRepository();
         $this->courseHistoryRepository = new CourseHistoryRepository();
@@ -74,6 +78,7 @@ class CourseController extends Controller
         $languages = $this->courseRepository->getLanguages();
         $types = $this->courseTypeRepository->getAll();
         $categories = $this->courseCategoryRepository->getAll();
+        $nfts = $this->nftRepository->getAll();
         $teachers = $this->userRepository->getAllTeachers();
 
         $courses = $this->courseRepository->search($request);
@@ -84,6 +89,7 @@ class CourseController extends Controller
                 'languages'             => $languages,
                 'teachers'              => $teachers,
                 'courses'               => $courses,
+                'nfts'                  => $nfts,
                 'page'                  => @$request['page'] ?? 1,
                 'from'                  => @$request['from'] ?? '',
                 'to'                    => @$request['to'] ?? '',
@@ -109,6 +115,7 @@ class CourseController extends Controller
 
         return Inertia::render('Portal/Course/Details', [
             'course'           => $course,
+            'nft'              => $course->nft,
             'schedules'        => $schedules,
             'feedbacks'        => $feedbacks,
             'isBooked'         => auth()->user() && auth()->user()->isCourseBooked($id),
@@ -226,10 +233,11 @@ class CourseController extends Controller
     public function create($id)
     {
         $courseApplication = $this->courseApplicationRepository->findOneApproved($id);
-
+        $nftId = $courseApplication['nft_id'];
         return Inertia::render('Portal/Course/Create', [
             'courseApplication' => $courseApplication,
             'categories'        => $this->courseCategoryRepository->getDropdownData(),
+            'nft'               => $this->nftRepository->getNftById($nftId),
             'title'             => getTranslation('title.class.create'),
             'packages'          => $this->coursePackageRepository->getByUserId(auth()->user()->id)
         ])->withViewData([
@@ -254,9 +262,10 @@ class CourseController extends Controller
     public function edit($id)
     {
         $course = $this->courseRepository->with(['courseType', 'courseCategory', 'coursePackage'])->findOrFail($id);
-
+        $nftId = $course['nft_id'];
         return Inertia::render('Portal/Course/Create', [
             'course'     => $course,
+            'nft'        => $this->nftRepository->getNftById($nftId),
             'categories' => $this->courseCategoryRepository->getDropdownData(),
             'title'      => getTranslation('texts.edit_class'),
             'packages'   => $this->coursePackageRepository->getByUserId(auth()->user()->id)
