@@ -19,7 +19,7 @@ import axios from "axios";
 import verifySignature from "@cardano-foundation/cardano-verify-datasignature";
 
 
-const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
+const NFTConnector = ({walletAdr, walletAPI, onWalletAPI}) => {
 
     const { errors, auth, translatables } = usePage().props
 
@@ -32,8 +32,11 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                                                     w : 0,
                                                     h :0} | undefined);
     const [walletBalance, setWalletBalance] = useState(undefined);
-    const [walletVerify, setWalletVerify] = useState(false);
-    const [walletStakeAddr, setwalletStakeAddr] = useState(undefined);
+    const [nftVerify, setNFTVerify] = useState(false);
+
+
+
+    const [walletAddr, setwalletAddr] = useState(undefined);
     const [walletStakeKeyDisplay, setwalletStakeKeyDisplay] = useState(undefined);
     const [walletStakeAddrBech32, setWalletStakeAddrBech32] = useState(undefined);
     
@@ -152,7 +155,7 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
             console.log("respObj.verified: ", respObj.verified);
             console.log("stakeKeyHash: ", stakeKeyHash);
             if (respObj.verified) {
-                setWalletVerify(true);
+                //setWalletVerify(true);
                 onStakeKeyHash([displayStakeKey]);
             }
         })
@@ -161,9 +164,49 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
         });   
     }
 
-    const handleWalletVerify = async () => {
+    const handleNFTValidation = async () => {
+        if (await handleNFTCheck()) {
+            await handleNFTVerify();
+        }
+        
+    }
+
+    const handleNFTCheck = async () => {
+
+        try {
+            // get the UTXOs from wallet,
+            const cborUtxos = await walletAPI.getUtxos();
+
+            await axios.post('/nft/check', {
+                nftName: nft.name,
+                utxos: cborUtxos
+            })
+            .then(async response => {
+                const respObj = await JSON.parse(response.data);
+                console.log("handleNFTCheck: response", respObj);
+                if (respObj.status == 200) {
+                    setwalletAddr(respObj.addr);
+                    return true;
+                } else {
+                    setNFTCheck(false);
+                    alert("NFT Check Not Successful");
+                    return false;
+                }
+            })
+            .catch(error => {
+                throw console.error("handleNFTCheck: ", error);
+                
+            }); 
+        } catch (error) {
+            console.error(error);
+            alert('No NFT found in user wallet');
+            return false;
+        }
+    }
+
+    const handleNFTVerify = async () => {
     
-        let message = 'Wallet Verification Message ' + Date().toString();
+        let message = 'NFT Verification ' + Date().toString();
         let hexMessage = '';
 
         for (var i = 0, l = message.length; i < l; i++) {
@@ -172,9 +215,9 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
 
         try {
             
-            console.log("walletStakeKey: ", walletStakeAddr);
+            //console.log("walletStakeKey: ", walletStakeAddr);
             console.log("hexMessage: ", hexMessage);
-            const { signature, key } = await walletAPI.signData(walletStakeAddr, hexMessage);
+            const { signature, key } = await walletAPI.signData(walletAddr, hexMessage);
             console.log(signature, key);
             
             //console.log("(signature, key)");
@@ -184,30 +227,28 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
             //console.log("(signature, key, message, address)");
             //console.log(verifySignature(signature, key, message, walletStakeAddrBech32)); // true
             
-            await axios.post('/wallet/verify', {
+            await axios.post('/nft/verify', {
                 signature: signature,
                 stake_key: key,
-                message: message,  // TODO, message needs from backend
-                stake_addr: walletStakeAddrBech32
+                message: message,
+                wallet_addr: walletAddr
             })
             .then(async response => {
                 const respObj = await JSON.parse(response.data);
-                console.log("getWalletVerify: response", respObj);
+                console.log("handleNFTVerify: response", respObj);
                 if (respObj.status == 200) {
-                    setWalletVerify(true);
-                    onStakeKeyHash([walletStakeKeyDisplay]);
+                    setNFTVerify(true);
                 } else {
-                    setWalletVerify(false);
-                    onStakeKeyHash(undefined);
-                    alert("Verifying Wallet Not Successful");
+                    setNFTVerify(false);
+                    alert("NFT Verify Not Successful");
                 }
             })
             .catch(error => {
-                throw console.error("getWalletVerify: ", error);
+                throw console.error("handleNFTVerify: ", error);
             }); 
         } catch (error) {
             console.warn(error);
-            alert('wallet signature not verified')
+            alert('NFT not verified')
         }
     }
 
@@ -247,16 +288,16 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                     </Stack>
                 </CardContent>
                 <CardActions disableSpacing>
-                        {!walletVerify && <Tooltip title={translatables.texts.wallet_verify} sx={{ ml: 'auto' }}>
+                        {!nftVerify && <Tooltip title={translatables.texts.wallet_verify} sx={{ ml: 'auto' }}>
                             <IconButton
                                 color="primary"
-                                onClick={handleWalletVerify}
+                                onClick={handleNFTValidation}
                                 children={<TaskAltIcon fontSize="inherit" color="disabled"/>}/>
                             </Tooltip>}
-                        {walletVerify && <Tooltip title={translatables.texts.wallet_verify} sx={{ ml: 'auto' }}>
+                        {nftVerify && <Tooltip title={translatables.texts.wallet_verify} sx={{ ml: 'auto' }}>
                             <IconButton
                                 color="primary"
-                                onClick={handleWalletVerify}
+                                onClick={handleNFTValidation}
                                 children={<TaskAltIcon fontSize="inherit"/>}/>
                             </Tooltip>}
                     <Tooltip title={translatables.texts.wallet_switch}>

@@ -13,12 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('nfts', function (Blueprint $table) {
+        Schema::create('nft_transactions', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('image_url');
-            $table->integer('points');
-            $table->boolean('for_sale');
+            $table->unsignedBigInteger('user_id');
+            $table->string('nft_name');
+            $table->unsignedBigInteger('serial_num');
+            $table->boolean('used');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('nfts');
+        Schema::dropIfExists('nft_transactions');
     }
 };

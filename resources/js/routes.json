@@ -109,6 +109,8 @@
     "mypage.course.manage_class.feedbacks": "\/mypage\/manage-class\/{id}\/feedbacks",
     "mypage.course.manage_class.exams": "\/mypage\/manage-class\/{id}\/exams",
     "mypage.course.manage_class.schedules": "\/mypage\/manage-class\/{id}\/schedules",
+    "nft.check": "\/nft\/check",
+    "nft.verify": "\/nft\/verify",
     "exams.create": "\/exams\/{id}\/create",
     "exams.store": "\/exams\/{id}",
     "exams.edit": "\/exams\/{id}\/edit",

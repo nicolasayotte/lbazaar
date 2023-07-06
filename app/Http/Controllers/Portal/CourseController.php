@@ -9,6 +9,7 @@ use App\Http\Requests\SearchClassRequest;
 use App\Mail\CourseBooking;
 use App\Models\CourseHistory;
 use App\Models\CourseSchedule;
+use App\Models\NftTransactions;
 use App\Models\Setting;
 use App\Models\UserExam;
 use App\Models\WalletTransactionHistory;
@@ -28,6 +29,7 @@ use App\Repositories\TranslationRepository;
 use App\Repositories\UserRepository;
 use Inertia\Inertia;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use DateTime;
@@ -153,8 +155,48 @@ class CourseController extends Controller
         $teacherWallet = $schedule->course->professor()->first()->userWallet()->first();
 
         $adminCommissionSettings = Setting::where('slug', 'admin-commission')->first();
+        $userId = Auth::user()->id;
+        $nftId = $schedule->course->nft_id;
+        $nft = isset($nftId) ? $this->nftRepository->getNftById($nftId): null;
+        
+        $hasNft = isset($nft) ? NftTransactions::where('user_id', $userId)
+                                   -> where('nft_name', $nft->name)
+                                   -> where('used', 'false')->first() : null;
+        
+        $nftBurnt = isset($hasNft) ? NftTransactions::where('serial_num', $hasNft->serial_num)
+                                   ->where('used', 1)->first() : null;
+       
+        if (isset($nftBurnt)) {
+            Log::debug("NFT has already been used");
+            return redirect()->back()->withErrors([
+                'error' => getTranslation('error')
+            ]);
+        }
 
-        if (!$isBooked && !$isFullyBooked && ($userWallet->points >= $schedule->course->price)) {
+        if (!$isBooked && !$isFullyBooked && 
+            $schedule->course->course_type_id == 4 && 
+            isset($hasNft) && !isset($nftBurnt)) {
+            $courseHistory = CourseHistory::create([
+                'course_schedule_id' => $schedule->id,
+                'course_id'          => $schedule->course->id,
+                'user_id'            => auth()->user()->id,
+            ]);
+            Log::debug("booking special course");
+            $this->sendBookEmailCourse($schedule);
+
+            $nftTrans = NftTransactions::updateOrCreate(
+                ['user_id'     => $userId,
+                'nft_name'     => $nft->name,
+                'serial_num'   => $hasNft->serial_num],
+                ['user_id'     => $userId,
+                'nft_name'     => $nft->name,
+                'serial_num'   => $hasNft->serial_num,
+                'used'         => 1 ]);                                     
+
+
+        }else if (!$isBooked && !$isFullyBooked && 
+                    $schedule->course->course_type_id != 4 &&
+                    ($userWallet->points >= $schedule->course->price)) {
             $courseHistory = CourseHistory::create([
                 'course_schedule_id' => $schedule->id,
                 'course_id'          => $schedule->course->id,

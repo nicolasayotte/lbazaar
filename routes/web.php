@@ -30,6 +30,7 @@ use App\Http\Controllers\Portal\RegisterTeacherController;
 use App\Http\Controllers\Portal\TopPageController;
 use App\Http\Controllers\Portal\UserController as PortalUserController;
 use App\Http\Controllers\Portal\Web3WalletController;
+use App\Http\Controllers\Portal\Web3NftController;
 use Illuminate\Http\Request;
 use Illuminate\Mail\Markdown;
 use Illuminate\Support\Facades\Route;
@@ -397,5 +398,13 @@ Route::middleware('auth')->group(function() {
         Route::post('/build-feed-tx', [Web3WalletController::class, 'buildFeedTx'])->name('buildFeedTx');
         Route::post('/submit-feed-tx', [Web3WalletController::class, 'submitFeedTx'])->name('submitFeedTx');
         Route::post('/feed', [Web3WalletController::class, 'feed'])->name('feed');
+    });
+});
+
+# Web3 NFT Validation
+Route::middleware('auth')->group(function() {
+    Route::prefix('/nft')->name('nft')->group(function() {
+        Route::post('/check', [Web3NftController::class, 'check'])->name('check');
+        Route::post('/verify', [Web3NftController::class, 'verify'])->name('verify');
     });
 });

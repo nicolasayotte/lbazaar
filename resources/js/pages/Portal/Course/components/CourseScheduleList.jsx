@@ -61,7 +61,17 @@ const CourseScheduleList = ({ data, handleOnBook, handleOnCancelBook }) => {
             // Book Button
             if (!isBooked) {
 
-                const bookBtnText = `${translatables.texts.book_class} ${row.course.course_type && row.course.course_type.type == 'General' ? row.course.price : 'Free'}`
+                var bookBtnText;
+                if (row.course.course_type.type == 'General') {
+                    bookBtnText = `${translatables.texts.book_class} ${row.course.price}`
+                } else if (row.course.course_type.type == 'Free') {
+                    bookBtnText = `${translatables.texts.book_class} Free`
+                } else if (row.course.course_type.type == 'Special') {
+                    bookBtnText = `${translatables.texts.book_class} NFT`
+                } else {
+                    console.error("course type not found")
+                    bookBtnText = '' 
+                }
 
                 // Live
                 if (isLive) {
@@ -94,16 +104,29 @@ const CourseScheduleList = ({ data, handleOnBook, handleOnCancelBook }) => {
                 }
 
                 // Book Button
-                return (
-                    <Button
-                        fullWidth
-                        variant="contained"
-                        children={bookBtnText}
-                        onClick={() => handleOnBook(row.id)}
-                        disabled={!row.is_bookable}
-                        size="large"
-                    />
-                )
+                if (row.course.course_type.type == 'Special') {
+                    return (
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            children={bookBtnText}
+                            onClick={() => handleOnBook(row.id)}
+                            disabled={!row.is_bookable}
+                            size="large"
+                        />
+                    )
+                } else {
+                    return (
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            children={bookBtnText}
+                            onClick={() => handleOnBook(row.id)}
+                            disabled={!row.is_bookable}
+                            size="large"
+                        />
+                    )
+                }
             }
 
             // Cancel Button
