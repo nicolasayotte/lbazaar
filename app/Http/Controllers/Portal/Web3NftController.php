@@ -85,16 +85,20 @@ class Web3NftController extends Controller
             $signature = $request->input('signature');
             $spendingKey = $request->input('spending_key');
             $message = $request->input('message');
-            $nftName = $request->input('nft_name');
             $walletAddr = $request->input('wallet_addr');
+            $nftName = $request->input('nft_name');
+            $mph = Nft::where('name', $nftName)->first()->mph;
+            $serialNum = $request->input('serial_num');
             $user = UserWallet::where('user_id', $userId)->first(); 
             $stakeKeyHash = $user->stake_key_hash;
             $cmd = '(cd ../web3/;node ./run/nft-verify.mjs '
                         .escapeshellarg($signature).' '
                         .escapeshellarg($spendingKey).' '
                         .escapeshellarg($message).' '
-                        .escapeshellarg($nftName).' '
                         .escapeshellarg($walletAddr).' '
+                        .escapeshellarg($nftName).' '
+                        .escapeshellarg($mph).' '
+                        .escapeshellarg($serialNum).' '
                         .escapeshellarg($stakeKeyHash).') 2>> ../storage/logs/web3.log'; 
             
             $response = exec($cmd);
@@ -103,7 +107,7 @@ class Web3NftController extends Controller
             if ($responseJSON->status == 200)
             {
                 // Record the NFT transaction with serial number
-                $serialNum = $responseJSON->serialNum;
+                //$serialNum = $responseJSON->serialNum;
 
                 $nftTrans = NftTransactions::updateOrCreate(
                     ['user_id'      => $userId,

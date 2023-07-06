@@ -59,7 +59,7 @@ const Details = () => {
                 console.log("handleNFTCheck: response", respObj);
                 if (respObj.status == 200) {
                     setNFTCheck(true);
-                    setWalletAddr(respObj.addr);
+                    setWalletAddr(respObj.addrHex);
                     console.log("nftCheck OK");
 
                     let message = 'NFT Verification ' + Date().toString();
@@ -71,9 +71,11 @@ const Details = () => {
 
                     try {
             
+                        console.log("mph: ", respObj.mph);
                         console.log("hexMessage: ", hexMessage);
-                        console.log("walletAddr: ", respObj.addr);
-                        const { signature, key } = await walletAPI.signData(respObj.addr, hexMessage);
+                        console.log("addrHex: ", respObj.addrHex);
+                        console.log("serialNum: ", respObj.serialNum);
+                        const { signature, key } = await walletAPI.signData(respObj.addrHex, hexMessage);
                         console.log("signature: ", signature);
                         console.log("key: ", key);
                         
@@ -88,8 +90,9 @@ const Details = () => {
                             signature: signature,
                             spending_key: key,
                             message: message,
-                            nft_name: nft.name,
-                            wallet_addr: walletAddr
+                            wallet_addr: respObj.addrHex,
+                            nft_name : nft.name,
+                            serial_num : respObj.serialNum
                         })
                         .then(async response => {
                             const respObj = await JSON.parse(response.data);

@@ -163,8 +163,9 @@ class CourseController extends Controller
                                    -> where('nft_name', $nft->name)
                                    -> where('used', 'false')->first() : null;
         
-        $nftBurnt = isset($hasNft) ? NftTransactions::where('serial_num', $hasNft->serial_num)
-                                   ->where('used', 1)->first() : null;
+        $nftBurnt = isset($hasNft) ? NftTransactions::where('nft_name', $nft->name)
+                                    ->where('serial_num', $hasNft->serial_num)
+                                    ->where('used', 1)->first() : null;
        
         if (isset($nftBurnt)) {
             Log::debug("NFT has already been used");

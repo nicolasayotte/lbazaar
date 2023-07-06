@@ -36,6 +36,12 @@ class NftController extends Controller
 
     public function store(NftFormRequest $request)
     {
+        // Store NFT minting policy hash in the nft table
+        $cmd = '(cd ../web3/;node ./run/get-mph.mjs) 2>> ../storage/logs/web3.log';  
+        $response = exec($cmd);
+        $responseJSON = json_decode($response, false);
+        $request['mph'] = $responseJSON->mph;
+
         $this->nftRepository->create($request->all());
 
         return redirect()->back();

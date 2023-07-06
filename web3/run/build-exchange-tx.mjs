@@ -5,7 +5,6 @@ import {
     Assets, 
     bytesToHex, 
     CoinSelection,
-    ConstrData, 
     hexToBytes, 
     NetworkParams,
     Program, 
@@ -20,8 +19,8 @@ import {
 import { signTx } from "../common/sign-tx.mjs";
 import { getNetworkParams } from "../common/network.mjs"
 
-//import NFTMintingPolicy from '../contracts/nft-minting-policy.hl';
-//import NFTValidator from '../contracts/nft-validator.hl';
+// Define time to live for tx validity interval
+const ttl = 5; 
 
 /**
  * Main calling function via the command line 
@@ -45,10 +44,18 @@ const main = async () => {
         const minUTXOVal = new Value(minAda + maxTxFee + minChangeAmt);
         const stakeKeyHash = args[2]
         const hexChangeAddr = args[3];
-        const nftTokenName = args[4];
-        const cborUtxos = args[5].split(',');
-        //const nftTokenName = process.env.NFT_TOKEN_NAME;
-  
+        const nftName = args[4];
+        const mph = args[5];
+        const cborUtxos = args[6].split(',');
+        
+         // Construct the user token
+        const now = new Date()
+        const before = new Date(now.getTime())
+        before.setMinutes(now.getMinutes() - ttl)
+        const after = new Date(now.getTime())
+        after.setMinutes(now.getMinutes() + ttl)
+        const nftTokenName = nftName + "|" + now.getTime().toString();
+       
         // Get the change address from the wallet
         const changeAddr = Address.fromHex(hexChangeAddr);
 
@@ -70,11 +77,14 @@ const main = async () => {
         const nftMintingPolicyFile = await fs.readFile('./contracts/nft-minting-policy.hl', 'utf8');
         const nftMintingPolicyScript = nftMintingPolicyFile.toString();
         const nftMintingProgram  = Program.new(nftMintingPolicyScript);
-        //const nftMintingProgram = new NFTMintingPolicy();
         nftMintingProgram.parameters = {["OWNER_PKH"] : ownerPkh};
         nftMintingProgram.parameters = {["VERSION"] : "1.0"};
         const compiledNftMintingProgram = nftMintingProgram.compile(optimize);
         const nftTokenMPH = compiledNftMintingProgram.mintingPolicyHash;
+        
+        if (nftTokenMPH.hex !== mph) {
+            throw console.error("build-exchange-tx: NFT Token minting policy hash does not match")
+        }
         tx.attachScript(compiledNftMintingProgram);
 
         // Create the nft mint redeemer
@@ -102,7 +112,6 @@ const main = async () => {
         const nftValFile = await fs.readFile('./contracts/nft-validator.hl', 'utf8');
         const nftValScript = nftValFile.toString();
         const nftValProgram  = Program.new(nftValScript);
-        //const nftValProgram = new NFTValidator();
         nftValProgram.parameters = {["OWNER_PKH"] : ownerPkh};
         nftValProgram.parameters = {["VERSION"] : "1.0"};
         const compiledNftValProgram = nftValProgram.compile(optimize);
@@ -117,13 +126,10 @@ const main = async () => {
         // Add owner pkh as a signer which is required to mint the nft
         tx.addSigner(PubKeyHash.fromHex(ownerPkh));
 
-        // Add both the spending and the verified staking key so they 
-        // are signed as part of this transaction
+        // Also add the user wallet as signer as well
         tx.addSigner(changeAddr.pubKeyHash);
-        //tx.addSigner(changeAddr.stakingHash);
 
         // Attached the metadata for the minting transaction
-
         tx.addMetadata(721, {"map": [[nftTokenMPH.hex, 
                                 {"map": [[nftTokenName,
                                     {
@@ -151,6 +157,7 @@ const main = async () => {
             status: 200,
             cborTx: bytesToHex(txSigned.toCbor())
         }
+        console.error("build-exchange-tx: return Obj", returnObj);
         process.stdout.write(JSON.stringify(returnObj));
 
     } catch (err) {
@@ -160,6 +167,7 @@ const main = async () => {
             date: timestamp,
             error: err
         }
+        console.error("build-exchange-tx: return Obj", returnObj);
         process.stdout.write(JSON.stringify(returnObj));
     }
 }

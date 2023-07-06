@@ -11,6 +11,7 @@ class Nft extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'mph',
         'name',
         'points',
         'for_sale',

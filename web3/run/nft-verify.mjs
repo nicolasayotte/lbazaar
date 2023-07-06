@@ -1,174 +1,88 @@
-import { promises as fs } from 'fs';
+import { BlockFrostAPI } from '@blockfrost/blockfrost-js';
+import verifySignature from "@cardano-foundation/cardano-verify-datasignature";
+import { Address,
+         textToBytes,
+         bytesToHex, 
+         PubKeyHash} from "@hyperionbt/helios";
 
-import {
-    Address, 
-    Assets, 
-    bytesToHex, 
-    CoinSelection,
-    ConstrData, 
-    hexToBytes, 
-    NetworkParams,
-    Program, 
-    PubKeyHash,
-    Value, 
-    textToBytes,
-    TxOutput,
-    Tx, 
-    UTxO 
-} from "@hyperionbt/helios";
-
-import { signTx } from "../common/sign-tx.mjs";
-import { getNetworkParams } from "../common/network.mjs"
-
-//import NFTMintingPolicy from '../contracts/nft-minting-policy.hl';
-//import NFTValidator from '../contracts/nft-validator.hl';
-
-/**
- * Main calling function via the command line 
- * Usage: node nft-verify.js signature spendingKey message nftName walletAddr stakeKeyHash
- * @params {string, string, string, string, string, string, string}
- * @output {string} cborTx
- */
 const main = async () => {
 
     try {
         const args = process.argv;
-        console.error("nft-verify: args: ", args);
-        /*
-        
-        // Set the Helios compiler optimizer flag
-        const optimize = (process.env.OPTIMIZE === 'true');
-        const network = process.env.NETWORK;
-        const ownerPkh = process.env.OWNER_PKH;
-        const minAda = BigInt(process.env.MIN_ADA);  // minimum lovelace needed to send an NFT
-        const maxTxFee = BigInt(process.env.MAX_TX_FEE);
-        const minChangeAmt = BigInt(process.env.MIN_CHANGE_AMT);
-        const minUTXOVal = new Value(minAda + maxTxFee + minChangeAmt);
-        const stakeKeyHash = args[2]
-        const hexChangeAddr = args[3];
-        const nftTokenName = args[4];
-        const cborUtxos = args[5].split(',');
-        //const nftTokenName = process.env.NFT_TOKEN_NAME;
-  
-        // Get the change address from the wallet
-        const changeAddr = Address.fromHex(hexChangeAddr);
+        const signature = args[2];
+        const spendingKey = args[3];
+        const message = args[4];
+        const walletAddrHex = args[5];
+        const nftName = args[6];
+        const mph = args[7];
+        const serialNum = args[8];
+        const stakeKeyHash = args[9];
 
-        if (!(stakeKeyHash === changeAddr.stakingHash.hex)) {
-            throw console.error("exchange-tx.mjs: stake key hash does not match with verified stake key");
+        console.error("args: ", args);
+
+        const walletAddr = Address.fromHex(walletAddrHex).toBech32();
+        const verified = verifySignature(signature, spendingKey, message, walletAddr);
+        //const pkh = Address.fromBech32(walletAddr).pubKeyHash;
+        //const stakeKeyHash = StakeAddress.fromBech32(stakeAddr).stakingHash;
+        const date = new Date(); // Create a new Date object with the current date and time
+
+        // Confirm the address that the NFT is residing at and that
+        // it is the same address that is owned by the student
+        const tokenName = nftName + '|' + serialNum;
+        const unit = mph + bytesToHex(textToBytes(tokenName));
+        const apiKey = process.env.BLOCKFROST_API_KEY
+        console.error("nft-verify: apiKey: ", apiKey);
+        const API = new BlockFrostAPI({
+            projectId: apiKey
+        });
+        const assets = await API.assetsAddresses(unit);
+        const addr = Address.fromBech32(assets[0].address);
+
+        console.error("nft-verify: assets: ", assets);
+        console.error("nft-verify: walletAddr: ", walletAddr);
+        console.error("nft-verify: stake key has: ", addr.stakingHash.hex);
+        // Check that both the signed phk and verified stake key hash
+        // are correct.
+        if (walletAddr !== addr.toBech32()) {
+            throw console.error("nft-verify: Address for NFT does not match what wallet provided");
+        }
+        console.error("nft-verify:addr: ", addr);
+
+        // Double check that address belongs to verified stake key hash
+        if (stakeKeyHash !== addr.stakingHash.hex) {
+            throw console.error("nft-verify: Stake key hash does not match with verified stake key")
         }
 
-        // Get UTXOs from wallet
-        const walletUtxos = cborUtxos.map(u => UTxO.fromCbor(hexToBytes(u)));
-        const utxos = CoinSelection.selectSmallestFirst(walletUtxos, minUTXOVal);
+        // Get the individual date and time components
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Add leading zero if necessary
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
 
-        // Start building the transaction
-        const tx = new Tx();
+        // Create the formatted date string
+        const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
-        // Add the UTXO as inputs
-        tx.addInputs(utxos[0]);
-
-        // Add the script as a witness to the transaction
-        const nftMintingPolicyFile = await fs.readFile('./contracts/nft-minting-policy.hl', 'utf8');
-        const nftMintingPolicyScript = nftMintingPolicyFile.toString();
-        const nftMintingProgram  = Program.new(nftMintingPolicyScript);
-        //const nftMintingProgram = new NFTMintingPolicy();
-        nftMintingProgram.parameters = {["OWNER_PKH"] : ownerPkh};
-        nftMintingProgram.parameters = {["VERSION"] : "1.0"};
-        const compiledNftMintingProgram = nftMintingProgram.compile(optimize);
-        const nftTokenMPH = compiledNftMintingProgram.mintingPolicyHash;
-        tx.attachScript(compiledNftMintingProgram);
-
-        // Create the nft mint redeemer
-        const nftRedeemer = (new nftMintingProgram.types.Redeemer.Mint())._toUplcData();
-
-        // Create the nft token that will be sent to the user
-        // and the soul bound token
-        const nftTokens = [[textToBytes(nftTokenName), BigInt(2)]];
-        
-        // Add the mint to the tx
-        tx.mintTokens(
-            nftTokenMPH,
-            nftTokens,
-            nftRedeemer
-        )
-
-        // Attach the output with the minted nft token to the destination address
-        const nftToken = [[textToBytes(nftTokenName), BigInt(1)]];
-        tx.addOutput(new TxOutput(
-            changeAddr,
-            new Value(minAda, new Assets([[nftTokenMPH, nftToken]]))
-          ));
-
-        // Construct the nft validator output address
-        const nftValFile = await fs.readFile('./contracts/nft-validator.hl', 'utf8');
-        const nftValScript = nftValFile.toString();
-        const nftValProgram  = Program.new(nftValScript);
-        //const nftValProgram = new NFTValidator();
-        nftValProgram.parameters = {["OWNER_PKH"] : ownerPkh};
-        nftValProgram.parameters = {["VERSION"] : "1.0"};
-        const compiledNftValProgram = nftValProgram.compile(optimize);
-        const nftValHash = compiledNftValProgram.validatorHash;
-
-        // Create the output for the soul-bound token
-        tx.addOutput(new TxOutput(
-            Address.fromHashes(nftValHash),
-            new Value(minAda, new Assets([[nftTokenMPH, nftToken]]))
-        ));
-
-        // Add owner pkh as a signer which is required to mint the nft
-        tx.addSigner(PubKeyHash.fromHex(ownerPkh));
-
-        // Add both the spending and the verified staking key so they 
-        // are signed as part of this transaction
-        tx.addSigner(changeAddr.pubKeyHash);
-        //tx.addSigner(changeAddr.stakingHash);
-
-        // Attached the metadata for the minting transaction
-
-        tx.addMetadata(721, {"map": [[nftTokenMPH.hex, 
-                                {"map": [[nftTokenName,
-                                    {
-                                    "map": [["pub_key_hash", changeAddr.pubKeyHash.hex],
-                                            ["stake_key_hash", changeAddr.stakingHash.hex]]
-                                    }
-                                ]]}
-                            ]]}
-                        ); 
-                        
-         
-        // Network Params
-        const networkParamsPreview = await getNetworkParams(network);
-        const networkParams = new NetworkParams(JSON.parse(networkParamsPreview));
-        
-        // Send any change back to the buyer
-        await tx.finalize(networkParams, changeAddr, utxos[1]);
-
-        // Add the signature from the server side private key
-        // This way, we lock the transaction now and then need
-        // the end user to sign the tx.
-        const txSigned = await signTx(tx);
-        */
-        const timestamp = new Date().toISOString();
-
-        const returnObj = {
-            status: 200,
-            serialNum: '12345678',
-            date: timestamp
+        if (verified) {
+            const returnObj = {
+                status: 200,
+                date: formattedDate
+            }
+            console.error(returnObj);
+            process.stdout.write(JSON.stringify(returnObj));
+        } else {
+            const returnObj = {
+                status: 501
+            }
+            console.error(returnObj);
+            process.stdout.write(JSON.stringify(returnObj));
         }
-        process.stdout.write(JSON.stringify(returnObj));
 
-    } catch (err) {
-        const timestamp = new Date().toISOString();
-        const returnObj = {
-            status: 500,
-            date: timestamp,
-            error: err
-        }
-        process.stdout.write(JSON.stringify(returnObj));
+    } catch (e) {
+        console.error("nft-verify: ", e);
     }
 }
 
 main();
 
-
-  

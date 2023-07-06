@@ -2,26 +2,15 @@ import { promises as fs } from 'fs';
 
 import {
     Address, 
-    Assets, 
-    bytesToHex, 
-    CoinSelection,
-    ConstrData, 
     hexToBytes, 
-    NetworkParams,
     Program, 
-    PubKeyHash,
     Value, 
-    textToBytes,
-    TxOutput,
-    Tx, 
     UTxO 
 } from "@hyperionbt/helios";
 
 import { signTx } from "../common/sign-tx.mjs";
 import { getNetworkParams } from "../common/network.mjs"
-
-//import NFTMintingPolicy from '../contracts/nft-minting-policy.hl';
-//import NFTValidator from '../contracts/nft-validator.hl';
+import { getTokenNamesAddrs } from "../common/utils.mjs"
 
 /**
  * Main calling function via the command line 
@@ -34,7 +23,6 @@ const main = async () => {
     try {
         const args = process.argv;
         console.error("nft-check: args: ", args);
-        /*
         
         // Set the Helios compiler optimizer flag
         const optimize = (process.env.OPTIMIZE === 'true');
@@ -44,116 +32,54 @@ const main = async () => {
         const maxTxFee = BigInt(process.env.MAX_TX_FEE);
         const minChangeAmt = BigInt(process.env.MIN_CHANGE_AMT);
         const minUTXOVal = new Value(minAda + maxTxFee + minChangeAmt);
-        const stakeKeyHash = args[2]
-        const hexChangeAddr = args[3];
-        const nftTokenName = args[4];
-        const cborUtxos = args[5].split(',');
-        //const nftTokenName = process.env.NFT_TOKEN_NAME;
+        const nftName = args[2];
+        const stakeKeyHash = args[3];
+        const cborUtxos = args[4].split(',');
   
-        // Get the change address from the wallet
-        const changeAddr = Address.fromHex(hexChangeAddr);
-
-        if (!(stakeKeyHash === changeAddr.stakingHash.hex)) {
-            throw console.error("exchange-tx.mjs: stake key hash does not match with verified stake key");
-        }
-
         // Get UTXOs from wallet
         const walletUtxos = cborUtxos.map(u => UTxO.fromCbor(hexToBytes(u)));
-        const utxos = CoinSelection.selectSmallestFirst(walletUtxos, minUTXOVal);
-
-        // Start building the transaction
-        const tx = new Tx();
-
-        // Add the UTXO as inputs
-        tx.addInputs(utxos[0]);
-
-        // Add the script as a witness to the transaction
+      
         const nftMintingPolicyFile = await fs.readFile('./contracts/nft-minting-policy.hl', 'utf8');
         const nftMintingPolicyScript = nftMintingPolicyFile.toString();
         const nftMintingProgram  = Program.new(nftMintingPolicyScript);
-        //const nftMintingProgram = new NFTMintingPolicy();
         nftMintingProgram.parameters = {["OWNER_PKH"] : ownerPkh};
         nftMintingProgram.parameters = {["VERSION"] : "1.0"};
         const compiledNftMintingProgram = nftMintingProgram.compile(optimize);
         const nftTokenMPH = compiledNftMintingProgram.mintingPolicyHash;
-        tx.attachScript(compiledNftMintingProgram);
 
-        // Create the nft mint redeemer
-        const nftRedeemer = (new nftMintingProgram.types.Redeemer.Mint())._toUplcData();
+        const { tokenNames, addresses } = await getTokenNamesAddrs(nftTokenMPH, walletUtxos);
+        console.error("tokenNames: ", tokenNames);
+        if (!tokenNames) {
+            throw console.error("No NFT tokens found in wallet");
+        }
+        if (tokenNames.length == 0) {
+            throw console.error("No NFT tokens found in wallet");
+        }
+        var serialNum;
+        var addrBech32;
+        let i = 0;
+        for (const tn of tokenNames) {
+            if (tn.includes(nftName)) {
+                serialNum = tn.split('|')[1];
+                addrBech32 = addresses[i];
+                break;
+            }
+            i++;
+        }
 
-        // Create the nft token that will be sent to the user
-        // and the soul bound token
-        const nftTokens = [[textToBytes(nftTokenName), BigInt(2)]];
+        const addr = Address.fromBech32(addrBech32);
+        if (stakeKeyHash !== addr.stakingHash.hex) {
+            throw console.error("Staking Key Does Not Match Verified Wallet");
+        }
         
-        // Add the mint to the tx
-        tx.mintTokens(
-            nftTokenMPH,
-            nftTokens,
-            nftRedeemer
-        )
-
-        // Attach the output with the minted nft token to the destination address
-        const nftToken = [[textToBytes(nftTokenName), BigInt(1)]];
-        tx.addOutput(new TxOutput(
-            changeAddr,
-            new Value(minAda, new Assets([[nftTokenMPH, nftToken]]))
-          ));
-
-        // Construct the nft validator output address
-        const nftValFile = await fs.readFile('./contracts/nft-validator.hl', 'utf8');
-        const nftValScript = nftValFile.toString();
-        const nftValProgram  = Program.new(nftValScript);
-        //const nftValProgram = new NFTValidator();
-        nftValProgram.parameters = {["OWNER_PKH"] : ownerPkh};
-        nftValProgram.parameters = {["VERSION"] : "1.0"};
-        const compiledNftValProgram = nftValProgram.compile(optimize);
-        const nftValHash = compiledNftValProgram.validatorHash;
-
-        // Create the output for the soul-bound token
-        tx.addOutput(new TxOutput(
-            Address.fromHashes(nftValHash),
-            new Value(minAda, new Assets([[nftTokenMPH, nftToken]]))
-        ));
-
-        // Add owner pkh as a signer which is required to mint the nft
-        tx.addSigner(PubKeyHash.fromHex(ownerPkh));
-
-        // Add both the spending and the verified staking key so they 
-        // are signed as part of this transaction
-        tx.addSigner(changeAddr.pubKeyHash);
-        //tx.addSigner(changeAddr.stakingHash);
-
-        // Attached the metadata for the minting transaction
-
-        tx.addMetadata(721, {"map": [[nftTokenMPH.hex, 
-                                {"map": [[nftTokenName,
-                                    {
-                                    "map": [["pub_key_hash", changeAddr.pubKeyHash.hex],
-                                            ["stake_key_hash", changeAddr.stakingHash.hex]]
-                                    }
-                                ]]}
-                            ]]}
-                        ); 
-                        
-         
-        // Network Params
-        const networkParamsPreview = await getNetworkParams(network);
-        const networkParams = new NetworkParams(JSON.parse(networkParamsPreview));
-        
-        // Send any change back to the buyer
-        await tx.finalize(networkParams, changeAddr, utxos[1]);
-
-        // Add the signature from the server side private key
-        // This way, we lock the transaction now and then need
-        // the end user to sign the tx.
-        const txSigned = await signTx(tx);
-
-        */
-
         const returnObj = {
             status: 200,
-            addr: 'e0c1ac73589d3f2484a26c712eca7b8f5444e1d2905a1e4749f593b100'
+            mph: nftTokenMPH.hex,
+            nftName: nftName,
+            serialNum: serialNum,
+            addrHex: addr.toHex()
         }
+        console.error("nft-check: returnObj: ", returnObj);
         process.stdout.write(JSON.stringify(returnObj));
 
     } catch (err) {
@@ -163,6 +89,7 @@ const main = async () => {
             date: timestamp,
             error: err
         }
+        console.error("nft-check: returnObj: ", returnObj);
         process.stdout.write(JSON.stringify(returnObj));
     }
 }

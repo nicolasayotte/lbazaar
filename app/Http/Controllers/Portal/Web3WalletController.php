@@ -130,12 +130,14 @@ class Web3WalletController extends Controller
             $skateKeyHash = UserWallet::where('user_id', $userId)->first()->stake_key_hash;
             $changeAddr = $request->input('changeAddr');
             $nft = $request->input('nft');
+            $mph = Nft::where('name', $nft)->first()->mph;
             $utxos = $request->input('utxos');
             $strUtxos = implode(",",$utxos);
            
             Log::debug('skateKeyHash: ' . $skateKeyHash);
             Log::debug('changeAddr: ' . $changeAddr);
             Log::debug('nft: ' . $nft);
+            Log::debug('mph: ' . $mph);
             Log::debug('strUtxos: ' . $strUtxos);
 
             // TODO
@@ -148,6 +150,7 @@ class Web3WalletController extends Controller
                         .escapeshellarg($skateKeyHash).' '
                         .escapeshellarg($changeAddr).' '
                         .escapeshellarg($nft).' '
+                        .escapeshellarg($mph).' '
                         .escapeshellarg($strUtxos).') 2>> ../storage/logs/web3.log'; 
             
             $response = exec($cmd);
