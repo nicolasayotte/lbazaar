@@ -393,6 +393,8 @@ Route::middleware('auth')->group(function() {
     Route::prefix('/wallet')->name('wallet')->group(function() {
         Route::post('/info', [Web3WalletController::class, 'info'])->name('info');
         Route::post('/verify', [Web3WalletController::class, 'verify'])->name('verify');
+        Route::post('/verify-hw', [Web3WalletController::class, 'verifyHw'])->name('verifyHw');
+        Route::post('/build-hw-tx', [Web3WalletController::class, 'buildHwTx'])->name('buildHwTx');
         Route::post('/build-exchange-tx', [Web3WalletController::class, 'buildExchangeTx'])->name('buildExchangeTx');
         Route::post('/submit-exchange-tx', [Web3WalletController::class, 'submitExchangeTx'])->name('submitExchangeTx');
         Route::post('/build-feed-tx', [Web3WalletController::class, 'buildFeedTx'])->name('buildFeedTx');

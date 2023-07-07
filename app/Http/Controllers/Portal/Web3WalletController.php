@@ -115,6 +115,57 @@ class Web3WalletController extends Controller
     }
 
     /**
+     * web3 hardware wallet verify
+     * @param UserWalletRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function verifyHw(Web3WalletRequest $request)
+    {
+        try {
+            $inputs = $request->all();
+            Log::debug($inputs);
+            $userId = Auth::user()->id;
+            Log::debug($userId);
+ 
+            $walletSig = $request->input('walletSig');
+            $cborTx = $request->input('cborTx');
+            //$stake_key = $request->input('stake_key');
+            //$message = $request->input('message');
+            $stakeAddr = $request->input('stakeAddr');
+            $cmd = '(cd ../web3/;node ./run/wallet-verify-hw.mjs '
+                        .escapeshellarg($walletSig).' '
+                        .escapeshellarg($cborTx).' '
+                        .escapeshellarg($stakeAddr).') 2>> ../storage/logs/web3.log'; 
+            
+            $response = exec($cmd);
+            $responseJSON = json_decode($response, false);
+
+            if ($responseJSON->status == 200)
+            {
+                // Update user_wallets table with stake key only
+                // if it has been successfully verified
+                $userId = Auth::user()->id;
+                $user_wallets = UserWallet::where('user_id', $userId)
+                ->update(['stake_key_hash' => $responseJSON->stakeKeyHash,
+                          'updated_at' => $responseJSON->date]);
+                
+                          return [
+                    $response
+                ];
+            } else {
+                return [
+                    '{"status": "501", "msg": "Wallet verify not successful"}'
+                ];
+            }
+
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * web3 wallet build exchange tx
      * @param UserWalletRequest $request
      * @return \Illuminate\Http\JsonResponse
@@ -348,6 +399,50 @@ class Web3WalletController extends Controller
             } else {
                 return [
                     '{"status": "503", "msg": "SubmitExchange failed"}'
+                ];
+            }
+
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * web3 build hardware wallet tx
+     * @param UserWalletRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function buildHwTx(Web3WalletRequest $request)
+    {
+        try {
+            $inputs = $request->all();
+            Log::debug($inputs);
+            $userId = Auth::user()->id;
+            Log::debug($userId);
+            
+            $changeAddr = $request->input('changeAddr');
+            $utxos = $request->input('utxos');
+            $strUtxos = implode(",",$utxos);
+
+            Log::debug('changeAddr: ' . $changeAddr);
+            
+            $cmd = '(cd ../web3/;node ./run/build-wallet-hw-tx.mjs '
+                        .escapeshellarg($changeAddr).' '
+                        .escapeshellarg($strUtxos).') 2>> ../storage/logs/web3.log'; 
+            
+            $response = exec($cmd);
+            $responseJSON = json_decode($response, false);
+
+            if ($responseJSON->status == 200)
+            {
+                return [
+                    $response
+                ];
+            } else {
+                return [
+                    '{"status": "502", "msg": "Wallet hardware tx failed"}'
                 ];
             }
 

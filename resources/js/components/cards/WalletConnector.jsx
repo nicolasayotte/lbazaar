@@ -171,23 +171,16 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
         }
 
         try {
-            
             console.log("walletStakeKey: ", walletStakeAddr);
             console.log("hexMessage: ", hexMessage);
+            throw console.error("throwing error");
             const { signature, key } = await walletAPI.signData(walletStakeAddr, hexMessage);
             console.log(signature, key);
-            
-            //console.log("(signature, key)");
-            //console.log(verifySignature(signature, key)); // true
-            //console.log("(signature, key, message)");
-            //console.log(verifySignature(signature, key, message)); // true
-            //console.log("(signature, key, message, address)");
-            //console.log(verifySignature(signature, key, message, walletStakeAddrBech32)); // true
-            
+        
             await axios.post('/wallet/verify', {
                 signature: signature,
                 stake_key: key,
-                message: message,  // TODO, message needs from backend
+                message: message,  
                 stake_addr: walletStakeAddrBech32
             })
             .then(async response => {
@@ -206,8 +199,69 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                 throw console.error("getWalletVerify: ", error);
             }); 
         } catch (error) {
-            console.warn(error);
-            alert('wallet signature not verified')
+
+            // Will try again, but by signing a tx (and not submitting it)
+            try {
+                const hexAddress = await walletAPI.getChangeAddress();
+                
+                // get the UTXOs from wallet,
+                const cborUtxos = await walletAPI.getUtxos();
+                
+                await axios.post('/wallet/build-hw-tx', {
+                    changeAddr: hexAddress,
+                    utxos: cborUtxos
+                })
+                .then(async response => {
+                    const respObj = await JSON.parse(response.data);
+                    console.log("buildWalletHardwareTx: response", respObj);
+       
+                    if (respObj.status == 200) {
+
+                        // Get user to sign the transaction
+                        console.log("Get wallet signature");
+                        var walletSig;
+                        try {
+                            walletSig = await walletAPI.signTx(respObj.cborTx, true);
+                        } catch (err) {
+                            console.error(err);
+                            return
+                        }
+                        console.log("walletSig: ", walletSig);
+                        await axios.post('/wallet/verify-hw', {
+                            walletSig: walletSig,
+                            cborTx: respObj.cborTx,
+                            stakeAddr: walletStakeAddrBech32
+                        })
+                        .then(async response => {
+                            const respObj = await JSON.parse(response.data);
+                            console.log("getWalletHwVerify: response", respObj);
+                            if (respObj.status == 200) {
+                                setWalletVerify(true);
+                                onStakeKeyHash([walletStakeKeyDisplay]);
+                            } else {
+                                setWalletVerify(false);
+                                onStakeKeyHash(undefined);
+                                alert("Verifying Wallet Not Successful");
+                            }
+                        })
+                        .catch(error => {
+                            throw console.error("getWalletVerify: ", error);
+                        }); 
+
+                    } else {
+                        setWalletVerify(false);
+                        onStakeKeyHash(undefined);
+                        alert("Verifying Wallet Not Successful");
+                    }
+                })
+                .catch(error => {
+                    throw console.error("handleWalletVerify: ", error);
+                }); 
+
+            } catch (error) {
+                console.warn(error);
+                alert('wallet signature not verified')
+            }
         }
     }
 

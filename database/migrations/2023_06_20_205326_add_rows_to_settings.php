@@ -14,13 +14,6 @@ return new class extends Migration
             'category' => 'general',
             'type' => 'number',
             'value' => 10
-        ],
-        [
-            'name' => 'Points to NFT',
-            'slug' => 'points-to-nft',
-            'category' => 'general',
-            'type' => 'number',
-            'value' => 100
         ]
     ];
 

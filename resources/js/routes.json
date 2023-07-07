@@ -11,6 +11,8 @@
     "wallet.feed": "\/wallet\/feed",
     "wallet.info": "\/wallet\/info",
     "wallet.verify": "\/wallet\/verify",
+    "wallet.verify-hw": "\/wallet\/verify-hw",
+    "wallet.build-wallet-hw-tx": "\/wallet\/build-hw-tx",
     "wallet.build-exchange-tx": "\/wallet\/build-exchange-tx",
     "wallet.submit-exchange-tx": "\/wallet\/submit-exchange-tx",
     "wallet.build-feed-tx": "\/wallet\/build-feed-tx",
