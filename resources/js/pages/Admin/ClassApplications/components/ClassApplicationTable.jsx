@@ -20,11 +20,12 @@ const ClassApplicationTable = ({ data }) => {
 
         return (
             <TableRow key={index}>
+                {console.log("row: ", row)}
                 <TableCell children={row.title}/>
                 <TableCell children={row.professor_name}/>
                 <TableCell align="center" children={row.type}/>
                 <TableCell align="center" children={row.category}/>
-                <TableCell align="center" children={row.price}/>
+                <TableCell align="center" children={row.nft_id ? 'NFT' : row.price}/>
                 <TableCell align="center" children={row.created_at}/>
                 <TableCell align="center">
                     <Chip size="small" label={row.status} color={statusColors[row.status]}/>
