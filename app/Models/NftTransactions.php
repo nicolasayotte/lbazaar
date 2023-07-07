@@ -12,8 +12,11 @@ class NftTransactions extends Model
 
     protected $fillable = [
         'user_id',
+        'nft_id',
         'nft_name',
         'serial_num',
+        'course_id',
+        'schedule_id',
         'used'
     ];
 }

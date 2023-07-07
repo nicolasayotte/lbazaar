@@ -130,6 +130,7 @@ const CourseScheduleList = ({ data, handleOnBook, handleOnCancelBook }) => {
             }
 
             // Cancel Button
+            {console.log("row: ", row)}
             if (isBooked && row.status == 'Upcoming') {
                 return (
                     <Button

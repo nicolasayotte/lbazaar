@@ -112,6 +112,7 @@ class CourseController extends Controller
         $feedbackCount = @$request['feedback_count'] ?? CourseFeedbackRepository::PER_PAGE;
 
         $course = $this->courseRepository->findById($id);
+        //Log::debug("course: " . $course);
         $nftId = $course['nft_id'];
         $nft = isset($nftId) ? $this->nftRepository->getNftById($nftId): null;
         $schedules = $this->courseScheduleRepository->findByCourseId($course->id);
@@ -170,7 +171,7 @@ class CourseController extends Controller
         if (isset($nftBurnt)) {
             Log::debug("NFT has already been used");
             return redirect()->back()->withErrors([
-                'error' => getTranslation('error')
+                'error' => getTranslation('nftError')
             ]);
         }
 
@@ -192,6 +193,8 @@ class CourseController extends Controller
                 ['user_id'     => $userId,
                 'nft_name'     => $nft->name,
                 'serial_num'   => $hasNft->serial_num,
+                'course_id'    => $schedule->course->id,
+                'schedule_id'  => $schedule->id,
                 'used'         => 1 ]);                                     
 
 
@@ -243,9 +246,20 @@ class CourseController extends Controller
         $adminWallet = $this->userRepository->getAdmin()->userWallet()->first();
         $teacherWallet = $schedule->course->professor()->first()->userWallet()->first();
 
-        if(@$courseHistory && $schedule->is_cancellable) {
-            if ($schedule->course->courseType->name != CourseType::FREE) {
+        Log::debug("user id: " . auth()->user()->id);
+        Log::debug("nft id: " . $schedule->course->nft_id);
+        Log::debug("course id: ". $schedule->course->id);
+        Log::debug("schedule id: ". $schedule_id);
+        Log::debug("cancel: " . $schedule->course->courseType->name);
+        Log::debug("course type: " . CourseType::SPECIAL);
+        Log::debug("courseHistory: " . $courseHistory);
+        Log::debug("schedule->is_cancellable: " . $schedule->is_cancellable);
+       
+        if(isset($courseHistory) && $schedule->is_cancellable) {
+            if ($schedule->course->courseType->name == CourseType::GENERAL ||
+                $schedule->course->courseType->name == CourseType::EARN) {
 
+                Log::debug("getting here?");
                 $userWalletTransaction = $this->walletTransactionHistoryRepository->findByUserWalletAndCourseHistoryID($userWallet->id, $courseHistory->id);
                 $newUserPoints = $userWallet->points + abs($userWalletTransaction->points_before - $userWalletTransaction->points_after);
                 $this->updateWalletHistory($userWallet, WalletTransactionHistory::REFUND, $newUserPoints, $courseHistory);
@@ -260,8 +274,17 @@ class CourseController extends Controller
                 $newTeacherPoints = $teacherWallet->points - abs($teacherWalletTransaction->points_before - $teacherWalletTransaction->points_after);
                 $this->updateWalletHistory($teacherWallet, WalletTransactionHistory::REFUND, $newTeacherPoints, $courseHistory);
                 $this->updateWallet($teacherWallet, $newTeacherPoints);
+            } else if ($schedule->course->courseType->name == CourseType::SPECIAL) {
+                
+                Log::debug("cancel special course");
+                NftTransactions::where('user_id', auth()->user()->id)
+                                ->where('nft_id', $schedule->course->nft_id)
+                                ->where('course_id', $schedule->course->id)
+                                ->where('schedule_id', $schedule_id)
+                                ->where('used', 1)
+                                ->delete();
             }
-
+            Log::debug("set to cancel");
             $courseHistory->update([
                 'is_cancelled' => true,
             ]);

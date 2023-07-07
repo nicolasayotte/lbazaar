@@ -7,6 +7,7 @@ use App\Data\CourseManageStudentData;
 use App\Models\Badge;
 use App\Models\CourseHistory;
 use Illuminate\Support\Facades\Auth;
+
 class CourseHistoryRepository extends BaseRepository
 {
     const PER_PAGE = 10;
@@ -101,7 +102,8 @@ class CourseHistoryRepository extends BaseRepository
 
     public function findByUserAndCourseScheduleID($user_id, $course_schedule_id)
     {
-        $courseHistory = $this->model->where('user_id', $user_id)->where('course_schedule_id', $course_schedule_id)->where('is_cancelled', null)->get();
+        $courseHistory = $this->model->where('user_id', $user_id)->where('course_schedule_id', $course_schedule_id)->where('is_cancelled', false)->get();
+        
         return $courseHistory != null ?  $courseHistory : [];
     }
 

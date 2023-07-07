@@ -108,9 +108,12 @@ class Web3NftController extends Controller
             {
                 // Record the NFT transaction with serial number
                 //$serialNum = $responseJSON->serialNum;
+                $nftId = NFT::where('name', $nftName)->first()->id;
+                Log::debug("nftId: " . $nftId);
 
                 $nftTrans = NftTransactions::updateOrCreate(
                     ['user_id'      => $userId,
+                     'nft_id'       => $nftId,
                      'nft_name'     => $nftName,
                      'serial_num'   => $serialNum,
                      'used'         => 0],

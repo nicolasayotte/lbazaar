@@ -11,6 +11,7 @@ return [
     |
     */
     'error'   => 'There was an error encountered',
+    'nftError'   => 'NFT has already been used',
     'success' => [
         'forgotPassword' => 'Reset password link already sent to you email.',
         'profile' => 'Profile successfully updated',

@@ -16,8 +16,11 @@ return new class extends Migration
         Schema::create('nft_transactions', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('nft_id');
             $table->string('nft_name');
             $table->unsignedBigInteger('serial_num');
+            $table->unsignedBigInteger('course_id')->nullable(true);
+            $table->unsignedBigInteger('schedule_id')->nullable(true);
             $table->boolean('used');
             $table->timestamps();
             $table->softDeletes();
