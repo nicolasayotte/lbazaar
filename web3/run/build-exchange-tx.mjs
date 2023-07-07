@@ -24,8 +24,8 @@ const ttl = 5;
 
 /**
  * Main calling function via the command line 
- * Usage: node exchange-tx.js stakeKeyHash cBorChangeAddr [cborUtxo1,cborUtxo2,...]
- * @params {string, string, string[]}
+ * Usage: node exchange-tx.js stakeKeyHash cBorChangeAddr imageUrl nftName mph [cborUtxo1,cborUtxo2,...]
+ * @params {string, string, string, string, string, string[]}
  * @output {string} cborTx
  */
 const main = async () => {
@@ -44,9 +44,10 @@ const main = async () => {
         const minUTXOVal = new Value(minAda + maxTxFee + minChangeAmt);
         const stakeKeyHash = args[2]
         const hexChangeAddr = args[3];
-        const nftName = args[4];
-        const mph = args[5];
-        const cborUtxos = args[6].split(',');
+        const imageUrl = args[4];
+        const nftName = args[5];
+        const mph = args[6];
+        const cborUtxos = args[7].split(',');
         
          // Construct the user token
         const now = new Date()
@@ -92,7 +93,7 @@ const main = async () => {
 
         // Create the nft token that will be sent to the user
         // and the soul bound token
-        const nftTokens = [[textToBytes(nftTokenName), BigInt(2)]];
+        const nftTokens = [[textToBytes(nftTokenName), BigInt(1)]];
         
         // Add the mint to the tx
         tx.mintTokens(
@@ -109,19 +110,23 @@ const main = async () => {
           ));
 
         // Construct the nft validator output address
-        const nftValFile = await fs.readFile('./contracts/nft-validator.hl', 'utf8');
-        const nftValScript = nftValFile.toString();
-        const nftValProgram  = Program.new(nftValScript);
-        nftValProgram.parameters = {["OWNER_PKH"] : ownerPkh};
-        nftValProgram.parameters = {["VERSION"] : "1.0"};
-        const compiledNftValProgram = nftValProgram.compile(optimize);
-        const nftValHash = compiledNftValProgram.validatorHash;
+        //const nftValFile = await fs.readFile('./contracts/nft-validator.hl', 'utf8');
+        //const nftValScript = nftValFile.toString();
+        //const nftValProgram  = Program.new(nftValScript);
+        //nftValProgram.parameters = {["OWNER_PKH"] : ownerPkh};
+        //nftValProgram.parameters = {["VERSION"] : "1.0"};
+        //const compiledNftValProgram = nftValProgram.compile(optimize);
+        //const nftValHash = compiledNftValProgram.validatorHash;
 
         // Create the output for the soul-bound token
-        tx.addOutput(new TxOutput(
-            Address.fromHashes(nftValHash),
-            new Value(minAda, new Assets([[nftTokenMPH, nftToken]]))
-        ));
+        //tx.addOutput(new TxOutput(
+        //    Address.fromHashes(nftValHash),
+        //    new Value(minAda, new Assets([[nftTokenMPH, nftToken]]))
+        //));
+
+        // Set a valid time interval
+        tx.validFrom(before);
+        tx.validTo(after);
 
         // Add owner pkh as a signer which is required to mint the nft
         tx.addSigner(PubKeyHash.fromHex(ownerPkh));
@@ -130,15 +135,16 @@ const main = async () => {
         tx.addSigner(changeAddr.pubKeyHash);
 
         // Attached the metadata for the minting transaction
-        tx.addMetadata(721, {"map": [[nftTokenMPH.hex, 
-                                {"map": [[nftTokenName,
-                                    {
-                                    "map": [["pub_key_hash", changeAddr.pubKeyHash.hex],
-                                            ["stake_key_hash", changeAddr.stakingHash.hex]]
-                                    }
-                                ]]}
-                            ]]}
-                        ); 
+        tx.addMetadata(721, {"map": [[nftTokenMPH.hex, {"map": [[nftTokenName,
+                                        {
+                                          "map": [["name", nftName],
+                                                  ["image", imageUrl]
+                                                 ]
+                                        }
+                                        ]]}
+                                    ]]
+                            }
+                        );
                         
          
         // Network Params

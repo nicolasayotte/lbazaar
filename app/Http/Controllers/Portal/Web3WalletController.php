@@ -130,25 +130,22 @@ class Web3WalletController extends Controller
             $skateKeyHash = UserWallet::where('user_id', $userId)->first()->stake_key_hash;
             $changeAddr = $request->input('changeAddr');
             $nft = $request->input('nft');
+            $imageUrl = Nft::where('name', $nft)->first()->image_url;
             $mph = Nft::where('name', $nft)->first()->mph;
             $utxos = $request->input('utxos');
             $strUtxos = implode(",",$utxos);
            
             Log::debug('skateKeyHash: ' . $skateKeyHash);
             Log::debug('changeAddr: ' . $changeAddr);
+            Log::debug('imageUrl: ' . $imageUrl);
             Log::debug('nft: ' . $nft);
             Log::debug('mph: ' . $mph);
             Log::debug('strUtxos: ' . $strUtxos);
 
-            // TODO
-            // check that nft name is in the transaction table
-            // check that nft is available for sale in the nfts table
-            // check that user has enough points to cover the cost in user table
-            // add new draft entry in the transaction table
-
             $cmd = '(cd ../web3/;node ./run/build-exchange-tx.mjs '
                         .escapeshellarg($skateKeyHash).' '
                         .escapeshellarg($changeAddr).' '
+                        .escapeshellarg($imageUrl).' '
                         .escapeshellarg($nft).' '
                         .escapeshellarg($mph).' '
                         .escapeshellarg($strUtxos).') 2>> ../storage/logs/web3.log'; 

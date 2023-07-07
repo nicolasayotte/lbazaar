@@ -9,6 +9,7 @@ import { actions } from "../../store/slices/ToasterSlice"
 import { AccountBalanceWallet, AddCard, Cached, DownloadForOffline, DownloadForOfflineOutlined, SwapVerticalCircle, SwapVerticalCircleOutlined } from "@mui/icons-material"
 import FormDialog from "../common/FormDialog"
 import Input from "../forms/Input"
+import Spinner from '../common/Spinner';
 import axios from "axios"
 
 const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
@@ -45,6 +46,9 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
         type: '',
     })
 
+    const [loading, setLoading] = useState(false);
+    const [tx, setTx] = useState(false);
+
     const handleOnFeed = () => {
         setDialog(dialog => ({
             ...dialog,
@@ -75,6 +79,7 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
 
         return (
             <Box mt={1}>
+                {loading && <Spinner />}
                 <Input
                     label={translatables.texts.points}
                     type="number"
@@ -115,7 +120,7 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
         return (
             
             <Box mt={1}>
-                
+                {loading && <Spinner />}
                 <Input
                     select
                     label={translatables.texts.nft}
@@ -163,6 +168,7 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
 
     const handleOnDialogSubmitFeed = async (e) => {
         e.preventDefault()
+        setLoading(true);
 
         //Inertia.visit(dialog.submitUrl, {
         //    method: dialog.method,
@@ -208,6 +214,7 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
                         const submitTx = await JSON.parse(response.data);
                         if (submitTx.status == 200) {
                             console.log("submitFeedTx Success: ", submitTx.txId);
+                            setTx(submitTx.txId);
                         } else {
                             console.error("Feed transaction could not be submitted");
                             alert ('Feed transaction could not be submitted, please try again');
@@ -230,10 +237,14 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
         } catch (err) {
             console.error(err);
         }
+        setLoading(false);
+        handleOnDialogClose();
     }
 
     const handleOnDialogSubmitExchange = async (e) => {
-        e.preventDefault()
+        e.preventDefault();
+        console.log("e: ", e);
+        setLoading(true);
 
         //Inertia.visit(dialog.submitUrl, {
         //    method: dialog.method,
@@ -281,6 +292,7 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
                         const submitTx = await JSON.parse(response.data);
                         if (submitTx.status == 200) {
                             console.log("submitExchangeTx Success: ", submitTx.txId);
+                            setTx(submitTx.txId);
                         } else {
                             console.error("Exchange transaction could not be submitted");
                             alert ('Exchange transaction could not be submitted, please try again');
@@ -303,11 +315,13 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
         } catch (err) {
             console.error(err);
         }
+        setLoading(false);
+        handleOnDialogClose();
     }
 
     return (
         <>  
-            <Card>
+            {!tx && <Card>
                 <CardContent>
                     <Stack direction="row" alignItems="center" spacing={1}>
                         <AccountBalanceWallet />
@@ -333,7 +347,14 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
                         />
                     </Tooltip>
                 </CardActions>
-            </Card>
+            </Card>}
+            {tx && <Card>
+                <CardContent>
+                    <Typography variant="h5" children={"Transaction Success!!!"}/>
+                    <Typography ml={0.5}> Please wait for 5 confirmations on the blockchain and then refresh this page if needed</Typography>
+                    <Typography fontSize={8} ml={0.5}><a href={"https://preprod.cexplorer.io/tx/" + tx} target="_blank" rel="noopener noreferrer" >{tx}</a></Typography>
+                </CardContent>
+            </Card>}
             <FormDialog
                 {...dialog}
                 handleClose={handleOnDialogClose}
