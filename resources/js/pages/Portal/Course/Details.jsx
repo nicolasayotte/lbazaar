@@ -11,11 +11,8 @@ import CourseScheduleList from "./components/CourseScheduleList";
 import { grey } from "@mui/material/colors";
 import Course from "../../../components/cards/Course";
 import User from "../../../components/cards/User";
-import UserPoints from "../../../components/cards/UserPoints"
 import WalletConnector from "../../../components/cards/WalletConnector"
 import axios from "axios";
-
-
 
 
 const Details = () => {
@@ -24,14 +21,8 @@ const Details = () => {
 
     const { auth, course, nft, schedules, feedbacks, translatables, feedbackCount, feedbacksPerPage } = usePage().props
 
-    const [nftCheck, setNFTCheck] = useState(undefined)
-    const [nftVerify, setNFTVerify] = useState(undefined)
     const [walletStakeKeyDisplay, setwalletStakeKeyDisplay] = useState(undefined)
-    const [walletAddr, setWalletAddr] = useState(undefined)
     const [walletAPI, setWalletAPI] = useState(undefined)
-
-    console.log("nft: ", nft);
-    console.log("schedules: ", schedules);
 
     const [dialog, setDialog] = useState({
         open: false,
@@ -55,14 +46,10 @@ const Details = () => {
                 utxos: cborUtxos
             })
             .then(async response => {
-                const respObj = await JSON.parse(response.data);
-                console.log("handleNFTCheck: response", respObj);
-                if (respObj.status == 200) {
-                    setNFTCheck(true);
-                    setWalletAddr(respObj.addrHex);
-                    console.log("nftCheck OK");
-
-                    let message = 'Please sign with your wallet to verifiy you own the required NFT for this class';
+                const respObjCheck = await JSON.parse(response.data);
+                if (respObjCheck.status == 200) {
+                    
+                    let message = translatables.texts.nft_verify;
                     let hexMessage = '';
 
                     for (var i = 0, l = message.length; i < l; i++) {
@@ -70,36 +57,21 @@ const Details = () => {
                     }
 
                     try {
-            
-                        console.log("mph: ", respObj.mph);
-                        console.log("hexMessage: ", hexMessage);
-                        console.log("addrHex: ", respObj.addrHex);
-                        console.log("serialNum: ", respObj.serialNum);
-                        const { signature, key } = await walletAPI.signData(respObj.addrHex, hexMessage);
-                        console.log("signature: ", signature);
-                        console.log("key: ", key);
-                        
-                        //console.log("(signature, key)");
-                        //console.log(verifySignature(signature, key)); // true
-                        //console.log("(signature, key, message)");
-                        //console.log(verifySignature(signature, key, message)); // true
-                        //console.log("(signature, key, message, address)");
-                        //console.log(verifySignature(signature, key, message, walletStakeAddrBech32)); // true
+                        const { signature, key } = await walletAPI.signData(respObjCheck.addrHex, hexMessage);
                         
                         await axios.post('/nft/verify', {
                             signature: signature,
                             spending_key: key,
                             message: hexMessage,
-                            wallet_addr: respObj.addrHex,
+                            wallet_addr: respObjCheck.addrHex,
                             nft_name : nft.name,
-                            serial_num : respObj.serialNum
+                            serial_num : respObjCheck.serialNum
                         })
                         .then(async response => {
-                            const respObj = await JSON.parse(response.data);
-                            console.log("handleNFTVerify: response", respObj);
-                            if (respObj.status == 200) {
-                                setNFTVerify(true);
-                                console.log("nftVerify OK");
+                            const respObjVerify = await JSON.parse(response.data);
+                            
+                            if (respObjVerify.status == 200) {
+            
                                 setDialog(dialog => ({
                                     ...dialog,
                                     open: true,
@@ -110,33 +82,94 @@ const Details = () => {
                                     action: 'booked'
                                 }))
                             } else {
-                                setNFTVerify(false);
-                                alert("NFT Verify Not Successful");
+                                alert(translatables.texts.nft_verify_error);
                             }
                         })
                         .catch(error => {
                             throw console.error("handleNFTVerify: ", error);
                         }); 
                     } catch (error) {
-                        setNFTVerify(false);
-                        console.error(error);
-                        alert('NFT not verified');
+                        console.warn(error);
+
+                        // Will try using a signed tx because some wallets don't support signData 
+                        try {
+                            // get the UTXOs from wallet,
+                            const cborUtxos = await walletAPI.getUtxos();
+                            
+                            await axios.post('/wallet/build-hw-tx', {
+                                changeAddr: respObjCheck.addrHex,
+                                utxos: cborUtxos
+                            })
+                            .then(async response => {
+                                const respObjBuildHw = await JSON.parse(response.data);
+                                
+                                if (respObjBuildHw.status == 200) {
+
+                                    // Get user to sign the transaction
+                                    var walletSig;
+                                    try {
+                                        walletSig = await walletAPI.signTx(respObjBuildHw.cborTx, true);
+                                    } catch (err) {
+                                        console.error(err);
+                                        return
+                                    }
+                   
+                                    await axios.post('/nft/verify-hw', {
+                                        walletSig: walletSig,
+                                        cborTx: respObjBuildHw.cborTx,
+                                        wallet_addr: respObjCheck.addrHex,
+                                        nft_name : nft.name,
+                                        serial_num : respObjCheck.serialNum
+                                    })
+                                    .then(async response => {
+                                        const respObj = await JSON.parse(response.data);
+                                        if (respObj.status == 200) {
+
+                                            setDialog(dialog => ({
+                                                ...dialog,
+                                                open: true,
+                                                title: translatables.texts.book,
+                                                text: translatables.confirm.class.schedules.book,
+                                                submitUrl: getRoute('course.book', {schedule_id}),
+                                                method: 'post',
+                                                action: 'booked'
+                                            }))
+                                        } else {
+                                            console.error("NFT could not be validated")
+                                            alert(translatables.texts.nft_verify_error);
+                                        }
+                                    })
+                                    .catch(error => {
+                                        throw console.error("NFT could not be validated: ", error);
+                                    }); 
+
+                                } else {
+                                    console.error("NFT could not be validated");
+                                    alert(translatables.texts.nft_verify_error);
+                                }
+                            })
+                            .catch(error => {
+                                throw console.error("handleWalletVerify: ", error);
+                            }); 
+
+                        } catch (error) {
+                            console.error(error);
+                            alert(translatables.texts.nft_verify_error);
+                        }
                     }
 
                 } else {
-                    setNFTCheck(false);
-                    alert("No NFT found in user wallet");
+                    console.error("No NFT found in user wallet");
+                    alert(translatables.texts.nft_not_found);
                 }
             })
             .catch(error => {
-                setNFTCheck(false);
                 throw console.error("handleNFTCheck: ", error);
                 
             }); 
         } catch (error) {
-            console.error(error);
-            setNFTCheck(false);
-            alert('No NFT found in user wallet');
+            console.error("handleNFTCheck: ", error);
+            alert(translatables.texts.nft_not_found);
         }
     }
 

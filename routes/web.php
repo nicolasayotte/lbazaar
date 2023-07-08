@@ -408,5 +408,6 @@ Route::middleware('auth')->group(function() {
     Route::prefix('/nft')->name('nft')->group(function() {
         Route::post('/check', [Web3NftController::class, 'check'])->name('check');
         Route::post('/verify', [Web3NftController::class, 'verify'])->name('verify');
+        Route::post('/verify-hw', [Web3NftController::class, 'verifyHw'])->name('verifyHw');
     });
 });

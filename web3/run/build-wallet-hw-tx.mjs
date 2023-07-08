@@ -33,7 +33,7 @@ const main = async () => {
 
         const network = process.env.NETWORK;
         const args = process.argv;
-        const hexChangeAddr = args[2];
+        const hexAddr = args[2];
         const cborUtxos = args[3].split(',');
         const minAda = BigInt(process.env.MIN_ADA);  // minimum lovelace needed to send an NFT
         const maxTxFee = BigInt(process.env.MAX_TX_FEE);
@@ -41,8 +41,8 @@ const main = async () => {
         const minUTXOVal = new Value(minAda + maxTxFee + minChangeAmt);
         
        
-        // Get the change address from the wallet
-        const changeAddr = Address.fromHex(hexChangeAddr);
+        // Get the address from the wallet
+        const addr = Address.fromHex(hexAddr);
 
         // Get UTXOs from wallet
         const walletUtxos = cborUtxos.map(u => UTxO.fromCbor(hexToBytes(u)));
@@ -55,12 +55,13 @@ const main = async () => {
         // Add the UTXO as inputs
         tx.addInputs(utxos[0]);
 
-        tx.addSigner(changeAddr.stakingHash);
+        tx.addSigner(addr.pubKeyHash);
+        tx.addSigner(addr.stakingHash); 
 
         const networkParamsFile = await getNetworkParams(network);
         const networkParams = new NetworkParams(JSON.parse(networkParamsFile));
         
-        await tx.finalize(networkParams, changeAddr, utxos[1]);
+        await tx.finalize(networkParams, addr, utxos[1]);
 
         const returnObj = {
             status: 200,

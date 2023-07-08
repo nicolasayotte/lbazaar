@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Web3NftRequest;
 use App\Http\Requests\Web3NftCheckRequest;
 use App\Http\Requests\Web3NftVerifyRequest;
+use App\Http\Requests\Web3NftVerifyHwRequest;
 use App\Models\Nft;
 use App\Models\UserWallet;
 use App\Models\NftTransactions;
@@ -97,6 +98,70 @@ class Web3NftController extends Controller
                         .escapeshellarg($signature).' '
                         .escapeshellarg($spendingKey).' '
                         .escapeshellarg($message).' '
+                        .escapeshellarg($walletAddr).' '
+                        .escapeshellarg($nftName).' '
+                        .escapeshellarg($mph).' '
+                        .escapeshellarg($serialNum).' '
+                        .escapeshellarg($stakeKeyHash).') 2>> ../storage/logs/web3.log'; 
+            
+            $response = exec($cmd);
+            $responseJSON = json_decode($response, false);
+            
+            if ($responseJSON->status == 200)
+            {
+                // Record the NFT transaction with serial number
+                //$serialNum = $responseJSON->serialNum;
+                $nftId = NFT::where('name', $nftName)->first()->id;
+                Log::debug("nftId: " . $nftId);
+
+                $nftTrans = NftTransactions::updateOrCreate(
+                    ['user_id'      => $userId,
+                     'nft_id'       => $nftId,
+                     'nft_name'     => $nftName,
+                     'serial_num'   => $serialNum,
+                     'used'         => 0],
+                    ['updated_at' => $responseJSON->date] 
+                );
+                    return [
+                        $response
+                    ];
+            } else {
+                return [
+                    '{"status": "501", "msg": "NFT verify not successful"}'
+                ];
+            }
+
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * web3 wallet hardware verify
+     * @param UserWalletRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function verifyHw(Web3NftVerifyHwRequest $request)
+    {
+        try {
+            $inputs = $request->all();
+            Log::debug($inputs);
+            $userId = Auth::user()->id;
+            Log::debug($userId);
+ 
+            $walletSig = $request->input('walletSig');
+            $cborTx = $request->input('cborTx');
+            $walletAddr = $request->input('wallet_addr');
+            $nftName = $request->input('nft_name');
+            $mph = Nft::where('name', $nftName)->first()->mph;
+            $serialNum = $request->input('serial_num');
+            $user = UserWallet::where('user_id', $userId)->first(); 
+            $stakeKeyHash = $user->stake_key_hash;
+            $cmd = '(cd ../web3/;node ./run/nft-verify-hw.mjs '
+                        .escapeshellarg($walletSig).' '
+                        .escapeshellarg($cborTx).' '
                         .escapeshellarg($walletAddr).' '
                         .escapeshellarg($nftName).' '
                         .escapeshellarg($mph).' '
