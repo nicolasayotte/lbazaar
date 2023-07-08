@@ -180,7 +180,7 @@ const Index = () => {
             <Input
                 name="imageUrl"
                 value={dialog.imageUrl}
-                placeholder="e.g. www.something.com"
+                placeholder="IPFS CID"
                 onChange={e => setDialog(dialog => ({
                     ...dialog,
                     imageUrl: e.target.value

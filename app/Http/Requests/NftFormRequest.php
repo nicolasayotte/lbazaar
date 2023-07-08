@@ -34,7 +34,22 @@ class NftFormRequest extends FormRequest
         return [
             'name' => [
                 'required',
+                'alpha_dash',
                 $uniqueRule
+            ],
+            'points' => [
+                'required',
+                'integer',
+                'min:0'
+            ],
+            'for_sale' => [
+                'integer',
+                'min:0',
+                'max:1'
+            ],
+            'image_url' => [
+                'required',
+                'alpha_dash'
             ]
         ];
     }
@@ -51,7 +66,10 @@ class NftFormRequest extends FormRequest
     protected function failedValidation(Validator $validator)
     {
         $errorValues = [
-            'name' => $this->name
+            'name' => $this->name,
+            'points' => $this->points,
+            'for_sale' => $this->for_sale,
+            'image_url' => $this->image_url
         ];
 
         if (@$this->id) {

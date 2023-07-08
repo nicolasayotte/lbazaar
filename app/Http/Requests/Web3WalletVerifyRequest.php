@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class Web3WalletRequest extends FormRequest
+class Web3WalletVerifyRequest extends FormRequest
 {
 
     /**
@@ -17,7 +17,10 @@ class Web3WalletRequest extends FormRequest
     public function rules()
     {
         return [
-            'changeAddr' => 'required|alpha_num'
+            'signature' => 'required|alpha_num|max:8192',
+            'stake_key' => 'required|alpha_num|max:256',
+            'message' => 'required|alpha_dash|max:8192',
+            'stake_addr' => 'required|alpha_dash|max:256'
         ];
      
     }

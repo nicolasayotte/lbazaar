@@ -39,16 +39,16 @@ class NftRepository extends BaseRepository
 
     public function getDropdownData()
     {
-        return $this->model->all()->map(function($data) {
-            
-            if($data->for_sale) {
-                return [
-                    'id'   => $data->id,
-                    'name' => $data->name
-                ];
-            } else {
-                return [];
-            }
+        return $this->model
+                    ->all()
+                    ->filter(function ($data) {
+                        return $data->for_sale != 0;
+                    })
+                    ->map(function($data) {
+                        return [
+                            'id'   => $data->id,
+                            'name' => $data->name
+                        ];
         });
     }
 

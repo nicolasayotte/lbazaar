@@ -259,7 +259,6 @@ class CourseController extends Controller
             if ($schedule->course->courseType->name == CourseType::GENERAL ||
                 $schedule->course->courseType->name == CourseType::EARN) {
 
-                Log::debug("getting here?");
                 $userWalletTransaction = $this->walletTransactionHistoryRepository->findByUserWalletAndCourseHistoryID($userWallet->id, $courseHistory->id);
                 $newUserPoints = $userWallet->points + abs($userWalletTransaction->points_before - $userWalletTransaction->points_after);
                 $this->updateWalletHistory($userWallet, WalletTransactionHistory::REFUND, $newUserPoints, $courseHistory);

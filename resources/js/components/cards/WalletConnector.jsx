@@ -163,7 +163,7 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
 
     const handleWalletVerify = async () => {
     
-        let message = 'Wallet Verification Message ' + Date().toString();
+        let message = 'Please-Sign-This-To-Verify-Your-Wallet';
         let hexMessage = '';
 
         for (var i = 0, l = message.length; i < l; i++) {
@@ -173,7 +173,6 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
         try {
             console.log("walletStakeKey: ", walletStakeAddr);
             console.log("hexMessage: ", hexMessage);
-            throw console.error("throwing error");
             const { signature, key } = await walletAPI.signData(walletStakeAddr, hexMessage);
             console.log(signature, key);
         

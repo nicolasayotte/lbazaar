@@ -50,12 +50,16 @@ const main = async () => {
         const cborUtxos = args[7].split(',');
         
          // Construct the user token
-        const now = new Date()
-        const before = new Date(now.getTime())
-        before.setMinutes(now.getMinutes() - ttl)
-        const after = new Date(now.getTime())
-        after.setMinutes(now.getMinutes() + ttl)
-        const nftTokenName = nftName + "|" + now.getTime().toString();
+        const now = new Date();
+        const serialNum = now.getTime().toString();
+        const nftTokenName = nftName + "|" + serialNum;
+
+        // Set validitity interval
+        const before = new Date(now.getTime());
+        before.setMinutes(now.getMinutes() - ttl);
+        const after = new Date(now.getTime());
+        after.setMinutes(now.getMinutes() + ttl);
+        
        
         // Get the change address from the wallet
         const changeAddr = Address.fromHex(hexChangeAddr);
@@ -161,6 +165,9 @@ const main = async () => {
 
         const returnObj = {
             status: 200,
+            nftName: nftName,
+            serialNum: serialNum,
+            mph: nftTokenMPH.hex,
             cborTx: bytesToHex(txSigned.toCbor())
         }
         console.error("build-exchange-tx: return Obj", returnObj);

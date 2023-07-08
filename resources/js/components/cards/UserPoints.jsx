@@ -283,9 +283,12 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
 
                     console.log("Submit transaction...");
                     await axios.post('/wallet/submit-exchange-tx', {
+                        nft: dialog.nftName,
+                        serialNum : exchangeTx.serialNum,
+                        mph: exchangeTx.mph,
                         cborSig: walletSig,
                         cborTx: exchangeTx.cborTx,
-                        nft: dialog.nftName // TODO change to order ID
+                       
                     })
                     .then(async response => {
                 

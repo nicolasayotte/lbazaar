@@ -8,6 +8,7 @@ use App\Models\Role;
 use App\Repositories\CourseTypeRepository;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Log;
 
 class CourseApplicationRequest extends FormRequest
 {
@@ -32,11 +33,17 @@ class CourseApplicationRequest extends FormRequest
         $isEarn = $this->type == strtolower(CourseType::EARN);
         $isLive = $this->get('format') == Course::LIVE;
         $isSpecial = $this->type == strtolower(CourseType::SPECIAL);
+        Log::debug("isSpecial: ". $isSpecial);
+        Log::debug("this->type: ". $this->type);
+        Log::debug("CourseType::SPECIAL: ". CourseType::SPECIAL);
         
-        $nftRules = [
-            Rule::requiredIf($isSpecial),
-            'required'
-        ];
+        $nftRules = $isSpecial ?
+            [
+                'required',
+                'alpha_dash',
+                'max:15'
+            ] : [];
+
         $priceRules = [
             Rule::requiredIf($isPaid),
             'integer',

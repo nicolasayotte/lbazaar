@@ -4,6 +4,12 @@ namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Web3WalletRequest;
+use App\Http\Requests\Web3WalletBuildExchangeRequest;
+use App\Http\Requests\Web3WalletSubmitExchangeRequest;
+use App\Http\Requests\Web3WalletHwRequest;
+use App\Http\Requests\Web3WalletInfoRequest;
+use App\Http\Requests\Web3WalletVerifyRequest;
+use App\Http\Requests\Web3WalletVerifyHwRequest;
 use App\Models\Nft;
 use App\Models\UserWallet;
 use App\Models\User;
@@ -34,7 +40,7 @@ class Web3WalletController extends Controller
      * @param UserWalletRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function info(Web3WalletRequest $request)
+    public function info(Web3WalletInfoRequest $request)
     {
         try {
             $inputs = $request->all();
@@ -68,7 +74,7 @@ class Web3WalletController extends Controller
      * @param UserWalletRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function verify(Web3WalletRequest $request)
+    public function verify(Web3WalletVerifyRequest $request)
     {
         try {
             $inputs = $request->all();
@@ -119,7 +125,7 @@ class Web3WalletController extends Controller
      * @param UserWalletRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function verifyHw(Web3WalletRequest $request)
+    public function verifyHw(Web3WalletVerifyHwRequest $request)
     {
         try {
             $inputs = $request->all();
@@ -129,8 +135,6 @@ class Web3WalletController extends Controller
  
             $walletSig = $request->input('walletSig');
             $cborTx = $request->input('cborTx');
-            //$stake_key = $request->input('stake_key');
-            //$message = $request->input('message');
             $stakeAddr = $request->input('stakeAddr');
             $cmd = '(cd ../web3/;node ./run/wallet-verify-hw.mjs '
                         .escapeshellarg($walletSig).' '
@@ -170,7 +174,7 @@ class Web3WalletController extends Controller
      * @param UserWalletRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function buildExchangeTx(Web3WalletRequest $request)
+    public function buildExchangeTx(Web3WalletBuildExchangeRequest $request)
     {
         try {
             $inputs = $request->all();
@@ -227,7 +231,7 @@ class Web3WalletController extends Controller
      * @param UserWalletRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function submitExchangeTx(Web3WalletRequest $request)
+    public function submitExchangeTx(Web3WalletSubmitExchangeRequest $request)
     {
         try {
             $inputs = $request->all();
@@ -236,13 +240,11 @@ class Web3WalletController extends Controller
             Log::debug($userId);
             $user = User::where('id', $userId)->first();
             $userWallet = $user->userWallet()->first();
-
-            // TODO, pull the points for the NFT from the transaction table
-            // indexed by trans id and user
             $nft = $request->input('nft');
             Log::debug("nft: ". $nft);
-            // TODO - Check that the nft name matches the order table, if so calc points
             $pointsToNFT = Nft::where('name', $nft)->first()->points;
+            $serialNum = $request->input('serialNum');
+            $mph = $request->input('mph');
 
             // Only submit if there is enought points to cover the cost
             if ($userWallet->points > $pointsToNFT) {
@@ -251,6 +253,9 @@ class Web3WalletController extends Controller
                 $cborTx = $request->input('cborTx');
                 
                 $cmd = '(cd ../web3/;node ./run/submit-exchange-tx.mjs '
+                            .escapeshellarg($nft).' '
+                            .escapeshellarg($serialNum).' '
+                            .escapeshellarg($mph).' '
                             .escapeshellarg($cborSig).' '
                             .escapeshellarg($cborTx).') 2>> ../storage/logs/web3.log'; 
                 
@@ -298,7 +303,7 @@ class Web3WalletController extends Controller
      * @param UserWalletRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function buildFeedTx(Web3WalletRequest $request)
+    public function buildFeedTx(Web3WalletBuildExchangeRequest $request)
     {
         try {
             $inputs = $request->all();
@@ -351,7 +356,7 @@ class Web3WalletController extends Controller
      * @param UserWalletRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function submitFeedTx(Web3WalletRequest $request)
+    public function submitFeedTx(Web3WalletSubmitExchangeRequest $request)
     {
         try {
             $inputs = $request->all();
@@ -414,7 +419,7 @@ class Web3WalletController extends Controller
      * @param UserWalletRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function buildHwTx(Web3WalletRequest $request)
+    public function buildHwTx(Web3WalletHwRequest $request)
     {
         try {
             $inputs = $request->all();
