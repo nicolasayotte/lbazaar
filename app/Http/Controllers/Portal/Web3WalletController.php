@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Web3WalletRequest;
 use App\Http\Requests\Web3WalletBuildExchangeRequest;
 use App\Http\Requests\Web3WalletSubmitExchangeRequest;
+use App\Http\Requests\Web3WalletBuildFeedRequest;
+use App\Http\Requests\Web3WalletSubmitFeedRequest;
 use App\Http\Requests\Web3WalletHwRequest;
 use App\Http\Requests\Web3WalletInfoRequest;
 use App\Http\Requests\Web3WalletVerifyRequest;
@@ -303,7 +305,7 @@ class Web3WalletController extends Controller
      * @param UserWalletRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function buildFeedTx(Web3WalletBuildExchangeRequest $request)
+    public function buildFeedTx(Web3WalletBuildFeedRequest $request)
     {
         try {
             $inputs = $request->all();
@@ -356,7 +358,7 @@ class Web3WalletController extends Controller
      * @param UserWalletRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function submitFeedTx(Web3WalletSubmitExchangeRequest $request)
+    public function submitFeedTx(Web3WalletSubmitFeedRequest $request)
     {
         try {
             $inputs = $request->all();

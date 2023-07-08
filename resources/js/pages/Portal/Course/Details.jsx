@@ -62,7 +62,7 @@ const Details = () => {
                     setWalletAddr(respObj.addrHex);
                     console.log("nftCheck OK");
 
-                    let message = 'NFT Verification ' + Date().toString();
+                    let message = 'Please-sign-with-your-wallet-to-verifiy-you-own-the-required-NFT-for-this-class';
                     let hexMessage = '';
 
                     for (var i = 0, l = message.length; i < l; i++) {
