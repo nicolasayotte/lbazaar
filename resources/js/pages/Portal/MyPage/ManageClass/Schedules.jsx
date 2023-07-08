@@ -13,9 +13,7 @@ import { Inertia } from "@inertiajs/inertia"
 const Schedules = () => {
 
     const { schedules, translatables, course, nft, from, to, page, status, sort } = usePage().props
-    console.log("ManageClass.Scedule.jsx");
-    console.log("nft: ", nft);
-    console.log("course: ", course);
+    
     const statusOptions = [
         { name: 'All', value: '' },
         { name: 'Upcoming', value: 'upcoming' },

@@ -15,7 +15,6 @@ const View = () => {
 
     const { students, course, nft, translatables, schedule, keyword, sort, page, return_url } = usePage().props
 
-    console.log("nft: ", nft);
     const sortOptions = [
         { name: translatables.filters.name.asc, value: 'fullname:asc' },
         { name: translatables.filters.name.desc, value: 'fullname:desc' },

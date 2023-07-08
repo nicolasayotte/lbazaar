@@ -20,7 +20,6 @@ const ClassApplicationTable = ({ data }) => {
 
         return (
             <TableRow key={index}>
-                {console.log("row: ", row)}
                 <TableCell children={row.title}/>
                 <TableCell children={row.professor_name}/>
                 <TableCell align="center" children={row.type}/>

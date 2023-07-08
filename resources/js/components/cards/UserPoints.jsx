@@ -1,7 +1,7 @@
 
 import { Typography, Tooltip, IconButton, Stack, Box, CardContent, Card, CardActions} from "@mui/material"
 import routes from "../../helpers/routes.helper"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { usePage } from "@inertiajs/inertia-react"
 import { AccountBalanceWallet, DownloadForOffline, SwapVerticalCircle } from "@mui/icons-material"
 import FormDialog from "../common/FormDialog"
@@ -10,21 +10,6 @@ import Spinner from '../common/Spinner';
 import axios from "axios"
 
 const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
-
-    useEffect(() => {
-        const checkStakeKey = async () => {
-            console.log("UserPoints: walletStakeKeyHash: ", walletStakeKeyHash);
-        }
-        checkStakeKey();
-    }, [walletStakeKeyHash]);
-
-    useEffect(() => {
-        const checkWalletAPI = async () => {
-            console.log("UserPoints: walletAPI: ", walletAPI);
-        }
-        checkWalletAPI();
-    }, [walletAPI]);
-
     
     const { auth, translatables, ada_to_points, nfts, network } = usePage().props
 
@@ -219,7 +204,6 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
 
     const handleOnDialogSubmitExchange = async (e) => {
         e.preventDefault();
-        console.log("e: ", e);
         setLoading(true);
 
         try {
@@ -322,7 +306,7 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
                 <CardContent>
                     <Typography variant="h5" children={translatables.tx.success.status}/>
                     <Typography fontSize={12} ml={0.5}>{translatables.tx.success.message}</Typography>
-                    <Typography fontSize={6} ml={0.5}><a href={"https://" + network + ".cexplorer.io/tx/" + tx} target="_blank" rel="noopener noreferrer" >{tx}</a></Typography>
+                    <Typography fontSize={7} ml={0.5}><a href={"https://" + network + ".cexplorer.io/tx/" + tx} target="_blank" rel="noopener noreferrer" >{tx}</a></Typography>
                 </CardContent>
             </Card>}
             <FormDialog

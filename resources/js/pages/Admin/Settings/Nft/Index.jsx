@@ -90,7 +90,6 @@ const Index = () => {
         const forSaleValue = (errors.update && errors.update.values && errors.update.values.forSale) ? errors.update.values.forSale : forSale
         const imageURLValue = (errors.update && errors.update.values && errors.update.values.imageUrl) ? errors.update.values.imageUrl : imageUrl
 
-        console.log("handleOnEdit: forSaleValue: ", forSaleValue);
         // Check if the selected category was the one that has an error, otherwise delete errors.name
         setHideErrorMessages(errors.update && errors.update.values && errors.update.values.id && errors.update.values.id != id)
 
@@ -187,7 +186,6 @@ const Index = () => {
                 }))}
                 errors={hideErrorMessages ? {} : errors[dialog.action]}
             />
-            {console.log("CheckBox: dialog.forSale", dialog.forSale == 1)}
             <Box textAlign="center" display="flex" justifyContent="center" alignItems="center">
                 <Checkbox
                     name="forSale"

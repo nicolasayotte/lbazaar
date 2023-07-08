@@ -7,8 +7,7 @@ import placeholderImg from "../../../../../../img/placeholder.png"
 const ClassInformationHeader = () => {
 
     const { course, translatables, nft } = usePage().props
-    console.log("header nft: ", nft);
-
+   
     const isEarn = course.course_type.type == 'Earn'
     const isFree = course.course_type.type == 'Free'
     const isLive = course.is_live

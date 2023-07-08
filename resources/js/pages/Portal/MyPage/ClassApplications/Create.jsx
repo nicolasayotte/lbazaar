@@ -44,8 +44,6 @@ const Create = () => {
     const handleOnSubmit = e => {
         e.preventDefault()
 
-        console.log("handleOnSubmit e: ", e);
-
         post(routes["mypage.course.applications.store"])
     }
 

@@ -38,9 +38,6 @@ const main = async () => {
         // Create the formatted date string
         const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
-        //console.log(formattedDate); // Output: YYYY-MM-DD HH:MM:SS
-
-
         const returnObj = {
             status: 200,
             accountAmt: accountAmt,

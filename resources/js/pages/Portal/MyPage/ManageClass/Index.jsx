@@ -12,8 +12,7 @@ import { Inertia } from "@inertiajs/inertia"
 const Index = () => {
 
     const { courses, categoryOptions, nftOptions, typeOptions, keyword, course_type, category, format, sort, page, translatables } = usePage().props
-    console.log("ManageClass/index.jsx");
-
+    
     const sortOptions = [
         { name: translatables.filters.title.asc, value: 'courses.title:asc' },
         { name: translatables.filters.title.desc, value: 'courses.title:desc' },

@@ -13,7 +13,6 @@ const View = () => {
 
     const { courseApplication, translatables, nft } = usePage().props
 
-    console.log("nft: ", nft);
     const [dialog, setDialog] = useState({
         open: false,
         title: translatables.title.class.applications.view,

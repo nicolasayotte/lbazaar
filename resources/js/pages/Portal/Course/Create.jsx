@@ -14,8 +14,6 @@ const Create = () => {
 
     const { courseApplication, translatables, categories, nft, course, packages } = usePage().props
 
-    console.log("Create: nft: ", nft);
-
     const formatOptions = {
         'live': 'Live',
         'on-demand': 'On-Demand'

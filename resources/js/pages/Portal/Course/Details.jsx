@@ -413,7 +413,6 @@ const Details = () => {
                                      walletAPI={walletAPI}
                                      onWalletAPI={setWalletAPI}/>
                         </Box>}
-                        {console.log("auth: ", auth)}
                         {nft && walletAPI &&<CourseScheduleList data={schedules} handleOnBook={handleBook} handleOnCancelBook={handleCancelBooking} />}
                         {!nft &&<CourseScheduleList data={schedules} handleOnBook={handleBook} handleOnCancelBook={handleCancelBooking} />}
                         <PackageInformation />
