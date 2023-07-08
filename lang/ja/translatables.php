@@ -408,14 +408,19 @@ return [
         'package_information'=> 'パッケージ情報',
         'password'=> 'パスワード',
         'points'=> 'ポイント',
+        'wallet_balance' => 'Wallet balance',
         'wallet_commission_details'=> 'コミッション',
         'points_earned'=> 'ポイント追加',
         'wallet_connect'=> 'ウォレットを接続する',
+        'wallet_connected' => 'Connected',
+        'wallet_not_connected' => 'Please make sure your wallet dapp connector is turned on',
         'wallet_exchange_details'=> 'NFT変更ポイント',
         'wallet_feed_details'=> 'Walletに追加されたポイント',
         'wallet_id' => 'Wallet ID',
+        'wallet_message' => 'Please sign to verify your wallet',
         'wallet_switch' => 'Switch Connected Wallets',
         'wallet_verify' => 'Verify Wallet Ownership',
+        'wallet_verify_error' => 'Wallet can not be verified',
         'points_to_convert_to_nft'=> 'ポイントNFT変換',
         'price'=> 'ポイント',
         'pricing_information'=> 'ポイント上布',
@@ -503,5 +508,10 @@ return [
         'error' => [
             'message' => 'Transaction could not be submitted'
         ]
+    ],
+    'wallets' => [
+        'eternl' => 'Eternl',
+        'flint'  => 'Flint',
+        'nami'   => 'Nami',
     ]
 ];

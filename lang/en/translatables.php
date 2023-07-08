@@ -477,6 +477,8 @@ return [
         'wallet_book_details' => 'Booked class',
         'wallet_commission_details' => 'Points commissioned in class',
         'wallet_connect' => 'Connect Wallet',
+        'wallet_connected' => 'Connected',
+        'wallet_not_connected' => 'Please make sure your wallet dapp connector is turned on',
         'wallet_donate_points_from' => 'You reacieved donation points from',
         'wallet_donate_points_to' => 'You send donation points to',
         'wallet_earn_details' => 'Earned from class',
@@ -484,10 +486,12 @@ return [
         'wallet_feed_details' => 'Points Feed to wallet',
         'wallet_history' => 'Wallet History',
         'wallet_id' => 'Wallet ID',
+        'wallet_message' => 'Please sign to verify your wallet',
         'wallet_refund_details' => 'Refunded points from class',
         'wallet_schedule_fee' => 'Payed points to schedule class',
         'wallet_switch' => 'Switch Connected Wallets',
         'wallet_verify' => 'Verify Wallet Ownership',
+        'wallet_verify_error' => 'Wallet can not be verified',
         'watch_video' => 'Watch Video',
         'watch_video_description' => 'Watch the video to learn the contents of the class',
         'welcome' => 'Welcome',
@@ -504,5 +508,10 @@ return [
         'error' => [
             'message' => 'Transaction could not be submitted'
         ]
-    ]
+    ],
+    'wallets' => [
+        'eternl' => 'Eternl',
+        'flint'  => 'Flint',
+        'nami'   => 'Nami',
+    ],
 ];
