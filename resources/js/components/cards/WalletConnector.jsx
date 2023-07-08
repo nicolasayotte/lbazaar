@@ -163,7 +163,7 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
 
     const handleWalletVerify = async () => {
     
-        let message = 'Please-Sign-This-To-Verify-Your-Wallet';
+        let message = 'Please sign to verify your wallet';
         let hexMessage = '';
 
         for (var i = 0, l = message.length; i < l; i++) {
@@ -179,7 +179,7 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
             await axios.post('/wallet/verify', {
                 signature: signature,
                 stake_key: key,
-                message: message,  
+                message: hexMessage,  
                 stake_addr: walletStakeAddrBech32
             })
             .then(async response => {

@@ -62,7 +62,7 @@ const Details = () => {
                     setWalletAddr(respObj.addrHex);
                     console.log("nftCheck OK");
 
-                    let message = 'Please-sign-with-your-wallet-to-verifiy-you-own-the-required-NFT-for-this-class';
+                    let message = 'Please sign with your wallet to verifiy you own the required NFT for this class';
                     let hexMessage = '';
 
                     for (var i = 0, l = message.length; i < l; i++) {
@@ -89,7 +89,7 @@ const Details = () => {
                         await axios.post('/nft/verify', {
                             signature: signature,
                             spending_key: key,
-                            message: message,
+                            message: hexMessage,
                             wallet_addr: respObj.addrHex,
                             nft_name : nft.name,
                             serial_num : respObj.serialNum

@@ -7,10 +7,14 @@ const main = async () => {
         const args = process.argv;
         const signature = args[2];
         const stakeKey = args[3];
-        const message = args[4];
+        const messageHex = args[4];
         const stakeAddr = args[5];
 
         console.error("args: ", args);
+
+        const buffer = Buffer.from(messageHex, 'hex');
+        const message = buffer.toString('utf8');
+        console.error("message: ", message);
 
         const verified = verifySignature(signature, stakeKey, message, stakeAddr);
         const stakeKeyHash = StakeAddress.fromBech32(stakeAddr).stakingHash;

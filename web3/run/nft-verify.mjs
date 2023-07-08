@@ -11,7 +11,7 @@ const main = async () => {
         const args = process.argv;
         const signature = args[2];
         const spendingKey = args[3];
-        const message = args[4];
+        const messageHex = args[4];
         const walletAddrHex = args[5];
         const nftName = args[6];
         const mph = args[7];
@@ -19,6 +19,10 @@ const main = async () => {
         const stakeKeyHash = args[9];
 
         console.error("args: ", args);
+
+        const buffer = Buffer.from(messageHex, 'hex');
+        const message = buffer.toString('utf8');
+        console.error("message: ", message);
 
         const walletAddr = Address.fromHex(walletAddrHex).toBech32();
         const verified = verifySignature(signature, spendingKey, message, walletAddr);
