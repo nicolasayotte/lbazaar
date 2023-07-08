@@ -12,6 +12,7 @@ use App\Models\Nft;
 use App\Repositories\UserRepository;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use App\Facades\Asset;
 use App\Facades\Discord;
 use App\Services\API\EmailService;
@@ -40,12 +41,15 @@ class ProfileController extends Controller
         $ada_to_points = Setting::where('slug', 'ada-to-points')->first();
         //$points_to_nft = Setting::where('slug', 'points-to-nft')->first();
         $nfts = Nft::all();
+        $network = env('NETWORK');
+        Log::debug("env: " . $network);
 
         return Inertia::render('Portal/MyPage/Profile/Index', [
             'countries' => $countries,
             'ada_to_points' =>  $ada_to_points->value,
             //'points_to_nft' => $points_to_nft->value,
             'nfts' => $nfts,
+            'network' => $network,
             'title' => getTranslation('texts.mypage').' | '.getTranslation('texts.profile')
         ])->withViewData([
             'title' => getTranslation('texts.mypage').' | '.getTranslation('texts.profile')

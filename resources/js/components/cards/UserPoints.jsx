@@ -1,12 +1,9 @@
 
-import { Button, Typography, Tooltip, Grid, IconButton, Stack, Box, Paper, Divider, Icon, CardContent, Card, CardActions} from "@mui/material"
+import { Typography, Tooltip, IconButton, Stack, Box, CardContent, Card, CardActions} from "@mui/material"
 import routes from "../../helpers/routes.helper"
 import { useEffect, useState } from "react"
-import { useDispatch } from "react-redux"
 import { usePage } from "@inertiajs/inertia-react"
-import { Inertia } from "@inertiajs/inertia"
-import { actions } from "../../store/slices/ToasterSlice"
-import { AccountBalanceWallet, AddCard, Cached, DownloadForOffline, DownloadForOfflineOutlined, SwapVerticalCircle, SwapVerticalCircleOutlined } from "@mui/icons-material"
+import { AccountBalanceWallet, DownloadForOffline, SwapVerticalCircle } from "@mui/icons-material"
 import FormDialog from "../common/FormDialog"
 import Input from "../forms/Input"
 import Spinner from '../common/Spinner';
@@ -29,10 +26,7 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
     }, [walletAPI]);
 
     
-    const { errors, auth, translatables, ada_to_points, nfts } = usePage().props
-
-    //console.log("UserPoints: general_settings: ", usePage().props)
-    //console.log("UserPoints: translatables: ", translatables)
+    const { auth, translatables, ada_to_points, nfts, network } = usePage().props
 
     const [dialog, setDialog] = useState({
         open: false,
@@ -91,14 +85,12 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
                     label="Ada Amount"
                     name="ada_amount"
                     value={dialog.points * Number(ada_to_points)}
-                    //onChange={e => setDialog(dialog => ({ ...dialog, wallet_id: e.target.value }))}
                     sx={{ mt: 2 }}
                 />
                 <Input
                     label="Wallet ID"
                     name="wallet_id"
                     value={dialog.wallet_id}
-                    //onChange={e => setDialog(dialog => ({ ...dialog, wallet_id: e.target.value }))}
                     sx={{ mt: 2 }}
                 />
             </Box>
@@ -112,13 +104,11 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
         setDialog(dialog => ({ ...dialog,
                                 nftName: name,
                                 points: Math.abs(points)}));
-        // Do something with the values
       };
 
     const dialogFormExchange = () => {
 
         return (
-            
             <Box mt={1}>
                 {loading && <Spinner />}
                 <Input
@@ -128,13 +118,9 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
                         shrink: true
                     }}
                     name="nft"
-                    //value={filters.category}
-                    //onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
-                    //value={dialog.points}
                     onChange={handleSelectChange}
-                    //onChange={e => setDialog(dialog => ({ ...dialog, points: Math.abs(e.target.value[0]) }))}
                 >
-                    <option value="">Select an NFT</option>
+                    <option value="">{translatables.texts.nft_select}</option>
                     {nfts && nfts.map((item) => (
                     <option key={item.id} value={[item.points, item.name]}>
                         {item.name}
@@ -142,17 +128,15 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
                     ))}
                 </Input>
                 <Input
-                    label="Points"
+                    label={translatables.texts.points}
                     name="points"
                     value={dialog.points}
-                    //onChange={e => setDialog(dialog => ({ ...dialog, wallet_id: e.target.value }))}
                     sx={{ mt: 2 }}
                 />
                 <Input
-                    label="Wallet ID"
+                    label={translatables.texts.wallet_id}
                     name="wallet_id"
                     value={dialog.wallet_id}
-                    //onChange={e => setDialog(dialog => ({ ...dialog, wallet_id: e.target.value }))}
                     sx={{ mt: 2 }}
                 />
             </Box>
@@ -170,13 +154,6 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
         e.preventDefault()
         setLoading(true);
 
-        //Inertia.visit(dialog.submitUrl, {
-        //    method: dialog.method,
-        //    data: {
-        //        points: dialog.points,
-        //        wallet_id: dialog.wallet_id
-        //    }
-        //})
         try {
             // get the UTXOs from wallet,
             const cborUtxos = await walletAPI.getUtxos();
@@ -195,14 +172,13 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
                 if (feedTx.status == 200) {
 
                     // Get user to sign the transaction
-                    console.log("Get wallet signature");
                     var walletSig;
-                    try {
-                        walletSig = await walletAPI.signTx(feedTx.cborTx, true);
-                    } catch (err) {
-                        console.error(err);
-                        return
-                    }
+                        try {
+                            walletSig = await walletAPI.signTx(feedTx.cborTx, true);
+                        } catch (err) {
+                            console.error(err);
+                            return
+                        }
 
                     console.log("Submit transaction...");
                     await axios.post('/wallet/submit-feed-tx', {
@@ -216,23 +192,23 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
                             console.log("submitFeedTx Success: ", submitTx.txId);
                             setTx(submitTx.txId);
                         } else {
-                            console.error("Feed transaction could not be submitted");
-                            alert ('Feed transaction could not be submitted, please try again');
+                            console.error("Transaction could not be submitted");
+                            alert (translatables.tx.error.message);
                         }
                     })
                     .catch(error => {
                         console.error("submit-tx: ", error);
-                        alert ('Feed transaction could not be submitted, please try again');
+                        alert (translatables.tx.error.message);
                     });
 
                 } else {
-                    console.error("Exchange transaction could not be submitted");
-                    alert ('Feed transaction could not be submitted, please try again');
+                    console.error("Transaction could not be submitted");
+                    alert (translatables.tx.error.message);
                 }
             })
             .catch(error => {
                 console.error("submit-tx: ", error);
-                alert ('Feed transaction could not be submitted, please try again');
+                alert (translatables.tx.error.message);
             });
         } catch (err) {
             console.error(err);
@@ -245,14 +221,6 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
         e.preventDefault();
         console.log("e: ", e);
         setLoading(true);
-
-        //Inertia.visit(dialog.submitUrl, {
-        //    method: dialog.method,
-        //    data: {
-        //        points: dialog.points,
-        //        wallet_id: dialog.wallet_id
-        //    }
-        //})
 
         try {
             // get the UTXOs from wallet,
@@ -272,7 +240,6 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
                 if (exchangeTx.status == 200) {
 
                     // Get user to sign the transaction
-                    console.log("Get wallet signature");
                     var walletSig;
                     try {
                         walletSig = await walletAPI.signTx(exchangeTx.cborTx, true);
@@ -298,22 +265,22 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
                             setTx(submitTx.txId);
                         } else {
                             console.error("Exchange transaction could not be submitted");
-                            alert ('Exchange transaction could not be submitted, please try again');
+                            alert (translatables.tx.error.message);
                         }
                     })
                     .catch(error => {
                         console.error("submit-tx: ", error);
-                        alert ('Exchange transaction could not be submitted, please try again');
+                        alert (translatables.tx.error.message);
                     });
 
                 } else {
                     console.error("Exchange transaction could not be submitted");
-                    alert ('Exchange transaction could not be submitted, please try again');
+                    alert (translatables.tx.error.message);
                 }
             })
             .catch(error => {
                 console.error("submit-tx: ", error);
-                alert ('Exchange transaction could not be submitted, please try again');
+                alert (translatables.tx.error.message);
             });
         } catch (err) {
             console.error(err);
@@ -353,9 +320,9 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
             </Card>}
             {tx && <Card>
                 <CardContent>
-                    <Typography variant="h5" children={"Transaction Success!!!"}/>
-                    <Typography ml={0.5}> Please wait for 5 confirmations on the blockchain and then refresh this page if needed</Typography>
-                    <Typography fontSize={8} ml={0.5}><a href={"https://preprod.cexplorer.io/tx/" + tx} target="_blank" rel="noopener noreferrer" >{tx}</a></Typography>
+                    <Typography variant="h5" children={translatables.tx.success.status}/>
+                    <Typography fontSize={12} ml={0.5}>{translatables.tx.success.message}</Typography>
+                    <Typography fontSize={6} ml={0.5}><a href={"https://" + network + ".cexplorer.io/tx/" + tx} target="_blank" rel="noopener noreferrer" >{tx}</a></Typography>
                 </CardContent>
             </Card>}
             <FormDialog

@@ -399,7 +399,7 @@ return [
         'new_category'  => 'New Category',
         'new_password' => 'New Password',
         'next_question' => 'Next Question',
-        'nft' => 'Select NFT',
+        'nft_select' => 'Select NFT',
         'nft' => 'NFT',
         'no_file_selected' => 'No file selected',
         'no_records_found' => 'No Records Found',
@@ -483,6 +483,7 @@ return [
         'wallet_exchange_details' => 'Points Exchanged to NFT',
         'wallet_feed_details' => 'Points Feed to wallet',
         'wallet_history' => 'Wallet History',
+        'wallet_id' => 'Wallet ID',
         'wallet_refund_details' => 'Refunded points from class',
         'wallet_schedule_fee' => 'Payed points to schedule class',
         'wallet_switch' => 'Switch Connected Wallets',
@@ -494,5 +495,14 @@ return [
         'class_url' => 'Class meeting URL',
         'class_feedback' => 'Class Feedback',
         'comments' => 'Comments'
+    ],
+    'tx' => [
+        'success' => [
+            'status' => 'Transaction Success!!!',
+            'message' => 'Please wait for 5 confirmations on the blockchain and then refresh this page if needed'
+        ],
+        'error' => [
+            'message' => 'Transaction could not be submitted'
+        ]
     ]
 ];

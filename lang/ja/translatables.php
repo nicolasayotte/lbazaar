@@ -397,7 +397,7 @@ return [
         'new_category'=> '新しいカテゴリ',
         'new_password'=> '新パスワード',
         'next_question'=> '次の質問',
-        'nft' => 'NFTを選択する',
+        'nft_select' => 'NFTを選択する',
         'nft' => 'エヌエフティー',
         'no_file_selected'=> 'ファイルが選択されていません',
         'no_records_found'=> 'レコードがありません',
@@ -413,6 +413,7 @@ return [
         'wallet_connect'=> 'ウォレットを接続する',
         'wallet_exchange_details'=> 'NFT変更ポイント',
         'wallet_feed_details'=> 'Walletに追加されたポイント',
+        'wallet_id' => 'Wallet ID',
         'wallet_switch' => 'Switch Connected Wallets',
         'wallet_verify' => 'Verify Wallet Ownership',
         'points_to_convert_to_nft'=> 'ポイントNFT変換',
@@ -493,5 +494,14 @@ return [
         'exam_failed' => 'Unfortunately, you did not pass the exam. You may request a retake by clicking Request retake. (JA)',
         'request_retake' => 'Request retake (JA)',
         'exam_passing_percentage' => 'Exam passing percentage is (JA)'
+    ],
+    'tx' => [
+        'success' => [
+            'status' => 'Transaction Success!!!',
+            'message' => 'Please wait for 5 confirmations on the blockchain and then refresh this page if needed'
+        ],
+        'error' => [
+            'message' => 'Transaction could not be submitted'
+        ]
     ]
 ];
