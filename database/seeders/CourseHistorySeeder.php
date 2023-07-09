@@ -77,6 +77,8 @@ class CourseHistorySeeder extends Seeder
             'type' => $transactionType,
             'points_before' => $userWallet->points,
             'points_after' => $newUserPoints,
+            'tx_id' => '687b187b5dc6b6525f859989556cf320bfb9c101276c192af2db7d012e35834b',
+            'status' => 'confirmed'
         ]);
     }
 

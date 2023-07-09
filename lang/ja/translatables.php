@@ -11,6 +11,7 @@ return [
     |
     */
     'error'=> 'エラーが発生しました',
+    'nftError'   => 'NFT has already been used',
     'success'=> [
         'category'=> [
             'create'=> '分類は作成されました',
@@ -411,7 +412,6 @@ return [
         'package_information'=> 'パッケージ情報',
         'password'=> 'パスワード',
         'points'=> 'ポイント',
-        'wallet_balance' => 'Wallet balance',
         'wallet_commission_details'=> 'コミッション',
         'points_earned'=> 'ポイント追加',
         'wallet_connect'=> 'ウォレットを接続する',

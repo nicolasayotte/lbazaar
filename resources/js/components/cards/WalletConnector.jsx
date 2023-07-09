@@ -302,15 +302,15 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                 <Stack direction="column" alignItems="left" spacing={1} ml={1} mb={1}>
                         <Box display="flex" alignItems="center" ml={0.5}>
                             <WalletIconButton name="eternl" src={EternlLogo} w={25} h={25}/>
-                            <Typography color="BlackText">{translatables.texts.wallets.eternl}</Typography>
+                            <Typography color="BlackText">{translatables.wallets.eternl}</Typography>
                         </Box>
                         <Box display="flex" alignItems="center" ml={0}>
                             <WalletIconButton name="flint" src={FlintLogo} w={30} h={30}/>
-                            <Typography color="BlackText">{translatables.texts.wallets.flint}</Typography>
+                            <Typography color="BlackText">{translatables.wallets.flint}</Typography>
                         </Box>
                         <Box display="flex" alignItems="center" ml={0} paddingLeft={0.3}>
                             <WalletIconButton name="nami" src={NamiLogo} w={25} h={25}/>
-                            <Typography color="BlackText">{translatables.texts.wallets.nami}</Typography>
+                            <Typography color="BlackText">{translatables.wallets.nami}</Typography>
                         </Box>
                 </Stack>
             </Card> 
