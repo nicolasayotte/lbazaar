@@ -42,7 +42,7 @@ class UserWalletController extends Controller
             $cmd = '(cd ../web3/;node ./run/blockfrost-verify.mjs '
             .escapeshellarg(json_encode($apiSignature)).' '
             .escapeshellarg(json_encode($body)).' '
-            .escapeshellarg(json_encode($webhook)).') 2>> ../storage/logs/web3.log'; 
+            .escapeshellarg($webhook).') 2>> ../storage/logs/web3.log'; 
 
             $response = exec($cmd);
             $responseJSON = json_decode($response, false);
@@ -105,7 +105,7 @@ class UserWalletController extends Controller
             $cmd = '(cd ../web3/;node ./run/blockfrost-verify.mjs '
             .escapeshellarg(json_encode($apiSignature)).' '
             .escapeshellarg(json_encode($body)).' '
-            .escapeshellarg(json_encode($webhook)).') 2>> ../storage/logs/web3.log'; 
+            .escapeshellarg($webhook).') 2>> ../storage/logs/web3.log'; 
 
             $response = exec($cmd);
             $responseJSON = json_decode($response, false);
