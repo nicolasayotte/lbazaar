@@ -39,7 +39,9 @@ class ProfileController extends Controller
     {
         $countries = Country::all();
         $ada_to_points = Setting::where('slug', 'ada-to-points')->first();
-        $nfts = Nft::all();
+        $nfts = Nft::all()->filter(function ($data) {
+            return $data->for_sale != 0;
+        });
         $network = env('NETWORK');
        
         return Inertia::render('Portal/MyPage/Profile/Index', [
