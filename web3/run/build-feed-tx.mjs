@@ -1,17 +1,10 @@
-import { promises as fs } from 'fs';
-
 import {
-    Address, 
-    Assets, 
+    Address,  
     bytesToHex, 
     CoinSelection,
-    ConstrData, 
     hexToBytes, 
     NetworkParams,
-    Program, 
-    PubKeyHash,
     Value, 
-    textToBytes,
     TxOutput,
     Tx, 
     UTxO 
@@ -31,9 +24,7 @@ const main = async () => {
     console.error("build-feed-tx");
     try {
         // Set the Helios compiler optimizer flag
-        const optimize = (process.env.OPTIMIZE === 'true');
         const network = process.env.NETWORK;
-        const ownerPkh = process.env.OWNER_PKH;
         const minAda = BigInt(process.env.MIN_ADA);  // minimum lovelace needed to send an NFT
         const maxTxFee = BigInt(process.env.MAX_TX_FEE);
         const minChangeAmt = BigInt(process.env.MIN_CHANGE_AMT);
@@ -94,7 +85,7 @@ const main = async () => {
             date: timestamp,
             error: err
         }
-  
+        console.error("build-feed-tx: returnObj: ", returnObj);
         process.stdout.write(JSON.stringify(returnObj));
     }
 }

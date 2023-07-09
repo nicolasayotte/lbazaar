@@ -1,23 +1,14 @@
-import { promises as fs } from 'fs';
-
 import {
     Address, 
-    Assets, 
     bytesToHex, 
     CoinSelection,
-    ConstrData, 
     hexToBytes, 
     NetworkParams,
-    Program, 
-    PubKeyHash,
     Value, 
-    textToBytes,
-    TxOutput,
     Tx, 
     UTxO 
 } from "@hyperionbt/helios";
 
-import { signTx } from "../common/sign-tx.mjs";
 import { getNetworkParams } from "../common/network.mjs"
 
 /**
@@ -39,8 +30,7 @@ const main = async () => {
         const maxTxFee = BigInt(process.env.MAX_TX_FEE);
         const minChangeAmt = BigInt(process.env.MIN_CHANGE_AMT);
         const minUTXOVal = new Value(minAda + maxTxFee + minChangeAmt);
-        
-       
+           
         // Get the address from the wallet
         const addr = Address.fromHex(hexAddr);
 

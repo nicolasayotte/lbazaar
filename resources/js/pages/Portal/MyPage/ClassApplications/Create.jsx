@@ -8,7 +8,7 @@ import routes from "../../../../helpers/routes.helper"
 const Create = () => {
 
     const { translatables, categoryOptions, nftOptions } = usePage().props
-
+    
     const typeOptions = [
         { name: 'General', value: 'general' },
         { name: 'Free', value: 'free' },

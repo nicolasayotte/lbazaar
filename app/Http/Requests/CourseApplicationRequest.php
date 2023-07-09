@@ -33,10 +33,7 @@ class CourseApplicationRequest extends FormRequest
         $isEarn = $this->type == strtolower(CourseType::EARN);
         $isLive = $this->get('format') == Course::LIVE;
         $isSpecial = $this->type == strtolower(CourseType::SPECIAL);
-        Log::debug("isSpecial: ". $isSpecial);
-        Log::debug("this->type: ". $this->type);
-        Log::debug("CourseType::SPECIAL: ". CourseType::SPECIAL);
-        
+      
         $nftRules = $isSpecial ?
             [
                 'required',

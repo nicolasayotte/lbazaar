@@ -1,5 +1,4 @@
 import { Address,
-         bytesToHex,
          StakeAddress } from "@hyperionbt/helios";
 
 import { BlockFrostAPI } from '@blockfrost/blockfrost-js';
@@ -20,8 +19,6 @@ const main = async () => {
 
         // Get the change address from the wallet
         const changeAddr = Address.fromHex(hexChangeAddr);
-        //const stakeHash = changeAddr.stakingHash;
-        //const stakeAddr = Address.fromPubKeyHash(stakeHash);
         const stakeAddr = StakeAddress.fromAddress(changeAddr);
         const accountInfo = API.accounts(stakeAddr.toBech32());
         const accountAmt = (await accountInfo).controlled_amount;
@@ -41,7 +38,6 @@ const main = async () => {
         const returnObj = {
             status: 200,
             accountAmt: accountAmt,
-            //stakeKeyHash: bytesToHex(stakeAddr.bytes),
             stakeKeyAddr: stakeAddr.toHex(),
             stakeAddrBech32: stakeAddr.toBech32(),
             stakeKeyHash: stakeAddr.stakingHash.hex,

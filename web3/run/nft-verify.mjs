@@ -2,8 +2,7 @@ import { BlockFrostAPI } from '@blockfrost/blockfrost-js';
 import verifySignature from "@cardano-foundation/cardano-verify-datasignature";
 import { Address,
          textToBytes,
-         bytesToHex, 
-         PubKeyHash} from "@hyperionbt/helios";
+         bytesToHex } from "@hyperionbt/helios";
 
 const main = async () => {
 
@@ -22,12 +21,8 @@ const main = async () => {
 
         const buffer = Buffer.from(messageHex, 'hex');
         const message = buffer.toString('utf8');
-        console.error("message: ", message);
-
         const walletAddr = Address.fromHex(walletAddrHex).toBech32();
         const verified = verifySignature(signature, spendingKey, message, walletAddr);
-        //const pkh = Address.fromBech32(walletAddr).pubKeyHash;
-        //const stakeKeyHash = StakeAddress.fromBech32(stakeAddr).stakingHash;
         const date = new Date(); // Create a new Date object with the current date and time
 
         // Confirm the address that the NFT is residing at and that
@@ -35,23 +30,18 @@ const main = async () => {
         const tokenName = nftName + '|' + serialNum;
         const unit = mph + bytesToHex(textToBytes(tokenName));
         const apiKey = process.env.BLOCKFROST_API_KEY
-        console.error("nft-verify: apiKey: ", apiKey);
         const API = new BlockFrostAPI({
             projectId: apiKey
         });
         const assets = await API.assetsAddresses(unit);
         const addr = Address.fromBech32(assets[0].address);
 
-        console.error("nft-verify: assets: ", assets);
-        console.error("nft-verify: walletAddr: ", walletAddr);
-        console.error("nft-verify: stake key has: ", addr.stakingHash.hex);
         // Check that both the signed phk and verified stake key hash
         // are correct.
         if (walletAddr !== addr.toBech32()) {
             throw console.error("nft-verify: Address for NFT does not match what wallet provided");
         }
-        console.error("nft-verify:addr: ", addr);
-
+    
         // Double check that address belongs to verified stake key hash
         if (stakeKeyHash !== addr.stakingHash.hex) {
             throw console.error("nft-verify: Stake key hash does not match with verified stake key")

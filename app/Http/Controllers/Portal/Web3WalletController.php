@@ -46,11 +46,8 @@ class Web3WalletController extends Controller
     {
         try {
             $inputs = $request->all();
-            Log::debug($inputs);
             $userId = Auth::user()->id;
-            Log::debug($userId);
             $user = UserWallet::where('user_id', $userId)->first();
-            Log::debug('stake_key: ' . $user->stake_key_hash);
             $changeAddr = $request->input('changeAddr'); 
             $stakeKeyHash = $user->stake_key_hash;
 
@@ -80,10 +77,8 @@ class Web3WalletController extends Controller
     {
         try {
             $inputs = $request->all();
-            Log::debug($inputs);
             $userId = Auth::user()->id;
-            Log::debug($userId);
- 
+            
             $signature = $request->input('signature');
             $stake_key = $request->input('stake_key');
             $message = $request->input('message');
@@ -131,10 +126,8 @@ class Web3WalletController extends Controller
     {
         try {
             $inputs = $request->all();
-            Log::debug($inputs);
             $userId = Auth::user()->id;
-            Log::debug($userId);
- 
+            
             $walletSig = $request->input('walletSig');
             $cborTx = $request->input('cborTx');
             $stakeAddr = $request->input('stakeAddr');
@@ -180,9 +173,7 @@ class Web3WalletController extends Controller
     {
         try {
             $inputs = $request->all();
-            Log::debug($inputs);
             $userId = Auth::user()->id;
-            Log::debug($userId);
             
             $skateKeyHash = UserWallet::where('user_id', $userId)->first()->stake_key_hash;
             $changeAddr = $request->input('changeAddr');
@@ -192,13 +183,6 @@ class Web3WalletController extends Controller
             $utxos = $request->input('utxos');
             $strUtxos = implode(",",$utxos);
            
-            Log::debug('skateKeyHash: ' . $skateKeyHash);
-            Log::debug('changeAddr: ' . $changeAddr);
-            Log::debug('imageUrl: ' . $imageUrl);
-            Log::debug('nft: ' . $nft);
-            Log::debug('mph: ' . $mph);
-            Log::debug('strUtxos: ' . $strUtxos);
-
             $cmd = '(cd ../web3/;node ./run/build-exchange-tx.mjs '
                         .escapeshellarg($skateKeyHash).' '
                         .escapeshellarg($changeAddr).' '
@@ -237,13 +221,10 @@ class Web3WalletController extends Controller
     {
         try {
             $inputs = $request->all();
-            Log::debug($inputs);
             $userId = Auth::user()->id;
-            Log::debug($userId);
             $user = User::where('id', $userId)->first();
             $userWallet = $user->userWallet()->first();
             $nft = $request->input('nft');
-            Log::debug("nft: ". $nft);
             $pointsToNFT = Nft::where('name', $nft)->first()->points;
             $serialNum = $request->input('serialNum');
             $mph = $request->input('mph');
@@ -268,7 +249,6 @@ class Web3WalletController extends Controller
                 {
                     try {
                         $userEmail = $user->email;
-                        Log::debug('txId: ' . $responseJSON->txId);
                         $walletTransactionHistory = $this->walletService->exchange($userWallet, $pointsToNFT, $responseJSON->txId, 'pending');
                         $this->emailService->sendEmailNotificationWalletUpdate($user, $walletTransactionHistory);
 
@@ -309,9 +289,7 @@ class Web3WalletController extends Controller
     {
         try {
             $inputs = $request->all();
-            Log::debug($inputs);
             $userId = Auth::user()->id;
-            Log::debug($userId);
             
             $skateKeyHash = UserWallet::where('user_id', $userId)->first()->stake_key_hash;
             $changeAddr = $request->input('changeAddr');
@@ -321,11 +299,6 @@ class Web3WalletController extends Controller
             $adaToPoints = Setting::where('slug', 'ada-to-points')->first()->value;
             $adaAmount = $points * $adaToPoints;
              
-            Log::debug('skateKeyHash: ' . $skateKeyHash);
-            Log::debug('changeAddr: ' . $changeAddr);
-            Log::debug('strUtxos: ' . $strUtxos);
-            Log::debug('adaAmount: ' . $adaAmount);
-            
             $cmd = '(cd ../web3/;node ./run/build-feed-tx.mjs '
                         .escapeshellarg($skateKeyHash).' '
                         .escapeshellarg($changeAddr).' '
@@ -362,8 +335,6 @@ class Web3WalletController extends Controller
     {
         try {
             $inputs = $request->all();
-            Log::debug($inputs);
-            
             $cborSig = $request->input('cborSig');
             $cborTx = $request->input('cborTx');
             
@@ -378,7 +349,6 @@ class Web3WalletController extends Controller
             {
                 try {
                     $userId = Auth::user()->id;
-                    Log::debug($userId);
                     $user = User::where('id', $userId)->first();
                     $adaAmount = $responseJSON->adaAmount;
             
@@ -389,7 +359,6 @@ class Web3WalletController extends Controller
                     $adaToPoints = Setting::where('slug', 'ada-to-points')->first()->value;
                     $points = $adaAmount / $adaToPoints;
                  
-                    Log::debug('txId: ' . $responseJSON->txId);
                     $walletTransactionHistory = $this->walletService->feed($userWallet, $points, $responseJSON->txId, 'pending');
                     $this->emailService->sendEmailNotificationWalletUpdate($user, $walletTransactionHistory);
 
@@ -425,16 +394,12 @@ class Web3WalletController extends Controller
     {
         try {
             $inputs = $request->all();
-            Log::debug($inputs);
-            $userId = Auth::user()->id;
-            Log::debug($userId);
-            
+           $userId = Auth::user()->id;
+          
             $changeAddr = $request->input('changeAddr');
             $utxos = $request->input('utxos');
             $strUtxos = implode(",",$utxos);
 
-            Log::debug('changeAddr: ' . $changeAddr);
-            
             $cmd = '(cd ../web3/;node ./run/build-wallet-hw-tx.mjs '
                         .escapeshellarg($changeAddr).' '
                         .escapeshellarg($strUtxos).') 2>> ../storage/logs/web3.log'; 

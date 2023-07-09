@@ -9,7 +9,6 @@ use App\Models\Role;
 use Exception;
 use App\Services\API\EmailService;
 use App\Services\API\WalletService;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 
 class Web3WalletController extends Controller
@@ -30,7 +29,6 @@ class Web3WalletController extends Controller
     {
         try {
             $inputs = $request->all();
-            Log::debug($inputs);
             $changeAddr = $request->input('changeAddr'); 
             $cmd = '(cd ../web3/;node ./run/wallet-info.mjs '.escapeshellarg($changeAddr).') 2>> ../storage/logs/web3.log'; 
             

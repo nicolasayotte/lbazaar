@@ -113,21 +113,6 @@ const main = async () => {
             new Value(minAda, new Assets([[nftTokenMPH, nftToken]]))
           ));
 
-        // Construct the nft validator output address
-        //const nftValFile = await fs.readFile('./contracts/nft-validator.hl', 'utf8');
-        //const nftValScript = nftValFile.toString();
-        //const nftValProgram  = Program.new(nftValScript);
-        //nftValProgram.parameters = {["OWNER_PKH"] : ownerPkh};
-        //nftValProgram.parameters = {["VERSION"] : "1.0"};
-        //const compiledNftValProgram = nftValProgram.compile(optimize);
-        //const nftValHash = compiledNftValProgram.validatorHash;
-
-        // Create the output for the soul-bound token
-        //tx.addOutput(new TxOutput(
-        //    Address.fromHashes(nftValHash),
-        //    new Value(minAda, new Assets([[nftTokenMPH, nftToken]]))
-        //));
-
         // Set a valid time interval
         tx.validFrom(before);
         tx.validTo(after);

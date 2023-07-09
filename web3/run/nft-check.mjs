@@ -8,8 +8,6 @@ import {
     UTxO 
 } from "@hyperionbt/helios";
 
-import { signTx } from "../common/sign-tx.mjs";
-import { getNetworkParams } from "../common/network.mjs"
 import { getTokenNamesAddrs } from "../common/utils.mjs"
 
 /**
@@ -26,12 +24,10 @@ const main = async () => {
         
         // Set the Helios compiler optimizer flag
         const optimize = (process.env.OPTIMIZE === 'true');
-        const network = process.env.NETWORK;
         const ownerPkh = process.env.OWNER_PKH;
         const minAda = BigInt(process.env.MIN_ADA);  // minimum lovelace needed to send an NFT
         const maxTxFee = BigInt(process.env.MAX_TX_FEE);
         const minChangeAmt = BigInt(process.env.MIN_CHANGE_AMT);
-        const minUTXOVal = new Value(minAda + maxTxFee + minChangeAmt);
         const nftName = args[2];
         const stakeKeyHash = args[3];
         const cborUtxos = args[4].split(',');

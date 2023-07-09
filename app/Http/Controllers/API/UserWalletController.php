@@ -11,7 +11,6 @@ use App\Models\Role;
 use Exception;
 use App\Services\API\EmailService;
 use App\Services\API\WalletService;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 
 class UserWalletController extends Controller
@@ -33,7 +32,6 @@ class UserWalletController extends Controller
      */
     public function feed(Request $request)
     {
-        Log::debug('Request: ' . $request);
         try {
             $headers = $request->header();
             
@@ -52,7 +50,6 @@ class UserWalletController extends Controller
             if ($responseJSON->status == 200)
             {
                 $txId = $body['payload'][0]['tx']['hash'];
-                Log::debug('$txId: ' . $txId);
                 $userWalletTrans = WalletTransactionHistory::where('tx_id', $txId)->first();
                 if (!$userWalletTrans->user_wallet_id) {
                     throw new \Exception("Wallet ID not found");
@@ -98,7 +95,6 @@ class UserWalletController extends Controller
     //public function exchange(UserWalletRequest $request)
     public function exchange(Request $request)
     {
-        Log::debug('Request: ' . $request);
         try {
             $headers = $request->header();
             
@@ -117,7 +113,6 @@ class UserWalletController extends Controller
             if ($responseJSON->status == 200)
             {
                 $txId = $body['payload'][0]['tx']['hash'];
-                Log::debug('$txId: ' . $txId);
                 $userWalletTrans = WalletTransactionHistory::where('tx_id', $txId)->first();
                 if (!$userWalletTrans->user_wallet_id) {
                     throw new \Exception("Tx ID not found");

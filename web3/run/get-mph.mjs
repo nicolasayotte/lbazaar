@@ -1,16 +1,5 @@
 import { promises as fs } from 'fs';
-
-import {
-    Address, 
-    hexToBytes, 
-    Program, 
-    Value, 
-    UTxO 
-} from "@hyperionbt/helios";
-
-import { signTx } from "../common/sign-tx.mjs";
-import { getNetworkParams } from "../common/network.mjs"
-import { getTokenNamesAddrs } from "../common/utils.mjs"
+import { Program } from "@hyperionbt/helios";
 
 /**
  * Main calling function via the command line 
@@ -20,10 +9,8 @@ import { getTokenNamesAddrs } from "../common/utils.mjs"
 const main = async () => {
 
     try {
-
         // Set the Helios compiler optimizer flag
         const optimize = (process.env.OPTIMIZE === 'true');
-        const network = process.env.NETWORK;
         const ownerPkh = process.env.OWNER_PKH;
   
         const nftMintingPolicyFile = await fs.readFile('./contracts/nft-minting-policy.hl', 'utf8');

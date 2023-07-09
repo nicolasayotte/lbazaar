@@ -32,7 +32,6 @@ const main = async () => {
                 break;
             }
         }
-        console.error("submit-feed-tx: adaAmount: ", adaAmount);
         if (adaAmount == BigInt(0)) {
             throw console.error("submit-feed-tx: adaAmount not found");
         }
@@ -65,7 +64,6 @@ const main = async () => {
         process.stdout.write(JSON.stringify(returnObj));
     }
 }
-
 
 main();
 

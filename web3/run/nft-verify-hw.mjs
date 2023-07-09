@@ -1,10 +1,8 @@
 import { BlockFrostAPI } from '@blockfrost/blockfrost-js';
-import verifySignature from "@cardano-foundation/cardano-verify-datasignature";
 import { Address,
          hexToBytes,
          textToBytes,
          bytesToHex, 
-         PubKeyHash,
          TxWitnesses,
          Tx} from "@hyperionbt/helios";
 
@@ -12,7 +10,6 @@ const main = async () => {
 
     try {
         const args = process.argv;
-
         const cborSig = args[2];
         const cborTx = args[3];
         const walletAddr = args[4];
@@ -44,23 +41,18 @@ const main = async () => {
         const tokenName = nftName + '|' + serialNum;
         const unit = mph + bytesToHex(textToBytes(tokenName));
         const apiKey = process.env.BLOCKFROST_API_KEY
-        console.error("nft-verify: apiKey: ", apiKey);
         const API = new BlockFrostAPI({
             projectId: apiKey
         });
         const assets = await API.assetsAddresses(unit);
         const addr = Address.fromBech32(assets[0].address);
 
-        console.error("nft-verify: assets: ", assets);
-        console.error("nft-verify: walletAddr: ", walletAddr);
-        console.error("nft-verify: stake key has: ", addr.stakingHash.hex);
         // Check that both the signed phk and verified stake key hash
         // are correct.
         if (walletAddr !== addr.toHex()) {
             throw console.error("nft-verify-hw: Address for NFT does not match what wallet provided");
         }
-        console.error("nft-verify-hw:addr: ", addr);
-
+       
         // Double check that address belongs to verified stake key hash
         if (stakeKeyHash !== addr.stakingHash.hex) {
             throw console.error("nft-verify-hw: Stake key hash does not match with verified stake key")

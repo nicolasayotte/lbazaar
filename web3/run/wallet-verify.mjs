@@ -14,8 +14,6 @@ const main = async () => {
 
         const buffer = Buffer.from(messageHex, 'hex');
         const message = buffer.toString('utf8');
-        console.error("message: ", message);
-
         const verified = verifySignature(signature, stakeKey, message, stakeAddr);
         const stakeKeyHash = StakeAddress.fromBech32(stakeAddr).stakingHash;
         const date = new Date(); // Create a new Date object with the current date and time

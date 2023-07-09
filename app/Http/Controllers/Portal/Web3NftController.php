@@ -16,7 +16,6 @@ use App\Models\Setting;
 use Exception;
 use App\Services\API\EmailService;
 use App\Services\API\WalletService;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 
 class Web3NftController extends Controller
@@ -42,11 +41,8 @@ class Web3NftController extends Controller
     {
         try {
             $inputs = $request->all();
-            Log::debug($inputs);
             $userId = Auth::user()->id;
-            Log::debug($userId);
             $user = UserWallet::where('user_id', $userId)->first();
-            Log::debug('stake_key: ' . $user->stake_key_hash);
             $nftName = $request->input('nft_name'); 
             $stakeKeyHash = $user->stake_key_hash;
             $utxos = $request->input('utxos');
@@ -81,10 +77,8 @@ class Web3NftController extends Controller
     {
         try {
             $inputs = $request->all();
-            Log::debug($inputs);
             $userId = Auth::user()->id;
-            Log::debug($userId);
- 
+           
             $signature = $request->input('signature');
             $spendingKey = $request->input('spending_key');
             $message = $request->input('message');
@@ -112,8 +106,7 @@ class Web3NftController extends Controller
                 // Record the NFT transaction with serial number
                 //$serialNum = $responseJSON->serialNum;
                 $nftId = NFT::where('name', $nftName)->first()->id;
-                Log::debug("nftId: " . $nftId);
-
+              
                 $nftTrans = NftTransactions::updateOrCreate(
                     ['user_id'      => $userId,
                      'nft_id'       => $nftId,
@@ -147,10 +140,8 @@ class Web3NftController extends Controller
     {
         try {
             $inputs = $request->all();
-            Log::debug($inputs);
             $userId = Auth::user()->id;
-            Log::debug($userId);
- 
+           
             $walletSig = $request->input('walletSig');
             $cborTx = $request->input('cborTx');
             $walletAddr = $request->input('wallet_addr');
@@ -174,10 +165,8 @@ class Web3NftController extends Controller
             if ($responseJSON->status == 200)
             {
                 // Record the NFT transaction with serial number
-                //$serialNum = $responseJSON->serialNum;
                 $nftId = NFT::where('name', $nftName)->first()->id;
-                Log::debug("nftId: " . $nftId);
-
+                
                 $nftTrans = NftTransactions::updateOrCreate(
                     ['user_id'      => $userId,
                      'nft_id'       => $nftId,

@@ -39,15 +39,12 @@ class ProfileController extends Controller
     {
         $countries = Country::all();
         $ada_to_points = Setting::where('slug', 'ada-to-points')->first();
-        //$points_to_nft = Setting::where('slug', 'points-to-nft')->first();
         $nfts = Nft::all();
         $network = env('NETWORK');
-        Log::debug("env: " . $network);
-
+       
         return Inertia::render('Portal/MyPage/Profile/Index', [
             'countries' => $countries,
             'ada_to_points' =>  $ada_to_points->value,
-            //'points_to_nft' => $points_to_nft->value,
             'nfts' => $nfts,
             'network' => $network,
             'title' => getTranslation('texts.mypage').' | '.getTranslation('texts.profile')
