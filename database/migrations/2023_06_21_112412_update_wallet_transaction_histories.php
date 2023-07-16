@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('wallet_transaction_histories', function (Blueprint $table) {
-            $table->string('tx_id')->after('points_after');
+            $table->string('tx_id')->nullable(true)->after('points_after');
         });
     }
 

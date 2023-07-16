@@ -66,6 +66,8 @@ const CourseScheduleList = ({ data, handleOnBook, handleOnCancelBook }) => {
                     bookBtnText = `${translatables.texts.book_class} ${row.course.price}`
                 } else if (row.course.course_type.type == 'Free') {
                     bookBtnText = `${translatables.texts.book_class} Free`
+                } else if (row.course.course_type.type == 'Earn') {
+                    bookBtnText = `${translatables.texts.book_class} Earn`
                 } else if (row.course.course_type.type == 'Special') {
                     bookBtnText = `${translatables.texts.book_class} NFT`
                 } else {

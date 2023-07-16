@@ -36,6 +36,18 @@ const Details = () => {
     })
 
     const handleBook = async (schedule_id) => {
+        setDialog(dialog => ({
+            ...dialog,
+            open: true,
+            title: translatables.texts.book,
+            text: translatables.confirm.class.schedules.book,
+            submitUrl: getRoute('course.book', {schedule_id}),
+            method: 'post',
+            action: 'booked'
+        }))
+    }
+
+    const handleBookNFT = async (schedule_id) => {
     
         try {
             // get the UTXOs from wallet,
@@ -413,7 +425,7 @@ const Details = () => {
                                      walletAPI={walletAPI}
                                      onWalletAPI={setWalletAPI}/>
                         </Box>}
-                        {nft && walletAPI &&<CourseScheduleList data={schedules} handleOnBook={handleBook} handleOnCancelBook={handleCancelBooking} />}
+                        {nft && walletAPI &&<CourseScheduleList data={schedules} handleOnBook={handleBookNFT} handleOnCancelBook={handleCancelBooking} />}
                         {!nft &&<CourseScheduleList data={schedules} handleOnBook={handleBook} handleOnCancelBook={handleCancelBooking} />}
                         <PackageInformation />
                     </Grid>
