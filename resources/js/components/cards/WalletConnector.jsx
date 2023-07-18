@@ -64,11 +64,10 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
 
         const redirectMobile = () => {
 
+            alert('Connect to the Flint Mobile Wallet Browser');
             window.location.href = 'https://flint-wallet.app.link/browse?dappUrl=' + window.location.href;
         };
    
-        console.log("window.cardano. ", !window?.cardano?.flint);
-
         if (!!window?.cardano?.flint) {
             return (
                 <IconButton
