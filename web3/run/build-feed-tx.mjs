@@ -4,6 +4,7 @@ import {
     CoinSelection,
     hexToBytes, 
     NetworkParams,
+    PubKeyHash,
     Value, 
     TxOutput,
     Tx, 
@@ -12,6 +13,9 @@ import {
 
 import { signTx } from "../common/sign-tx.mjs";
 import { getNetworkParams } from "../common/network.mjs"
+
+// Define time to live for tx validity interval
+const ttl = 5; 
 
 /**
  * Main calling function via the command line 
@@ -25,6 +29,7 @@ const main = async () => {
     try {
         // Set the Helios compiler optimizer flag
         const network = process.env.NETWORK;
+        const ownerPkh = process.env.OWNER_PKH;
         const minAda = BigInt(process.env.MIN_ADA);  // minimum lovelace needed to send an NFT
         const maxTxFee = BigInt(process.env.MAX_TX_FEE);
         const minChangeAmt = BigInt(process.env.MIN_CHANGE_AMT);
@@ -58,6 +63,23 @@ const main = async () => {
             Address.fromBech32(ownerWalletAddr),
             new Value(adaAmount)
           ));
+
+        // Set validitity interval
+        const now = new Date();
+        const before = new Date(now.getTime());
+        before.setMinutes(now.getMinutes() - ttl);
+        const after = new Date(now.getTime());
+        after.setMinutes(now.getMinutes() + ttl);
+        
+        // Set a valid time interval
+        tx.validFrom(before);
+        tx.validTo(after);
+
+        // Add owner pkh as a signer which is required to mint the nft
+        tx.addSigner(PubKeyHash.fromHex(ownerPkh));
+
+        // Also add the user wallet as signer as well
+        tx.addSigner(changeAddr.pubKeyHash);
 
         // Network Params
         const networkParamsPreview = await getNetworkParams(network);
