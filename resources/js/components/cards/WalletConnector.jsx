@@ -1,6 +1,7 @@
 
 import { Typography, Tooltip, IconButton, Stack, Box, Icon, CardContent, Card, CardActions} from "@mui/material"
 import { useEffect, useState } from "react"
+import {BrowserView, MobileView} from 'react-device-detect'
 import { usePage } from "@inertiajs/inertia-react"
 import ChangeCircleIcon from '@mui/icons-material/ChangeCircle';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
@@ -25,7 +26,7 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
     const [walletStakeAddr, setwalletStakeAddr] = useState(undefined);
     const [walletStakeKeyDisplay, setwalletStakeKeyDisplay] = useState(undefined);
     const [walletStakeAddrBech32, setWalletStakeAddrBech32] = useState(undefined);
-    
+
     useEffect(() => {
         const checkWallet = async () => {
             if (await checkIfWalletFound()) {
@@ -57,15 +58,33 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
     const WalletIconButton = ({ name, src, w, h }) => {
         
         const handleWalletSelect = () => {
+           
             setWhichWalletSelected({name, src, w, h});
         };
-      
-        return (
+
+        const redirectMobile = () => {
+
+            window.location.href = 'https://flint-wallet.app.link/browse?dappUrl=' + window.location.href;
+        };
+   
+        console.log("window.cardano. ", !window?.cardano?.flint);
+
+        if (!!window?.cardano?.flint) {
+            return (
+                <IconButton
+                    aria-label={name}
+                    color="primary"
+                    onClick={handleWalletSelect}>
+                    <img src={src} alt={name} width={w} height={h}/>
+                </IconButton>
+            );
+        } else 
+        return(
             <IconButton
-                aria-label={name}
-                color="primary"
-                onClick={handleWalletSelect}>
-                <img src={src} alt={name} width={w} height={h}/>
+                    aria-label={name}
+                    color="primary"
+                    onClick={redirectMobile}>
+                    <img src={src} alt={name} width={w} height={h}/>
             </IconButton>
         );
       };
@@ -291,6 +310,7 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                 </CardActions>
                 </Card>
             }
+            <BrowserView>
             {!walletIsEnabled && <Card>
                 <CardContent>  
                     <Stack direction="row" alignItems="left" spacing={1}>
@@ -315,6 +335,24 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                 </Stack>
             </Card> 
             }
+        </BrowserView>
+        <MobileView>
+            {!walletIsEnabled && <Card>
+                <CardContent>  
+                    <Stack direction="row" alignItems="left" spacing={1}>
+                        <Box display="flex" alignItems="flex-end">
+                            <Typography variant="h5" children={translatables.texts.wallet_connect} color="BlackText" /> 
+                        </Box>
+                    </Stack>
+                </CardContent>
+                <Stack direction="column" alignItems="left" spacing={1} ml={1} mb={1}>
+                        <Box display="flex" alignItems="center" ml={0}>
+                            <WalletIconButton name="flint" src={FlintLogo} w={30} h={30}/>
+                            <Typography color="BlackText">{translatables.wallets.flint}</Typography>
+                        </Box>
+                </Stack>
+            </Card>}
+        </MobileView>
         </>
     );
 }
