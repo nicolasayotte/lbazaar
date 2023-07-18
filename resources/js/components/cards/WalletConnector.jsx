@@ -62,6 +62,23 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
             setWhichWalletSelected({name, src, w, h});
         };
 
+        return (
+            <IconButton
+                aria-label={name}
+                color="primary"
+                onClick={handleWalletSelect}>
+                <img src={src} alt={name} width={w} height={h}/>
+            </IconButton>
+        );
+      };
+
+    const WalletIconButtonMobile = ({ name, src, w, h }) => {
+        
+        const handleWalletSelect = () => {
+           
+            setWhichWalletSelected({name, src, w, h});
+        };
+
         const redirectMobile = () => {
 
             alert('Connect to the Flint Mobile Wallet Browser');
@@ -346,7 +363,7 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                 </CardContent>
                 <Stack direction="column" alignItems="left" spacing={1} ml={1} mb={1}>
                         <Box display="flex" alignItems="center" ml={0}>
-                            <WalletIconButton name="flint" src={FlintLogo} w={30} h={30}/>
+                            <WalletIconButtonMobile name="flint" src={FlintLogo} w={30} h={30}/>
                             <Typography color="BlackText">{translatables.wallets.flint}</Typography>
                         </Box>
                 </Stack>
