@@ -11,7 +11,16 @@ return [
     |
     */
     'error'   => 'There was an error encountered',
-    'nftError'   => 'NFT has already been used',
+    'nft_error'   => [
+        'used' =>'NFT has already been used',
+        'not_found' => 'NFT not found in wallet',
+        'verify' => 'The NFT could not be verified'
+    ],
+    'wallet_error'   => [
+        'not_connected' => 'Wallet is not connected',
+        'not_found' => 'Wallet is not found',
+        'verify' => 'The Wallet could not be verified'
+    ],
     'success' => [
         'forgotPassword' => 'Reset password link already sent to you email.',
         'profile' => 'Profile successfully updated',
@@ -21,6 +30,7 @@ return [
         'inquiry' => 'Inquiry successfully submitted',
         'class_generated' => 'Command Generated.',
         'copy' => 'Copied!',
+        'nft' => 'NFT successfully verified',
         'verification_sent' => 'Verification link successfully sent',
         'user' => [
             'login'  => 'User successfully authenticated',
@@ -86,6 +96,7 @@ return [
             'feed' => 'Points successfully added',
             'exchange' => 'Points successfully exchanged to NFT',
             'request_exchange' => 'Points successfully requested to exchanged to NFT',
+            'verify' => 'The Wallet was successfully verified'
         ],
         'api' => [
             'get' => 'Successfully retrieved data'
@@ -134,6 +145,9 @@ return [
         ],
         'nft' => [
             'delete' => 'Are you sure you want to delete this NFT?'
+        ],
+        'mobile' => [
+            'view' => 'Are you sure you want to go to the mobile wallet browser?'
         ],
         'translations' => [
             'update' => 'Are you sure you want to update these translations?'
@@ -394,6 +408,7 @@ return [
         'load_more' => 'Load More',
         'mark_done' => 'Mark as Done',
         'message' => 'Message',
+        'mobile' => 'Mobile Wallet Browser',
         'mypage' => 'My Page',
         'name' => 'Name',
         'new_category'  => 'New Category',
@@ -401,9 +416,7 @@ return [
         'next_question' => 'Next Question',
         'nft_select' => 'Select NFT',
         'nft' => 'NFT',
-        'nft_not_found' => 'NFT not found in wallet',
         'nft_verify' => 'Please sign your wallet to verify ownership of the NFT',
-        'nft_verify_error' => 'The NFT could not be verified',
         'no_file_selected' => 'No file selected',
         'no_records_found' => 'No Records Found',
         'no_schedules_available' => 'No Schedules Available',
@@ -506,7 +519,7 @@ return [
     'tx' => [
         'success' => [
             'status' => 'Transaction Success!!!',
-            'message' => 'Please wait for 5 confirmations on the blockchain and then refresh this page if needed'
+            'message' => 'Please wait for 5 confirmations on the blockchain'
         ],
         'error' => [
             'message' => 'Transaction could not be submitted'

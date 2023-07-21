@@ -11,7 +11,16 @@ return [
     |
     */
     'error'=> 'エラーが発生しました',
-    'nftError'   => 'NFT has already been used',
+    'nft_error'   => [
+        'used' =>'NFT has already been used (JA)',
+        'not_found' => 'NFT not found in wallet(JA)',
+        'verify' => 'The NFT could not be verified(JA)'
+    ],
+    'wallet_error'   => [
+        'not_connected' => 'Wallet is not connected',
+        'not_found' => 'Wallet is not found',
+        'verify' => 'The Wallet could not be verified'
+    ],
     'success'=> [
         'category'=> [
             'create'=> '分類は作成されました',
@@ -56,6 +65,7 @@ return [
         ],
         'feedback'=> 'フィードバックは正常に保存されました',
         'inquiry'=> 'お問い合わせは正常に送信されました',
+        'nft' => 'NFT successfully verified (JA)',
         'packages'=> [
             'create'=> 'パッケージは正常に作成されました'
         ],
@@ -63,7 +73,8 @@ return [
         'wallet'=> [
             'feed'=> 'ポイントは正常に追加されました',
             'exchange'=> 'ポイントは正常にNFTに変換されました',
-            'request_exchange'=> 'ポイント変換は正常に提出されました'
+            'request_exchange'=> 'ポイント変換は正常に提出されました',
+            'verify' => 'The Wallet was successfully verified (JA)'
         ],
         'profile'=> 'プロファイルは更新されました',
         'forgotPassword'=> 'リセットパスワードは送信されました',
@@ -144,6 +155,9 @@ return [
         ],
         'nft'=> [
             'delete'=> 'このNFTを削除してもよろしいですか？'
+        ],
+        'mobile' => [
+            'view' => 'Are you sure you want to go to the mobile wallet browser?'
         ],
         'translations'=> [
             'update'=> '翻訳を更新して良いですか？'
@@ -391,6 +405,7 @@ return [
         'load_more'=> '続き',
         'mark_done'=> '終了印',
         'message'=> 'メッセージ',
+        'mobile' => 'Mobile Wallet Browser',
         'inquiry_help'=> '200字以内',
         'password_help'=> '8文字以上にする必要があります',
         'mypage'=> 'My Page',
@@ -400,9 +415,7 @@ return [
         'next_question'=> '次の質問',
         'nft_select' => 'NFTを選択する',
         'nft' => 'エヌエフティー',
-        'nft_not_found' => 'NFT not found in wallet',
         'nft_verify' => 'Please sign your wallet to verify ownership of the NFT',
-        'nft_verify_error' => 'The NFT could not be verified',
         'no_file_selected'=> 'ファイルが選択されていません',
         'no_records_found'=> 'レコードがありません',
         'no_schedules_available'=> 'スケジュールがありません',
@@ -506,7 +519,7 @@ return [
     'tx' => [
         'success' => [
             'status' => 'Transaction Success!!!',
-            'message' => 'Please wait for 5 confirmations on the blockchain and then refresh this page if needed'
+            'message' => 'Please wait for 5 confirmations on the blockchain'
         ],
         'error' => [
             'message' => 'Transaction could not be submitted'

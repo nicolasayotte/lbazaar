@@ -35,6 +35,5 @@ const getTokenNamesAddrs = async (tokenMph, utxos) => {
             }
         }
     }
-    //console.error("utils: ", { tokenNames: tn, addresses: addr })
     return { tokenNames: tn, addresses: addr }
 }

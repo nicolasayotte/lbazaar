@@ -50,7 +50,7 @@ const Details = () => {
     const handleBookNFT = async (schedule_id) => {
     
         try {
-            // get the UTXOs from wallet,
+            // get the UTXOs from wallet
             const cborUtxos = await walletAPI.getUtxos();
 
             await axios.post('/nft/check', {
@@ -84,6 +84,10 @@ const Details = () => {
                             
                             if (respObjVerify.status == 200) {
             
+                                dispatch(actions.success({
+                                    message: translatables.success.nft
+                                }))
+                                
                                 setDialog(dialog => ({
                                     ...dialog,
                                     open: true,
@@ -94,7 +98,9 @@ const Details = () => {
                                     action: 'booked'
                                 }))
                             } else {
-                                alert(translatables.texts.nft_verify_error);
+                                dispatch(actions.error({
+                                    message: translatables.nft_error.verify
+                                }));
                             }
                         })
                         .catch(error => {
@@ -102,6 +108,14 @@ const Details = () => {
                         }); 
                     } catch (error) {
                         console.warn(error);
+
+                        if (error.code == 3 || error.code == -3 ) {
+                            // User has declined to sign Data, exit gracefully
+                            dispatch(actions.error({
+                                message: translatables.nft_error.verify
+                            }));
+                            return;
+                        }
 
                         // Will try using a signed tx because some wallets don't support signData 
                         try {
@@ -123,6 +137,9 @@ const Details = () => {
                                         walletSig = await walletAPI.signTx(respObjBuildHw.cborTx, true);
                                     } catch (err) {
                                         console.error(err);
+                                        dispatch(actions.error({
+                                            message: translatables.nft_error.verify
+                                        }));
                                         return
                                     }
                    
@@ -137,6 +154,10 @@ const Details = () => {
                                         const respObj = await JSON.parse(response.data);
                                         if (respObj.status == 200) {
 
+                                            dispatch(actions.success({
+                                                message: translatables.success.nft
+                                            }))
+
                                             setDialog(dialog => ({
                                                 ...dialog,
                                                 open: true,
@@ -148,7 +169,9 @@ const Details = () => {
                                             }))
                                         } else {
                                             console.error("NFT could not be validated")
-                                            alert(translatables.texts.nft_verify_error);
+                                            dispatch(actions.error({
+                                                message: translatables.nft_error.verify
+                                            }))
                                         }
                                     })
                                     .catch(error => {
@@ -157,7 +180,9 @@ const Details = () => {
 
                                 } else {
                                     console.error("NFT could not be validated");
-                                    alert(translatables.texts.nft_verify_error);
+                                    dispatch(actions.error({
+                                        message: translatables.nft_error.verify
+                                    }));
                                 }
                             })
                             .catch(error => {
@@ -166,13 +191,17 @@ const Details = () => {
 
                         } catch (error) {
                             console.error(error);
-                            alert(translatables.texts.nft_verify_error);
+                            dispatch(actions.error({
+                                message: translatables.nft_error.verify
+                            }));
                         }
                     }
 
                 } else {
                     console.error("No NFT found in user wallet");
-                    alert(translatables.texts.nft_not_found);
+                    dispatch(actions.error({
+                        message: translatables.nft_error.not_found
+                    }));
                 }
             })
             .catch(error => {
@@ -181,7 +210,9 @@ const Details = () => {
             }); 
         } catch (error) {
             console.error("handleNFTCheck: ", error);
-            alert(translatables.texts.nft_not_found);
+            dispatch(actions.error({
+                message: translatables.nft_error.not_found
+            }));
         }
     }
 

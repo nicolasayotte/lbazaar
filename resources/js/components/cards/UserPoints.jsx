@@ -1,8 +1,10 @@
 
 import { Typography, Tooltip, IconButton, Stack, Box, CardContent, Card, CardActions} from "@mui/material"
 import routes from "../../helpers/routes.helper"
+import { useDispatch } from "react-redux"
 import { useState } from "react"
 import { usePage } from "@inertiajs/inertia-react"
+import { actions } from "../../store/slices/ToasterSlice"
 import { AccountBalanceWallet, DownloadForOffline, SwapVerticalCircle } from "@mui/icons-material"
 import FormDialog from "../common/FormDialog"
 import Input from "../forms/Input"
@@ -10,12 +12,15 @@ import Spinner from '../common/Spinner';
 import axios from "axios"
 
 const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
+
+    const dispatch = useDispatch()
     
     const { auth, translatables, ada_to_points, nfts, network } = usePage().props
 
     const [dialog, setDialog] = useState({
         open: false,
         title: '',
+        nfts: undefined,
         nftName: '',
         points: 0,
         wallet_id: walletStakeKeyHash,
@@ -128,10 +133,20 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
         )
     }
 
-    const handleOnDialogClose = () => {
+    const handleOnDialogCloseExchange = (e) => {
+        
         setDialog(dialog => ({
             ...dialog,
             open: false
+        }))
+    }
+
+    const handleOnDialogCloseFeed = (e) => {
+
+        setDialog(dialog => ({
+            ...dialog,
+            open: false,
+            points: 0
         }))
     }
 
@@ -162,6 +177,9 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
                             walletSig = await walletAPI.signTx(feedTx.cborTx, true);
                         } catch (err) {
                             console.error(err);
+                            dispatch(actions.error({
+                                message: translatables.tx.error.message
+                            }))
                             return
                         }
 
@@ -178,28 +196,36 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
                             setTx(submitTx.txId);
                         } else {
                             console.error("Transaction could not be submitted");
-                            alert (translatables.tx.error.message);
+                            dispatch(actions.error({
+                                message: translatables.tx.error.message
+                            }))
                         }
                     })
                     .catch(error => {
                         console.error("submit-tx: ", error);
-                        alert (translatables.tx.error.message);
+                        dispatch(actions.error({
+                            message: translatables.tx.error.message
+                        }))
                     });
 
                 } else {
                     console.error("Transaction could not be submitted");
-                    alert (translatables.tx.error.message);
+                    dispatch(actions.error({
+                        message: translatables.tx.error.message
+                    }))
                 }
             })
             .catch(error => {
                 console.error("submit-tx: ", error);
-                alert (translatables.tx.error.message);
+                dispatch(actions.error({
+                    message: translatables.tx.error.message
+                }))
             });
         } catch (err) {
             console.error(err);
         }
         setLoading(false);
-        handleOnDialogClose();
+        handleOnDialogCloseFeed(e);
     }
 
     const handleOnDialogSubmitExchange = async (e) => {
@@ -229,6 +255,9 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
                         walletSig = await walletAPI.signTx(exchangeTx.cborTx, true);
                     } catch (err) {
                         console.error(err);
+                        dispatch(actions.error({
+                            message: translatables.tx.error.message
+                        }))
                         return
                     }
 
@@ -249,28 +278,36 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
                             setTx(submitTx.txId);
                         } else {
                             console.error("Exchange transaction could not be submitted");
-                            alert (translatables.tx.error.message);
+                            dispatch(actions.error({
+                                message: translatables.tx.error.message
+                            }))
                         }
                     })
                     .catch(error => {
                         console.error("submit-tx: ", error);
-                        alert (translatables.tx.error.message);
+                        dispatch(actions.error({
+                            message: translatables.tx.error.message
+                        }))
                     });
 
                 } else {
                     console.error("Exchange transaction could not be submitted");
-                    alert (translatables.tx.error.message);
+                    dispatch(actions.error({
+                        message: translatables.tx.error.message
+                    }))
                 }
             })
             .catch(error => {
                 console.error("submit-tx: ", error);
-                alert (translatables.tx.error.message);
+                dispatch(actions.error({
+                    message: translatables.tx.error.message
+                }))
             });
         } catch (err) {
             console.error(err);
         }
         setLoading(false);
-        handleOnDialogClose();
+        handleOnDialogCloseExchange(e);
     }
 
     return (
@@ -311,7 +348,9 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
             </Card>}
             <FormDialog
                 {...dialog}
-                handleClose={handleOnDialogClose}
+                handleClose={dialog.action == 'feed'
+                    ? handleOnDialogCloseFeed
+                    : handleOnDialogCloseExchange}
                 handleSubmit={
                     dialog.action == 'feed'
                     ? handleOnDialogSubmitFeed

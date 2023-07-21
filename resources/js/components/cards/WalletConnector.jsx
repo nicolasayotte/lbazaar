@@ -1,8 +1,11 @@
 
 import { Typography, Tooltip, IconButton, Stack, Box, Icon, CardContent, Card, CardActions} from "@mui/material"
+import { useDispatch } from "react-redux"
 import { useEffect, useState } from "react"
+import { actions } from "../../store/slices/ToasterSlice"
 import {BrowserView, MobileView} from 'react-device-detect'
 import { usePage } from "@inertiajs/inertia-react"
+import ConfirmationDialog from "../../components/common/ConfirmationDialog"
 import ChangeCircleIcon from '@mui/icons-material/ChangeCircle';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import EternlLogo from '../../../img/eternl-logo.jpg';
@@ -12,7 +15,18 @@ import axios from "axios";
 
 const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
 
+    const dispatch = useDispatch()
+
     const { translatables } = usePage().props
+
+    const [dialog, setDialog] = useState({
+        open: false,
+        title: '',
+        text: '',
+        value: '',
+        submitUrl: '',
+        method: null,
+    })
 
     const [walletIsEnabled, setWalletIsEnabled] = useState(false);
     const [whichWalletSelected, setWhichWalletSelected] = 
@@ -55,6 +69,19 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
             walletInfo();
     }, [walletIsEnabled]);
 
+    const handleOnDialogClose = () => {
+        setDialog(dialog => ({
+            ...dialog,
+            open: false
+        }))
+    }
+
+    const handleOnDialogSubmit = e => {
+
+        window.location.href = dialog.submitUrl;
+        handleOnDialogClose()
+    }
+
     const WalletIconButton = ({ name, src, w, h }) => {
         
         const handleWalletSelect = () => {
@@ -81,8 +108,16 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
 
         const redirectMobile = () => {
 
-            alert('Connect to the Flint Mobile Wallet Browser');
-            window.location.href = 'https://flint-wallet.app.link/browse?dappUrl=' + window.location.href;
+            setDialog(dialog => ({
+                ...dialog,
+                open: true,
+                title: translatables.texts.mobile,
+                text: translatables.confirm.mobile.view,
+                submitUrl: 'https://flint-wallet.app.link/browse?dappUrl=' + window.location.href,
+                method: 'get',
+                action: 'mobile'
+            }))
+            
         };
    
         if (!!window?.cardano?.flint) {
@@ -116,6 +151,12 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                 walletFound = !!window?.cardano?.flint;
             } else if (walletChoice === "nami") {
                 walletFound = !!window?.cardano?.nami;
+            } 
+
+            if (!walletFound) {
+                dispatch(actions.error({
+                    message: translatables.wallet_error.not_found
+                }))
             }
         }
         return walletFound;
@@ -137,14 +178,21 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                 const walletAPI = await window.cardano.nami.enable();
                 onWalletAPI(walletAPI);
                 return true;
-            }
-            return false;
-            
-            } catch (err) {
-                alert(translatables.texts.wallet_not_connected);
-                setWhichWalletSelected(undefined);
+            } else {
+                dispatch(actions.error({
+                    message: translatables.wallet_error.not_connected
+                }))
                 return false;
             }
+            
+        } catch (err) {
+            
+            dispatch(actions.error({
+                message: translatables.wallet_error.not_connected
+            }))
+            setWhichWalletSelected(undefined);
+            return false;
+        }
     }
 
     const getWalletInfo = async (hexChangeAddr) => {
@@ -169,6 +217,9 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
             }
         })
         .catch(error => {
+            dispatch(actions.error({
+                message: translatables.wallet_error.verify
+            }))
             throw console.error("getWalletInfo: ", error);
         });   
     }
@@ -195,18 +246,32 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                 const respObj = await JSON.parse(response.data);
                 
                 if (respObj.status == 200) {
+
                     setWalletVerify(true);
                     onStakeKeyHash([walletStakeKeyDisplay]);
+                    dispatch(actions.success({
+                        message: translatables.success.wallet.verify
+                    }))
                 } else {
                     setWalletVerify(false);
                     onStakeKeyHash(undefined);
-                    alert(translatables.texts.wallet_verify_error);
+                    dispatch(actions.error({
+                        message: translatables.wallet_error.verify
+                    }))
                 }
             })
             .catch(error => {
                 throw console.error("getWalletVerify: ", error);
             }); 
         } catch (error) {
+
+            if (error.code == 3 || error.code == -3) {
+                // User has declined to sign Data, exit gracefully
+                dispatch(actions.error({
+                    message: translatables.wallet_error.verify
+                }));
+                return;
+            }
 
             // Will try again, but by signing a tx (and not submitting it)
             try {
@@ -230,6 +295,9 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                             walletSig = await walletAPI.signTx(respObj.cborTx, true);
                         } catch (err) {
                             console.error(err);
+                            dispatch(actions.error({
+                                message: translatables.wallet_error.verify
+                            }));
                             return
                         }
                         await axios.post('/wallet/verify-hw', {
@@ -242,10 +310,15 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                             if (respObj.status == 200) {
                                 setWalletVerify(true);
                                 onStakeKeyHash([walletStakeKeyDisplay]);
+                                dispatch(actions.success({
+                                    message: translatables.success.wallet.verify
+                                }))
                             } else {
                                 setWalletVerify(false);
                                 onStakeKeyHash(undefined);
-                                alert(translatables.texts.wallet_verify_error);
+                                dispatch(actions.error({
+                                    message: translatables.wallet_error.verify
+                                }))
                             }
                         })
                         .catch(error => {
@@ -255,7 +328,9 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                     } else {
                         setWalletVerify(false);
                         onStakeKeyHash(undefined);
-                        alert(translatables.texts.wallet_verify_error);
+                        dispatch(actions.error({
+                            message: translatables.wallet_error.verify
+                        }))
                     }
                 })
                 .catch(error => {
@@ -264,7 +339,9 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
 
             } catch (error) {
                 console.warn(error);
-                alert(translatables.texts.wallet_verify_error)
+                dispatch(actions.error({
+                    message: translatables.wallet_error.verify
+                }))
             }
         }
     }
@@ -351,24 +428,31 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                 </Stack>
             </Card> 
             }
-        </BrowserView>
-        <MobileView>
-            {!walletIsEnabled && <Card>
-                <CardContent>  
-                    <Stack direction="row" alignItems="left" spacing={1}>
-                        <Box display="flex" alignItems="flex-end">
-                            <Typography variant="h5" children={translatables.texts.wallet_connect} color="BlackText" /> 
-                        </Box>
+            </BrowserView>
+            <MobileView>
+                {!walletIsEnabled && <Card>
+                    <CardContent>  
+                        <Stack direction="row" alignItems="left" spacing={1}>
+                            <Box display="flex" alignItems="flex-end">
+                                <Typography variant="h5" children={translatables.texts.wallet_connect} color="BlackText" /> 
+                            </Box>
+                        </Stack>
+                    </CardContent>
+                    <Stack direction="column" alignItems="left" spacing={1} ml={1} mb={1}>
+                            <Box display="flex" alignItems="center" ml={0}>
+                                <WalletIconButtonMobile name="flint" src={FlintLogo} w={30} h={30}/>
+                                <Typography color="BlackText">{translatables.wallets.flint}</Typography>
+                            </Box>
                     </Stack>
-                </CardContent>
-                <Stack direction="column" alignItems="left" spacing={1} ml={1} mb={1}>
-                        <Box display="flex" alignItems="center" ml={0}>
-                            <WalletIconButtonMobile name="flint" src={FlintLogo} w={30} h={30}/>
-                            <Typography color="BlackText">{translatables.wallets.flint}</Typography>
-                        </Box>
-                </Stack>
-            </Card>}
-        </MobileView>
+                </Card>}
+            </MobileView>
+            <Box>
+                <ConfirmationDialog
+                        {...dialog}
+                        handleClose={handleOnDialogClose}
+                        handleConfirm={handleOnDialogSubmit}
+                />
+            </Box>
         </>
     );
 }
