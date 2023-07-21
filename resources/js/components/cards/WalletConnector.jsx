@@ -28,6 +28,7 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
         method: null,
     })
 
+    const [loggedIn, setLoggedIn] = useState(false);
     const [walletIsEnabled, setWalletIsEnabled] = useState(false);
     const [whichWalletSelected, setWhichWalletSelected] = 
                                                 useState({
@@ -40,11 +41,13 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
     const [walletStakeAddr, setwalletStakeAddr] = useState(undefined);
     const [walletStakeKeyDisplay, setwalletStakeKeyDisplay] = useState(undefined);
     const [walletStakeAddrBech32, setWalletStakeAddrBech32] = useState(undefined);
-
+    
     useEffect(() => {
         const checkWallet = async () => {
             if (await checkIfWalletFound()) {
-                setWalletIsEnabled(await enableWallet());
+                if (await checkUserSignedIn()) {
+                    setWalletIsEnabled(await enableWallet());
+                } 
             }
         }
         checkWallet();
@@ -143,6 +146,7 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
     const checkIfWalletFound = async () => {
 
         let walletFound = false;
+        
         if (whichWalletSelected) {
             const walletChoice = whichWalletSelected.name;
             if (walletChoice === "eternl") {
@@ -161,6 +165,36 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
         }
         return walletFound;
     }
+
+
+    const checkUserSignedIn = async () => {
+
+        try {
+            await axios.get('/user-status')
+                        .then(async response => {
+                        
+                            if (response.data.loggedIn) {
+                                console.log("logged in");
+                                setLoggedIn(response.data.loggedIn);
+                            } else {
+                                console.log("not logged in");
+                                setLoggedIn(false);
+                                dispatch(actions.error({
+                                    message: translatables.wallet_error.no_signin
+                                }))
+                                throw console.error("user not signed in");
+                            }
+                        })
+                        .catch(error => {
+                            throw error;
+                        });
+            return true;
+            
+        } catch (err) {
+            return false;
+        }
+    }
+
 
     const enableWallet = async () => {
 
@@ -359,7 +393,7 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
 
     return (
         <>
-            {walletIsEnabled && <Card>
+            {walletIsEnabled && loggedIn && <Card>
                 <CardContent>  
                     <Stack direction="column" alignItems="left" spacing={1}>
                         <Box display="flex" alignItems="center">

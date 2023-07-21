@@ -19,6 +19,7 @@ return [
     'wallet_error'   => [
         'not_connected' => 'Wallet is not connected',
         'not_found' => 'Wallet is not found',
+        'no_signin' => 'User must sign in to access wallet',
         'verify' => 'The Wallet could not be verified'
     ],
     'success' => [

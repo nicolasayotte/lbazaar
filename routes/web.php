@@ -56,6 +56,14 @@ Route::get('lang/{locale}', [TopPageController::class, 'setLanguage'])->name('la
 # Inquiries
 Route::get('/inquiries', [InquiriesController::class, 'index'])->name('inquiries.index');
 Route::post('/inquiries', [InquiriesController::class, 'store'])->name('inquiries.store');
+# Check if user is logged in
+Route::get('/user-status', function () {
+    if (auth()->check()) {
+        return response()->json(['loggedIn' => true]);
+    } else {
+        return response()->json(['loggedIn' => false]);
+    }
+});
 
 # Admin Routes
 Route::prefix('admin')->name('admin.')->group(function() {
