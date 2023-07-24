@@ -1,5 +1,5 @@
-import React from 'react';
-import '../../../css/Spinner.css'; 
+import React from 'react'
+import '../../../css/Spinner.css'
 
 const Spinner = () => {
   return <div className="spinner-overlay">

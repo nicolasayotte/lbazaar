@@ -17,6 +17,7 @@ return [
         'verify' => 'The NFT could not be verified(JA)'
     ],
     'wallet_error'   => [
+        'insufficient_funds' => 'Insufficient funds in wallet',
         'not_connected' => 'Wallet is not connected',
         'not_found' => 'Wallet is not found',
         'no_signin' => 'User must sign in to access wallet',

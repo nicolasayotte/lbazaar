@@ -26,6 +26,7 @@ const ttl = 5;
 const main = async () => {
 
     console.error("build-feed-tx");
+    let canPay = false;
     try {
         // Set the Helios compiler optimizer flag
         const network = process.env.NETWORK;
@@ -52,6 +53,7 @@ const main = async () => {
         // Get UTXOs from wallet
         const walletUtxos = cborUtxos.map(u => UTxO.fromCbor(hexToBytes(u)));
         const utxos = CoinSelection.selectSmallestFirst(walletUtxos, minUTXOVal);
+        canPay = true;
 
         // Start building the transaction
         const tx = new Tx();
@@ -103,7 +105,7 @@ const main = async () => {
     } catch (err) {
         const timestamp = new Date().toISOString();
         const returnObj = {
-            status: 500,
+            status: canPay ? 500 : 501,
             date: timestamp,
             error: err
         }

@@ -106,7 +106,7 @@ class Web3WalletController extends Controller
                 ];
             } else {
                 return [
-                    '{"status": "501", "msg": "Wallet verify not successful"}'
+                    '{"status": "601", "msg": "Wallet verify not successful"}'
                 ];
             }
 
@@ -153,7 +153,7 @@ class Web3WalletController extends Controller
                 ];
             } else {
                 return [
-                    '{"status": "501", "msg": "Wallet verify not successful"}'
+                    '{"status": "602", "msg": "HW Wallet verify not successful"}'
                 ];
             }
 
@@ -199,9 +199,14 @@ class Web3WalletController extends Controller
                 return [
                     $response
                 ];
-            } else {
+            } else if ($responseJSON->status == 501)
+            {
                 return [
-                    '{"status": "502", "msg": "Wallet exchange failed"}'
+                    '{"status": "501", "msg": "Insufficient funds in wallet"}'
+                ];
+            }else {
+                return [
+                    '{"status": "603", "msg": "Wallet exchange failed"}'
                 ];
             }
 
@@ -264,12 +269,12 @@ class Web3WalletController extends Controller
 
                 } else {
                     return [
-                        '{"status": "503", "msg": "SubmitExchange failed"}'
+                        '{"status": "604", "msg": "SubmitExchange failed"}'
                     ];
                 }
             } else {
                 return [
-                    '{"status": "504", "msg": "SubmitExchange failed"}'
+                    '{"status": "605", "msg": "SubmitExchange failed"}'
                 ];
             }
 
@@ -313,9 +318,14 @@ class Web3WalletController extends Controller
                 return [
                     $response
                 ];
+            }  else if ($responseJSON->status == 501)
+            {
+                return [
+                    '{"status": "501", "msg": "Insufficient funds in wallet"}'
+                ];
             } else {
                 return [
-                    '{"status": "502", "msg": "Wallet feed failed"}'
+                    '{"status": "606", "msg": "Wallet feed failed"}'
                 ];
             }
 
@@ -351,10 +361,9 @@ class Web3WalletController extends Controller
                     $userId = Auth::user()->id;
                     $user = User::where('id', $userId)->first();
                     $adaAmount = $responseJSON->adaAmount;
-            
-                    //$user = User::where('email', $inputs['email'])->first();
                     $userWallet = $user->userWallet()->first();
                     $userEmail = $user->email;
+
                     // Determin the number of points to credit based on the Ada that was sent
                     $adaToPoints = Setting::where('slug', 'ada-to-points')->first()->value;
                     $points = $adaAmount / $adaToPoints;
@@ -374,7 +383,7 @@ class Web3WalletController extends Controller
 
             } else {
                 return [
-                    '{"status": "503", "msg": "SubmitExchange failed"}'
+                    '{"status": "607", "msg": "SubmitExchange failed"}'
                 ];
             }
 
@@ -394,7 +403,7 @@ class Web3WalletController extends Controller
     {
         try {
             $inputs = $request->all();
-           $userId = Auth::user()->id;
+            $userId = Auth::user()->id;
           
             $changeAddr = $request->input('changeAddr');
             $utxos = $request->input('utxos');
@@ -414,7 +423,7 @@ class Web3WalletController extends Controller
                 ];
             } else {
                 return [
-                    '{"status": "502", "msg": "Wallet hardware tx failed"}'
+                    '{"status": "608", "msg": "Wallet hardware tx failed"}'
                 ];
             }
 

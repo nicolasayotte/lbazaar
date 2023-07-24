@@ -6,12 +6,12 @@ import { actions } from "../../store/slices/ToasterSlice"
 import {BrowserView, MobileView} from 'react-device-detect'
 import { usePage } from "@inertiajs/inertia-react"
 import ConfirmationDialog from "../../components/common/ConfirmationDialog"
-import ChangeCircleIcon from '@mui/icons-material/ChangeCircle';
-import TaskAltIcon from '@mui/icons-material/TaskAlt';
-import EternlLogo from '../../../img/eternl-logo.jpg';
-import FlintLogo from '../../../img/flint-logo.svg';
-import NamiLogo from '../../../img/nami-logo.svg';
-import axios from "axios";
+import ChangeCircleIcon from '@mui/icons-material/ChangeCircle'
+import TaskAltIcon from '@mui/icons-material/TaskAlt'
+import EternlLogo from '../../../img/eternl-logo.jpg'
+import FlintLogo from '../../../img/flint-logo.svg'
+import NamiLogo from '../../../img/nami-logo.svg'
+import axios from "axios"
 
 const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
 
@@ -28,49 +28,49 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
         method: null,
     })
 
-    const [loggedIn, setLoggedIn] = useState(false);
-    const [walletIsEnabled, setWalletIsEnabled] = useState(false);
+    const [loggedIn, setLoggedIn] = useState(false)
+    const [walletIsEnabled, setWalletIsEnabled] = useState(false)
     const [whichWalletSelected, setWhichWalletSelected] = 
                                                 useState({
                                                     name : '', 
                                                     src : '',
                                                     w : 0,
-                                                    h :0} | undefined);
-    const [walletBalance, setWalletBalance] = useState(undefined);
-    const [walletVerify, setWalletVerify] = useState(false);
-    const [walletStakeAddr, setwalletStakeAddr] = useState(undefined);
-    const [walletStakeKeyDisplay, setwalletStakeKeyDisplay] = useState(undefined);
-    const [walletStakeAddrBech32, setWalletStakeAddrBech32] = useState(undefined);
+                                                    h :0} | undefined)
+    const [walletBalance, setWalletBalance] = useState(undefined)
+    const [walletVerify, setWalletVerify] = useState(false)
+    const [walletStakeAddr, setwalletStakeAddr] = useState(undefined)
+    const [walletStakeKeyDisplay, setwalletStakeKeyDisplay] = useState(undefined)
+    const [walletStakeAddrBech32, setWalletStakeAddrBech32] = useState(undefined)
     
     useEffect(() => {
         const checkWallet = async () => {
             if (await checkIfWalletFound()) {
                 if (await checkUserSignedIn()) {
-                    setWalletIsEnabled(await enableWallet());
+                    setWalletIsEnabled(await enableWallet())
                 } 
             }
         }
-        checkWallet();
-    }, [whichWalletSelected]);
+        checkWallet()
+    }, [whichWalletSelected])
 
     useEffect(() => {
         const getBalance = async () => {
                 if (walletIsEnabled && walletAPI) {
-                    const balance = await walletAPI.getBalance();
+                    const balance = await walletAPI.getBalance()
                 }
             }
-            getBalance();
-    }, [walletIsEnabled]);
+            getBalance()
+    }, [walletIsEnabled])
 
     useEffect(() => {
         const walletInfo = async () => {
                 if (walletIsEnabled && walletAPI) {
-                    const hexChangeAddr = await walletAPI.getChangeAddress();
-                    getWalletInfo(hexChangeAddr);
+                    const hexChangeAddr = await walletAPI.getChangeAddress()
+                    getWalletInfo(hexChangeAddr)
                 }
             }
-            walletInfo();
-    }, [walletIsEnabled]);
+            walletInfo()
+    }, [walletIsEnabled])
 
     const handleOnDialogClose = () => {
         setDialog(dialog => ({
@@ -81,7 +81,7 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
 
     const handleOnDialogSubmit = e => {
 
-        window.location.href = dialog.submitUrl;
+        window.location.href = dialog.submitUrl
         handleOnDialogClose()
     }
 
@@ -89,8 +89,8 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
         
         const handleWalletSelect = () => {
            
-            setWhichWalletSelected({name, src, w, h});
-        };
+            setWhichWalletSelected({name, src, w, h})
+        }
 
         return (
             <IconButton
@@ -99,15 +99,15 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                 onClick={handleWalletSelect}>
                 <img src={src} alt={name} width={w} height={h}/>
             </IconButton>
-        );
-      };
+        )
+      }
 
     const WalletIconButtonMobile = ({ name, src, w, h }) => {
         
         const handleWalletSelect = () => {
            
-            setWhichWalletSelected({name, src, w, h});
-        };
+            setWhichWalletSelected({name, src, w, h})
+        }
 
         const redirectMobile = () => {
 
@@ -121,7 +121,7 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                 action: 'mobile'
             }))
             
-        };
+        }
    
         if (!!window?.cardano?.flint) {
             return (
@@ -131,7 +131,7 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                     onClick={handleWalletSelect}>
                     <img src={src} alt={name} width={w} height={h}/>
                 </IconButton>
-            );
+            )
         } else 
         return(
             <IconButton
@@ -140,21 +140,21 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                     onClick={redirectMobile}>
                     <img src={src} alt={name} width={w} height={h}/>
             </IconButton>
-        );
-      };
+        )
+      }
 
     const checkIfWalletFound = async () => {
 
-        let walletFound = false;
+        let walletFound = false
         
         if (whichWalletSelected) {
-            const walletChoice = whichWalletSelected.name;
+            const walletChoice = whichWalletSelected.name
             if (walletChoice === "eternl") {
-                walletFound = !!window?.cardano?.eternl;
+                walletFound = !!window?.cardano?.eternl
             } else if (walletChoice === "flint") {
-                walletFound = !!window?.cardano?.flint;
+                walletFound = !!window?.cardano?.flint
             } else if (walletChoice === "nami") {
-                walletFound = !!window?.cardano?.nami;
+                walletFound = !!window?.cardano?.nami
             } 
 
             if (!walletFound) {
@@ -163,7 +163,7 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                 }))
             }
         }
-        return walletFound;
+        return walletFound
     }
 
 
@@ -174,24 +174,24 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                         .then(async response => {
                         
                             if (response.data.loggedIn) {
-                                console.log("logged in");
-                                setLoggedIn(response.data.loggedIn);
+                                console.log("logged in")
+                                setLoggedIn(response.data.loggedIn)
                             } else {
-                                console.log("not logged in");
-                                setLoggedIn(false);
+                                console.log("not logged in")
+                                setLoggedIn(false)
                                 dispatch(actions.error({
                                     message: translatables.wallet_error.no_signin
                                 }))
-                                throw console.error("user not signed in");
+                                throw console.error("user not signed in")
                             }
                         })
                         .catch(error => {
-                            throw error;
-                        });
-            return true;
+                            throw error
+                        })
+            return true
             
         } catch (err) {
-            return false;
+            return false
         }
     }
 
@@ -199,24 +199,24 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
     const enableWallet = async () => {
 
         try {
-            const walletChoice = whichWalletSelected.name;
+            const walletChoice = whichWalletSelected.name
             if (walletChoice === "eternl") {
-                const walletAPI = await window.cardano.eternl.enable();
-                onWalletAPI(walletAPI);
-                return true;
+                const walletAPI = await window.cardano.eternl.enable()
+                onWalletAPI(walletAPI)
+                return true
             } else if (walletChoice === "flint") {
-                const walletAPI = await window.cardano.flint.enable();
-                onWalletAPI(walletAPI);
-                return true;
+                const walletAPI = await window.cardano.flint.enable()
+                onWalletAPI(walletAPI)
+                return true
             } else if (walletChoice === "nami") {
-                const walletAPI = await window.cardano.nami.enable();
-                onWalletAPI(walletAPI);
-                return true;
+                const walletAPI = await window.cardano.nami.enable()
+                onWalletAPI(walletAPI)
+                return true
             } else {
                 dispatch(actions.error({
                     message: translatables.wallet_error.not_connected
                 }))
-                return false;
+                return false
             }
             
         } catch (err) {
@@ -224,8 +224,8 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
             dispatch(actions.error({
                 message: translatables.wallet_error.not_connected
             }))
-            setWhichWalletSelected(undefined);
-            return false;
+            setWhichWalletSelected(undefined)
+            return false
         }
     }
 
@@ -235,40 +235,40 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
             changeAddr: hexChangeAddr
         })
         .then(async response => {
-            const respObj = await JSON.parse(response.data);
-            setWalletBalance(Number(respObj.accountAmt) / 1000000);
-            setwalletStakeAddr(respObj.stakeKeyAddr);
-            setWalletStakeAddrBech32(respObj.stakeAddrBech32);
+            const respObj = await JSON.parse(response.data)
+            setWalletBalance(Number(respObj.accountAmt) / 1000000)
+            setwalletStakeAddr(respObj.stakeKeyAddr)
+            setWalletStakeAddrBech32(respObj.stakeAddrBech32)
             
-            const stakeKeyHash =respObj.stakeKeyHash;
+            const stakeKeyHash =respObj.stakeKeyHash
             const displayStakeKey = stakeKeyHash.substring(0,6)
-                            + "..." + stakeKeyHash.substring(stakeKeyHash.length - 6, stakeKeyHash.length);
-            setwalletStakeKeyDisplay(displayStakeKey);
+                            + "..." + stakeKeyHash.substring(stakeKeyHash.length - 6, stakeKeyHash.length)
+            setwalletStakeKeyDisplay(displayStakeKey)
             
             if (respObj.verified) {
-                setWalletVerify(true);
-                onStakeKeyHash([displayStakeKey]);
+                setWalletVerify(true)
+                onStakeKeyHash([displayStakeKey])
             }
         })
         .catch(error => {
             dispatch(actions.error({
                 message: translatables.wallet_error.verify
             }))
-            throw console.error("getWalletInfo: ", error);
-        });   
+            throw console.error("getWalletInfo: ", error)
+        })   
     }
 
     const handleWalletVerify = async () => {
     
-        let message = translatables.texts.wallet_message;
-        let hexMessage = '';
+        let message = translatables.texts.wallet_message
+        let hexMessage = ''
 
         for (var i = 0, l = message.length; i < l; i++) {
-            hexMessage += message.charCodeAt(i).toString(16);
+            hexMessage += message.charCodeAt(i).toString(16)
         }
 
         try {
-            const { signature, key } = await walletAPI.signData(walletStakeAddr, hexMessage);
+            const { signature, key } = await walletAPI.signData(walletStakeAddr, hexMessage)
             
             await axios.post('/wallet/verify', {
                 signature: signature,
@@ -277,61 +277,61 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                 stake_addr: walletStakeAddrBech32
             })
             .then(async response => {
-                const respObj = await JSON.parse(response.data);
+                const respObj = await JSON.parse(response.data)
                 
                 if (respObj.status == 200) {
 
-                    setWalletVerify(true);
-                    onStakeKeyHash([walletStakeKeyDisplay]);
+                    setWalletVerify(true)
+                    onStakeKeyHash([walletStakeKeyDisplay])
                     dispatch(actions.success({
                         message: translatables.success.wallet.verify
                     }))
                 } else {
-                    setWalletVerify(false);
-                    onStakeKeyHash(undefined);
+                    setWalletVerify(false)
+                    onStakeKeyHash(undefined)
                     dispatch(actions.error({
                         message: translatables.wallet_error.verify
                     }))
                 }
             })
             .catch(error => {
-                throw console.error("getWalletVerify: ", error);
-            }); 
+                throw console.error("getWalletVerify: ", error)
+            }) 
         } catch (error) {
 
             if (error.code == 3 || error.code == -3) {
                 // User has declined to sign Data, exit gracefully
                 dispatch(actions.error({
                     message: translatables.wallet_error.verify
-                }));
-                return;
+                }))
+                return
             }
 
             // Will try again, but by signing a tx (and not submitting it)
             try {
-                const hexAddress = await walletAPI.getChangeAddress();
+                const hexAddress = await walletAPI.getChangeAddress()
                 
                 // get the UTXOs from wallet,
-                const cborUtxos = await walletAPI.getUtxos();
+                const cborUtxos = await walletAPI.getUtxos()
                 
                 await axios.post('/wallet/build-hw-tx', {
                     changeAddr: hexAddress,
                     utxos: cborUtxos
                 })
                 .then(async response => {
-                    const respObj = await JSON.parse(response.data);
+                    const respObj = await JSON.parse(response.data)
                     
                     if (respObj.status == 200) {
 
                         // Get user to sign the transaction
-                        var walletSig;
+                        var walletSig
                         try {
-                            walletSig = await walletAPI.signTx(respObj.cborTx, true);
+                            walletSig = await walletAPI.signTx(respObj.cborTx, true)
                         } catch (err) {
-                            console.error(err);
+                            console.error(err)
                             dispatch(actions.error({
                                 message: translatables.wallet_error.verify
-                            }));
+                            }))
                             return
                         }
                         await axios.post('/wallet/verify-hw', {
@@ -340,39 +340,39 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                             stakeAddr: walletStakeAddrBech32
                         })
                         .then(async response => {
-                            const respObj = await JSON.parse(response.data);
+                            const respObj = await JSON.parse(response.data)
                             if (respObj.status == 200) {
-                                setWalletVerify(true);
-                                onStakeKeyHash([walletStakeKeyDisplay]);
+                                setWalletVerify(true)
+                                onStakeKeyHash([walletStakeKeyDisplay])
                                 dispatch(actions.success({
                                     message: translatables.success.wallet.verify
                                 }))
                             } else {
-                                setWalletVerify(false);
-                                onStakeKeyHash(undefined);
+                                setWalletVerify(false)
+                                onStakeKeyHash(undefined)
                                 dispatch(actions.error({
                                     message: translatables.wallet_error.verify
                                 }))
                             }
                         })
                         .catch(error => {
-                            throw console.error("getWalletVerify: ", error);
-                        }); 
+                            throw console.error("getWalletVerify: ", error)
+                        }) 
 
                     } else {
-                        setWalletVerify(false);
-                        onStakeKeyHash(undefined);
+                        setWalletVerify(false)
+                        onStakeKeyHash(undefined)
                         dispatch(actions.error({
                             message: translatables.wallet_error.verify
                         }))
                     }
                 })
                 .catch(error => {
-                    throw console.error("handleWalletVerify: ", error);
-                }); 
+                    throw console.error("handleWalletVerify: ", error)
+                }) 
 
             } catch (error) {
-                console.warn(error);
+                console.warn(error)
                 dispatch(actions.error({
                     message: translatables.wallet_error.verify
                 }))
@@ -381,14 +381,14 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
     }
 
     const handleWalletSwitch = () => {
-        setWhichWalletSelected(undefined);
-        setWalletIsEnabled(false);
-        onWalletAPI(undefined);
-        setWalletVerify(false);
-        setwalletStakeAddr(undefined);
-        setwalletStakeKeyDisplay(undefined);
-        setWalletStakeAddrBech32(undefined);
-        onStakeKeyHash(undefined);
+        setWhichWalletSelected(undefined)
+        setWalletIsEnabled(false)
+        onWalletAPI(undefined)
+        setWalletVerify(false)
+        setwalletStakeAddr(undefined)
+        setwalletStakeKeyDisplay(undefined)
+        setWalletStakeAddrBech32(undefined)
+        onStakeKeyHash(undefined)
     }
 
     return (
@@ -488,7 +488,7 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                 />
             </Box>
         </>
-    );
+    )
 }
 
 export default WalletConnector

@@ -8,7 +8,7 @@ import { actions } from "../../store/slices/ToasterSlice"
 import { AccountBalanceWallet, DownloadForOffline, SwapVerticalCircle } from "@mui/icons-material"
 import FormDialog from "../common/FormDialog"
 import Input from "../forms/Input"
-import Spinner from '../common/Spinner';
+import Spinner from '../common/Spinner'
 import axios from "axios"
 
 const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
@@ -30,8 +30,8 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
         type: '',
     })
 
-    const [loading, setLoading] = useState(false);
-    const [tx, setTx] = useState(false);
+    const [loading, setLoading] = useState(false)
+    const [tx, setTx] = useState(false)
 
     const handleOnFeed = () => {
         setDialog(dialog => ({
@@ -88,13 +88,13 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
     }
 
     const handleSelectChange = (event) => {
-        const selectedValues = event.target.value.split(',');
-        const points = selectedValues[0];
-        const name = selectedValues[1];
+        const selectedValues = event.target.value.split(',')
+        const points = selectedValues[0]
+        const name = selectedValues[1]
         setDialog(dialog => ({ ...dialog,
                                 nftName: name,
-                                points: Math.abs(points)}));
-      };
+                                points: Math.abs(points)}))
+      }
 
     const dialogFormExchange = () => {
 
@@ -152,14 +152,14 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
 
     const handleOnDialogSubmitFeed = async (e) => {
         e.preventDefault()
-        setLoading(true);
+        setLoading(true)
 
         try {
             // get the UTXOs from wallet,
-            const cborUtxos = await walletAPI.getUtxos();
+            const cborUtxos = await walletAPI.getUtxos()
 
             // Get the change address from the wallet
-            const hexChangeAddr = await walletAPI.getChangeAddress();
+            const hexChangeAddr = await walletAPI.getChangeAddress()
 
             await axios.post('/wallet/build-feed-tx', {
                 changeAddr: hexChangeAddr,
@@ -167,77 +167,82 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
                 points: dialog.points
             })
             .then(async response => {
-                const feedTx = await JSON.parse(response.data);
+                const feedTx = await JSON.parse(response.data)
 
                 if (feedTx.status == 200) {
 
                     // Get user to sign the transaction
-                    var walletSig;
+                    var walletSig
                         try {
-                            walletSig = await walletAPI.signTx(feedTx.cborTx, true);
+                            walletSig = await walletAPI.signTx(feedTx.cborTx, true)
                         } catch (err) {
-                            console.error(err);
+                            console.error(err)
                             dispatch(actions.error({
                                 message: translatables.tx.error.message
                             }))
                             return
                         }
 
-                    console.log("Submit transaction...");
+                    console.log("Submit transaction...")
                     await axios.post('/wallet/submit-feed-tx', {
                         cborSig: walletSig,
                         cborTx: feedTx.cborTx
                     })
                     .then(async response => {
                 
-                        const submitTx = await JSON.parse(response.data);
+                        const submitTx = await JSON.parse(response.data)
                         if (submitTx.status == 200) {
-                            console.log("submitFeedTx Success: ", submitTx.txId);
-                            setTx(submitTx.txId);
+                            console.log("submitFeedTx Success: ", submitTx.txId)
+                            setTx(submitTx.txId)
                         } else {
-                            console.error("Transaction could not be submitted");
+                            console.error("Transaction could not be submitted")
                             dispatch(actions.error({
                                 message: translatables.tx.error.message
                             }))
                         }
                     })
                     .catch(error => {
-                        console.error("submit-tx: ", error);
+                        console.error("submit-tx: ", error)
                         dispatch(actions.error({
                             message: translatables.tx.error.message
                         }))
-                    });
+                    })
 
+                } else if (feedTx.status == 501) {
+                    console.error("Insufficient funds in wallet")
+                    dispatch(actions.error({
+                        message: translatables.wallet_error.insufficient_funds
+                    }))
                 } else {
-                    console.error("Transaction could not be submitted");
+                    console.error("Transaction could not be submitted")
                     dispatch(actions.error({
                         message: translatables.tx.error.message
                     }))
                 }
             })
             .catch(error => {
-                console.error("submit-tx: ", error);
+                console.error("submit-tx: ", error)
                 dispatch(actions.error({
                     message: translatables.tx.error.message
                 }))
-            });
+            })
         } catch (err) {
-            console.error(err);
+            console.error(err)
         }
-        setLoading(false);
-        handleOnDialogCloseFeed(e);
+        setLoading(false)
+        handleOnDialogCloseFeed(e)
     }
 
     const handleOnDialogSubmitExchange = async (e) => {
-        e.preventDefault();
-        setLoading(true);
+        e.preventDefault()
+        setLoading(true)
 
         try {
             // get the UTXOs from wallet,
-            const cborUtxos = await walletAPI.getUtxos();
+            const cborUtxos = await walletAPI.getUtxos()
 
             // Get the change address from the wallet
-            const hexChangeAddr = await walletAPI.getChangeAddress();
+            const hexChangeAddr = await walletAPI.getChangeAddress()
 
             await axios.post('/wallet/build-exchange-tx', {
                 changeAddr: hexChangeAddr,
@@ -245,23 +250,23 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
                 utxos: cborUtxos,
             })
             .then(async response => {
-                const exchangeTx = await JSON.parse(response.data);
+                const exchangeTx = await JSON.parse(response.data)
 
                 if (exchangeTx.status == 200) {
 
                     // Get user to sign the transaction
-                    var walletSig;
+                    var walletSig
                     try {
-                        walletSig = await walletAPI.signTx(exchangeTx.cborTx, true);
+                        walletSig = await walletAPI.signTx(exchangeTx.cborTx, true)
                     } catch (err) {
-                        console.error(err);
+                        console.error(err)
                         dispatch(actions.error({
                             message: translatables.tx.error.message
                         }))
                         return
                     }
 
-                    console.log("Submit transaction...");
+                    console.log("Submit transaction...")
                     await axios.post('/wallet/submit-exchange-tx', {
                         nft: dialog.nftName,
                         serialNum : exchangeTx.serialNum,
@@ -272,42 +277,46 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
                     })
                     .then(async response => {
                 
-                        const submitTx = await JSON.parse(response.data);
+                        const submitTx = await JSON.parse(response.data)
                         if (submitTx.status == 200) {
-                            console.log("submitExchangeTx Success: ", submitTx.txId);
-                            setTx(submitTx.txId);
+                            console.log("submitExchangeTx Success: ", submitTx.txId)
+                            setTx(submitTx.txId)
                         } else {
-                            console.error("Exchange transaction could not be submitted");
+                            console.error("Exchange transaction could not be submitted")
                             dispatch(actions.error({
                                 message: translatables.tx.error.message
                             }))
                         }
                     })
                     .catch(error => {
-                        console.error("submit-tx: ", error);
+                        console.error("submit-tx: ", error)
                         dispatch(actions.error({
                             message: translatables.tx.error.message
                         }))
-                    });
-
+                    })
+                } else if (exchangeTx.status == 501) {
+                    console.error("Insufficient funds in wallet")
+                    dispatch(actions.error({
+                        message: translatables.wallet_error.insufficient_funds
+                    }))
                 } else {
-                    console.error("Exchange transaction could not be submitted");
+                    console.error("Exchange transaction could not be submitted")
                     dispatch(actions.error({
                         message: translatables.tx.error.message
                     }))
                 }
             })
             .catch(error => {
-                console.error("submit-tx: ", error);
+                console.error("submit-tx: ", error)
                 dispatch(actions.error({
                     message: translatables.tx.error.message
                 }))
-            });
+            })
         } catch (err) {
-            console.error(err);
+            console.error(err)
         }
-        setLoading(false);
-        handleOnDialogCloseExchange(e);
+        setLoading(false)
+        handleOnDialogCloseExchange(e)
     }
 
     return (
@@ -366,7 +375,7 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
                 }
             />
         </>
-    );
+    )
 }
 
 export default UserPoints
