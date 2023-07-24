@@ -35,6 +35,7 @@ const ttl = 5;
  */
 const main = async () => {
 
+    let canPay = false;
     try {
         const args = process.argv;
         console.error("build-exchange-tx: args: ", args);
@@ -76,6 +77,7 @@ const main = async () => {
         // Get UTXOs from wallet
         const walletUtxos = cborUtxos.map(u => UTxO.fromCbor(hexToBytes(u)));
         const utxos = CoinSelection.selectSmallestFirst(walletUtxos, minUTXOVal);
+        canPay = true;
 
         // Start building the transaction
         const tx = new Tx();
@@ -203,7 +205,7 @@ const main = async () => {
     } catch (err) {
         const timestamp = new Date().toISOString();
         const returnObj = {
-            status: 500,
+            status: canPay ? 500 : 501,
             date: timestamp,
             error: err
         }
