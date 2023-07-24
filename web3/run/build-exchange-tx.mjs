@@ -5,7 +5,11 @@ import {
     Assets, 
     bytesToHex, 
     CoinSelection,
+    ConstrData,
+    Datum,
     hexToBytes, 
+    IntData,
+    MapData,
     NetworkParams,
     Program, 
     PubKeyHash,
@@ -13,7 +17,8 @@ import {
     textToBytes,
     TxOutput,
     Tx, 
-    UTxO 
+    UTxO, 
+    ByteArrayData
 } from "@hyperionbt/helios";
 
 import { signTx } from "../common/sign-tx.mjs";
@@ -52,7 +57,8 @@ const main = async () => {
          // Construct the user token
         const now = new Date();
         const serialNum = now.getTime().toString();
-        const nftTokenName = nftName + "|" + serialNum;
+        const nftTokenName = "(222)" + nftName + "|" + serialNum;
+        const nftTokenNameRef = "(100)" + nftName + "|" + serialNum;
 
         // Set validitity interval
         const before = new Date(now.getTime());
@@ -96,8 +102,9 @@ const main = async () => {
         const nftRedeemer = (new nftMintingProgram.types.Redeemer.Mint())._toUplcData();
 
         // Create the nft token that will be sent to the user
-        // and the soul bound token
-        const nftTokens = [[textToBytes(nftTokenName), BigInt(1)]];
+        // and the metadata reference token
+        const nftTokens = [[textToBytes(nftTokenName), BigInt(1)],
+                           [textToBytes(nftTokenNameRef), BigInt(1)]];
         
         // Add the mint to the tx
         tx.mintTokens(
@@ -106,12 +113,45 @@ const main = async () => {
             nftRedeemer
         )
 
-        // Attach the output with the minted nft token to the destination address
+        // Attach the output with the minted nft token to the user wallet address
         const nftToken = [[textToBytes(nftTokenName), BigInt(1)]];
         tx.addOutput(new TxOutput(
             changeAddr,
             new Value(minAda, new Assets([[nftTokenMPH, nftToken]]))
           ));
+
+        // Construct the nft validator output address
+        const nftValFile = await fs.readFile('./contracts/nft-validator.hl', 'utf8');
+        const nftValScript = nftValFile.toString();
+        const nftValProgram  = Program.new(nftValScript);
+        nftValProgram.parameters = {["OWNER_PKH"] : ownerPkh};
+        nftValProgram.parameters = {["TOKEN_MPH"] : nftTokenMPH.hex};
+        nftValProgram.parameters = {["TOKEN_NAME"] : textToBytes(nftTokenName)};
+        nftValProgram.parameters = {["VERSION"] : "1.0"};
+        const compiledNftValProgram = nftValProgram.compile(optimize);
+        const nftValHash = compiledNftValProgram.validatorHash;
+
+        // Build the CIP-068 metadata datum
+        const nameKey = new ByteArrayData(textToBytes("name"));
+        const nameValue = new ByteArrayData(textToBytes(nftName));
+        const imageKey = new ByteArrayData(textToBytes("image"));
+        const imageValue = new ByteArrayData(textToBytes(imageUrl));
+        const decimalsKey = new ByteArrayData(textToBytes("decimals"));
+        const decimalsValue = new IntData(0);
+        const mapData = new MapData([[nameKey, nameValue],
+                                     [imageKey, imageValue],
+                                     [decimalsKey, decimalsValue]]);
+        const version = new IntData(1);
+        const cip068Datum = new ConstrData(0, [mapData, version]);
+        const newInlineDatum = Datum.inline(cip068Datum);
+
+        // Create the output for the metadata reference token
+        const nftTokenRef = [[textToBytes(nftTokenNameRef), BigInt(1)]];
+        tx.addOutput(new TxOutput(
+            Address.fromHashes(nftValHash),
+            new Value(minAda, new Assets([[nftTokenMPH, nftTokenRef]])),
+            newInlineDatum
+        ));
 
         // Set a valid time interval
         tx.validFrom(before);
@@ -123,11 +163,12 @@ const main = async () => {
         // Also add the user wallet as signer as well
         tx.addSigner(changeAddr.pubKeyHash);
 
-        // Attached the metadata for the minting transaction
+        // Attached tx metadata for the minting transaction
         tx.addMetadata(721, {"map": [[nftTokenMPH.hex, {"map": [[nftTokenName,
                                         {
                                           "map": [["name", nftName],
-                                                  ["image", imageUrl]
+                                                  ["image", imageUrl],
+                                                  ["decimals", 0]
                                                  ]
                                         }
                                         ]]}
