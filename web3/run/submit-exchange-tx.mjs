@@ -28,7 +28,7 @@ const main = async () => {
         // Reconstruct the helios tx object
         const tx = Tx.fromCbor(hexToBytes(cborTx));
 
-        const tn = "(222)" + nftName + "|" + serialNum;
+        const tn = nftName + "|" + serialNum;
         const tokenName = textToBytes(tn);
         const mph = MintingPolicyHash.fromHex(mphHex);
         if (!tx.body.minted.has(mph, tokenName)) {
@@ -36,10 +36,14 @@ const main = async () => {
         }
 
         // Add signature from the users wallet
-        const signatures = TxWitnesses.fromCbor(hexToBytes(cborSig)).signatures;
+       //const signatures = TxWitnesses.fromCbor(hexToBytes(cborSig)).signatures;
+        const witness = TxWitnesses.fromCbor(hexToBytes(cborSig));
+        console.error("witness: ", witness.dump());
+        const signatures = witness.signatures;
         tx.addSignatures(signatures);
 
         const txId = await submitTx(tx);
+        //const txId = "abc123"
         const timestamp = new Date().toISOString();
         const returnObj = {
             status: 200,
@@ -63,6 +67,5 @@ const main = async () => {
 }
 
 main();
-
 
 
