@@ -104,9 +104,14 @@ class Web3NftController extends Controller
             if ($responseJSON->status == 200)
             {
                 // Record the NFT transaction with serial number
-                //$serialNum = $responseJSON->serialNum;
                 $nftId = NFT::where('name', $nftName)->first()->id;
-              
+
+                // Clean up any previous transactions for this nft id and user
+                NftTransactions::where('user_id', $userId)
+                                ->where('nft_id', $nftId)
+                                ->where('used', 0)
+                                ->delete();
+                
                 $nftTrans = NftTransactions::updateOrCreate(
                     ['user_id'      => $userId,
                      'nft_id'       => $nftId,

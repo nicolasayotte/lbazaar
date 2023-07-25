@@ -4,7 +4,6 @@ import {
     Address, 
     hexToBytes, 
     Program, 
-    Value, 
     UTxO 
 } from "@hyperionbt/helios";
 
@@ -13,8 +12,8 @@ import { getTokenNamesAddrs } from "../common/utils.mjs"
 /**
  * Main calling function via the command line 
  * Usage: node nft-check.js nftName skateKeyHash [cborUtxo1,cborUtxo2,...]
- * @params {string, string, string[]}
- * @output {string} cborTx
+ * @params {string, string, string[]} nftName stakeKeyHash
+ * @output {string} cborUtxos
  */
 const main = async () => {
 
@@ -25,9 +24,6 @@ const main = async () => {
         // Set the Helios compiler optimizer flag
         const optimize = (process.env.OPTIMIZE === 'true');
         const ownerPkh = process.env.OWNER_PKH;
-        const minAda = BigInt(process.env.MIN_ADA);  // minimum lovelace needed to send an NFT
-        const maxTxFee = BigInt(process.env.MAX_TX_FEE);
-        const minChangeAmt = BigInt(process.env.MIN_CHANGE_AMT);
         const nftName = args[2];
         const stakeKeyHash = args[3];
         const cborUtxos = args[4].split(',');

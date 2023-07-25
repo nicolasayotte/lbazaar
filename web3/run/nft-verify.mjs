@@ -27,7 +27,7 @@ const main = async () => {
 
         // Confirm the address that the NFT is residing at and that
         // it is the same address that is owned by the student
-        const tokenName = nftName + '|' + serialNum;
+        const tokenName = '(222)' + nftName + '|' + serialNum;
         const unit = mph + bytesToHex(textToBytes(tokenName));
         const apiKey = process.env.BLOCKFROST_API_KEY
         const API = new BlockFrostAPI({

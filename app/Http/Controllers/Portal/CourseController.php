@@ -77,6 +77,7 @@ class CourseController extends Controller
 
     public function index(SearchClassRequest $request)
     {
+        
         $languages = $this->courseRepository->getLanguages();
         $types = $this->courseTypeRepository->getAll();
         $categories = $this->courseCategoryRepository->getAll();
@@ -157,20 +158,20 @@ class CourseController extends Controller
         $adminCommissionSettings = Setting::where('slug', 'admin-commission')->first();
         $userId = Auth::user()->id;
         $nftId = $schedule->course->nft_id;
+
         $nft = isset($nftId) ? $this->nftRepository->getNftById($nftId): null;
         
         $hasNft = isset($nft) ? NftTransactions::where('user_id', $userId)
                                    -> where('nft_name', $nft->name)
-                                   -> where('used', 'false')->first() : null;
-        
+                                   -> where('used', 0)->first() : null;
+
         $nftBurnt = isset($hasNft) ? NftTransactions::where('nft_name', $nft->name)
                                     ->where('serial_num', $hasNft->serial_num)
                                     ->where('used', 1)->first() : null;
-       
+
+        // If NFT has been burnt, notify user that it has already been used
         if (isset($nftBurnt)) {
-            return redirect()->back()->withErrors([
-                'error' => getTranslation('nftError')
-            ]);
+            return redirect()->back()->with('error', getTranslation('nft_error.used'));
         }
 
         if (!$isBooked && !$isFullyBooked && 
