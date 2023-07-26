@@ -262,7 +262,6 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
 
     const handleWalletVerify = async () => {
     
-        console.log("hw: ", hardwareWallet);
         let message = translatables.texts.wallet_message
         let hexMessage = ''
 
