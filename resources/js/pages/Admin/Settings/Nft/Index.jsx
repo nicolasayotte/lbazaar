@@ -2,9 +2,8 @@ import { useForm, usePage } from "@inertiajs/inertia-react"
 import { Add, Label} from "@mui/icons-material"
 import { Box, Button, Card, CardContent, Grid, Pagination, Stack, Typography } from "@mui/material"
 import Input from "../../../../components/forms/Input"
-import Checkbox from '@mui/material/Checkbox';
+import Checkbox from '@mui/material/Checkbox'
 import { displaySelectOptions } from "../../../../helpers/form.helper"
-//import CourseCategoryTable from "./components/CourseCategoryTable"
 import NftTable from "./components/NftTable"
 import TableLoader from "../../../../components/common/TableLoader"
 import { handleOnChange, handleOnSelectChange } from "../../../../helpers/form.helper"
@@ -100,7 +99,6 @@ const Index = () => {
             submitUrl: getRoute('admin.settings.nft.update', {id}),
             method: 'patch',
             action: 'update',
-            //value: inputValue,
             name: nameValue,
             points: pointsValue,
             forSale: forSaleValue,

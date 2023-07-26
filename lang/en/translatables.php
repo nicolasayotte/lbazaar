@@ -502,6 +502,7 @@ return [
         'wallet_earn_details' => 'Earned from class',
         'wallet_exchange_details' => 'Points Exchanged to NFT',
         'wallet_feed_details' => 'Points Feed to wallet',
+        'wallet_hardware' => 'Hardware Wallet',
         'wallet_history' => 'Wallet History',
         'wallet_id' => 'Wallet ID',
         'wallet_message' => 'Please sign to verify your wallet',

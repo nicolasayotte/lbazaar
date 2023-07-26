@@ -5,6 +5,7 @@ import { useEffect, useState } from "react"
 import { actions } from "../../store/slices/ToasterSlice"
 import {BrowserView, MobileView} from 'react-device-detect'
 import { usePage } from "@inertiajs/inertia-react"
+import Checkbox from '@mui/material/Checkbox'
 import ConfirmationDialog from "../../components/common/ConfirmationDialog"
 import ChangeCircleIcon from '@mui/icons-material/ChangeCircle'
 import TaskAltIcon from '@mui/icons-material/TaskAlt'
@@ -41,6 +42,7 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
     const [walletStakeAddr, setwalletStakeAddr] = useState(undefined)
     const [walletStakeKeyDisplay, setwalletStakeKeyDisplay] = useState(undefined)
     const [walletStakeAddrBech32, setWalletStakeAddrBech32] = useState(undefined)
+    const [hardwareWallet, setHardwareWallet] = useState(false)
     
     useEffect(() => {
         const checkWallet = async () => {
@@ -260,54 +262,58 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
 
     const handleWalletVerify = async () => {
     
+        console.log("hw: ", hardwareWallet);
         let message = translatables.texts.wallet_message
         let hexMessage = ''
 
         for (var i = 0, l = message.length; i < l; i++) {
             hexMessage += message.charCodeAt(i).toString(16)
         }
+        
+        if (!hardwareWallet) {
 
-        try {
-            const { signature, key } = await walletAPI.signData(walletStakeAddr, hexMessage)
-            
-            await axios.post('/wallet/verify', {
-                signature: signature,
-                stake_key: key,
-                message: hexMessage,  
-                stake_addr: walletStakeAddrBech32
-            })
-            .then(async response => {
-                const respObj = await JSON.parse(response.data)
+            try {
+                const { signature, key } = await walletAPI.signData(walletStakeAddr, hexMessage)
                 
-                if (respObj.status == 200) {
+                await axios.post('/wallet/verify', {
+                    signature: signature,
+                    stake_key: key,
+                    message: hexMessage,  
+                    stake_addr: walletStakeAddrBech32
+                })
+                .then(async response => {
+                    const respObj = await JSON.parse(response.data)
+                    
+                    if (respObj.status == 200) {
 
-                    setWalletVerify(true)
-                    onStakeKeyHash([walletStakeKeyDisplay])
-                    dispatch(actions.success({
-                        message: translatables.success.wallet.verify
-                    }))
-                } else {
-                    setWalletVerify(false)
-                    onStakeKeyHash(undefined)
+                        setWalletVerify(true)
+                        onStakeKeyHash([walletStakeKeyDisplay])
+                        dispatch(actions.success({
+                            message: translatables.success.wallet.verify
+                        }))
+                    } else {
+                        setWalletVerify(false)
+                        onStakeKeyHash(undefined)
+                        dispatch(actions.error({
+                            message: translatables.wallet_error.verify
+                        }))
+                    }
+                })
+                .catch(error => {
+                    throw console.error("getWalletVerify: ", error)
+                }) 
+            } catch (error) {
+        
+                if (error.code == 3 || error.code == -3) {
+                    // User has declined to sign Data, exit gracefully
                     dispatch(actions.error({
                         message: translatables.wallet_error.verify
                     }))
+                    return
                 }
-            })
-            .catch(error => {
-                throw console.error("getWalletVerify: ", error)
-            }) 
-        } catch (error) {
-
-            if (error.code == 3 || error.code == -3) {
-                // User has declined to sign Data, exit gracefully
-                dispatch(actions.error({
-                    message: translatables.wallet_error.verify
-                }))
-                return
             }
+        } else {
 
-            // Will try again, but by signing a tx (and not submitting it)
             try {
                 const hexAddress = await walletAPI.getChangeAddress()
                 
@@ -411,6 +417,14 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                                     <br></br>{translatables.texts.wallet_id} &nbsp;{walletStakeKeyDisplay}
                                 </Typography>
                                 }
+                        </Box>
+                        <Box textAlign="center" display="flex" justifyContent="left" alignItems="center">
+                            <Checkbox
+                                name="hwWallet"
+                                checked={hardwareWallet == 1}
+                                onChange={e => setHardwareWallet(e.target.checked)}
+                            />
+                            <Typography>{translatables.texts.wallet_hardware}</Typography>
                         </Box>
                     </Stack>
                 </CardContent>

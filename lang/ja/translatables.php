@@ -497,6 +497,7 @@ return [
         'view_more'=> 'もっと見る',
         'view_profile'=> 'プロファイルを見る',
         'wallet_balance'=> 'ウォレット残高',
+        'wallet_hardware' => 'Wallet History(JA)',
         'wallet_history'=> 'ウォレット履歴',
         'watch_video_description'=> 'このクラスで得られる内容',
         'watch_video'=> 'ビデオを見る',
