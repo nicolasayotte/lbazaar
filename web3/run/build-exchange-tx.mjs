@@ -167,16 +167,16 @@ const main = async () => {
         tx.addSigner(changeAddr.pubKeyHash);
 
         // Attached tx metadata for the minting transaction
-        tx.addMetadata(721, {"map": [[nftTokenMPH.hex, {"map": [[nftTokenName,
+        tx.addMetadata(721, {"map": [[nftTokenMPH.hex, {"map": [[Buffer.from(nftTokenName, 'utf-8').toString(),
                                         {
                                           "map": [["name", nftName],
-                                                  ["image", imageUrl],
-                                                  ["decimals", 0]
+                                                  ["image", "ipfs://" + imageUrl]
                                                  ]
                                         }
-                                        ]]}
+                                        ]]},
                                     ]]
-                            }
+                            },
+                            {"map": [["version", {"map" : [["1.0"]]}]]}
                         );
                         
          
