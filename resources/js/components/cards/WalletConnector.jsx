@@ -417,14 +417,16 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                                 </Typography>
                                 }
                         </Box>
-                        <Box textAlign="center" display="flex" justifyContent="left" alignItems="center">
-                            <Checkbox
-                                name="hwWallet"
-                                checked={hardwareWallet == 1}
-                                onChange={e => setHardwareWallet(e.target.checked)}
-                            />
-                            <Typography>{translatables.texts.wallet_hardware}</Typography>
-                        </Box>
+                        {whichWalletSelected.name == "eternl" && 
+                            <Box textAlign="center" display="flex" justifyContent="left" alignItems="center">
+                                <Checkbox
+                                    name="hwWallet"
+                                    checked={hardwareWallet == 1}
+                                    onChange={e => setHardwareWallet(e.target.checked)}
+                                />
+                                <Typography>{translatables.texts.wallet_hardware}</Typography>
+                            </Box>
+                        }
                     </Stack>
                 </CardContent>
                 <CardActions disableSpacing>
