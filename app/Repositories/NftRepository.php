@@ -39,11 +39,9 @@ class NftRepository extends BaseRepository
 
     public function getDropdownData()
     {
-        return $this->model
-                    ->all()
-                    ->filter(function ($data) {
-                        return $data->for_sale != 0;
-                    })
+        return $this->model::withoutTrashed()
+                    ->where('for_sale', 1)
+                    ->get()
                     ->map(function($data) {
                         return [
                             'id'   => $data->id,

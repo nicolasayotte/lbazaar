@@ -9,8 +9,7 @@ const Create = () => {
 
     
     const { translatables, categoryOptions, nftOptions } = usePage().props
-    console.log("nftOpions: ", nftOptions)
-    
+
     const typeOptions = [
         { name: 'General', value: 'general' },
         { name: 'Free', value: 'free' },
