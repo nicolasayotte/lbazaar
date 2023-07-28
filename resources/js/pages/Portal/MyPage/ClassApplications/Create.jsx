@@ -7,7 +7,9 @@ import routes from "../../../../helpers/routes.helper"
 
 const Create = () => {
 
+    
     const { translatables, categoryOptions, nftOptions } = usePage().props
+    console.log("nftOpions: ", nftOptions)
     
     const typeOptions = [
         { name: 'General', value: 'general' },
@@ -123,12 +125,12 @@ const Create = () => {
                                     />
                                 </Grid>
                             }
-                            {
+                            {   
                                 data.type === 'special' &&
                                 <Grid item xs={12} md={4}>
                                     <Autocomplete
                                     freeSolo
-                                    options={nftOptions.map(nft => nft.name)}
+                                    options={nftOptions ? nftOptions.map(nft => nft.name) : ''}
                                     fullWidth
                                     size="small"
                                     value={data.nft_name}
