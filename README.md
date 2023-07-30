@@ -102,6 +102,7 @@ npm run dev
 ```
 
 ## Run DB Migration
+```
 ./vendor/bin/sail artisan migrate --seed
 
    INFO  Preparing database.  
@@ -225,7 +226,7 @@ npm run dev
 
   Database\Seeders\CourseFeedbackSeeder ....................................................... RUNNING  
   Database\Seeders\CourseFeedbackSeeder .................................................. 1.24 ms DONE 
-
+```
 
 
 ### Set Environment Variables.
