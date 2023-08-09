@@ -16,6 +16,8 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
     const dispatch = useDispatch()
     
     const { auth, translatables, ada_to_points, nfts, network } = usePage().props
+    const cexplorerUrl = network === 'mainnet' ? "https://cexplorer.io/tx/" :
+                                                 "https://" + network + ".cexplorer.io/tx/"   
 
     const [dialog, setDialog] = useState({
         open: false,
@@ -352,7 +354,7 @@ const UserPoints = ({walletStakeKeyHash, walletAPI}) => {
                 <CardContent>
                     <Typography variant="h5" children={translatables.tx.success.status}/>
                     <Typography fontSize={12} ml={0.5}>{translatables.tx.success.message}</Typography>
-                    <Typography fontSize={7} ml={0.5}><a href={"https://" + network + ".cexplorer.io/tx/" + tx} target="_blank" rel="noopener noreferrer" >{tx}</a></Typography>
+                    <Typography fontSize={7} ml={0.5}><a href={cexplorerUrl + tx} target="_blank" rel="noopener noreferrer" >{tx}</a></Typography>
                 </CardContent>
             </Card>}
             <FormDialog

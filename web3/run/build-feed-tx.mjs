@@ -1,6 +1,7 @@
 import {
     Address,  
     bytesToHex, 
+    config,
     CoinSelection,
     hexToBytes, 
     NetworkParams,
@@ -30,6 +31,7 @@ const main = async () => {
     try {
         // Set the Helios compiler optimizer flag
         const network = process.env.NETWORK;
+        config.IS_TESTNET = (network === 'mainnet') ? false : true;
         const ownerPkh = process.env.OWNER_PKH;
         const minAda = BigInt(process.env.MIN_ADA);  // minimum lovelace needed to send an NFT
         const maxTxFee = BigInt(process.env.MAX_TX_FEE);

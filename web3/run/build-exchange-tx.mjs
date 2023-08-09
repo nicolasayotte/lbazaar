@@ -3,7 +3,8 @@ import { promises as fs } from 'fs';
 import {
     Address, 
     Assets, 
-    bytesToHex, 
+    bytesToHex,
+    config, 
     CoinSelection,
     ConstrData,
     Datum,
@@ -43,6 +44,7 @@ const main = async () => {
         // Set the Helios compiler optimizer flag
         const optimize = (process.env.OPTIMIZE === 'true');
         const network = process.env.NETWORK;
+        config.IS_TESTNET = (network === 'mainnet') ? false : true;
         const ownerPkh = process.env.OWNER_PKH;
         const minAda = BigInt(process.env.MIN_ADA);  // minimum lovelace needed to send an NFT
         const maxTxFee = BigInt(process.env.MAX_TX_FEE);
@@ -147,7 +149,7 @@ const main = async () => {
         const version = new IntData(1);
         const cip068Datum = new ConstrData(0, [mapData, version]);
         const newInlineDatum = Datum.inline(cip068Datum);
-
+ 
         // Create the output for the metadata reference token
         const nftTokenRef = [[textToBytes(nftTokenNameRef), BigInt(1)]];
         tx.addOutput(new TxOutput(
@@ -177,8 +179,7 @@ const main = async () => {
                                     ]]
                             },
                             {"map": [["version", {"map" : [["1.0"]]}]]}
-                        );
-                        
+                        );          
          
         // Network Params
         const networkParamsPreview = await getNetworkParams(network);

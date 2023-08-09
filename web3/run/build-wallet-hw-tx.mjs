@@ -1,6 +1,7 @@
 import {
     Address, 
     bytesToHex, 
+    config,
     CoinSelection,
     hexToBytes, 
     NetworkParams,
@@ -23,6 +24,7 @@ const main = async () => {
     try {
 
         const network = process.env.NETWORK;
+        config.IS_TESTNET = (network === 'mainnet') ? false : true;
         const args = process.argv;
         const hexAddr = args[2];
         const cborUtxos = args[3].split(',');
