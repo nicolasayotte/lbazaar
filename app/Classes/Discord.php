@@ -11,15 +11,27 @@ use Illuminate\Support\Facades\Log;
 
 class Discord
 {
-    private $webhook_url;
+    private $webhook_class_url;
+    private $webhook_teacher_url;
 
     public function __construct()
     {
-        $this->webhook_url = env('DISCORD_WEBOOK_URL');
+        $this->webhook_teacher_url = env('DISCORD_WEBOOK_TEACHER_URL');
+        $this->webhook_class_url = env('DISCORD_WEBOOK_CLASS_URL');
     }
 
     public function sendMessage($data, $type)
     {
+	$webhook_url = '';
+        if ($type === CourseApplication::class) {
+            $webhook_url = $this->webhook_class_url;
+        } else if ($type ===  TeacherApplication::class) {
+            $webhook_url = $this->webhook_teacher_url;
+        } else {
+            Log::error('Discord message type not defined');
+            return false;
+	}
+
         $buildMethods = [
             CourseApplication::class => 'buildClassApplicationMessage',
             TeacherApplication::class => 'buildTeacherApplicationMessage',
@@ -35,7 +47,7 @@ class Discord
                 'Content-Type: application/json'
             ]);
 
-            curl_setopt($ch, CURLOPT_URL, $this->webhook_url . '?wait=true');
+            curl_setopt($ch, CURLOPT_URL, $webhook_url . '?wait=true');
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
                 'embeds' => [$messageContent]
