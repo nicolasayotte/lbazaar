@@ -244,6 +244,9 @@ class Discord
                     // Additional lines
                     $this->addEmptyLines($message, 1);
                 }
+            } else if ($key == 'email') {
+                // Do not show
+                
             } else {
                 $field['name'] = $fieldName;
 
