@@ -236,6 +236,16 @@ When you make a change, you will need to run auto-load to have them read and ava
 sail composer dump-autoload
 ```
 
+## Installing web3 node & npm modules
+``` 
+cd ./web3
+npm install
+curl -sL https://nodejs.org/dist/v18.16.1/node-v18.16.1-linux-x64.tar.xz | tar -xJ
+mkdir bin
+cp node-v18.16.1-linux-x64/bin/node bin
+rm -r node-v18.16.1-linux-x64
+```
+
 
 ## Creating Root Key & Owner PKH
 ```
@@ -250,13 +260,10 @@ OWNER_PKH=3a0c3...1bd2d766aa
 ```
 
 
-
-
 *For `sail` command convenience, add this to your `~/.zshrc` or `~/.bashrc`*
 ```
 alias sail='[ -f sail ] && sh sail || sh vendor/bin/sail'
 ```
-
 
 ## Website Acceess
 ```
@@ -277,6 +284,14 @@ Access local URL: http://localhost:8080
 (host) $ sail --help
 ```
 or check official [docs](https://laravel.com/docs/9.x/sail)
+
+### Dev Env
+You may need to remove the following line from vite.config.js for your local dev env since this is only used for production.
+```
+server: {
+    host: 'www.e-learning.com',
+  }
+```
 
 ## Staging Deployment
 - First, create a Github token [here](https://github.com/settings/tokens). (One time only)
