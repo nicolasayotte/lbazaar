@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-git checkout develop && git pull && git checkout release && git merge --no-ff develop
+git checkout staging && git pull && git checkout release && git merge --no-ff develop
 
 VERSION=""
 
