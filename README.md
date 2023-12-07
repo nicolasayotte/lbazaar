@@ -236,14 +236,10 @@ When you make a change, you will need to run auto-load to have them read and ava
 sail composer dump-autoload
 ```
 
-## Installing web3 node & npm modules
+## Installing web3 npm modules
 ``` 
 cd ./web3
 npm install
-curl -sL https://nodejs.org/dist/v18.16.1/node-v18.16.1-linux-x64.tar.xz | tar -xJ
-mkdir bin
-cp node-v18.16.1-linux-x64/bin/node bin
-rm -r node-v18.16.1-linux-x64
 ```
 
 
