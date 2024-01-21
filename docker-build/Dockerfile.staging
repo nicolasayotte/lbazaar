@@ -22,14 +22,14 @@ FROM webdevops/php-nginx:8.1-alpine AS base
 
 # Install Laravel dependencies
 RUN docker-php-ext-install \
-        bcmath \
-        pdo_mysql
+    bcmath \
+    pdo_mysql
 
 WORKDIR /app
 ENV WEB_DOCUMENT_ROOT /app/public
 
 COPY ./ ./
 COPY --from=nodeBuild /app/public/build ./public/build
-RUN apk add nodejs
+RUN apk add nodejs npm
 RUN composer install --no-interaction --optimize-autoloader
 RUN chown -R application:application .

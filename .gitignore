@@ -7,6 +7,9 @@
 .env
 .env.backup
 .env.production
+.env.staging
+composer-setup.php
+pnpm-lock.yaml
 .phpunit.result.cache
 Homestead.json
 Homestead.yaml
