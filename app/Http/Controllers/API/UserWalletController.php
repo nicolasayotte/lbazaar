@@ -34,7 +34,7 @@ class UserWalletController extends Controller
     {
         try {
             $headers = $request->header();
-            
+
             // Get blockfrost api signature
             $apiSignature = $headers['blockfrost-signature'][0];
             $body = $request->all();
@@ -42,7 +42,7 @@ class UserWalletController extends Controller
             $cmd = '(cd ../web3/;node ./run/blockfrost-verify.mjs '
             .escapeshellarg(json_encode($apiSignature)).' '
             .escapeshellarg(json_encode($body)).' '
-            .escapeshellarg($webhook).') 2>> ../storage/logs/web3.log'; 
+            .escapeshellarg($webhook).') 2>> ../storage/logs/web3.log';
 
             $response = exec($cmd);
             $responseJSON = json_decode($response, false);
@@ -61,9 +61,9 @@ class UserWalletController extends Controller
                 if ($points < 1) {
                     throw new \Exception("Negative points not allowed");
                 }
-                $userId = $userWalletTrans->user_wallet_id;
-                $user = User::where('id', $userId)->first();
-                $userWallet = UserWallet::where('user_id', $userId)->first();
+                $userWalletId = $userWalletTrans->user_wallet_id;
+                $userWallet = UserWallet::where('id', $userWalletId)->first();
+                $user = User::where('id', $userWallet->user_id)->first();
                 $walletTransactionHistory = $this->walletService->feed($userWallet, $points, $txId, 'confirmed');
                 $this->emailService->sendEmailNotificationWalletUpdate($user, $walletTransactionHistory);
                 return response()->json([
@@ -97,7 +97,7 @@ class UserWalletController extends Controller
     {
         try {
             $headers = $request->header();
-            
+
             // Get blockfrost api signature
             $apiSignature = $headers['blockfrost-signature'][0];
             $body = $request->all();
@@ -105,7 +105,7 @@ class UserWalletController extends Controller
             $cmd = '(cd ../web3/;node ./run/blockfrost-verify.mjs '
             .escapeshellarg(json_encode($apiSignature)).' '
             .escapeshellarg(json_encode($body)).' '
-            .escapeshellarg($webhook).') 2>> ../storage/logs/web3.log'; 
+            .escapeshellarg($webhook).') 2>> ../storage/logs/web3.log';
 
             $response = exec($cmd);
             $responseJSON = json_decode($response, false);
@@ -124,9 +124,9 @@ class UserWalletController extends Controller
                 if ($points < 1) {
                     throw new \Exception("Negative points not allowed");
                 }
-                $userId = $userWalletTrans->user_wallet_id;
-                $user = User::where('id', $userId)->first();
-                $userWallet = UserWallet::where('user_id', $userId)->first();
+                $userWalletId = $userWalletTrans->user_wallet_id;
+                $userWallet = UserWallet::where('id', $userWalletId)->first();
+                $user = User::where('id', $userWallet->user_id)->first();
                 $walletTransactionHistory = $this->walletService->exchange($userWallet, $points, $txId, 'confirmed');
                 $this->emailService->sendEmailNotificationWalletUpdate($user, $walletTransactionHistory);
                 return response()->json([
