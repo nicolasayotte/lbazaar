@@ -200,11 +200,19 @@ class CourseRepository extends BaseRepository
         $inputs['course_application_id'] = $courseApplication->id;
         $inputs['professor_id'] = auth()->user()->id;
         $inputs['is_live'] = $isLive;
-        $inputs['image_thumbnail'] = Asset::upload($request->files->get('image_thumbnail'));
+        if($request->hasFile('image_thumbnail')){
+            $inputs['image_thumbnail'] = Asset::upload($request->files->get('image_thumbnail'));
+        } else {
+            unset($inputs['image_thumbnail']);
+        }
 
         if (!$isLive) {
             $inputs['zoom_link'] = null;
-            $inputs['video_path'] = Asset::upload($request->files->get('video_path'));
+            if($request->hasFile('video_path')){
+                $inputs['video_path'] = Asset::upload($request->files->get('video_path'));
+            } else {
+                unset($inputs['video_path']);
+            }
         } else {
             $inputs['video_path'] = null;
             $inputs['video_link'] = null;

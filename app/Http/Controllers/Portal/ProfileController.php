@@ -41,7 +41,7 @@ class ProfileController extends Controller
         $ada_to_points = Setting::where('slug', 'ada-to-points')->first();
         $nfts = Nft::withoutTrashed()->where('for_sale', 1)->get();
         $network = env('NETWORK');
-       
+
         return Inertia::render('Portal/MyPage/Profile/Index', [
             'countries' => $countries,
             'ada_to_points' =>  $ada_to_points->value,
@@ -58,7 +58,11 @@ class ProfileController extends Controller
         $user = $this->userRepository->findOrFail(auth()->user()->id);
         $inputs= $request->all();
 
-        $inputs['image'] = Asset::upload($request->files->get('image'));
+        if($request->hasFile('image')){
+            $inputs['image'] = Asset::upload($request->files->get('image'));
+        } else {
+            unset($inputs['image']);
+        }
         $user->update($inputs);
 
         return redirect()->route('mypage.profile.index');
