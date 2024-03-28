@@ -20,6 +20,7 @@ const SearchCourse = () => {
         from,
         to,
         courses,
+        languages,
         course_types,
         course_categories,
         teachers,
@@ -127,6 +128,22 @@ const SearchCourse = () => {
                                             >
                                                 <option value="">All</option>
                                                 {displaySelectOptions(course_categories)}
+                                            </Input>
+                                        </Grid>
+                                        <Grid item xs={12} sm={12}>
+                                            <Input
+                                                label={translatables.texts.language}
+                                                select
+                                                name="language"
+                                                value={filters.language}
+                                                onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
+                                                errors={errors}
+                                                InputLabelProps={{
+                                                    shrink: true
+                                                }}
+                                            >
+                                                <option value="">All</option>
+                                                {displaySelectOptions(languages)}
                                             </Input>
                                         </Grid>
                                         <Grid item xs={12} sm={12}>
