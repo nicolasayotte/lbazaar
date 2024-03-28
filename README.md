@@ -354,13 +354,12 @@ tail -n40 storage/logs/web3.log
 
 ## Staging Deployment
 
--   First, create a Github token [here](https://github.com/settings/tokens). (One time only)
-    -   Tokens(Classic)
-    -   Make sure expiration is long enough or no expiration at all
--   SSH into the server (Ask Admin for pem file)
-    -   `ssh -i test-lebazaar-key.pem ubuntu@18.178.42.141`
 
 ```bash
+
+#   SSH into the server (Ask Admin for pem file)
+ssh -i test-lebazaar-key.pem ubuntu@18.178.42.141
+
 # go to project docker-build directory:
 cd /var/www/groundfloor/docker-build
 
@@ -370,27 +369,50 @@ sudo su
 # allow docker not load cache
 export DOCKER_BUILDKIT=0
 
+# first, create a Github token [here](https://github.com/settings/tokens). (One time only)
+#    -   Tokens(Classic)
+#    -   Make sure expiration is long enough or no expiration at all
+# get the latest branch
+git checkout staging; git pull
+
 # execute build script. It will as for Github username and token (generated from step 1)
-./staging.sh
+.staging.sh
+
+# Install npm packages?
+docker container ls
+container_id="<id>"
+docker exec -it $container_id /bin/bash
+
+cd ./web3
+npm install
+
+#  Check https://stage.l-e-bazaar.com/ to make sure changes have been published
 ```
 
--   Check https://stage.l-e-bazaar.com/ to make sure changes have been
 
 ## Production Deployment
 
--   First, create a Github token [here](https://github.com/settings/tokens). (One time only)
-    -   Tokens(Classic)
-    -   Make sure expiration is long enough or no expiration at all
--   SSH into the server (Ask Admin for pem file)
-    -   `ssh -i prod-lebazaar.pem ubuntu@54.249.86.195`
--   Go to project docker-build directory:
-    -   `cd /var/www/groundfloor/docker-build`
--   run as root
-    -   `sudo su`
--   allow docker not load cache
-    -   `export DOCKER_BUILDKIT=0`
--   Execute build script. It will as for Github username and token (generated from step 1)
-    -   for patch `./production.sh -v patch`
-    -   for minor changes `./production.sh -v minor`
-    -   for major changes `./production.sh -v major`
--   Check https://l-e-bazaar.com/ to make sure changes have been
+```bash
+#   First, create a Github token [here](https://github.com/settings/tokens). (One time only)
+#   - Tokens(Classic)
+#   - Make sure expiration is long enough or no expiration at all
+
+#   SSH into the server (Ask Admin for pem file)
+ssh -i prod-lebazaar.pem ubuntu@54.249.86.195
+
+#   Go to project docker-build directory:
+cd /var/www/groundfloor/docker-build
+
+#   run as root
+sudo su
+
+#   allow docker not load cache
+export DOCKER_BUILDKIT=0
+
+#   Execute build script. It will as for Github username and token (generated from step 1)
+./production.sh -v patch
+./production.sh -v minor
+./production.sh -v major
+
+#   Check https://l-e-bazaar.com/ to make sure changes have been published
+```
