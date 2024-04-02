@@ -1,25 +1,25 @@
 import {
-    Address,  
-    bytesToHex, 
+    Address,
+    bytesToHex,
     config,
     CoinSelection,
-    hexToBytes, 
+    hexToBytes,
     NetworkParams,
     PubKeyHash,
-    Value, 
+    Value,
     TxOutput,
-    Tx, 
-    UTxO 
+    Tx,
+    UTxO
 } from "@hyperionbt/helios";
 
 import { signTx } from "../common/sign-tx.mjs";
 import { getNetworkParams } from "../common/network.mjs"
 
 // Define time to live for tx validity interval
-const ttl = 5; 
+const ttl = 5;
 
 /**
- * Main calling function via the command line 
+ * Main calling function via the command line
  * Usage: node build-feed-tx.js cBorChangeAddr [cborUtxo1,cborUtxo2,...] adaAmount
  * @params {string, string, string[], string}
  * @output {string} cborTx
@@ -43,7 +43,7 @@ const main = async () => {
         const adaAmount = BigInt(args[5]) * BigInt(1_000_000);
         const minUTXOVal = new Value(minAda + maxTxFee + minChangeAmt + adaAmount);
         const ownerWalletAddr = process.env.OWNER_WALLET_ADDR;
-  
+
         // Get the change address from the wallet
         const changeAddr = Address.fromHex(hexChangeAddr);
 
@@ -54,7 +54,7 @@ const main = async () => {
 
         // Get UTXOs from wallet
         const walletUtxos = cborUtxos.map(u => UTxO.fromCbor(hexToBytes(u)));
-        const utxos = CoinSelection.selectSmallestFirst(walletUtxos, minUTXOVal);
+        const utxos = CoinSelection.selectLargestFirst(walletUtxos, minUTXOVal);
         canPay = true;
 
         // Start building the transaction
@@ -63,7 +63,7 @@ const main = async () => {
         // Add the UTXO as inputs
         tx.addInputs(utxos[0]);
 
-       tx.addOutput(new TxOutput(
+        tx.addOutput(new TxOutput(
             Address.fromBech32(ownerWalletAddr),
             new Value(adaAmount)
           ));
@@ -88,14 +88,14 @@ const main = async () => {
         // Network Params
         const networkParamsPreview = await getNetworkParams(network);
         const networkParams = new NetworkParams(JSON.parse(networkParamsPreview));
-        
+
         // Send any change back to the buyer
         await tx.finalize(networkParams, changeAddr, utxos[1]);
 
         // Add the signature from the server side private key
         // This way, we lock the transaction now and then need
         // the end user to sign the tx.
-        const txSigned = await signTx(tx);
+        const txSigned = signTx(tx);
 
         const returnObj = {
             status: 200,
@@ -119,4 +119,4 @@ const main = async () => {
 main();
 
 
-  
+

@@ -1,19 +1,19 @@
 import {
-    Address, 
-    bytesToHex, 
+    Address,
+    bytesToHex,
     config,
     CoinSelection,
-    hexToBytes, 
+    hexToBytes,
     NetworkParams,
-    Value, 
-    Tx, 
-    UTxO 
+    Value,
+    Tx,
+    UTxO
 } from "@hyperionbt/helios";
 
 import { getNetworkParams } from "../common/network.mjs"
 
 /**
- * Main calling function via the command line 
+ * Main calling function via the command line
  * Usage: node build-wallet-hw-tx.js cBorChangeAddr
  * @params {string}
  * @output {string, string} cborTx cborTxBody
@@ -32,13 +32,13 @@ const main = async () => {
         const maxTxFee = BigInt(process.env.MAX_TX_FEE);
         const minChangeAmt = BigInt(process.env.MIN_CHANGE_AMT);
         const minUTXOVal = new Value(minAda + maxTxFee + minChangeAmt);
-           
+
         // Get the address from the wallet
         const addr = Address.fromHex(hexAddr);
 
         // Get UTXOs from wallet
         const walletUtxos = cborUtxos.map(u => UTxO.fromCbor(hexToBytes(u)));
-        const utxos = CoinSelection.selectSmallestFirst(walletUtxos, minUTXOVal);
+        const utxos = CoinSelection.selectLargestFirst(walletUtxos, minUTXOVal);
 
 
         // Start building the transaction
@@ -48,11 +48,11 @@ const main = async () => {
         tx.addInputs(utxos[0]);
 
         tx.addSigner(addr.pubKeyHash);
-        tx.addSigner(addr.stakingHash); 
+        tx.addSigner(addr.stakingHash);
 
         const networkParamsFile = await getNetworkParams(network);
         const networkParams = new NetworkParams(JSON.parse(networkParamsFile));
-        
+
         await tx.finalize(networkParams, addr, utxos[1]);
 
         const returnObj = {
@@ -77,4 +77,4 @@ const main = async () => {
 main();
 
 
-  
+

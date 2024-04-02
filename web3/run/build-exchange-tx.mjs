@@ -1,24 +1,24 @@
 import { promises as fs } from 'fs';
 
 import {
-    Address, 
-    Assets, 
+    Address,
+    Assets,
     bytesToHex,
-    config, 
+    config,
     CoinSelection,
     ConstrData,
     Datum,
-    hexToBytes, 
+    hexToBytes,
     IntData,
     MapData,
     NetworkParams,
-    Program, 
+    Program,
     PubKeyHash,
-    Value, 
+    Value,
     textToBytes,
     TxOutput,
-    Tx, 
-    UTxO, 
+    Tx,
+    UTxO,
     ByteArrayData
 } from "@hyperionbt/helios";
 
@@ -26,10 +26,10 @@ import { signTx } from "../common/sign-tx.mjs";
 import { getNetworkParams } from "../common/network.mjs"
 
 // Define time to live for tx validity interval
-const ttl = 5; 
+const ttl = 5;
 
 /**
- * Main calling function via the command line 
+ * Main calling function via the command line
  * Usage: node exchange-tx.js stakeKeyHash cBorChangeAddr imageUrl nftName mph [cborUtxo1,cborUtxo2,...]
  * @params {string, string, string, string, string, string[]}
  * @output {string} cborTx
@@ -40,7 +40,7 @@ const main = async () => {
     try {
         const args = process.argv;
         console.error("build-exchange-tx: args: ", args);
-        
+
         // Set the Helios compiler optimizer flag
         const optimize = (process.env.OPTIMIZE === 'true');
         const network = process.env.NETWORK;
@@ -56,19 +56,19 @@ const main = async () => {
         const nftName = args[5];
         const mph = args[6];
         const cborUtxos = args[7].split(',');
-        
+
          // Construct the user token
         const now = new Date();
         const serialNum = now.getTime().toString();
         const nftTokenNameRef = "(100)" + nftName + "|" + serialNum;
         const nftTokenName = "(222)" + nftName + "|" + serialNum;
-        
+
         // Set validitity interval
         const before = new Date(now.getTime());
         before.setMinutes(now.getMinutes() - ttl);
         const after = new Date(now.getTime());
         after.setMinutes(now.getMinutes() + ttl);
-        
+
         // Get the change address from the wallet
         const changeAddr = Address.fromHex(hexChangeAddr);
 
@@ -78,7 +78,7 @@ const main = async () => {
 
         // Get UTXOs from wallet
         const walletUtxos = cborUtxos.map(u => UTxO.fromCbor(hexToBytes(u)));
-        const utxos = CoinSelection.selectSmallestFirst(walletUtxos, minUTXOVal);
+        const utxos = CoinSelection.selectLargestFirst(walletUtxos, minUTXOVal);
         canPay = true;
 
         // Start building the transaction
@@ -95,7 +95,7 @@ const main = async () => {
         nftMintingProgram.parameters = {["VERSION"] : "1.0"};
         const compiledNftMintingProgram = nftMintingProgram.compile(optimize);
         const nftTokenMPH = compiledNftMintingProgram.mintingPolicyHash;
-        
+
         if (nftTokenMPH.hex !== mph) {
             throw console.error("build-exchange-tx: NFT Token minting policy hash does not match")
         }
@@ -105,12 +105,12 @@ const main = async () => {
         const nftRedeemer = (new nftMintingProgram.types.Redeemer.Mint())._toUplcData();
 
         // Create the nft token that will be sent to the user
-        // and the metadata reference token.   
+        // and the metadata reference token.
         // NOTE: Order of token names is important and may be
         // sorted by the wallet which will impact the tx body hash...
         const nftTokens = [[textToBytes(nftTokenNameRef), BigInt(1)],
                            [textToBytes(nftTokenName), BigInt(1)]];
-        
+
         // Add the mint to the tx
         tx.mintTokens(
             nftTokenMPH,
@@ -149,7 +149,7 @@ const main = async () => {
         const version = new IntData(1);
         const cip068Datum = new ConstrData(0, [mapData, version]);
         const newInlineDatum = Datum.inline(cip068Datum);
- 
+
         // Create the output for the metadata reference token
         const nftTokenRef = [[textToBytes(nftTokenNameRef), BigInt(1)]];
         tx.addOutput(new TxOutput(
@@ -169,22 +169,21 @@ const main = async () => {
         tx.addSigner(changeAddr.pubKeyHash);
 
         // Attached tx metadata for the minting transaction
-        tx.addMetadata(721, {"map": [[nftTokenMPH.hex, {"map": [[Buffer.from(nftTokenName, 'utf-8').toString(),
-                                        {
-                                          "map": [["name", nftName],
-                                                  ["image", "ipfs://" + imageUrl]
-                                                 ]
-                                        }
-                                        ]]},
-                                    ]]
-                            },
-                            {"map": [["version", {"map" : [["1.0"]]}]]}
-                        );          
-         
+        const policyId = nftTokenMPH.hex;
+        const assetName = Buffer.from(nftTokenName, 'utf-8').toString();
+        tx.addMetadata(721, [ { "map": [
+            [ policyId, { "map": [[ assetName, { "map": [
+                            ["name", nftName],
+                            ["image", "ipfs://" + imageUrl]
+            ]}]]}],
+            ["version", 1]
+        ]}]);
+
+
         // Network Params
         const networkParamsPreview = await getNetworkParams(network);
         const networkParams = new NetworkParams(JSON.parse(networkParamsPreview));
-        
+
         // Send any change back to the buyer
         await tx.finalize(networkParams, changeAddr, utxos[1]);
 
@@ -218,4 +217,4 @@ const main = async () => {
 main();
 
 
-  
+
