@@ -1,16 +1,16 @@
 import {
-    Address,
-    bytesToHex,
-    config,
-    CoinSelection,
-    hexToBytes,
-    NetworkParams,
-    Value,
-    Tx,
-    UTxO
-} from "@hyperionbt/helios";
+  Address,
+  bytesToHex,
+  config,
+  CoinSelection,
+  hexToBytes,
+  NetworkParams,
+  Value,
+  Tx,
+  UTxO,
+} from '@hyperionbt/helios';
 
-import { getNetworkParams } from "../common/network.mjs"
+import { getNetworkParams } from '../common/network.mjs';
 
 /**
  * Main calling function via the command line
@@ -19,62 +19,55 @@ import { getNetworkParams } from "../common/network.mjs"
  * @output {string, string} cborTx cborTxBody
  */
 const main = async () => {
+  console.error('build-wallet-hw-tx');
+  try {
+    const network = process.env.NETWORK;
+    config.IS_TESTNET = network === 'mainnet' ? false : true;
+    const args = process.argv;
+    const hexAddr = args[2];
+    const cborUtxos = args[3].split(',');
+    const minAda = BigInt(process.env.MIN_ADA); // minimum lovelace needed to send an NFT
+    const maxTxFee = BigInt(process.env.MAX_TX_FEE);
+    const minChangeAmt = BigInt(process.env.MIN_CHANGE_AMT);
+    const minUTXOVal = new Value(minAda + maxTxFee + minChangeAmt);
 
-    console.error("build-wallet-hw-tx");
-    try {
+    // Get the address from the wallet
+    const addr = Address.fromHex(hexAddr);
 
-        const network = process.env.NETWORK;
-        config.IS_TESTNET = (network === 'mainnet') ? false : true;
-        const args = process.argv;
-        const hexAddr = args[2];
-        const cborUtxos = args[3].split(',');
-        const minAda = BigInt(process.env.MIN_ADA);  // minimum lovelace needed to send an NFT
-        const maxTxFee = BigInt(process.env.MAX_TX_FEE);
-        const minChangeAmt = BigInt(process.env.MIN_CHANGE_AMT);
-        const minUTXOVal = new Value(minAda + maxTxFee + minChangeAmt);
+    // Get UTXOs from wallet
+    const walletUtxos = cborUtxos.map((u) => UTxO.fromCbor(hexToBytes(u)));
+    const utxos = CoinSelection.selectLargestFirst(walletUtxos, minUTXOVal);
 
-        // Get the address from the wallet
-        const addr = Address.fromHex(hexAddr);
+    // Start building the transaction
+    const tx = new Tx();
 
-        // Get UTXOs from wallet
-        const walletUtxos = cborUtxos.map(u => UTxO.fromCbor(hexToBytes(u)));
-        const utxos = CoinSelection.selectLargestFirst(walletUtxos, minUTXOVal);
+    // Add the UTXO as inputs
+    tx.addInputs(utxos[0]);
 
+    tx.addSigner(addr.pubKeyHash);
+    tx.addSigner(addr.stakingHash);
 
-        // Start building the transaction
-        const tx = new Tx();
+    const networkParamsFile = await getNetworkParams(network);
+    const networkParams = new NetworkParams(JSON.parse(networkParamsFile));
 
-        // Add the UTXO as inputs
-        tx.addInputs(utxos[0]);
+    await tx.finalize(networkParams, addr, utxos[1]);
 
-        tx.addSigner(addr.pubKeyHash);
-        tx.addSigner(addr.stakingHash);
-
-        const networkParamsFile = await getNetworkParams(network);
-        const networkParams = new NetworkParams(JSON.parse(networkParamsFile));
-
-        await tx.finalize(networkParams, addr, utxos[1]);
-
-        const returnObj = {
-            status: 200,
-            cborTx: bytesToHex(tx.toCbor())
-        }
-        console.error("build-hw-wallet-tx: returnObj: ", returnObj);
-        process.stdout.write(JSON.stringify(returnObj));
-
-    } catch (err) {
-        const timestamp = new Date().toISOString();
-        const returnObj = {
-            status: 500,
-            date: timestamp,
-            error: err
-        }
-        console.error("build-hw-wallet-tx: returnObj: ", returnObj);
-        process.stdout.write(JSON.stringify(returnObj));
-    }
-}
+    const returnObj = {
+      status: 200,
+      cborTx: bytesToHex(tx.toCbor()),
+    };
+    console.error('build-hw-wallet-tx: returnObj: ', returnObj);
+    process.stdout.write(JSON.stringify(returnObj));
+  } catch (err) {
+    const timestamp = new Date().toISOString();
+    const returnObj = {
+      status: 500,
+      date: timestamp,
+      error: err,
+    };
+    console.error('build-hw-wallet-tx: returnObj: ', returnObj);
+    process.stdout.write(JSON.stringify(returnObj));
+  }
+};
 
 main();
-
-
-
