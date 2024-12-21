@@ -48,7 +48,7 @@ const Details = () => {
     }
 
     const handleBookNFT = async (schedule_id) => {
-    
+
         try {
             // get the UTXOs from wallet
             const cborUtxos = await walletAPI.getUtxos()
@@ -60,7 +60,7 @@ const Details = () => {
             .then(async response => {
                 const respObjCheck = await JSON.parse(response.data)
                 if (respObjCheck.status == 200) {
-                    
+
                     let message = translatables.texts.nft_verify
                     let hexMessage = ''
 
@@ -70,7 +70,7 @@ const Details = () => {
 
                     try {
                         const { signature, key } = await walletAPI.signData(respObjCheck.addrHex, hexMessage)
-                        
+
                         await axios.post('/nft/verify', {
                             signature: signature,
                             spending_key: key,
@@ -81,13 +81,13 @@ const Details = () => {
                         })
                         .then(async response => {
                             const respObjVerify = await JSON.parse(response.data)
-                            
+
                             if (respObjVerify.status == 200) {
-            
+
                                 dispatch(actions.success({
                                     message: translatables.success.nft
                                 }))
-                                
+
                                 setDialog(dialog => ({
                                     ...dialog,
                                     open: true,
@@ -117,18 +117,18 @@ const Details = () => {
                             return
                         }
 
-                        // Will try using a signed tx because some wallets don't support signData 
+                        // Will try using a signed tx because some wallets don't support signData
                         try {
                             // get the UTXOs from wallet,
                             const cborUtxos = await walletAPI.getUtxos()
-                            
+
                             await axios.post('/wallet/build-hw-tx', {
                                 changeAddr: respObjCheck.addrHex,
                                 utxos: cborUtxos
                             })
                             .then(async response => {
                                 const respObjBuildHw = await JSON.parse(response.data)
-                                
+
                                 if (respObjBuildHw.status == 200) {
 
                                     // Get user to sign the transaction
@@ -142,7 +142,7 @@ const Details = () => {
                                         }))
                                         return
                                     }
-                   
+
                                     await axios.post('/nft/verify-hw', {
                                         walletSig: walletSig,
                                         cborTx: respObjBuildHw.cborTx,
@@ -206,8 +206,8 @@ const Details = () => {
             })
             .catch(error => {
                 throw console.error("handleNFTCheck: ", error);
-                
-            }); 
+
+            });
         } catch (error) {
             console.error("handleNFTCheck: ", error);
             dispatch(actions.error({
