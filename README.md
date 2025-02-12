@@ -23,7 +23,8 @@ MAX_TX_FEE=500000
 MIN_CHANGE_AMT=1000000
 ```
 
-Note: If you require a root key and corresponding owner pkh, please see additional notes below on how to create it.
+Note: If you require a root key and corresponding owner pkh, please see
+additional notes below on how to create it.
 
 Update with correct .env variable values
 
@@ -229,7 +230,8 @@ or check official [docs](https://laravel.com/docs/9.x/sail)
 
 ### Dev Env
 
-You may need to remove the following line from vite.config.js for your local dev env since this is only used for production.
+You may need to remove the following line from vite.config.js for your local
+dev env since this is only used for production.
 
 ```
 server: {
@@ -319,3 +321,21 @@ export DOCKER_BUILDKIT=0
 
 #   Check https://l-e-bazaar.com/ to make sure changes have been published
 ```
+
+# Payment Methods
+
+## NMKR
+
+### Setup Gateway
+https://studio.preprod.nmkr.io/projects
+
+### Setup Info
+https://docs.nmkr.io/nmkr-studio/set-up-sales/nmkr-pay/set-up-nmkr-pay
+
+### Button
+https://docs.nmkr.io/nmkr-studio/set-up-sales/nmkr-pay/website-integration
+
+This is the test button for Testnet test NFT
+
+https://pay.preprod.nmkr.io/?p=0da0ef090d5e46d9b9588fc45524e808&n=a80b1df9ef934e1e889ab110e3e363b6
+https://studio.nmkr.io/images/buttons/paybutton_1_1.svg

@@ -104,6 +104,7 @@ const Navbar = () => {
                 {
                     isLoggedIn && (
                         <>
+                            {/*
                             <ListItem>
                                 <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ width: '100%' }}>
                                     <AccountBalanceWallet sx={{ mr: 'auto' }} />
@@ -111,6 +112,7 @@ const Navbar = () => {
                                 </Stack>
                             </ListItem>
                             <Divider sx={{ my: 1 }} />
+                            */}
                             <ListItem disablePadding>
                                 <ListItemButton>
                                     <Typography
@@ -182,8 +184,10 @@ const Navbar = () => {
                                         children={`${auth.user.roles[0].name.toUpperCase()}`}
                                         sx={{ mr: 2 }}
                                     />
+                                    {/*
                                     <AccountBalanceWallet />
                                     <Typography children={auth.user.user_wallet.points.toFixed(2)} />
+                                    */}
                                 </Stack>
                             )
                         }

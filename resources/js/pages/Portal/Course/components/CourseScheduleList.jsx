@@ -35,19 +35,19 @@ const CourseScheduleList = ({ data, handleOnBook, handleOnCancelBook }) => {
         const ScheduleDate = () => (
             <Box>
                 <Typography variant="caption" color="primary" children={startDate[0]} display="block" />
-                <Typography variant="button" children={`${ startDate[1] } ${ startDate[2] } ${ startDate[3] }`} mr={1} />
-                <Typography variant="caption" children={`${ startDate[4] } ${ startDate[5] } ${ startDate[6] }`} />
+                <Typography variant="button" children={`${startDate[1]} ${startDate[2]} ${startDate[3]}`} mr={1} />
+                <Typography variant="caption" children={`${startDate[4]} ${startDate[5]} ${startDate[6]}`} />
             </Box>
         )
 
         const ScheduleButton = () => {
 
-            if (!isLoggedIn) return
+            //if (!isLoggedIn) return
 
             // View Schedule Button
             if (isLoggedIn && auth.user.id == row.course.professor_id) {
                 return (
-                    <Link href={getRoute('schedules.view', { id: row.id }) + `?return_url=${encodeURIComponent(window.location.href)}` }>
+                    <Link href={getRoute('schedules.view', { id: row.id }) + `?return_url=${encodeURIComponent(window.location.href)}`}>
                         <Button
                             fullWidth
                             variant="contained"
@@ -63,7 +63,7 @@ const CourseScheduleList = ({ data, handleOnBook, handleOnCancelBook }) => {
 
                 var bookBtnText;
                 if (row.course.course_type.type == 'General') {
-                    bookBtnText = `${translatables.texts.book_class} ${row.course.price}`
+                    bookBtnText = `${translatables.texts.book_class} ${row.course.price} ₳`
                 } else if (row.course.course_type.type == 'Free') {
                     bookBtnText = `${translatables.texts.book_class} Free`
                 } else if (row.course.course_type.type == 'Earn') {
@@ -72,7 +72,7 @@ const CourseScheduleList = ({ data, handleOnBook, handleOnCancelBook }) => {
                     bookBtnText = `${translatables.texts.book_class} NFT`
                 } else {
                     console.error("course type not found")
-                    bookBtnText = '' 
+                    bookBtnText = ''
                 }
 
                 // Live
@@ -184,9 +184,9 @@ const CourseScheduleList = ({ data, handleOnBook, handleOnCancelBook }) => {
                                     <ScheduleDate />
                                     {
                                         isLive ? (
-                                        availableSlots > 0
-                                        ? <Typography variant="caption" color="GrayText" children={`${availableSlots} ${translatables.texts.seats_available}`} />
-                                        : <Typography variant="caption" color="GrayText" children={translatables.texts.fully_booked} /> ) : ''
+                                            availableSlots > 0
+                                                ? <Typography variant="caption" color="GrayText" children={`${availableSlots} ${translatables.texts.seats_available}`} />
+                                                : <Typography variant="caption" color="GrayText" children={translatables.texts.fully_booked} />) : ''
                                     }
                                 </Box>
                             </Stack>
@@ -201,7 +201,7 @@ const CourseScheduleList = ({ data, handleOnBook, handleOnCancelBook }) => {
     })
 
     return (
-        <Box sx={{ mb:2 }}>
+        <Box sx={{ mb: 2 }}>
             <Grid container spacing={2}>
                 <Schedules />
             </Grid>
