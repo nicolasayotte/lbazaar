@@ -5,13 +5,21 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
 
-  outputs = { nixpkgs, ... }: {
-    devShells.default = with import nixpkgs { system = "x86_64-linux"; }; mkShell {
-      buildInputs = [
+  outputs = {
+    self,
+    nixpkgs,
+  }: let
+    system = "x86_64-linux"; # Change if using another architecture
+    pkgs = import nixpkgs {inherit system;};
+  in {
+    devShells.${system}.default = pkgs.mkShell {
+      buildInputs = with pkgs; [
+        phpactor
+        dockerfile-language-server-nodejs
+        docker-compose-language-service
         php82
         php82Packages.composer
       ];
     };
   };
 }
-
