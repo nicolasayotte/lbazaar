@@ -23,7 +23,7 @@
         ++ (with pkgs; [
           # apps
           php82Packages.composer
-          podman
+          docker
 
           # LSP
           phpactor
