@@ -1,56 +1,33 @@
 import { Buffer } from 'buffer';
-import { blake2b } from 'blakejs';
-import { mnemonicToEntropy } from 'bip39';
-import { Address, bytesToHex, PubKeyHash } from '@hyperionbt/helios';
-import pkg from '@stricahq/bip32ed25519';
-const { Bip32PrivateKey } = pkg;
+import { generateMnemonic, mnemonicToEntropy } from 'bip39';
+import { Address, bytesToHex, RootPrivateKey } from '@hyperionbt/helios';
 
-/***************************************************
+const isTestnet = process.env.NETWORK !== "mainnet"
+
+/**
+ * Generates:
+ *  - ROOT_KEY   : hex of the m/1852'/1815' root private key
+ *  - OWNER_PKH  : blake2b-224 hash of the first external pubkey
+ *  - ADDRESS    : enterprise (no-stake) mainnet Bech32 address
+ *
  * Usage:
- * export ENTROPY="witness pipe egg awake hood false fury announce one wool diagram weird phone treat bacon"
- * node ./generate-private-key.mjs
- * @output {string} ROOT_KEY OWNER_PKH ADDRESS
- ****************************************************/
+ *   ENTROPY="your twelve-word mnemonic here" node generate-address.js
+ */
+async function main(mnemonic) {
+    mnemonic ??= process.env.ENTROPY ?? generateMnemonic(256)
+    const entropy = mnemonicToEntropy(mnemonic);
 
-const hash28 = (data) => {
-  const hash = blake2b(data, undefined, 28);
-  return Buffer.from(hash);
-};
+    const entropyBytes = Array.from(Buffer.from(entropy, 'hex'));
+    const rootKey = new RootPrivateKey(entropyBytes);
 
-function harden(num) {
-  return 0x80000000 + num;
+    const rootKeyHex = bytesToHex(rootKey.bytes);
+    const paymentHash = rootKey.deriveSpendingKey(0, 0).derivePubKey().pubKeyHash;
+    const enterpriseAddr = Address.fromHash(paymentHash, isTestnet).toBech32()
+    return {
+        ENTROPY: mnemonic,
+        ROOT_KEY: rootKeyHex,
+        OWNER_PKH: paymentHash.hex,
+        ADDRESS: enterpriseAddr,
+    }
 }
-
-const main = async () => {
-  if (!process.env.ENTROPY) {
-    console.error('ENTROPY must be set as an environment variable');
-    return;
-  }
-  const entropy = mnemonicToEntropy(process.env.ENTROPY);
-  const buffer = Buffer.from(entropy, 'hex');
-  const rootKey = await Bip32PrivateKey.fromEntropy(buffer);
-
-  const accountKey = rootKey
-    .derive(harden(1852)) // purpose
-    .derive(harden(1815)) // coin type
-    .derive(harden(0)); // account #0
-
-  const addrPubKey = accountKey
-    .derive(0) // external
-    .derive(0)
-    .toBip32PublicKey();
-
-  const key = [...rootKey.toBytes()];
-  const keyStore = bytesToHex(key);
-  console.log('ROOT_KEY=' + keyStore);
-
-  const pubKey = addrPubKey.toPublicKey().toBytes();
-  const pubKeyHash = bytesToHex(hash28(pubKey));
-  console.log('OWNER_PKH=' + pubKeyHash);
-
-  const pkh = PubKeyHash.fromHex(pubKeyHash);
-  const addr = Address.fromPubKeyHash(pkh);
-  console.log('ADDRESS=' + addr.toBech32());
-};
-
-main();
+main().then((res) => Object.entries(res).forEach(([key, val]) => console.log(`${key}=${val}`)))

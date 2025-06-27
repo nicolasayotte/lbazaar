@@ -4,14 +4,12 @@ namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CourseRequest;
-use App\Http\Requests\CreateCourseRequest;
 use App\Http\Requests\SearchClassRequest;
 use App\Mail\CourseBooking;
 use App\Models\CourseHistory;
 use App\Models\CourseSchedule;
 use App\Models\NftTransactions;
 use App\Models\Setting;
-use App\Models\UserExam;
 use App\Models\WalletTransactionHistory;
 use App\Models\CourseType;
 use App\Models\Status;
@@ -25,15 +23,12 @@ use App\Repositories\WalletTransactionHistoryRepository;
 use App\Repositories\CourseRepository;
 use App\Repositories\CourseTypeRepository;
 use App\Repositories\NftRepository;
-use App\Repositories\TranslationRepository;
 use App\Repositories\UserRepository;
 use Inertia\Inertia;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
-use DateTime;
-use DateTimeZone;
 use Illuminate\Http\Request;
 
 class CourseController extends Controller
@@ -77,7 +72,7 @@ class CourseController extends Controller
 
     public function index(SearchClassRequest $request)
     {
-        
+
         $languages = $this->courseRepository->getLanguages();
         $types = $this->courseTypeRepository->getAll();
         $categories = $this->courseCategoryRepository->getAll();
@@ -156,11 +151,11 @@ class CourseController extends Controller
         $teacherWallet = $schedule->course->professor()->first()->userWallet()->first();
 
         $adminCommissionSettings = Setting::where('slug', 'admin-commission')->first();
-        $userId = Auth::user()->id;
+        $userId = auth()->user()->id;
         $nftId = $schedule->course->nft_id;
 
         $nft = isset($nftId) ? $this->nftRepository->getNftById($nftId): null;
-        
+
         $hasNft = isset($nft) ? NftTransactions::where('user_id', $userId)
                                    -> where('nft_name', $nft->name)
                                    -> where('used', 0)->first() : null;
@@ -174,8 +169,8 @@ class CourseController extends Controller
             return redirect()->back()->with('error', getTranslation('nft_error.used'));
         }
 
-        if (!$isBooked && !$isFullyBooked && 
-            $schedule->course->course_type_id == 4 && 
+        if (!$isBooked && !$isFullyBooked &&
+            $schedule->course->course_type_id == 4 &&
             isset($hasNft) && !isset($nftBurnt)) {
             $courseHistory = CourseHistory::create([
                 'course_schedule_id' => $schedule->id,
@@ -185,20 +180,25 @@ class CourseController extends Controller
             $this->sendBookEmailCourse($schedule);
 
             $nftTrans = NftTransactions::updateOrCreate(
-                ['user_id'     => $userId,
-                'nft_name'     => $nft->name,
-                'serial_num'   => $hasNft->serial_num],
-                ['user_id'     => $userId,
-                'nft_name'     => $nft->name,
-                'serial_num'   => $hasNft->serial_num,
-                'course_id'    => $schedule->course->id,
-                'schedule_id'  => $schedule->id,
-                'used'         => 1 ]);                                     
+                [
+                    'user_id'      => $userId,
+                    'nft_name'     => $nft->name,
+                    'serial_num'   => $hasNft->serial_num
+                ],
+                [
+                    'user_id'      => $userId,
+                    'nft_name'     => $nft->name,
+                    'serial_num'   => $hasNft->serial_num,
+                    'course_id'    => $schedule->course->id,
+                    'schedule_id'  => $schedule->id,
+                    'used'         => 1
+                ]);
 
 
-        }else if (!$isBooked && !$isFullyBooked && 
+        } else if (!$isBooked && !$isFullyBooked &&
                     $schedule->course->course_type_id != 4 &&
-                    ($userWallet->points >= $schedule->course->price)) {
+                    ($userCardanoWallet->ada >= $schedule->course->price)) {
+
             $courseHistory = CourseHistory::create([
                 'course_schedule_id' => $schedule->id,
                 'course_id'          => $schedule->course->id,
@@ -208,23 +208,31 @@ class CourseController extends Controller
             $this->sendBookEmailCourse($schedule);
 
             if ($schedule->course->courseType->type != CourseType::FREE) {
+                // TODO make this transaction with Ada
+                return redirect()->back()->withErrors([
+                    'error' => getTranslation('error')
+                ]);
 
-                $newUserPoints =  $userWallet->points - $schedule->course->price;
-                $this->updateWalletHistory($userWallet, WalletTransactionHistory::BOOK, $newUserPoints, $courseHistory);
-                $this->updateWallet($userWallet, $newUserPoints);
 
-                // $adminCommission = $schedule->course->price - $teacherCommission;
+                // TODO there is already something for this
+                $userAda =  $userCardanoWallet->ada - $schedule->course->price;
+
+                $teacherCommission = (int)($schedule->course->price / 100 * ($schedule->course->professor()->first()->commission_rate));
+                $teacherCommission = $schedule->course->price - $adminCommission;
+                $adminCommission = $schedule->course->price - $teacherCommission;
                 $adminCommission = (int)($schedule->course->price / 100 * $adminCommissionSettings->value);
-                $newAdminPoints =  $adminWallet->points + $adminCommission;
-                $this->updateWalletHistory($adminWallet, WalletTransactionHistory::COMMISSION, $newAdminPoints, $courseHistory);
-                $this->updateWallet($adminWallet, $newAdminPoints);
 
-                 // $teacherCommission = (int)($schedule->course->price / 100 * ($schedule->course->professor()->first()->commission_rate));
-                 $teacherCommission = $schedule->course->price - $adminCommission;
-                 $newTeacherPoints = $teacherWallet->points + $teacherCommission;
-                 $this->updateWalletHistory($teacherWallet, WalletTransactionHistory::COMMISSION, $newTeacherPoints, $courseHistory);
-                 $this->updateWallet($teacherWallet, $newTeacherPoints);
+                $tx = CardanoTransaction::create(userCardanowallet,
+                    [
+                        [$userAda, $userCardanoWallet->addr]
+                        [$teacherCommission, $teacherCardanoWallet->addr]
+                        [$adminCommission, $adminCardanoWallet->addr]
+                    ]
+                );
 
+
+                // TODO make sure this is returned somewhere we can sign it
+                return $tx
             }
 
         } else {
@@ -263,7 +271,7 @@ class CourseController extends Controller
                 $this->updateWalletHistory($teacherWallet, WalletTransactionHistory::REFUND, $newTeacherPoints, $courseHistory);
                 $this->updateWallet($teacherWallet, $newTeacherPoints);
             } else if ($schedule->course->courseType->name == CourseType::SPECIAL) {
-                
+
                 NftTransactions::where('user_id', auth()->user()->id)
                                 ->where('nft_id', $schedule->course->nft_id)
                                 ->where('course_id', $schedule->course->id)
@@ -508,16 +516,19 @@ class CourseController extends Controller
         $adminWallet = $this->userRepository->getAdmin()->userWallet()->first();
         $teacherWallet = $course->professor()->first()->userWallet()->first();
 
-        $pointsToGive = $course->points_earned;
-        $teacherCommission = (int)($course->points_earned / 100 * ($course->professor()->first()->commission_earn_rate));
+        // TODO rethink this method for EARN classes to be in Ada, disable for now
+        // $pointsToGive = $course->points_earned;
+        // $teacherCommission = (int)($course->points_earned / 100 * ($course->professor()->first()->commission_earn_rate));
+        $pointsToGive = 0;
+        $teacherCommission = 0;
 
         $pointsToGive = $pointsToGive - $teacherCommission;
 
         // Update admin points
         // $newUserPoints =  $userWallet->points + $pointsToGive;
-        $newUserPoints =  $userWallet->points + $course->points_earned;
-        $this->updateWalletHistory($userWallet, WalletTransactionHistory::EARN, $newUserPoints, $courseHistory);
-        $this->updateWallet($userWallet, $newUserPoints);
+        // $newUserPoints =  $userWallet->points + $course->points_earned;
+        // $this->updateWalletHistory($userWallet, WalletTransactionHistory::EARN, $newUserPoints, $courseHistory);
+        // $this->updateWallet($userWallet, $newUserPoints);
 
         // $newTeacherPoints = $teacherWallet->points + $teacherCommission;
         // $this->updateWalletHistory($teacherWallet, WalletTransactionHistory::COMMISSION, $newTeacherPoints, $courseHistory);

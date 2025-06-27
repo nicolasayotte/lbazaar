@@ -21,20 +21,11 @@
       buildInputs =
         [php82WithXml]
         ++ (with pkgs; [
-          # apps
           php82Packages.composer
           docker
-
-          # LSP
-          phpactor
-          dockerfile-language-server-nodejs
-          docker-compose-language-service
         ]);
 
       shellHook = ''
-
-        # Alias 'docker' to 'podman' for Sail compatibility
-        alias docker=podman
 
         # Set a custom shell prompt
         export PS1='\[\e[1;32m\][PHP-Sail:\w]\$\[\e[0m\] '
@@ -44,9 +35,13 @@
           chmod +x ./vendor/bin/sail
           echo "Laravel Sail is ready to use!"
         else
-          echo "Warning: Run 'composer require laravel/sail --dev' in a Laravel project to install Sail."
+          echo "Warning: use composer to require Sail"
         fi
 
+        # Verify Docker is running
+        if ! docker info >/dev/null 2>&1; then
+          echo "Warning: Docker daemon is not running. Start it with 'sudo systemctl start docker'."
+        fi
       '';
     };
   };

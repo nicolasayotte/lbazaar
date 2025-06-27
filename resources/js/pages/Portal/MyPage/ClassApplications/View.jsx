@@ -39,13 +39,13 @@ const View = () => {
 
         return (
             <TableRow>
-                <TableCell children={`Date ${courseApplication.status}`}/>
+                <TableCell children={`Date ${courseApplication.status}`} />
                 <TableCell
                     align="right"
                     children={
                         courseApplication.status === 'Approved'
-                        ? courseApplication.approved_at
-                        : courseApplication.denied_at
+                            ? courseApplication.approved_at
+                            : courseApplication.denied_at
                     }
                 />
             </TableRow>
@@ -78,26 +78,26 @@ const View = () => {
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell colSpan={2} children={translatables.texts.general_information}/>
+                                    <TableCell colSpan={2} children={translatables.texts.general_information} />
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 <TableRow>
-                                    <TableCell width="10%" children={translatables.texts.title}/>
+                                    <TableCell width="10%" children={translatables.texts.title} />
                                     <TableCell
                                         sx={generalInformationStyle}
                                         children={courseApplication.title}
                                     />
                                 </TableRow>
                                 <TableRow>
-                                    <TableCell width="10%" children={translatables.texts.type}/>
+                                    <TableCell width="10%" children={translatables.texts.type} />
                                     <TableCell
                                         sx={generalInformationStyle}
                                         children={courseApplication.type}
                                     />
                                 </TableRow>
                                 <TableRow>
-                                    <TableCell width="10%" children={translatables.texts.category}/>
+                                    <TableCell width="10%" children={translatables.texts.category} />
                                     <TableCell
                                         sx={generalInformationStyle}
                                         children={courseApplication.category}
@@ -110,7 +110,7 @@ const View = () => {
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell children={translatables.texts.content_information}/>
+                                    <TableCell children={translatables.texts.content_information} />
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -128,50 +128,58 @@ const View = () => {
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell colSpan={2} children={translatables.texts.status_information}/>
+                                    <TableCell colSpan={2} children={translatables.texts.status_information} />
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 <TableRow>
-                                    <TableCell children={translatables.texts.status}/>
+                                    <TableCell children={translatables.texts.status} />
                                     <TableCell align="right">
-                                        <Chip label={courseApplication.status} size="small" color={statusColors[courseApplication.status]}/>
+                                        <Chip label={courseApplication.status} size="small" color={statusColors[courseApplication.status]} />
                                     </TableCell>
                                 </TableRow>
                                 <TableRow>
-                                    <TableCell children={translatables.texts.date_applied}/>
-                                    <TableCell align="right" children={courseApplication.created_at}/>
+                                    <TableCell children={translatables.texts.date_applied} />
+                                    <TableCell align="right" children={courseApplication.created_at} />
                                 </TableRow>
                                 {displayApprovalStatus()}
                             </TableBody>
                         </Table>
                     </TableContainer>
                     <TableContainer component={Paper}>
-                    <Table>
+                        <Table>
                             <TableHead>
                                 <TableRow>
-                                    {!nft  && <TableCell colSpan={2} children={translatables.texts.pricing_information} />}
+                                    {!nft && <TableCell colSpan={2} children={translatables.texts.pricing_information} />}
                                     {nft && <TableCell colSpan={2} children={translatables.texts.nft} />}
                                 </TableRow>
                             </TableHead>
-                            <TableBody>
-                                {!nft && <TableRow>
-                                    <TableCell width="50%" children={translatables.texts.price} />
-                                    <TableCell align="right" children={courseApplication.price}/>
-                                </TableRow>}
-                                {nft && <TableRow>
-                                    <TableCell width="50%" children={translatables.texts.name} />
-                                    <TableCell align="right" children={nft.name}/>
-                                </TableRow>}
-                                {!nft && <TableRow>
-                                    <TableCell width="50%" children={translatables.texts.points_earned} />
-                                    <TableCell align="right" children={courseApplication.points_earned}/>
-                                </TableRow>}
-                                {nft && <TableRow>
-                                    <TableCell width="50%" children={translatables.texts.points} />
-                                    <TableCell align="right" children={nft.points}/>
-                                </TableRow>}
-                            </TableBody>
+
+                            {!nft && (
+                                <TableBody>
+                                    <TableRow>
+                                        <TableCell width="50%" children={translatables.texts.price} />
+                                        <TableCell align="right" children={courseApplication.price} />
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell width="50%" children={translatables.texts.points_earned} />
+                                        <TableCell align="right" children={courseApplication.points_earned} />
+                                    </TableRow>
+                                </TableBody>
+                            )}
+
+                            {nft && (
+                                <TableBody>
+                                    <TableRow>
+                                        <TableCell width="50%" children={translatables.texts.name} />
+                                        <TableCell align="right" children={nft.name} />
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell width="50%" children={translatables.texts.points} />
+                                        <TableCell align="right" children={nft.points} />
+                                    </TableRow>
+                                </TableBody>
+                            )}
                         </Table>
                     </TableContainer>
                 </Grid>

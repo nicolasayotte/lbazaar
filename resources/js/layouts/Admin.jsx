@@ -7,7 +7,7 @@ import Toaster from "../components/includes/Toaster"
 import AdminTheme from "../themes/admin.theme"
 import Meta from "../components/common/Meta"
 
-const Admin = ({children}) => {
+const Admin = ({ children }) => {
 
     const [drawerWidth, setDrawerWidth] = useState(300)
 
@@ -26,7 +26,7 @@ const Admin = ({children}) => {
                         />
                         <Box
                             sx={{
-                                paddingLeft: { xs: 0, md: `${ drawerWidth }px` },
+                                paddingLeft: { xs: 0, md: `${drawerWidth}px` },
                                 paddingY: 2
                             }}
                         >

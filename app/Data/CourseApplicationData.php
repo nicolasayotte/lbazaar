@@ -257,7 +257,7 @@ class CourseApplicationData
         $courseData->setTitle($courseApplication->title);
 		$courseData->setType($courseApplication->courseType->name);
         $courseData->setCategory($courseApplication->courseCategory->name);
-		
+
 		if($courseApplication->nft) {
 			$courseData->setNftId($courseApplication->nft->id);
 		}
@@ -268,7 +268,7 @@ class CourseApplicationData
         $courseData->setProfessorEmail($courseApplication->professor->email);
         $courseData->setProfessorCreatedAt(Carbon::parse($courseApplication->professor->created_at)->format('M j, Y'));
 
-        $courseData->setPrice($courseApplication->price == 0 ? 'Free' : number_format($courseApplication->price, 2));
+        $courseData->setPrice($courseApplication-> price == 0 ? 'Free' : number_format($courseApplication->price, 2));
         $courseData->setPointsEarned($courseApplication->points_earned == 0 ? "N/A" : number_format($courseApplication->points_earned, 2));
 
         $courseData->setCreatedAt(Carbon::parse($courseApplication->created_at)->format('M j, Y'));

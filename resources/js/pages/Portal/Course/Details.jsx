@@ -44,8 +44,8 @@ const Details = () => {
             open: true,
             title: translatables.texts.book,
             text: translatables.confirm.class.schedules.book,
-            //submitUrl: getRoute('course.book', {schedule_id}),
-            submitUrl: "https://pay.preprod.nmkr.io/?p=0da0ef090d5e46d9b9588fc45524e808&c=1",
+            submitUrl: getRoute('course.book', { schedule_id }),
+
             method: 'post',
             action: 'booked'
         }))
@@ -242,29 +242,32 @@ const Details = () => {
     const handleOnDialogSubmit = e => {
         e.preventDefault()
 
-        if (dialog.submitUrl.startsWith('https://pay.')) {
-            // Specify the popup width and height
-            const popupWidth = 500;
-            const popupHeight = 700;
+        const popupWidth = 500;
+        const popupHeight = 700;
 
-            // Calculate the center of the screen
-            const left = window.top.outerWidth / 2 + window.top.screenX - (popupWidth / 2);
-            const top = window.top.outerHeight / 2 + window.top.screenY - (popupHeight / 2);
+        // Calculate the center of the screen
+        const left = window.top.outerWidth / 2 + window.top.screenX - (popupWidth / 2);
+        const top = window.top.outerHeight / 2 + window.top.screenY - (popupHeight / 2);
 
-            const popup = window.open(dialog.submitUrl + "&pm=fiat", "NFT-MAKER PRO Payment Gateway", `popup=1, location=1, width=${popupWidth}, height=${popupHeight}, left=${left}, top=${top}`);
-        } else {
-            Inertia.visit(dialog.submitUrl, {
-                method: dialog.method,
-                errorBag: dialog.action,
+        const popup = window.open(
+            "https://pay.nmkr.io/?p=31970d0c2a694954a416d36847e50375&n=aa680d6c884b4b10ba7e76ff3fd9ebcc",
+            "NFT-MAKER PRO Payment Gateway",
+            `popup=1, location=1, width=${popupWidth}, height=${popupHeight}, left=${left}, top=${top}`
+        );
 
-                onSuccess: () => dispatch(actions.success({
-                    message: translatables.success.class.booking[dialog.action]
-                })),
-                onError: () => dispatch(actions.error({
-                    message: translatables.error
-                }))
-            })
-        }
+        console.log(popup)
+
+        Inertia.visit(dialog.submitUrl, {
+            method: dialog.method,
+            errorBag: dialog.action,
+
+            onSuccess: () => dispatch(actions.success({
+                message: translatables.success.class.booking[dialog.action]
+            })),
+            onError: () => dispatch(actions.error({
+                message: translatables.error
+            }))
+        })
     }
 
     const handleOnFeedbacksLoad = () => {
@@ -382,7 +385,7 @@ const Details = () => {
 
         const dynamicInfos = {
             'General': { type: translatables.texts.price, value: course.price },
-            'Free': { type: translatables.texts.price, value: 'Free' },
+            'Free': { type: translatables.texts.price, value: translatables.texts.free },
             'Earn': { type: translatables.texts.points_earned, value: course.points_earned }
         }
 

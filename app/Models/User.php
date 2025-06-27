@@ -27,6 +27,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public const RANDOM_PASSWORD_STRING_LENGTH = 8;
 
+    // Transactions use the value in the table, not this constant split
     public const COMMISSION = [
         Role::ADMIN => 20,
         Role::TEACHER => 80,

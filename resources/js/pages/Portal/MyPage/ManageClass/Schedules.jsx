@@ -13,7 +13,7 @@ import { Inertia } from "@inertiajs/inertia"
 const Schedules = () => {
 
     const { schedules, translatables, course, nft, from, to, page, status, sort } = usePage().props
-    
+
     const statusOptions = [
         { name: 'All', value: '' },
         { name: 'Upcoming', value: 'upcoming' },
@@ -160,8 +160,8 @@ const Schedules = () => {
             </Card>
             {
                 processing
-                ? <TableLoader />
-                : <ScheduleTable data={schedules.data} handleOnDelete={handleOnDelete} />
+                    ? <TableLoader />
+                    : <ScheduleTable data={schedules.data} handleOnDelete={handleOnDelete} />
             }
             <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
                 <Pagination

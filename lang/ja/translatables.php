@@ -283,6 +283,7 @@ return [
     ],
     'texts'=> [
         'actions'=> '実行',
+        'ada' =>'エイダ',
         'add_choice'=> '選択追加',
         'add_item'=> '項目を追加',
         'add_points'=> 'ポイント追加',
@@ -428,7 +429,7 @@ return [
         'password'=> 'パスワード',
         'points'=> 'ポイント',
         'wallet_commission_details'=> 'コミッション',
-        'points_earned'=> 'ポイント追加',
+        'points_earned'=> 'エイダ追加',
         'wallet_connect'=> 'ウォレットを接続する',
         'wallet_connected' => 'Connected',
         'wallet_not_connected' => 'Please make sure your wallet dapp connector is turned on',

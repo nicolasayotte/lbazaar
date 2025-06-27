@@ -30,7 +30,7 @@ const Attend = () => {
                 method: 'get'
             })
         }
-        let  course_exams_published = course.exams.filter((exam) => exam.published_at != null)
+        let course_exams_published = course.exams.filter((exam) => exam.published_at != null)
 
         if (course_exams_published && course_exams_published.length > 0) {
             course_exams_published.map(exam => {
@@ -45,9 +45,9 @@ const Attend = () => {
             })
         }
 
-        const isFreeClass = course.course_type.type  == 'Free'
+        const isFreeClass = course.course_type.type == 'Free'
         const defaultCompleteUrl = booking.completed_at ? getRoute('course.details', { id: course.id }) : getRoute('course.attend.complete', { course_id: course.id, schedule_id: schedule.id })
-        const freeClassCompleteUrl =  booking.completed_at ? getRoute('course.details', { id: course.id }) : getRoute('course.attend.complete.confirmation', { course_id: course.id, schedule_id: schedule.id })
+        const freeClassCompleteUrl = booking.completed_at ? getRoute('course.details', { id: course.id }) : getRoute('course.attend.complete.confirmation', { course_id: course.id, schedule_id: schedule.id })
 
         steps.push({
             label: translatables.texts.give_feedback,
@@ -188,12 +188,12 @@ const Attend = () => {
     const BadgeInformation = () => {
 
         const packageCourses = course.course_package && course.course_package.courses && course.course_package.courses.length > 0
-        ? course.course_package.courses.filter(item => item.id != course.id)
-        : []
+            ? course.course_package.courses.filter(item => item.id != course.id)
+            : []
 
         const title = packageCourses.length > 0
-        ? translatables.texts.complete_classes_earn_badge
-        : translatables.texts.complete_class_earn_badge
+            ? translatables.texts.complete_classes_earn_badge
+            : translatables.texts.complete_class_earn_badge
 
         return (
             <TableContainer sx={{ mb: 2 }} component={Paper}>

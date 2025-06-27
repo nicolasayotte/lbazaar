@@ -31,8 +31,8 @@ const Index = ({ errors }) => {
         <>
             {
                 processing
-                ? <TableLoader />
-                : <WalletHistoryTable data={wallet_history.data}/>
+                    ? <TableLoader />
+                    : <WalletHistoryTable data={wallet_history.data} />
             }
             <Grid item xs={12} md={12}>
                 <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>

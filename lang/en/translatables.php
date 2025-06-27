@@ -283,6 +283,7 @@ return [
     ],
     'texts' => [
         'actions' => 'Actions',
+        'ada' => 'Ada',
         'add_choice' => 'Add Choice',
         'add_item' => 'Add Item',
         'add_points' => 'Add Points',
@@ -432,7 +433,7 @@ return [
         'package' => 'Package',
         'password_help' => 'Must have at least 8 characters',
         'password' => 'Password',
-        'points_earned' => 'Points Earned',
+        'points_earned' => 'Ada Earned',
         'points' => 'Points',
         'points_to_convert_to_nft' => 'Points to convert to NFT',
         'price' => 'Price',
