@@ -224,15 +224,15 @@ class CourseController extends Controller
 
                 $tx = CardanoTransaction::create(userCardanowallet,
                     [
-                        [$userAda, $userCardanoWallet->addr]
-                        [$teacherCommission, $teacherCardanoWallet->addr]
-                        [$adminCommission, $adminCardanoWallet->addr]
+                        [$userAda, $userCardanoWallet->addr],
+                        [$teacherCommission, $teacherCardanoWallet->addr],
+                        [$adminCommission, $adminCardanoWallet->addr],
                     ]
                 );
 
 
                 // TODO make sure this is returned somewhere we can sign it
-                return $tx
+                return $tx;
             }
 
         } else {

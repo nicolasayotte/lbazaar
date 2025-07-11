@@ -18,7 +18,7 @@ class CourseFeedback extends Model
         'comments'
     ];
 
-    protected $table = 'gourse_feedbacks';
+    protected $table = 'course_feedbacks';
 
     public function user()
     {

@@ -18,11 +18,9 @@ use Inertia\Inertia;
 class CourseApplicationController extends Controller
 {
     private $courseApplicationRepository;
-
     private $courseCategoryRepository;
-
     private $courseTypeRepository;
-
+    private $nftRepository;
     private $title = 'Class Applications | Admin';
 
     public function __construct()
@@ -56,7 +54,7 @@ class CourseApplicationController extends Controller
     {
         $courseApplication = CourseApplicationData::fromModel($this->courseApplicationRepository->with(['professor.classification'])->findOrFail($id));
         $nftId = $courseApplication['nft_id'];
-        
+
         if ($nftId) {
             return Inertia::render('Admin/ClassApplications/View',[
                 'courseApplication' => $courseApplication,
