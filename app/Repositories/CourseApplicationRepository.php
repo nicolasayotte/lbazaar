@@ -24,6 +24,7 @@ class CourseApplicationRepository extends BaseRepository
         $sortOrder = $sortFilterArr[1];
 
         return $this->model
+                ->with(['professor', 'courseType', 'categories', 'course'])
                 ->where(function($q) use($filters) {
                     return $q->where('title', 'LIKE', '%'. @$filters['keyword'] .'%')
                             ->orWhereHas('professor', function($q2) use($filters) {
@@ -33,8 +34,10 @@ class CourseApplicationRepository extends BaseRepository
                 ->when(@$filters['course_type'], function($q) use($filters) {
                     return $q->where('course_type_id', @$filters['course_type']);
                 })
-                ->when(@$filters['category'], function($q) use($filters) {
-                    return $q->where('course_category_id', @$filters['category']);
+                ->when($filters['category'], function($q) use($filters) {
+                    return $q->whereHas('categories', function($q2) use ($filters) {
+                        return $q2->whereIn('course_category_id', (array) $filters['category']);
+                    });
                 })
                 ->when(@$filters['status'], function($q) use($filters) {
                     // Check if pending
@@ -65,16 +68,18 @@ class CourseApplicationRepository extends BaseRepository
         $sortBy    = $sortFilterArr[0];
         $sortOrder = $sortFilterArr[1];
 
-        return $this->model->with(['course'])
+        return $this->model->with(['course', 'categories'])
                 ->where(function($q) use($filters) {
                     return $q->where('title', 'LIKE', '%'. @$filters['keyword'] .'%');
                 })
                 ->when(@$filters['course_type'], function($q) use($filters) {
                     return $q->where('course_type_id', @$filters['course_type']);
                 })
-                ->when(@$filters['category'], function($q) use($filters) {
-                    return $q->where('course_category_id', @$filters['category']);
-                })
+                ->when($filters['category'] ?? null, fn($q) =>
+                    $q->whereHas('categories', fn($q2) =>
+                        $q2->whereIn('course_category_id', (array) $filters['category'])
+                    )
+                )
                 ->when(@$filters['status'], function($q) use($filters) {
                     // Check if pending
                     if (@$filters['status'] == CourseApplication::PENDING) {
@@ -122,11 +127,23 @@ class CourseApplicationRepository extends BaseRepository
     public function findOneApproved($id)
     {
         return $this->model
-                    ->with('courseType', 'courseCategory', 'course')
+                    ->with('courseType', 'categories', 'course')
                     ->where('approved_at', '!=', NULL)
                     ->whereDoesntHave('course')
                     ->where('id', $id)
                     ->firstOrFail();
+    }
+
+    public function saveWithCategories(array $data, array $categoryIds = [])
+    {
+        // If $data contains ['id'=>…] you might do update; otherwise create
+        $app = isset($data['id'])
+            ? $this->model->findOrFail($data['id'])->fill($data)->save() && $this->model->find($data['id'])
+            : $this->model->create($data);
+
+        $app->categories()->sync($categoryIds);
+
+        return $app;
     }
 
     public function processApplication(CourseApplication $applicationData)

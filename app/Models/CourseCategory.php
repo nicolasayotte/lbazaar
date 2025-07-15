@@ -13,4 +13,16 @@ class CourseCategory extends Model
     protected $fillable = [
         'name'
     ];
+
+    public function courses()
+    {
+        return $this->belongsToMany(Course::class)
+                    ->withTimestamps();
+    }
+
+    public function courseApplications()
+    {
+        return $this->belongsToMany(CourseApplication::class)
+                    ->withTimestamps();
+    }
 }

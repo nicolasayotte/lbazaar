@@ -56,7 +56,7 @@ class Course extends Model
     protected $with = [
         'professor',
         'courseType',
-        'courseCategory',
+        'categories',
         'coursePackage',
         'schedules'
     ];
@@ -71,9 +71,9 @@ class Course extends Model
         return $this->belongsTo(CourseType::class);
     }
 
-    public function courseCategory()
+    public function categories()
     {
-        return $this->belongsTo(CourseCategory::class)->withTrashed();
+        return $this->belongsToMany(CourseCategory::class)->withTrashed();
     }
 
     public function nft()
