@@ -24,8 +24,10 @@ class CourseApplicationFactory extends Factory
     public function definition()
     {
         $user = User::whereRoleIs(Role::TEACHER)->inRandomOrder()->first();
-
-        $category = CourseCategory::inRandomOrder()->first();
+        if (!$user) {
+            $user = User::factory()->create();
+            // Optionally assign TEACHER role if needed
+        }
 
         return [
             'title'              => fake()->sentence(),
@@ -37,7 +39,6 @@ class CourseApplicationFactory extends Factory
             'created_at'         => Carbon::now(),
             'course_type_id'     => $this->getCourseType(CourseType::GENERAL),
             'professor_id'       => $user->id,
-            'course_category_id' => $category->id,
             'max_participant'    => fake()->randomNumber(3),
             'is_live'            => fake()->randomElement([true, false]),
             'lecture_frequency'  => 'daily',

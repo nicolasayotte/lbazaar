@@ -7,7 +7,7 @@ use Carbon\Carbon;
 
 class CourseApplicationData
 {
-    private $id;
+	private $id;
 
 	private $title;
 
@@ -23,7 +23,7 @@ class CourseApplicationData
 
 	private $price;
 
-	private $category;
+	private $categories = [];
 
 	private $nft_id;
 
@@ -43,8 +43,8 @@ class CourseApplicationData
 
 	private $isCourseCreated;
 
-    // Setters
-    public function setId($id)
+	// Setters
+	public function setId($id)
 	{
 		$this->id = $id;
 		return $this;
@@ -92,9 +92,9 @@ class CourseApplicationData
 		return $this;
 	}
 
-	public function setCategory($category)
+	public function setCategories($categories)
 	{
-		$this->category = $category;
+		$this->categories = $categories;
 		return $this;
 	}
 
@@ -153,8 +153,8 @@ class CourseApplicationData
 		return $this;
 	}
 
-    // Getters
-    public function getId()
+	// Getters
+	public function getId()
 	{
 		return $this->id;
 	}
@@ -194,9 +194,9 @@ class CourseApplicationData
 		return $this->price;
 	}
 
-	public function getCategory()
+	public function getCategories()
 	{
-		return $this->category;
+		return $this->categories;
 	}
 
 	public function getNftId()
@@ -244,53 +244,55 @@ class CourseApplicationData
 		return $this->isCourseCreated;
 	}
 
-    public function getProperties()
-    {
-        return get_object_vars($this);
-    }
+	public function getProperties()
+	{
+		return get_object_vars($this);
+	}
 
-    public static function fromModel(CourseApplication $courseApplication)
-    {
-        $courseData = new CourseApplicationData();
+	public static function fromModel(CourseApplication $courseApplication)
+	{
+		$courseData = new CourseApplicationData();
 
-        $courseData->setId($courseApplication->id);
-        $courseData->setTitle($courseApplication->title);
+		$courseData->setId($courseApplication->id);
+		$courseData->setTitle($courseApplication->title);
 		$courseData->setType($courseApplication->courseType->name);
-        $courseData->setCategory($courseApplication->courseCategory->name);
+		// Set categories as array of names
+		$categoryNames = $courseApplication->categories->pluck('name')->toArray();
+		$courseData->setCategories($categoryNames);
 
 		if($courseApplication->nft) {
 			$courseData->setNftId($courseApplication->nft->id);
 		}
-    	$courseData->setLanguage($courseApplication->language);
-        $courseData->setDescription($courseApplication->description);
+		$courseData->setLanguage($courseApplication->language);
+		$courseData->setDescription($courseApplication->description);
 
-        $courseData->setProfessorName($courseApplication->professor->fullname);
-        $courseData->setProfessorEmail($courseApplication->professor->email);
-        $courseData->setProfessorCreatedAt(Carbon::parse($courseApplication->professor->created_at)->format('M j, Y'));
+		$courseData->setProfessorName($courseApplication->professor->fullname);
+		$courseData->setProfessorEmail($courseApplication->professor->email);
+		$courseData->setProfessorCreatedAt(Carbon::parse($courseApplication->professor->created_at)->format('M j, Y'));
 
-        $courseData->setPrice($courseApplication-> price == 0 ? 'Free' : number_format($courseApplication->price, 2));
-        $courseData->setPointsEarned($courseApplication->points_earned == 0 ? "N/A" : number_format($courseApplication->points_earned, 2));
+		$courseData->setPrice($courseApplication-> price == 0 ? 'Free' : number_format($courseApplication->price, 2));
+		$courseData->setPointsEarned($courseApplication->points_earned == 0 ? "N/A" : number_format($courseApplication->points_earned, 2));
 
-        $courseData->setCreatedAt(Carbon::parse($courseApplication->created_at)->format('M j, Y'));
-        $courseData->setDeniedAt(@$courseApplication->denied_at ? Carbon::parse($courseApplication->denied_at)->format('M j, Y') : NULL);
-        $courseData->setApprovedAt(@$courseApplication->approved_at ? Carbon::parse($courseApplication->approved_at)->format('M j, Y') : NULL);
+		$courseData->setCreatedAt(Carbon::parse($courseApplication->created_at)->format('M j, Y'));
+		$courseData->setDeniedAt(@$courseApplication->denied_at ? Carbon::parse($courseApplication->denied_at)->format('M j, Y') : NULL);
+		$courseData->setApprovedAt(@$courseApplication->approved_at ? Carbon::parse($courseApplication->approved_at)->format('M j, Y') : NULL);
 
-        $courseData->setIsCourseCreated(!empty($courseApplication->course) ? true : false);
+		$courseData->setIsCourseCreated(!empty($courseApplication->course) ? true : false);
 
-        $courseStatus = CourseApplication::PENDING;
+		$courseStatus = CourseApplication::PENDING;
 
-        // Check if status is approved
-        if ($courseApplication->approved_at != NULL) {
-            $courseStatus = CourseApplication::APPROVED;
-        }
+		// Check if status is approved
+		if ($courseApplication->approved_at != NULL) {
+			$courseStatus = CourseApplication::APPROVED;
+		}
 
-        // Check if status is denied
-        if ($courseApplication->denied_at != NULL) {
-            $courseStatus = CourseApplication::DENIED;
-        }
+		// Check if status is denied
+		if ($courseApplication->denied_at != NULL) {
+			$courseStatus = CourseApplication::DENIED;
+		}
 
-        $courseData->setStatus(ucwords($courseStatus));
+		$courseData->setStatus(ucwords($courseStatus));
 
-        return $courseData->getProperties();
-    }
+		return $courseData->getProperties();
+	}
 }

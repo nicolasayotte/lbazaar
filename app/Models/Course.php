@@ -26,7 +26,6 @@ class Course extends Model
         "description",
         "language",
         "image_thumbnail",
-        "course_category_id",
         "nft_id",
         "course_type_id",
         "video_path",
@@ -73,7 +72,7 @@ class Course extends Model
 
     public function categories()
     {
-        return $this->belongsToMany(CourseCategory::class)->withTrashed();
+        return $this->belongsToMany(CourseCategory::class, 'course_category_course')->withTrashed();
     }
 
     public function nft()

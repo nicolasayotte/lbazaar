@@ -43,6 +43,13 @@
           if ! docker info >/dev/null 2>&1; then
             echo "Warning: Docker daemon is not running. Start it with 'sudo systemctl start docker'."
           fi
+
+          mkdir -p .vscode
+          cat > .vscode/settings.json <<EOF
+{
+  "php.validate.executablePath": "${php82WithXml}/bin/php"
+}
+EOF
           zsh
         '';
       };

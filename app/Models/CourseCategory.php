@@ -16,13 +16,13 @@ class CourseCategory extends Model
 
     public function courses()
     {
-        return $this->belongsToMany(Course::class)
+        return $this->belongsToMany(Course::class, 'course_category_course')
                     ->withTimestamps();
     }
 
     public function courseApplications()
     {
-        return $this->belongsToMany(CourseApplication::class)
+        return $this->belongsToMany(CourseApplication::class, 'course_category_course_application')
                     ->withTimestamps();
     }
 }

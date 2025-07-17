@@ -19,7 +19,7 @@ class UserFactory extends Factory
      */
     public function definition()
     {
-        $countryIds = DB::table('countries')->select('id')->pluck('id');
+        $country = \App\Models\Country::inRandomOrder()->first() ?? \App\Models\Country::factory()->create();
 
         return [
             'first_name'        => fake()->firstName(),
@@ -31,7 +31,7 @@ class UserFactory extends Factory
             'specialty'         => fake()->sentence(),
             'email'             => fake()->unique()->safeEmail(),
             'email_verified_at' => fake()->dateTime(),
-            'country_id'        => fake()->randomElement($countryIds),
+            'country_id'        => $country->id,
             'password'          => Hash::make('test1234'),
             'is_temp_password'  => false,
             'is_enabled'        => true,

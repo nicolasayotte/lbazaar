@@ -60,6 +60,13 @@ class CourseApplicationSeeder extends Seeder
 
         $applications = $applications->approved();
 
-        return $applications->create();
+        $createdApplications = $applications->create();
+
+        foreach ($createdApplications as $application) {
+            $categoryIds = \App\Models\CourseCategory::inRandomOrder()->limit(rand(1, 3))->pluck('id');
+            $application->categories()->attach($categoryIds);
+        }
+
+        return $createdApplications;
     }
 }

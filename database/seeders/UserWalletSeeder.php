@@ -18,7 +18,7 @@ class UserWalletSeeder extends Seeder
         $users = User::all();
 
         foreach ($users as $user) {
-            UserWallet::create([
+            UserWallet::updateOrCreate([
                 'user_id' => $user->id,
                 'points' => fake()->numberBetween(500, 1000),
             ]);

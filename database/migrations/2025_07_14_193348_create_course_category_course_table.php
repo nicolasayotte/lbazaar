@@ -23,6 +23,7 @@ return new class extends Migration
                   ->cascadeOnDelete();
 
             $table->primary(['course_id', 'course_category_id']);   // composite PK
+            $table->timestamps();
         });
     }
 

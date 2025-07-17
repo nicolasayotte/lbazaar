@@ -36,7 +36,7 @@ class CourseApplicationRepository extends BaseRepository
                 })
                 ->when($filters['category'], function($q) use($filters) {
                     return $q->whereHas('categories', function($q2) use ($filters) {
-                        return $q2->whereIn('course_category_id', (array) $filters['category']);
+                        return $q2->whereIn('id', (array) $filters['category']);
                     });
                 })
                 ->when(@$filters['status'], function($q) use($filters) {
@@ -77,7 +77,7 @@ class CourseApplicationRepository extends BaseRepository
                 })
                 ->when($filters['category'] ?? null, fn($q) =>
                     $q->whereHas('categories', fn($q2) =>
-                        $q2->whereIn('course_category_id', (array) $filters['category'])
+                        $q2->whereIn('id', (array) $filters['category'])
                     )
                 )
                 ->when(@$filters['status'], function($q) use($filters) {

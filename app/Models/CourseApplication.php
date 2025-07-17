@@ -60,8 +60,7 @@ class CourseApplication extends Model
 
     public function categories()
     {
-        return $this->belongsToMany(CourseCategory::class)
-                    ->withTrashed();
+        return $this->belongsToMany(CourseCategory::class, 'course_category_course_application')->withTrashed();
     }
 
     public function nft()
