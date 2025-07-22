@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('course_feedbacks', function (Blueprint $table) {
-            $table->foreignId('schedule_id')->constrained('course_schedules')->cascadeOnDelete();
+            $table->foreignId('schedule_id')->nullable()->constrained('course_schedules')->nullOnDelete();
         });
     }
 

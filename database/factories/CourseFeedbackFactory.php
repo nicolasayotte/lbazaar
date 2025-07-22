@@ -17,6 +17,9 @@ class CourseFeedbackFactory extends Factory
     public function definition()
     {
         return [
+            'user_id' => \App\Models\User::factory(),
+            'course_id' => \App\Models\Course::factory(),
+            'schedule_id' => null,
             'rating'   => fake()->numberBetween(1, 100),
             'comments' => fake()->sentence()
         ];
