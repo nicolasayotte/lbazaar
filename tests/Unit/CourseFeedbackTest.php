@@ -32,4 +32,26 @@ class CourseFeedbackTest extends TestCase
     $this->assertEquals($course->id, $feedback->course->id);
     $this->assertEquals($schedule->id, $feedback->schedule->id);
   }
+
+
+    /** @test */
+    public function it_can_associate_feedback_with_a_specific_schedule()
+    {
+        $schedule = CourseSchedule::factory()->create();
+        $feedback = CourseFeedback::factory()->create([
+            'schedule_id' => $schedule->id,
+        ]);
+
+        $this->assertEquals($schedule->id, $feedback->schedule->id);
+    }
+
+    /** @test */
+    public function it_can_give_feedback_without_a_schedule()
+    {
+        $feedback = CourseFeedback::factory()->create([
+            'schedule_id' => null,
+        ]);
+
+        $this->assertNull($feedback->schedule);
+    }
 }
