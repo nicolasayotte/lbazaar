@@ -26,26 +26,9 @@ use Illuminate\Support\Facades\Log;
 
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    $user = $request->user();
-    $wallet = $user->userWallet;
-    $walletAddress = null;
-    $walletType = null;
-    if ($wallet && !empty($wallet->stake_key_hash)) {
-        $walletAddress = $wallet->stake_key_hash;
-        $walletType = 'linked';
-    } else {
-        // Call node script to get custodial wallet address
-        $userId = $user->id;
-        $cmd = 'cd ' . base_path('web3') . '; node common/get-custodial-address.mjs ' . escapeshellarg($userId);
-        $output = shell_exec($cmd);
-        $result = json_decode($output, true);
-        $walletAddress = $result['address'] ?? null;
-        $walletType = 'custodial';
-    }
-    $profile = $user->toArray();
-    $profile['wallet_address'] = $walletAddress;
-    $profile['wallet_type'] = $walletType;
-    return response()->json($profile);
+    // Return authenticated user with linked wallet
+    $user = $request->user()->load('userWallet');
+    return response()->json($user);
 });
 
 Route::post('/auth/login', [AuthController::class, 'authenticate']);

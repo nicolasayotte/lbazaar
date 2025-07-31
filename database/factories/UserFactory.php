@@ -3,6 +3,9 @@
 namespace Database\Factories;
 
 use App\Models\Classifications;
+use App\Models\User;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -41,6 +44,28 @@ class UserFactory extends Factory
             'commission_rate'   => fake()->numberBetween(10, 90),
             'commission_earn_rate' => fake()->numberBetween(10, 90)
         ];
+    }
+
+    /**
+     * Configure the factory to set custodial_address after creating the model.
+     *
+     * @return $this
+     */
+    public function configure()
+    {
+        return $this->afterCreating(function (User $user) {
+            // call Node script to get custodial address JSON
+            $script = base_path('web3/common/get-custodial-address.mjs');
+            $process = new Process(['node', $script, (string) $user->id]);
+            $process->run();
+            if (! $process->isSuccessful()) {
+                throw new ProcessFailedException($process);
+            }
+            $output = $process->getOutput();
+            $data = json_decode($output, true);
+            $address = $data['address'] ?? null;
+            $user->updateQuietly([ 'custodial_address' => $address ]);
+        });
     }
 
     public function unverified()

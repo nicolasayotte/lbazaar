@@ -23,16 +23,13 @@ class UserWalletAddressTest extends TestCase
         $this->actingAs($user);
         $response = $this->getJson('/api/user');
         $response->assertStatus(200)
-            ->assertJsonFragment([
-                'wallet_address' => 'addr_test1qpmocklinkedaddress',
-                'wallet_type' => 'linked',
-            ]);
+            ->assertJsonPath('user_wallet.stake_key_hash', 'addr_test1qpmocklinkedaddress');
     }
 
     /**
      * Test /user endpoint returns custodial wallet address if no linked wallet
      */
-    public function test_user_endpoint_returns_custodial_wallet_address_if_none_linked()
+    public function test_user_endpoint_always_returns_custodial_wallet_address()
     {
         $user = User::factory()->create();
         $user->userWallet()->create([
@@ -42,14 +39,6 @@ class UserWalletAddressTest extends TestCase
         $this->actingAs($user);
         $response = $this->getJson('/api/user');
         $response->assertStatus(200)
-            ->assertJsonStructure([
-                'wallet_address',
-                'wallet_type',
-            ])
-            ->assertJsonFragment([
-                'wallet_type' => 'custodial',
-            ]);
-        // Optionally: check address format
-        $this->assertStringStartsWith('addr', $response->json('wallet_address'));
+            ->assertJsonPath('custodial_address', fn($value) => str_starts_with($value, 'addr'));
     }
 }
