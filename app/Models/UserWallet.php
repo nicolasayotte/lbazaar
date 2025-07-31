@@ -15,6 +15,7 @@ class UserWallet extends Model
         'badges',
         'credit',
         'stake_key_hash',
+        'address',
     ];
 
     public function userWalletTransactions()

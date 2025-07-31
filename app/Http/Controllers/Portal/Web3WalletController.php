@@ -98,8 +98,11 @@ class Web3WalletController extends Controller
                 // if it has been successfully verified
                 $userId = Auth::user()->id;
                 $user_wallets = UserWallet::where('user_id', $userId)
-                ->update(['stake_key_hash' => $responseJSON->stakeKeyHash,
-                          'updated_at' => $responseJSON->date]);
+                    ->update([
+                        'stake_key_hash' => $responseJSON->stakeKeyHash,
+                        'address' => $request->input('addr'),
+                        'updated_at' => $responseJSON->date,
+                    ]);
                 
                           return [
                     $response
@@ -145,8 +148,11 @@ class Web3WalletController extends Controller
                 // if it has been successfully verified
                 $userId = Auth::user()->id;
                 $user_wallets = UserWallet::where('user_id', $userId)
-                ->update(['stake_key_hash' => $responseJSON->stakeKeyHash,
-                          'updated_at' => $responseJSON->date]);
+                    ->update([
+                        'stake_key_hash' => $responseJSON->stakeKeyHash,
+                        'address' => $request->input('addr'),
+                        'updated_at' => $responseJSON->date,
+                    ]);
                 
                           return [
                     $response
@@ -175,7 +181,7 @@ class Web3WalletController extends Controller
             $inputs = $request->all();
             $userId = Auth::user()->id;
             
-            $skateKeyHash = UserWallet::where('user_id', $userId)->first()->stake_key_hash;
+            $stakeKeyHash = UserWallet::where('user_id', $userId)->first()->stake_key_hash;
             $changeAddr = $request->input('changeAddr');
             $nft = $request->input('nft');
             $imageUrl = Nft::where('name', $nft)->first()->image_url;
@@ -184,7 +190,7 @@ class Web3WalletController extends Controller
             $strUtxos = implode(",",$utxos);
            
             $cmd = '(cd ../web3/;node ./run/build-exchange-tx.mjs '
-                        .escapeshellarg($skateKeyHash).' '
+                        .escapeshellarg($stakeKeyHash).' '
                         .escapeshellarg($changeAddr).' '
                         .escapeshellarg($imageUrl).' '
                         .escapeshellarg($nft).' '

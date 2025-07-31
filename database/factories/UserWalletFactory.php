@@ -25,11 +25,13 @@ class UserWalletFactory extends Factory
      */
     public function definition(): array
     {
+        $stakeKeyHash = $this->faker->optional(0.7)->regexify('[a-f0-9]{56}'); // 70% chance to have a stake key hash
         return [
             'user_id' => User::factory(),
             'points' => $this->faker->numberBetween(0, 1000),
             'credit' => $this->faker->randomFloat(2, 0, 100),
-            'stake_key_hash' => $this->faker->optional(0.7)->regexify('[a-f0-9]{56}'), // 70% chance to have a stake key hash
+            'address' => 'addr_test1qpmockaddress',
+            'stake_key_hash' => $stakeKeyHash,
         ];
     }
 
@@ -39,6 +41,7 @@ class UserWalletFactory extends Factory
     public function custodial(): static
     {
         return $this->state(fn (array $attributes) => [
+            'address' => null,
             'stake_key_hash' => null,
         ]);
     }
@@ -49,6 +52,7 @@ class UserWalletFactory extends Factory
     public function linked(): static
     {
         return $this->state(fn (array $attributes) => [
+            'address' => 'addr' . $this->faker->regexify('[a-f0-9]{56}'),
             'stake_key_hash' => $this->faker->regexify('[a-f0-9]{56}'),
         ]);
     }

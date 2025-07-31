@@ -79,75 +79,16 @@ class CertificateService
         $userWallet = $student->userWallet;
         
         // If student has a linked wallet with verified stake key, use it
-        if ($userWallet && $userWallet->stake_key_hash) {
-            // For linked wallets, we need to derive the payment address from the stake key
-            // This would require additional implementation to convert stake key to payment address
-            return $this->getLinkedWalletAddress($userWallet->stake_key_hash);
+        if ($userWallet && $userWallet->address) {
+            return $userWallet->address;
         }
         
-        // Otherwise, use custodial wallet derived from user ID
-        return $this->getCustodialWalletAddress($student->id);
-    }
-
-    /**
-     * Get custodial wallet address derived from user ID
-     * 
-     * @param int $userId
-     * @return string
-     */
-    protected function getCustodialWalletAddress($userId)
-    {
-        // Use the address derivation function from web3/common/get-custodial-address.mjs
-        $cmd = '(cd ../web3/; node ./common/get-custodial-address.mjs ' 
-            . escapeshellarg($userId) . ') 2>> ../storage/logs/web3.log';
-
-        $response = exec($cmd);
-        $responseJSON = json_decode($response, true);
-
-        if ($responseJSON && $responseJSON['status'] === 200) {
-            return $responseJSON['address'];
+        // If no linked wallet, use the user's custodial_address if available
+        if ($student->custodial_address) {
+            return $student->custodial_address;
         }
-
-        throw new Exception('Failed to derive custodial wallet address for user ' . $userId);
-    }
-
-    /**
-     * Get linked wallet address from stake key hash
-     * 
-     * @param string $stakeKeyHash
-     * @return string
-     */
-    protected function getLinkedWalletAddress($stakeKeyHash)
-    {
-        // This would need to be implemented based on how you want to handle
-        // converting stake key hash to payment address for linked wallets
-        // For now, we'll use a placeholder implementation
-        
-        $cmd = '(cd ../web3/; node -e "
-            import { Address, StakeAddress } from \'@hyperionbt/helios\';
-            try {
-                // This is a simplified implementation
-                // You may need to adjust based on your wallet address derivation logic
-                const stakeAddr = StakeAddress.fromHash(new Uint8Array(Buffer.from(\'' . $stakeKeyHash . '\', \'hex\')));
-                console.log(JSON.stringify({status: 200, address: stakeAddr.toBech32()}));
-            } catch (err) {
-                console.log(JSON.stringify({status: 500, error: err.message}));
-            }
-        ") 2>> ../storage/logs/web3.log';
-
-        $response = exec($cmd);
-        $responseJSON = json_decode($response, true);
-
-        if ($responseJSON && $responseJSON['status'] === 200) {
-            return $responseJSON['address'];
-        }
-
-        // Fallback to custodial if linked wallet address derivation fails
-        Log::warning('Failed to derive linked wallet address, falling back to custodial', [
-            'stake_key_hash' => $stakeKeyHash
-        ]);
-        
-        return $this->getCustodialWalletAddress($this->getUserIdFromStakeKey($stakeKeyHash));
+        // Otherwise fail
+        throw new Exception('No valid wallet address found for student ' . $student->id);
     }
 
     /**
@@ -321,17 +262,5 @@ class CertificateService
                 'error' => $e->getMessage()
             ]);
         }
-    }
-
-    /**
-     * Get user ID from stake key hash (for fallback scenarios)
-     * 
-     * @param string $stakeKeyHash
-     * @return int
-     */
-    private function getUserIdFromStakeKey($stakeKeyHash)
-    {
-        $userWallet = UserWallet::where('stake_key_hash', $stakeKeyHash)->first();
-        return $userWallet ? $userWallet->user_id : 1; // Default to admin if not found
     }
 }

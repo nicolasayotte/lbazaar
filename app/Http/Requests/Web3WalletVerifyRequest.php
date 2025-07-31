@@ -20,7 +20,13 @@ class Web3WalletVerifyRequest extends FormRequest
             'signature' => 'required|alpha_num|max:8192',
             'stake_key' => 'required|alpha_num|max:256',
             'message' => 'required|alpha_dash|max:8192',
-            'stake_addr' => 'required|alpha_dash|max:256'
+            // Cardano addresses can contain letters, numbers, underscores, and other symbols
+            'addr' => [
+                'required',
+                'regex:/^addr(_test)?1[0-9a-zA-Z]+$/',
+                'max:256'
+            ],
+            'stake_addr' => 'required|alpha_dash|max:256',
         ];
      
     }

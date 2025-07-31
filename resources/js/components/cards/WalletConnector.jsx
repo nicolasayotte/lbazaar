@@ -39,6 +39,7 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                                                     h :0} | undefined)
     const [walletBalance, setWalletBalance] = useState(undefined)
     const [walletVerify, setWalletVerify] = useState(false)
+    const [changeAddr, setChangeAddr] = useState(undefined)
     const [walletStakeAddr, setwalletStakeAddr] = useState(undefined)
     const [walletStakeKeyDisplay, setwalletStakeKeyDisplay] = useState(undefined)
     const [walletStakeAddrBech32, setWalletStakeAddrBech32] = useState(undefined)
@@ -68,6 +69,7 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
         const walletInfo = async () => {
                 if (walletIsEnabled && walletAPI) {
                     const hexChangeAddr = await walletAPI.getChangeAddress()
+                    setChangeAddr(hexChangeAddr)
                     getWalletInfo(hexChangeAddr)
                 }
             }
@@ -277,6 +279,7 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                 await axios.post('/wallet/verify', {
                     signature: signature,
                     stake_key: key,
+                    addr: changeAddr,
                     message: hexMessage,  
                     stake_addr: walletStakeAddrBech32
                 })
@@ -342,6 +345,7 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                         await axios.post('/wallet/verify-hw', {
                             walletSig: walletSig,
                             cborTx: respObj.cborTx,
+                            addr: changeAddr,
                             stakeAddr: walletStakeAddrBech32
                         })
                         .then(async response => {
