@@ -218,15 +218,7 @@ class CertificateControllerTest extends TestCase
         $this->certificateService
             ->shouldReceive('mintAndAirdropCertificate')
             ->once()
-            ->with(
-                \Mockery::on(function($course) {
-                    return $course instanceof \App\Models\Course && $course->id === $this->course->id;
-                }),
-                \Mockery::on(function($student) {
-                    return $student instanceof \App\Models\User && $student->id === $this->student->id;
-                }),
-                null
-            )
+            ->with($this->course, $this->student, null)
             ->andReturn([
                 'success' => false,
                 'message' => 'Minting failed'

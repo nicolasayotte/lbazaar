@@ -30,7 +30,7 @@ const main = async () => {
   } catch (err) {
     const returnObj = {
       status: 500,
-      error: err.message || err
+      error: err?.message || err
     };
     console.error('get-custodial-address: error', err);
     process.stdout.write(JSON.stringify(returnObj));

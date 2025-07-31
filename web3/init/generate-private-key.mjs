@@ -14,18 +14,33 @@ const isTestnet = process.env.NETWORK !== "mainnet"
  *   ENTROPY="your twelve-word mnemonic here" node generate-address.js
  */
 async function main(mnemonic) {
-    mnemonic ??= process.env.ENTROPY ?? generateMnemonic(256)
+    // Always use a valid 24-word mnemonic if none provided
+    if (!mnemonic || mnemonic.trim() === '') {
+        const envMnemonic = process.env.ENTROPY;
+        if (envMnemonic && envMnemonic.trim() !== '') {
+            mnemonic = envMnemonic.trim();
+        } else {
+            mnemonic = generateMnemonic(256); // 24 words
+        }
+    }
+    // Validate mnemonic
+    const words = mnemonic.trim().split(/\s+/);
+    if (![12, 15, 18, 21, 24].includes(words.length)) {
+        throw new Error(`Mnemonic must be 12, 15, 18, 21, or 24 words ${mnemonic}`);
+    }
     const entropy = mnemonicToEntropy(mnemonic);
 
     const entropyBytes = Array.from(Buffer.from(entropy, 'hex'));
     const rootKey = new RootPrivateKey(entropyBytes);
 
-    const rootKeyHex = bytesToHex(rootKey.bytes);
+    const rootKeyHex = entropy; // 64 hex chars for 24-word mnemonic
+    const rootKeyFullHex = bytesToHex(rootKey.bytes); // full private key
     const paymentHash = rootKey.deriveSpendingKey(0, 0).derivePubKey().pubKeyHash;
-    const enterpriseAddr = Address.fromHash(paymentHash, isTestnet).toBech32()
+    const enterpriseAddr = Address.fromHash(paymentHash, isTestnet).toBech32();
     return {
         ENTROPY: mnemonic,
         ROOT_KEY: rootKeyHex,
+        ROOT_KEY_FULL: rootKeyFullHex,
         OWNER_PKH: paymentHash.hex,
         ADDRESS: enterpriseAddr,
     }
