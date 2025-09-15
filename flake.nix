@@ -31,25 +31,25 @@
           ]);
 
         shellHook = ''
-          # Optional: Ensure Sail is executable if a Laravel project exists
-          if [ -f ./vendor/bin/sail ]; then
-            chmod +x ./vendor/bin/sail
-            echo "Laravel Sail is ready to use!"
-          else
-            echo "Warning: use composer to require Sail"
-          fi
+                    # Optional: Ensure Sail is executable if a Laravel project exists
+                    if [ -f ./vendor/bin/sail ]; then
+                      chmod +x ./vendor/bin/sail
+                      echo "Laravel Sail is ready to use!"
+                    else
+                      echo "Warning: use composer to require Sail"
+                    fi
 
-          # Verify Docker is running
-          if ! docker info >/dev/null 2>&1; then
-            echo "Warning: Docker daemon is not running. Start it with 'sudo systemctl start docker'."
-          fi
+                    # Verify Docker is running
+                    if ! docker info >/dev/null 2>&1; then
+                      echo "Warning: Docker daemon is not running. Start it with 'sudo systemctl start docker'."
+                    fi
 
-          mkdir -p .vscode
-          cat > .vscode/settings.json <<EOF
-{
-  "php.validate.executablePath": "${php82WithXml}/bin/php"
-}
-EOF
+                    mkdir -p .vscode
+                    cat > .vscode/settings.json <<EOF
+          {
+            "php.validate.executablePath": "${php82WithXml}/bin/php"
+          }
+          EOF
           zsh
         '';
       };

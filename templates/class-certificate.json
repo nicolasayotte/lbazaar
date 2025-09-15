@@ -1,0 +1,28 @@
+{
+  "{{asset_name}}": {
+    "name": "Certificate — {{course_title}} (Cohort {{cohort}})",
+    "cohort": "{{cohort}}",
+    "image": "{{image_cid}}",
+    "mediaType": "image/png",
+    "description": "Awarded upon successful completion.",
+    "course": {
+      "id": "{{course_id}}",
+      "teacher": "{{teacher_name}}",
+      "title": "{{course_title}}"
+    },
+    "credential": {
+      "type": [
+        "CourseCompletion",
+        "OpenBadgeV3"
+      ],
+      "awarded_at": "{{awarded_at}}",
+      "grade": "{{grade}}",
+      "score": "{{score}}",
+      "certificate_id": "{{certificate_id}}",
+      "student": {
+        "name": "{{student_name}}",
+        "email": "{{student_email}}"
+      }
+    }
+  }
+}

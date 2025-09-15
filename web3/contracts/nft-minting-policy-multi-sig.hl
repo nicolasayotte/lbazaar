@@ -1,0 +1,22 @@
+minting nftMintingPolicyMultiSig
+
+enum Redeemer {
+    Mint
+    Burn
+}
+
+// Define the owner public key hash (PKH) - your private key
+const OWNER_PKH: ByteArray = #
+const ownerPkh: PubKeyHash = PubKeyHash::new(OWNER_PKH)
+
+// Define the NMKR public key hash (PKH) - NMKR's signing key
+const NMKR_PKH: ByteArray = #
+const nmkrPkh: PubKeyHash = PubKeyHash::new(NMKR_PKH)
+
+const VERSION: ByteArray = #
+
+func main(_, ctx: ScriptContext) -> Bool {
+    // Allow minting if signed by either the owner OR NMKR
+    (ctx.tx.is_signed_by(ownerPkh).trace("NFT_MP_OWNER: ") ||
+     ctx.tx.is_signed_by(nmkrPkh).trace("NFT_MP_NMKR: ")).trace("NFT_MP_RESULT: ")
+}

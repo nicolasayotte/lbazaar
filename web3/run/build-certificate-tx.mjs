@@ -1,19 +1,20 @@
-import fs from 'fs/promises';
 import {
   Address,
   Assets,
+  bytesToHex,
+  CoinSelection,
+  hexToBytes,
+  NetworkParams,
+  Program,
+  PubKeyHash,
+  textToBytes,
   Tx,
   TxOutput,
-  Value,
-  hexToBytes,
-  textToBytes,
-  bytesToHex,
-  PubKeyHash,
-  Program,
-  NetworkParams,
   UTxO,
-  CoinSelection
+  Value
 } from '@hyperionbt/helios';
+import fs from 'fs/promises';
+import { buildCIP25Metadata, buildCustomMetadata } from '../common/certificate-metadata.mjs';
 import { getNetworkParams } from '../common/utils.mjs';
 
 const network = process.env.NETWORK || 'preprod';
@@ -36,9 +37,11 @@ const main = async () => {
     const metadataJson = args[7];
 
     const ownerPkh = process.env.OWNER_PKH;
+    const nmkrPkh = process.env.NMKR_PKH || ownerPkh; // Fallback to owner PKH if NMKR_PKH not set
     const minAda = BigInt(process.env.MIN_ADA);
     const maxTxFee = BigInt(process.env.MAX_TX_FEE);
     const minChangeAmt = BigInt(process.env.MIN_CHANGE_AMT);
+    const useMultiSig = process.env.NMKR_PKH ? true : false; // Use multi-sig policy if NMKR_PKH is set
 
     if (!recipientAddress || !nftName || !serialNum || !mph || !imageUrl) {
       throw new Error('Missing required parameters');
@@ -61,16 +64,22 @@ const main = async () => {
     const recipientAddr = Address.fromBech32(recipientAddress);
 
     // Load and compile the NFT minting policy
-    const nftMintingPolicyFile = await fs.readFile('./contracts/nft-minting-policy.hl', 'utf8');
+    const policyFileName = useMultiSig ? 'nft-minting-policy-multi-sig.hl' : 'nft-minting-policy.hl';
+    const nftMintingPolicyFile = await fs.readFile(`./contracts/${policyFileName}`, 'utf8');
     const nftMintingPolicyScript = nftMintingPolicyFile.toString();
     const nftMintingProgram = Program.new(nftMintingPolicyScript);
+
     nftMintingProgram.parameters = { ['OWNER_PKH']: ownerPkh };
+    if (useMultiSig) {
+      nftMintingProgram.parameters = { ['NMKR_PKH']: nmkrPkh };
+    }
     nftMintingProgram.parameters = { ['VERSION']: '1.0' };
+
     const compiledNftMintingProgram = nftMintingProgram.compile(optimize);
     const nftTokenMPH = compiledNftMintingProgram.mintingPolicyHash;
 
-    // Verify the minting policy hash matches
-    if (nftTokenMPH.hex !== mph) {
+    // Verify the minting policy hash matches (if provided)
+    if (mph && nftTokenMPH.hex !== mph) {
       throw new Error('Certificate Token minting policy hash does not match');
     }
 
@@ -79,7 +88,7 @@ const main = async () => {
     const ownerUtxosCmd = 'node ../common/get-owner-utxos.mjs';
     const ownerUtxosResponse = require('child_process').execSync(ownerUtxosCmd, { encoding: 'utf8' });
     const ownerUtxosData = JSON.parse(ownerUtxosResponse);
-    
+
     if (ownerUtxosData.status !== 200) {
       throw new Error('Failed to get owner UTXOs: ' + ownerUtxosData.error);
     }
@@ -138,38 +147,19 @@ const main = async () => {
 
     // Add certificate metadata (CIP-25)
     const policyId = nftTokenMPH.hex;
-    const assetName = Buffer.from(certificateTokenName, 'utf-8').toString();
-    
-    tx.addMetadata(721, {
-      [policyId]: {
-        [assetName]: {
-          name: metadata.name,
-          image: 'ipfs://' + imageUrl,
-          course_title: metadata.course_title,
-          student_name: metadata.student_name,
-          teacher_name: metadata.teacher_name,
-          completion_date: metadata.completion_date,
-          serial_number: metadata.serial_number
-        }
-      },
-      version: 1
-    });
+    const assetName = Buffer.from(certificateTokenName, 'utf-8').toString('hex');
+
+    const cip25Metadata = await buildCIP25Metadata(policyId, assetName, metadata, imageUrl);
+    tx.addMetadata(721, cip25Metadata);
 
     // Add custom metadata for certificate details
-    tx.addMetadata(674, {
-      msg: [
-        'Certificate of Completion',
-        'Course: ' + metadata.course_title,
-        'Student: ' + metadata.student_name,
-        'Teacher: ' + metadata.teacher_name,
-        'Date: ' + metadata.completion_date
-      ]
-    });
+    const customMetadata = buildCustomMetadata(metadata);
+    tx.addMetadata(674, customMetadata);
 
     // Finalize the transaction
     const networkParamsFile = await getNetworkParams(network);
     const networkParams = new NetworkParams(JSON.parse(networkParamsFile));
-    
+
     const ownerAddr = Address.fromBech32(ownerWalletAddr);
     await tx.finalize(networkParams, ownerAddr, utxos[1]);
 
