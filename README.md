@@ -195,8 +195,8 @@ node ./generate-private-key.mjs
 This will output the following which can be used for the env variables above.
 
 ```ini
-ROOT_KEY=e875684...a254e6cb6754b3866a0ba
-OWNER_PKH=3a0c3...1bd2d766aa
+ROOT_KEY=hexadecimal-root-key
+OWNER_PKH=hexadecimal-56-length-public-key-hash
 ```
 
 _For `sail` command convenience, add this to your `~/.zshrc` or `~/.bashrc`_
@@ -205,24 +205,24 @@ _For `sail` command convenience, add this to your `~/.zshrc` or `~/.bashrc`_
 alias sail='[ -f sail ] && sh sail || sh vendor/bin/sail'
 ```
 
-## Website Access
+## Local Dev Website Access
 
 Access local URL: http://localhost:8080
 Admin:
 
--   http://localhost:8080/admin/login
--   email: `admin@lebazaar.com`
--   password: `test1234`
+- http://localhost:8080/admin/login
+- email: `admin@lebazaar.com`
+- password: `test1234`
 
-### Accesing Database:
+### Accesing Database
 
-```
+```bash
 (host) $ sail mysql
 ```
 
 ### To explore more Sail commands:
 
-```
+```bash
 (host) $ sail --help
 ```
 
@@ -233,16 +233,16 @@ or check official [docs](https://laravel.com/docs/9.x/sail)
 You may need to remove the following line from vite.config.js for your local
 dev env since this is only used for production.
 
-```
+```js
 server: {
-    host: 'www.e-learning.com',
-  }
+  host: 'www.e-learning.com',
+}
 ```
 
 ## Getting to the logs
 
 ```bash
-#in the server
+# in the server
 cd /var/www/groundfloor
 sudo su
 sudo docker container ls
@@ -250,7 +250,7 @@ sudo docker exec -it $container_id /bin/bash
 ```
 
 ```bash
-#in the container
+# in the container
 su application
 tail -n40 storage/logs/web3.log
 ```
@@ -259,11 +259,11 @@ tail -n40 storage/logs/web3.log
 
 ## Staging Deployment
 
-
 ```bash
 
-#   SSH into the server (Ask Admin for pem file)
-ssh -i test-lebazaar-key.pem ubuntu@18.178.42.141
+#   SSH into the server (Ask Admin for pem file and config file)
+#   Your IP address must be whitelisted explicitely
+ssh -i test-lebazaar-key.pem <user>@<staging_ip>
 
 # go to project docker-build directory:
 cd /var/www/groundfloor/docker-build
@@ -294,7 +294,6 @@ npm install
 #  Check https://stage.l-e-bazaar.com/ to make sure changes have been published
 ```
 
-
 ## Production Deployment
 
 ```bash
@@ -302,8 +301,9 @@ npm install
 #   - Tokens(Classic)
 #   - Make sure expiration is long enough or no expiration at all
 
-#   SSH into the server (Ask Admin for pem file)
-ssh -i prod-lebazaar.pem ubuntu@54.249.86.195
+#   SSH into the server (Ask Admin for pem file and config file)
+#   Your IP address must be whitelisted explicitely
+ssh -i prod-lebazaar.pem <user>@<prod_ip>
 
 #   Go to project docker-build directory:
 cd /var/www/groundfloor/docker-build
@@ -327,12 +327,15 @@ export DOCKER_BUILDKIT=0
 ## NMKR
 
 ### Setup Gateway
+
 https://studio.preprod.nmkr.io/projects
 
 ### Setup Info
+
 https://docs.nmkr.io/nmkr-studio/set-up-sales/nmkr-pay/set-up-nmkr-pay
 
 ### Button
+
 https://docs.nmkr.io/nmkr-studio/set-up-sales/nmkr-pay/website-integration
 
 This is the test button for Testnet test NFT

@@ -307,12 +307,6 @@ Blockfrost also exposes endpoints under these tags:
 
 ---
 
-## Milkomeda Support
-
-Blockfrost mirrors Cardano-style endpoints on Milkomeda mainnet/testnet—with its own `project_id`. For details on available Milkomeda endpoints, see the Milkomeda section in the spec. ([blockfrost.dev][2])
-
----
-
 ## Additional Resources
 
 * **Interactive Swagger UI**: [https://docs.blockfrost.io/](https://docs.blockfrost.io/) ([docs.blockfrost.io][3])
