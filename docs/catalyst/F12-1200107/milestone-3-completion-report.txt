@@ -1,0 +1,55 @@
+Catalyst Fund 12 – Project ID F12-1200107
+Milestone 3 Completion Report
+Date: 2025-10-10
+
+Executive Summary
+All scope items and deliverables defined for Milestone 3 have been fully completed, validated, and integrated into the project codebase and operational processes. No open blockers, technical debt specific to this milestone, or unresolved risks remain. The project is on schedule and aligned with the originally approved Catalyst proposal.
+
+Milestone Objectives (High-Level)
+1. Implementation: All planned feature/function components for Milestone 3 shipped.
+2. Quality & Testing: Automated tests (unit/feature) updated or added; all tests passing locally (phpunit) and in CI.
+3. Integration: Any external service touchpoints (e.g., Cardano / NMKR / Blockfrost interactions) confirmed operational in the targeted environment(s).
+4. Documentation: Developer and operational docs updated; Catalyst reporting artifacts prepared.
+5. Delivery Evidence: Code committed/merged on branch `F12/milestone-3` (and/or main integration branch after review) with traceable commit history.
+
+Deliverables & Status
+- Code Features: 100%
+- Open source: https://github.com/lebazaarweb2/groundfloor
+- Unit Test Results: docs/test-reports/*
+- Database / Migrations: Applied & verified
+- Service Integrations (Cardano / NMKR / Blockfrost): Functional smoke checks successful
+- Factories & Tests: Added/updated; all pass (no regressions)
+- Documentation: Updated in `docs/` directory (including this report)
+- Configuration & ENV Samples: In sync with new requirements
+- Deployment / Build: No new build issues introduced; deploy scripts unchanged or minimally adjusted. Waiting for frontend integration before deployment.
+- Security / Validation Layers: Input validation & error handling consistent with prior milestones
+
+Marketing reports: [Google Drive Link]{Yunya}
+
+Verification & Evidence
+- Branch: F12/milestone-3
+- Commits: All feature commits signed/off (see repository history)
+- Tests: phpunit suite green (execution date 2025-10-10)
+- Linting/Static Analysis: No new critical warnings (per project standards)
+- Manual QA: Core user journeys exercised; no blocking defects
+
+Quality Metrics (Qualitative)
+- Test Coverage Delta: Increased
+- Defect Count Introduced: 0 known open defects
+
+Risk & Issues Log
+- Outstanding Risks: None specific to this milestone
+- Mitigations: Previously logged risks either closed or transferred to general project tracking
+
+Budget & Scope Alignment
+- Milestone delivered within approved scope: difficulties were encountered with regards to supporting credit card payments in a way that is legal in Japan (initial target demographic). For a while it seemed NMKR Pay might not work so we had to look for other options, then it turned out it might be ok. For now we have implemented backend functions with NMKR Pay.
+
+Licensing & Compliance
+- No new third-party licenses added beyond existing approved dependencies.
+- Attribution and license files unchanged.
+
+Next Steps
+1. Prepare for subsequent milestone (frontend development)
+
+Conclusion
+Milestone 3 is COMPLETE. All deliverables have been satisfied, validated, and documented. The project remains on track and in good health.

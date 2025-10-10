@@ -1,0 +1,6 @@
+Course Feedback (Tests\Unit\CourseFeedback)
+ [x] Course feedback can reference course and schedule
+ [x] It can associate feedback with a specific schedule
+ [x] It can give feedback without a schedule
+
+Certificate Controller (Tests\Unit\Http\Controllers\API\CertificateController)

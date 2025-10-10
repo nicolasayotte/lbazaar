@@ -3,7 +3,7 @@
 ```bash
 git clone https://github.com/lebazaarweb2/groundfloor.git
 cd ~/src/groundfloor
-git checkout web3
+git checkout dev
 cp .env.example .env
 ```
 
@@ -238,6 +238,19 @@ server: {
   host: 'www.e-learning.com',
 }
 ```
+
+## Running the tests
+
+### PHP Unit Tests
+
+```bash
+sail up -d
+sail test
+```
+
+### Web3 Unit Tests
+
+# Logs
 
 ## Getting to the logs
 

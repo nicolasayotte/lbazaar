@@ -3,7 +3,7 @@
 namespace Tests\Unit\Http\Controllers\API;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\WithFaker;
 use App\Http\Controllers\API\CertificateController;
 use App\Services\API\CertificateService;
@@ -20,7 +20,7 @@ use Mockery;
 
 class CertificateControllerTest extends TestCase
 {
-    use RefreshDatabase, WithFaker;
+    use DatabaseTransactions, WithFaker;
 
     protected $certificateService;
     protected $controller;
@@ -49,8 +49,8 @@ class CertificateControllerTest extends TestCase
     private function setupTestData()
     {
         // Create roles
-        Role::create(['name' => 'teacher', 'display_name' => 'Teacher']);
-        Role::create(['name' => 'student', 'display_name' => 'Student']);
+        Role::firstOrCreate(['name' => 'teacher'], ['display_name' => 'Teacher']);
+        Role::firstOrCreate(['name' => 'student'], ['display_name' => 'Student']);
 
         // Create teacher
         $this->teacher = User::factory()->create([

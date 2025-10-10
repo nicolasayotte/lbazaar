@@ -3,7 +3,7 @@
 namespace Tests\Unit\Services\API;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\WithFaker;
 use App\Services\API\CertificateService;
 use App\Models\User;
@@ -17,7 +17,7 @@ use Mockery;
 
 class CertificateServiceTest extends TestCase
 {
-    use RefreshDatabase, WithFaker;
+    use DatabaseTransactions, WithFaker;
 
     protected $service;
     protected $teacher;
@@ -42,8 +42,8 @@ class CertificateServiceTest extends TestCase
     private function setupTestData()
     {
         // Create roles
-        Role::create(['name' => 'teacher', 'display_name' => 'Teacher']);
-        Role::create(['name' => 'student', 'display_name' => 'Student']);
+        Role::firstOrCreate(['name' => 'teacher'], ['display_name' => 'Teacher']);
+        Role::firstOrCreate(['name' => 'student'], ['display_name' => 'Student']);
 
         // Create teacher
         $this->teacher = User::factory()->create([
@@ -216,7 +216,7 @@ class CertificateServiceTest extends TestCase
         $service = Mockery::mock(CertificateService::class)->makePartial();
         
         // Mock the protected method by calling the actual service method
-        $service->shouldReceive('exec')
+        $service->shouldReceive('runCommand')
             ->once()
             ->with(Mockery::type('string'))
             ->andReturn('{"status": 200, "address": "addr1custodial123"}');
@@ -235,7 +235,7 @@ class CertificateServiceTest extends TestCase
         $service = Mockery::mock(CertificateService::class)->makePartial();
         
         // Mock failed exec response
-        $service->shouldReceive('exec')
+        $service->shouldReceive('runCommand')
             ->once()
             ->with(Mockery::type('string'))
             ->andReturn('{"status": 500, "error": "Script error"}');
@@ -252,14 +252,24 @@ class CertificateServiceTest extends TestCase
 
     public function test_get_linked_wallet_address_success()
     {
-        // Simple test without external exec calls
-        $this->assertTrue(true); // Placeholder for now since exec calls cause issues
+        $reflection = new \ReflectionClass($this->service);
+        $method = $reflection->getMethod('getLinkedWalletAddress');
+        $method->setAccessible(true);
+
+        $address = $method->invokeArgs($this->service, ['abc123def456']);
+
+        $this->assertEquals($this->userWallet->address, $address);
     }
 
     public function test_get_linked_wallet_address_fallback_to_custodial()
     {
-        // Simple test without external exec calls
-        $this->assertTrue(true); // Placeholder for now since exec calls cause issues
+        $reflection = new \ReflectionClass($this->service);
+        $method = $reflection->getMethod('getLinkedWalletAddress');
+        $method->setAccessible(true);
+
+        $address = $method->invokeArgs($this->service, ['nonexistent_hash']);
+
+        $this->assertNull($address);
     }
 
     public function test_mint_certificate_nft_success()
@@ -274,7 +284,7 @@ class CertificateServiceTest extends TestCase
         // Create a mock that doesn't call external scripts
         $service = Mockery::mock(CertificateService::class)->makePartial();
         
-        $service->shouldReceive('exec')
+        $service->shouldReceive('runCommand')
             ->twice() // build and submit
             ->andReturn(
                 '{"status": 200, "cborTx": "tx_cbor_data"}',
@@ -302,7 +312,7 @@ class CertificateServiceTest extends TestCase
         ];
 
         // Mock failed build transaction
-        $service->shouldReceive('exec')
+        $service->shouldReceive('runCommand')
             ->once()
             ->andReturn('{"status": 500, "error": "Build failed"}');
 
@@ -327,7 +337,7 @@ class CertificateServiceTest extends TestCase
         ];
 
         // Mock successful build, failed submit
-        $service->shouldReceive('exec')
+        $service->shouldReceive('runCommand')
             ->twice()
             ->andReturn(
                 '{"status": 200, "cborTx": "tx_cbor_data"}',
@@ -485,6 +495,7 @@ class CertificateServiceTest extends TestCase
     {
         // Remove stake key hash
         $this->userWallet->update(['stake_key_hash' => null]);
+        $this->student->update(['custodial_address' => null]);
 
         $service = Mockery::mock(CertificateService::class)->makePartial();
         

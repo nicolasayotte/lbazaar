@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Log;
 
 class CertificateService
 {
+    private const DEFAULT_ADMIN_USER_ID = 1;
+
     /**
      * Mint and airdrop certificate NFT to a student
      * 
@@ -77,17 +79,30 @@ class CertificateService
     protected function getStudentWalletAddress(User $student)
     {
         $userWallet = $student->userWallet;
-        
-        // If student has a linked wallet with verified stake key, use it
-        if ($userWallet && $userWallet->address) {
-            return $userWallet->address;
+
+        if ($userWallet && $userWallet->stake_key_hash) {
+            $linkedAddress = $this->getLinkedWalletAddress($userWallet->stake_key_hash);
+
+            if (!empty($linkedAddress)) {
+                return $linkedAddress;
+            }
+
+            Log::warning('Linked wallet address not found; falling back to custodial wallet', [
+                'student_id' => $student->id,
+                'stake_key_hash' => $userWallet->stake_key_hash
+            ]);
         }
-        
-        // If no linked wallet, use the user's custodial_address if available
+
         if ($student->custodial_address) {
             return $student->custodial_address;
         }
-        // Otherwise fail
+
+        $custodialAddress = $this->getCustodialWalletAddress($student->id);
+
+        if (!empty($custodialAddress)) {
+            return $custodialAddress;
+        }
+
         throw new Exception('No valid wallet address found for student ' . $student->id);
     }
 
@@ -126,11 +141,16 @@ class CertificateService
     protected function mintCertificateNFT($certificateData, $walletAddress)
     {
         try {
+            $metadataJson = json_encode($certificateData);
+
+            if ($metadataJson === false) {
+                throw new Exception('Failed to encode certificate metadata');
+            }
+
             // Create NFT name and metadata
             $nftName = 'Certificate-' . $certificateData['course_id'] . '-' . $certificateData['student_id'];
             $serialNum = $certificateData['serial_number'];
             
-            // Get certificate NFT template (you may need to create this in the database)
             $certificateNft = Nft::where('name', 'Certificate')->first();
             if (!$certificateNft) {
                 throw new Exception('Certificate NFT template not found in database');
@@ -139,27 +159,36 @@ class CertificateService
             $mph = $certificateNft->mph;
             $imageUrl = $certificateNft->image_url;
 
-            // Build the minting transaction
-            $cmd = '(cd ../web3/; node ./run/build-certificate-tx.mjs ' 
-                . escapeshellarg($walletAddress) . ' '
-                . escapeshellarg($nftName) . ' '
-                . escapeshellarg($serialNum) . ' '
-                . escapeshellarg($mph) . ' '
-                . escapeshellarg($imageUrl) . ' '
-                . escapeshellarg(json_encode($certificateData)) . ') 2>> ../storage/logs/web3.log';
+            $buildCommand = $this->buildWeb3Command('run/build-certificate-tx.mjs', [
+                $walletAddress,
+                $nftName,
+                $serialNum,
+                $mph,
+                $imageUrl,
+                $metadataJson
+            ]);
 
-            $response = exec($cmd);
+            $response = $this->runCommand($buildCommand);
             $responseJSON = json_decode($response, true);
 
-            if ($responseJSON && $responseJSON['status'] === 200) {
-                // Submit the transaction
-                $submitCmd = '(cd ../web3/; node ./run/submit-certificate-tx.mjs '
-                    . escapeshellarg($responseJSON['cborTx']) . ') 2>> ../storage/logs/web3.log';
+            if (is_array($responseJSON) && ($responseJSON['status'] ?? null) === 200) {
+                $cborTx = $responseJSON['cborTx'] ?? null;
 
-                $submitResponse = exec($submitCmd);
+                if (empty($cborTx)) {
+                    return [
+                        'success' => false,
+                        'message' => 'Failed to build minting transaction: Missing cborTx in response'
+                    ];
+                }
+
+                $submitCommand = $this->buildWeb3Command('run/submit-certificate-tx.mjs', [
+                    $cborTx
+                ]);
+
+                $submitResponse = $this->runCommand($submitCommand);
                 $submitResponseJSON = json_decode($submitResponse, true);
 
-                if ($submitResponseJSON && $submitResponseJSON['status'] === 200) {
+                if (is_array($submitResponseJSON) && ($submitResponseJSON['status'] ?? null) === 200) {
                     return [
                         'success' => true,
                         'transaction_id' => $submitResponseJSON['txId'],
@@ -167,18 +196,22 @@ class CertificateService
                         'serial_number' => $serialNum,
                         'mph' => $mph
                     ];
-                } else {
-                    return [
-                        'success' => false,
-                        'message' => 'Failed to submit minting transaction: ' . ($submitResponseJSON['error'] ?? 'Unknown error')
-                    ];
                 }
-            } else {
+
+                $errorMessage = $submitResponseJSON['error'] ?? 'Unknown error';
+
                 return [
                     'success' => false,
-                    'message' => 'Failed to build minting transaction: ' . ($responseJSON['error'] ?? 'Unknown error')
+                    'message' => 'Failed to submit minting transaction: ' . $errorMessage
                 ];
             }
+
+            $errorMessage = $responseJSON['error'] ?? 'Unknown error';
+
+            return [
+                'success' => false,
+                'message' => 'Failed to build minting transaction: ' . $errorMessage
+            ];
 
         } catch (Exception $e) {
             return [
@@ -186,6 +219,114 @@ class CertificateService
                 'message' => 'NFT minting error: ' . $e->getMessage()
             ];
         }
+    }
+
+    /**
+     * Build a command for executing a Node script in the web3 directory.
+     *
+     * @param string $scriptRelativePath
+     * @param array $arguments
+     * @return string
+     */
+    protected function buildWeb3Command(string $scriptRelativePath, array $arguments = []): string
+    {
+        $web3Directory = base_path('web3');
+        $scriptPath = './' . ltrim($scriptRelativePath, '/');
+        $logPath = storage_path('logs/web3.log');
+
+        $argumentString = '';
+        if (!empty($arguments)) {
+            $argumentString = ' ' . implode(' ', array_map('escapeshellarg', $arguments));
+        }
+
+        return sprintf(
+            '(cd %s && node %s%s) 2>> %s',
+            escapeshellarg($web3Directory),
+            escapeshellarg($scriptPath),
+            $argumentString,
+            escapeshellarg($logPath)
+        );
+    }
+
+    /**
+     * Execute a shell command and return its output.
+     *
+     * @param string $command
+     * @return string
+     */
+    protected function runCommand(string $command): string
+    {
+        $output = [];
+        $returnVar = null;
+
+        exec($command, $output, $returnVar);
+
+        if ($returnVar !== 0) {
+            Log::error('Command execution failed', [
+                'command' => $command,
+                'exit_code' => $returnVar,
+            ]);
+        }
+
+        return trim(implode(PHP_EOL, $output));
+    }
+
+    /**
+     * Retrieve the custodial wallet address via Node script.
+     *
+     * @param int $userId
+     * @return string
+     * @throws Exception
+     */
+    protected function getCustodialWalletAddress(int $userId)
+    {
+        $command = $this->buildWeb3Command('common/get-custodial-address.mjs', [
+            (string) $userId
+        ]);
+
+        $response = $this->runCommand($command);
+        $responseJson = json_decode($response, true);
+
+        if (!is_array($responseJson) || ($responseJson['status'] ?? null) !== 200 || empty($responseJson['address'])) {
+            Log::error('Failed to derive custodial wallet address', [
+                'user_id' => $userId,
+                'response' => $response
+            ]);
+
+            throw new Exception('Failed to derive custodial wallet address');
+        }
+
+        return $responseJson['address'];
+    }
+
+    /**
+     * Retrieve a linked wallet address based on stake key hash.
+     *
+     * @param string $stakeKeyHash
+     * @return string|null
+     */
+    protected function getLinkedWalletAddress(string $stakeKeyHash): ?string
+    {
+        $wallet = UserWallet::where('stake_key_hash', $stakeKeyHash)->first();
+
+        return $wallet ? $wallet->address : null;
+    }
+
+    /**
+     * Resolve a user ID from a stake key hash (defaults to admin user ID when not found).
+     *
+     * @param string|null $stakeKeyHash
+     * @return int
+     */
+    protected function getUserIdFromStakeKey(?string $stakeKeyHash): int
+    {
+        if (empty($stakeKeyHash)) {
+            return self::DEFAULT_ADMIN_USER_ID;
+        }
+
+        $wallet = UserWallet::where('stake_key_hash', $stakeKeyHash)->first();
+
+        return $wallet ? $wallet->user_id : self::DEFAULT_ADMIN_USER_ID;
     }
 
     /**

@@ -4,12 +4,12 @@ namespace Tests\Feature;
 
 use App\Models\Course;
 use App\Models\CourseCategory;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class CourseCategoryRelationTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     /** @test */
     public function a_course_can_have_multiple_categories()
