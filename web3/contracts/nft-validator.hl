@@ -1,0 +1,28 @@
+spending nftValidator
+
+enum Redeemer {
+    Spend
+}
+
+
+// Contract parameters 
+const OWNER_PKH: ByteArray = #
+const ownerPKH: PubKeyHash = PubKeyHash::new(OWNER_PKH)
+
+// Define the tn & mph of the e-learning token
+const TOKEN_MPH: ByteArray = #8c74386d45ae55d78f2494e2496af7dac397d65850da6206a547be33
+const tokenMph: MintingPolicyHash = MintingPolicyHash::new(TOKEN_MPH)
+const TOKEN_NAME: ByteArray = #28323232294e46542d3130327c31363930313337323036303334
+const tokenAssetClass: AssetClass = AssetClass::new(
+        tokenMph, 
+        TOKEN_NAME
+    )
+const tokenVal : Value = Value::new(tokenAssetClass, 2)
+
+const VERSION: ByteArray = #
+
+func main(_, _, ctx: ScriptContext) -> Bool {
+
+    ctx.tx.is_signed_by(ownerPKH).trace("NFT_V1: ") &&
+    (ctx.tx.minted == tokenVal).trace("NFT_V2: ")
+}

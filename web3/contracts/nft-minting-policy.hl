@@ -1,0 +1,16 @@
+minting nftMintingPolicy
+
+enum Redeemer {
+    Mint
+    Burn
+}
+
+// Define the owner public key hash (PKH)
+const OWNER_PKH: ByteArray = #
+const ownerPkh: PubKeyHash = PubKeyHash::new(OWNER_PKH)
+const VERSION: ByteArray = #
+
+func main(_, ctx: ScriptContext) -> Bool {
+
+    ctx.tx.is_signed_by(ownerPkh).trace("NFT_MP1: ")
+}

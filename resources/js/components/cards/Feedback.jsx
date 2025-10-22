@@ -1,0 +1,46 @@
+import { Card, IconButton, CardContent, Typography, Box } from "@mui/material"
+import EditIcon from '@mui/icons-material/Edit';
+import { getRoute } from "../../helpers/routes.helper"
+import { Link, usePage } from "@inertiajs/inertia-react"
+
+const Feedback = ({ auth, feedback, showUser = false }) => {
+
+    const { translatables } = usePage().props
+
+    const editButton = (
+        auth && auth.user && auth.user.id && auth.user.id == feedback.user_id && (
+            <Link title={translatables.texts.edit} href={getRoute('course.feedbacks.edit', { id: feedback.id })}>
+                <IconButton size="small" color="white">
+                    <EditIcon fontSize="inherit" color="inherit" />
+                </IconButton>
+            </Link>
+        )
+    )
+
+    return (
+        <Card sx={{ minWidth: 275, mb: 2, position: 'relative' }}>
+            <CardContent>
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Box>
+                        {
+                            showUser &&
+                            <Typography inline="true" align="left" variant="subtitle1" children={feedback.user.fullname} />
+                        }
+                        <Box display="flex" alignItems="center">
+                            <Typography color="primary" variant="caption" children={`${feedback.rating}/100`} sx={{ mr: 1 }} />
+                            <Typography variant="caption" color="GrayText" children={`Posted on ${feedback.created_at}`} />
+                        </Box>
+                    </Box>
+                    { editButton }
+                </Box>
+                <Box sx={{ mt: 2 }}>
+                    <Typography variant="body2">
+                        <span dangerouslySetInnerHTML={{ __html: feedback.comments }} />
+                    </Typography>
+                </Box>
+            </CardContent>
+        </Card>
+    );
+}
+
+export default Feedback

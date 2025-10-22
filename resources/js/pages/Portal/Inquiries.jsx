@@ -1,0 +1,114 @@
+import { useForm, usePage } from "@inertiajs/inertia-react"
+import { Box, Button, Card, CardContent, Container, Grid, Typography } from "@mui/material"
+import { actions } from '../../store/slices/ToasterSlice'
+import { useDispatch } from "react-redux"
+import routes from "../../helpers/routes.helper"
+import Input from "../../components/forms/Input"
+import Header from "../../components/common/Header"
+
+const Inquiries = () => {
+
+    const { translatables } = usePage().props
+
+    const dispatch = useDispatch()
+
+    const { data, setData, post, processing, reset, errors, clearErrors, } = useForm({
+        name: '',
+        email: '',
+        subject: '',
+        message: ''
+    })
+
+    const handleOnChange = (e) => {
+        setData(e.target.name, e.target.value)
+    }
+
+    const handleSubmit = (e) => {
+        e.preventDefault()
+
+        post(routes["inquiries.store"], {
+            onSuccess: () => {
+                reset()
+                clearErrors()
+
+                dispatch(actions.success({
+                    message: translatables.success.inquiry
+                }))
+            },
+            onError: () => dispatch(actions.error({
+                message: translatables.error
+            }))
+        });
+    }
+
+    return (
+        <Box sx={{ minHeight: '100vh' }}>
+            <Header>
+                <Container sx={{ position: 'relative', zIndex: 500 }}>
+                    <Typography variant="h4" children={translatables.title.inquiries.view} textAlign="center" />
+                </Container>
+            </Header>
+            <Container>
+                <Grid container>
+                    <Grid item xs={12} md={8} mx="auto" py={5}>
+                        <Card>
+                            <CardContent sx={{ p: 3 }}>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={12} sm={6}>
+                                        <Input
+                                            label={translatables.texts.name}
+                                            name="name"
+                                            value={data.name}
+                                            onChange={handleOnChange}
+                                            errors={errors}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} sm={6} >
+                                        <Input
+                                            label={translatables.texts.email}
+                                            type="email"
+                                            name="email"
+                                            value={data.email}
+                                            onChange={handleOnChange}
+                                            errors={errors}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <Input
+                                            label={translatables.texts.subject}
+                                            name="subject"
+                                            value={data.subject}
+                                            onChange={handleOnChange}
+                                            errors={errors}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <Input
+                                            label={translatables.texts.message}
+                                            multiline
+                                            minRows={9}
+                                            name="message"
+                                            helperText={translatables.texts.inquiry_help}
+                                            value={data.message}
+                                            onChange={handleOnChange}
+                                            errors={errors}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} textAlign="right">
+                                        <Button
+                                            onClick={handleSubmit}
+                                            variant="contained"
+                                            disabled={processing}
+                                        >{translatables.texts.submit}</Button>
+                                    </Grid>
+                                </Grid>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                </Grid>
+            </Container>
+        </Box>
+    )
+}
+
+export default Inquiries

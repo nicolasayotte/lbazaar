@@ -1,0 +1,14 @@
+services:
+    app:
+        image: lebazaar-app-production:latest
+        ports:
+            - 80:80
+            - 443:443
+        volumes:
+            - /var/.secrets/.env.production:/app/.env:ro
+            - ./nginx/vhost.conf:/opt/docker/etc/nginx/vhost.conf
+            - /var/log/app:/app/storage/logs
+            - /var/log/nginx/:/var/log/nginx
+        environment:
+            LOG_STDOUT: '/var/log/nginx/access.log'
+            LOG_STDERR: '/var/log/nginx/error.log'

@@ -1,0 +1,41 @@
+@import '@fontsource/roboto/300.css';
+@import '@fontsource/roboto/400.css';
+@import '@fontsource/roboto/500.css';
+@import '@fontsource/roboto/700.css';
+
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    background-color: #E7EBF0;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+#nprogress .bar {
+    z-index: 9999 !important;
+    height: 3px !important;
+}
+
+.quill.ql-error {
+  .ql-toolbar {
+    border: 1px solid red;
+  }
+  .ql-container {
+    border-left: 1px solid red;
+    border-right: 1px solid red;
+    border-bottom: 1px solid red;
+  }
+}
+
+.ql-container.ql-disabled {
+  color: #9e9e9e;
+}
+
+@media only screen and (max-width: 600px) {
+  .myprofile-card {
+    margin-top: 0px !important;
+  }
+}

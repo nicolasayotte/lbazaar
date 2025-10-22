@@ -1,0 +1,35 @@
+# syntax=docker/dockerfile:1
+# Build Node dependencies
+FROM node:lts-alpine3.16 as nodeBuild
+WORKDIR /app
+COPY package*  ./
+COPY public ./public
+COPY vite.config.js ./vite.config.js
+COPY resources ./resources
+RUN npm install \
+    && npm run build
+WORKDIR /app/web3
+RUN npm install
+
+
+
+FROM webdevops/php-nginx:8.1-alpine AS base
+
+# Uncomment this to test in local using MacBook M1 chip
+# RUN wget -O "/usr/local/bin/go-replace" "https://github.com/webdevops/goreplace/releases/download/1.1.2/gr-arm64-linux" \
+#     && chmod +x "/usr/local/bin/go-replace" \
+#     && "/usr/local/bin/go-replace" --version
+
+# Install Laravel dependencies
+RUN docker-php-ext-install \
+    bcmath \
+    pdo_mysql
+
+WORKDIR /app
+ENV WEB_DOCUMENT_ROOT /app/public
+
+COPY ./ ./
+COPY --from=nodeBuild /app/public/build ./public/build
+RUN apk add nodejs npm
+RUN composer install --no-interaction --optimize-autoloader
+RUN chown -R application:application .
