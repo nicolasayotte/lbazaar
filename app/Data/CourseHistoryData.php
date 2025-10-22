@@ -14,7 +14,7 @@ class CourseHistoryData
 
     private $type;
 
-    private $category;
+    private $categories = [];
 
     private $teacher;
 
@@ -37,10 +37,9 @@ class CourseHistoryData
         return $this;
     }
 
-    public function setCategory($category)
+    public function setCategories($categories)
     {
-        $this->category = $category;
-
+        $this->categories = $categories;
         return $this;
     }
 
@@ -142,9 +141,9 @@ class CourseHistoryData
         return $this->type;
     }
 
-    public function getCategory()
+    public function getCategories()
     {
-        return $this->category;
+        return $this->categories;
     }
 
     public function getHasFeedback()
@@ -174,7 +173,9 @@ class CourseHistoryData
         $courseHistoryData->setTeacher($courseHistory->course->professor->fullname);
         $courseHistoryData->setTitle($courseHistory->course->title);
         $courseHistoryData->setType($courseHistory->course->courseType->name);
-        $courseHistoryData->setCategory($courseHistory->course->courseCategory->name);
+        // Set categories as array of names
+        $categoryNames = $courseHistory->course->categories->pluck('name')->toArray();
+        $courseHistoryData->setCategories($categoryNames);
         $courseHistoryData->setLanguage($courseHistory->course->language);
         $courseHistoryData->setStatus($courseHistory->completed_at != null ? CourseHistory::COMPLETED : CourseHistory::ONGOING);
         $courseHistoryData->setBookedDate($courseHistory->created_at);

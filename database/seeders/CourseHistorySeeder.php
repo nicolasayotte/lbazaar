@@ -39,7 +39,7 @@ class CourseHistorySeeder extends Seeder
                 $teacherWallet = $course->professor()->first()->userWallet()->first();
 
                 if (!$isBooked && !$isFullyBooked && ($userWallet->points >= $course->price)) {
-                    $courseHistory = CourseHistory::create([
+                    $courseHistory = CourseHistory::updateOrCreate([
                         'course_schedule_id' => $coursesSchedule->id,
                         'course_id'          => $course->id,
                         'user_id'            => $student->id,
@@ -71,7 +71,7 @@ class CourseHistorySeeder extends Seeder
     }
 
     public function updateWalletHistory($userWallet, $transactionType, $newUserPoints, $courseHistory) {
-        WalletTransactionHistory::create([
+        WalletTransactionHistory::updateOrCreate([
             'user_wallet_id' => $userWallet->id,
             'course_history_id' => isset($courseHistory->id) ? $courseHistory->id : null,
             'type' => $transactionType,

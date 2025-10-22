@@ -19,6 +19,11 @@ class Web3WalletVerifyHwRequest extends FormRequest
         return [
             'walletSig' => 'required|alpha_num|max:8192',
             'cborTx' => 'required|alpha_num|max:16384',
+            'addr' => [
+                'required',
+                'regex:/^addr(_test)?1[0-9a-zA-Z]+$/',
+                'max:256'
+            ],
             'stakeAddr' => 'required|alpha_dash|max:256'
         ];
     }

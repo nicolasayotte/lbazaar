@@ -53,8 +53,8 @@ const Index = () => {
             </Grid>
             {
                 processing
-                ? <TableLoader />
-                : <BadgesTable data={user_badges.data}/>
+                    ? <TableLoader />
+                    : <BadgesTable data={user_badges.data} />
             }
             <Grid item xs={12} md={12}>
                 <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>

@@ -3,6 +3,7 @@
          xsi:noNamespaceSchemaLocation="./vendor/phpunit/phpunit/phpunit.xsd"
          bootstrap="vendor/autoload.php"
          colors="true"
+         timeout="30"
 >
     <testsuites>
         <testsuite name="Unit">
@@ -21,10 +22,19 @@
         <env name="APP_ENV" value="testing"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="CACHE_DRIVER" value="array"/>
-        <env name="DB_DATABASE" value="testing"/>
+        <env name="DB_CONNECTION" value="mysql"/>
+        <env name="DB_HOST" value="mysql"/>
+        <env name="DB_PORT" value="3306"/>
+        <env name="DB_DATABASE" value="learning_bazaar"/>
+        <env name="DB_USERNAME" value="sail"/>
+        <env name="DB_PASSWORD" value="password"/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
     </php>
+    <logging>
+        <!-- Overwrite test results log each run -->
+        <log type="testdox-text" target="docs/test-reports/php-unit-tests.log"/>
+    </logging>
 </phpunit>

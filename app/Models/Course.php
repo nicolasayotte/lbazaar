@@ -26,7 +26,6 @@ class Course extends Model
         "description",
         "language",
         "image_thumbnail",
-        "course_category_id",
         "nft_id",
         "course_type_id",
         "video_path",
@@ -56,7 +55,7 @@ class Course extends Model
     protected $with = [
         'professor',
         'courseType',
-        'courseCategory',
+        'categories',
         'coursePackage',
         'schedules'
     ];
@@ -71,9 +70,9 @@ class Course extends Model
         return $this->belongsTo(CourseType::class);
     }
 
-    public function courseCategory()
+    public function categories()
     {
-        return $this->belongsTo(CourseCategory::class)->withTrashed();
+        return $this->belongsToMany(CourseCategory::class, 'course_category_course')->withTrashed();
     }
 
     public function nft()

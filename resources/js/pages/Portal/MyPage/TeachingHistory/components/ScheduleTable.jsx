@@ -24,8 +24,8 @@ const ScheduleTable = ({ data, handleOnDelete }) => {
         const ScheduleDate = () => (
             <Box>
                 <Typography variant="caption" color="primary" children={startDate[0]} display="block" />
-                <Typography variant="button" children={`${ startDate[1] } ${ startDate[2] } ${ startDate[3] }`} mr={1} />
-                <Typography variant="caption" children={`${ startDate[4] } ${ startDate[5] }`} />
+                <Typography variant="button" children={`${startDate[1]} ${startDate[2]} ${startDate[3]}`} mr={1} />
+                <Typography variant="caption" children={`${startDate[4]} ${startDate[5]}`} />
             </Box>
         )
 
@@ -34,7 +34,7 @@ const ScheduleTable = ({ data, handleOnDelete }) => {
                 <TableCell children={<ScheduleDate />} />
                 <TableCell children={schedule.course.title} />
                 <TableCell align="center">
-                    { isLive?  schedule.total_bookings +  ' / ' + schedule.max_participant : schedule.total_bookings }
+                    {isLive ? schedule.total_bookings + ' / ' + schedule.max_participant : schedule.total_bookings}
                 </TableCell>
                 <TableCell align="center">
                     <Chip color={statusColors[schedule.status]} label={schedule.status} />

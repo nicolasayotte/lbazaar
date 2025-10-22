@@ -1,63 +1,74 @@
-import { Buffer } from "buffer";
-import { blake2b } from "blakejs";
-import { bytesToHex, 
-         Signature,
-         Tx } from "@hyperionbt/helios";
-import pkg from '@stricahq/bip32ed25519';
-const { Bip32PrivateKey } = pkg;
+import { BlockFrostAPI } from '@blockfrost/blockfrost-js';
+import { RootPrivateKey, Address, Tx } from '@hyperionbt/helios';
 
-export { signTx };
+export { getAccountAddr, signTx, submitTx };
+
+const isTestnet = process.env.NETWORK !== "mainnet"
+const client = new BlockFrostAPI({
+    projectId: process.env.BLOCKFROST_API_KEY,
+});
+
+const defaultEntropy = 'kiss smile exotic pigeon jealous inmate bomb unit pelican tissue viable immense demand flee equal always decrease advance swallow stock replace list enhance item';
+
+const validEntropy = process.env.ENTROPY ? process.env.ENTROPY.trim() : false;
+if (!validEntropy) {
+    console.warn('No ENTROPY set, using default entropy');
+    if (process.env.NODE_ENV === 'production') {
+        throw new Error('No ENTROPY set, please set it in your environment variables');
+    }
+} else {
+    console.warn('Using custom ENTROPY from environment variables');
+}
+const entropy = (validEntropy || defaultEntropy).split(' ')
+
+/**
+ * Derive the first address of a rootKey
+ * @param {number} accountId
+ * @returns {string} bech32Address
+ */
+const getAccountAddr = async (accountId = 0) => {
+    try {
+        const rootKey = RootPrivateKey.fromPhrase(entropy)
+        const paymentHash = rootKey.deriveSpendingKey(accountId, 0).derivePubKey().pubKeyHash;
+        const bech32Addr = Address.fromHash(paymentHash, isTestnet).toBech32();
+        return bech32Addr;
+    } catch (err) {
+        throw console.error('get-addr: ', err);
+    }
+};
 
 /**
  * Sign the tx with a private key
  * @param {Tx} tx
  * @returns {Tx} tx
  */
-const signTx = async (tx) => {
-
-    const hash32 = (data) => {
-        const hash = blake2b(data, undefined, 32);
-        return Buffer.from(hash);
-    };
-        
-    function harden(num) {
-        return 0x80000000 + num;
-    }
-    
+const signTx = async (tx, accountId = 0) => {
     try {
-        const rootKeyHex = process.env.ROOT_KEY;
-        const buffer = Buffer.from(rootKeyHex, 'hex');
-        const rootKey = new Bip32PrivateKey(buffer);
-
-        const accountKey = rootKey
-        .derive(harden(1852)) // purpose
-        .derive(harden(1815)) // coin type
-        .derive(harden(0)); // account #0
-        
-        const addrPrvKey = accountKey
-        .derive(0) // external
-        .derive(0)
-        .toPrivateKey();
-
-        const addrPubKey = accountKey
-        .derive(0) // external
-        .derive(0)
-        .toBip32PublicKey();
-        
-        const txBodyCbor = bytesToHex((tx.body).toCbor());
-        const txBody = Buffer.from(txBodyCbor, 'hex');
-        const txHash = hash32(txBody);
-
-        const pubKeyArray = [...addrPubKey.toBytes().subarray(0, 32)];
-        const signatureArray = [...addrPrvKey.sign(txHash)];
-
-        const signature = new Signature(pubKeyArray,
-                                        signatureArray);
+        const rootKey = RootPrivateKey.fromPhrase(entropy)
+        const spendingKey = rootKey.deriveSpendingKey(accountId);
+        const bodyHash = Crypto.blake2b(tx.body.toCbor(), 32);  // 32-byte digest
+        const signature = spendingKey.sign(bodyHash);
 
         tx.addSignature(signature);
         return tx;
+    } catch (err) {
+        throw console.error('sign-tx: ', err);
     }
-    catch (err) {
-        throw console.error("sign-tx: ", err);
+};
+
+/**
+ * Submit a Helios Tx to blockfrost and return the
+ * txHash if successful.
+ * @param {Tx} tx
+ * @returns {string} txId
+ */
+
+const submitTx = async (tx) => {
+    try {
+        const payload = new Uint8Array(tx.toCbor());
+        const txHash = await client.txSubmit(payload);
+        return txHash;
+    } catch (err) {
+        throw err;
     }
-}
+};

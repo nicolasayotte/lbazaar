@@ -62,11 +62,11 @@ const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions,
     const displayCommand = () => {
         if (command != null) {
             return (
-                <Alert severity="success" sx={{position: 'relative'}}>
+                <Alert severity="success" sx={{ position: 'relative' }}>
                     <AlertTitle>Copy the generated command</AlertTitle>
                     <strong>{command}</strong>
-                    <IconButton onClick={handleCopyCommand} color="white" sx={{ position: 'absolute', right: '0'}}>
-                            <ContentCopy fontSize="small" color="inherit" />
+                    <IconButton onClick={handleCopyCommand} color="white" sx={{ position: 'absolute', right: '0' }}>
+                        <ContentCopy fontSize="small" color="inherit" />
                     </IconButton>
                 </Alert>
             )
@@ -127,148 +127,148 @@ const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions,
     }, [typeInput])
 
     const displayFormLayout = () => {
-            return (
-                <Box>
-                    <Typography fontFamily="inherit" variant="h5" component="div" sx={{ mb: 4 }}>Create Class Application</Typography>
-                    <Grid container spacing={3}>
-                        <Grid item xs={12} md={12}>
-                            <Input
-                                label="Title"
-                                name="title"
-                                value={data.title}
-                                onChange={e => handleOnChange(e, setData)}
-                                errors={errors}
-                                disabled={disabledForm}
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <Input
-                                select
-                                label="Type"
-                                InputLabelProps={{
-                                    shrink: true
-                                }}
-                                id="course_type"
-                                name="course_type_id"
-                                value={data.course_type_id}
-                                onChange={e => handleOnTypeChange(e)}
-                                errors={errors}
-                                disabled={disabledForm}
-                            >
-                                <option value=""></option>
-                                {displaySelectOptions(typeOptions)}
-                            </Input>
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <Input
-                                select
-                                label="Category"
-                                InputLabelProps={{
-                                    shrink: true
-                                }}
-                                name="course_category_id"
-                                value={data.course_category_id}
-                                onChange={e => handleOnChange(e, setData)}
-                                errors={errors}
-                                disabled={disabledForm}
-                            >
-                                <option value=""></option>
-                                {displaySelectOptions(categoryOptions)}
-                            </Input>
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <Input
-                                select
-                                label="Language"
-                                InputLabelProps={{
-                                    shrink: true
-                                }}
-                                name="language"
-                                value={data.language}
-                                onChange={e => handleOnChange(e, setData)}
-                                errors={errors}
-                                disabled={disabledForm}
-                            >
-                                <option value=""></option>
-                                {displaySelectOptions(languageOption)}
-                            </Input>
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <Input
-                                select
-                                label="Lecture Type"
-                                InputLabelProps={{
-                                    shrink: true
-                                }}
-                                name="lecture_type"
-                                value={data.lecture_type}
-                                onChange={e => handleOnChange(e, setData)}
-                                errors={errors}
-                                disabled={disabledForm}
-                            >
-                                <option value=""></option>
-                                {displaySelectOptions(lectureTypeOption)}
-                            </Input>
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <Input
-                                label="Seats"
-                                name="seats"
-                                InputLabelProps={{
-                                    shrink: true
-                                }}
-                                value={data.seats}
-                                onChange={e => handleOnChange(e, setData)}
-                                errors={errors}
-                                disabled={disabledForm}
-                            />
-                        </Grid>
-                        {
-                            (isPaidClass) &&
-                            <Grid item xs={12} md={6}>
-                                <Input
-                                    label="Price"
-                                    name="price"
-                                    InputLabelProps={{
-                                        shrink: true
-                                    }}
-                                    value={data.price}
-                                    onChange={e => handleOnChange(e, setData)}
-                                    errors={errors}
-                                    disabled={disabledForm}
-                                />
-                            </Grid>
-                        }
-                        {
-                            (isEarned) &&
-                            <Grid item xs={12} md={6}>
-                                <Input
-                                    label="Price earned"
-                                    name="price_earned"
-                                    InputLabelProps={{
-                                        shrink: true
-                                    }}
-                                    value={data.price_earned}
-                                    onChange={e => handleOnChange(e, setData)}
-                                    errors={errors}
-                                    disabled={disabledForm}
-                                />
-                            </Grid>
-                        }
-                        <Grid item xs={12} sm={12} sx={{mb:2}}>
-                            <Typography variant="h6">Description</Typography>
-                            <TextEditorInput
-                                name="description"
-                                value={data.description}
-                                onChange={(value) => handleEditorOnChange(value, setData, 'description')}
-                                style={{height: '180px'}}
-                                errors={errors}
-                                readOnly={disabledForm}
-                                />
-                        </Grid>
+        return (
+            <Box>
+                <Typography fontFamily="inherit" variant="h5" component="div" sx={{ mb: 4 }}>Create Class Application</Typography>
+                <Grid container spacing={3}>
+                    <Grid item xs={12} md={12}>
+                        <Input
+                            label="Title"
+                            name="title"
+                            value={data.title}
+                            onChange={e => handleOnChange(e, setData)}
+                            errors={errors}
+                            disabled={disabledForm}
+                        />
                     </Grid>
-                </Box>
-            )
+                    <Grid item xs={12} md={6}>
+                        <Input
+                            select
+                            label="Type"
+                            InputLabelProps={{
+                                shrink: true
+                            }}
+                            id="course_type"
+                            name="course_type_id"
+                            value={data.course_type_id}
+                            onChange={e => handleOnTypeChange(e)}
+                            errors={errors}
+                            disabled={disabledForm}
+                        >
+                            <option value=""></option>
+                            {displaySelectOptions(typeOptions)}
+                        </Input>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <Input
+                            select
+                            label="Category"
+                            InputLabelProps={{
+                                shrink: true
+                            }}
+                            name="course_category_id"
+                            value={data.course_category_id}
+                            onChange={e => handleOnChange(e, setData)}
+                            errors={errors}
+                            disabled={disabledForm}
+                        >
+                            <option value=""></option>
+                            {displaySelectOptions(categoryOptions)}
+                        </Input>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <Input
+                            select
+                            label="Language"
+                            InputLabelProps={{
+                                shrink: true
+                            }}
+                            name="language"
+                            value={data.language}
+                            onChange={e => handleOnChange(e, setData)}
+                            errors={errors}
+                            disabled={disabledForm}
+                        >
+                            <option value=""></option>
+                            {displaySelectOptions(languageOption)}
+                        </Input>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <Input
+                            select
+                            label="Lecture Type"
+                            InputLabelProps={{
+                                shrink: true
+                            }}
+                            name="lecture_type"
+                            value={data.lecture_type}
+                            onChange={e => handleOnChange(e, setData)}
+                            errors={errors}
+                            disabled={disabledForm}
+                        >
+                            <option value=""></option>
+                            {displaySelectOptions(lectureTypeOption)}
+                        </Input>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <Input
+                            label="Seats"
+                            name="seats"
+                            InputLabelProps={{
+                                shrink: true
+                            }}
+                            value={data.seats}
+                            onChange={e => handleOnChange(e, setData)}
+                            errors={errors}
+                            disabled={disabledForm}
+                        />
+                    </Grid>
+                    {
+                        (isPaidClass) &&
+                        <Grid item xs={12} md={6}>
+                            <Input
+                                label="Price"
+                                name="price"
+                                InputLabelProps={{
+                                    shrink: true
+                                }}
+                                value={data.price}
+                                onChange={e => handleOnChange(e, setData)}
+                                errors={errors}
+                                disabled={disabledForm}
+                            />
+                        </Grid>
+                    }
+                    {
+                        (isEarned) &&
+                        <Grid item xs={12} md={6}>
+                            <Input
+                                label="Price earned"
+                                name="price_earned"
+                                InputLabelProps={{
+                                    shrink: true
+                                }}
+                                value={data.price_earned}
+                                onChange={e => handleOnChange(e, setData)}
+                                errors={errors}
+                                disabled={disabledForm}
+                            />
+                        </Grid>
+                    }
+                    <Grid item xs={12} sm={12} sx={{ mb: 2 }}>
+                        <Typography variant="h6">Description</Typography>
+                        <TextEditorInput
+                            name="description"
+                            value={data.description}
+                            onChange={(value) => handleEditorOnChange(value, setData, 'description')}
+                            style={{ height: '180px' }}
+                            errors={errors}
+                            readOnly={disabledForm}
+                        />
+                    </Grid>
+                </Grid>
+            </Box>
+        )
     }
 
     return (
@@ -279,7 +279,7 @@ const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions,
                     {displayFormLayout()}
                     <Grid item xs={12} md={12} textAlign="right">
                         <Stack direction="row" spacing={1} justifyContent="end">
-                            <BackButton processing={processing}/>
+                            <BackButton processing={processing} />
                             {
                                 (disabledForm) &&
                                 <Button

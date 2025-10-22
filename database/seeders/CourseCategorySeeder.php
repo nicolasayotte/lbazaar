@@ -16,7 +16,7 @@ class CourseCategorySeeder extends Seeder
     public function run()
     {
         for ($i = 0; $i < 10; $i++) {
-            CourseCategory::create([
+            CourseCategory::updateOrCreate([
                 'name' => ucwords(fake()->word())
             ]);
         }

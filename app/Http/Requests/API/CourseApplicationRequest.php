@@ -21,7 +21,16 @@ class CourseApplicationRequest extends FormRequest
         return [
             'email' => 'required|exists:users,email',
             'category' => 'required',
-            'type' => ['required', Rule::in([strtolower(CourseType::FREE), strtolower(CourseType::GENERAL), strtolower(CourseType::SPECIAL), strtolower(CourseType::EARN)])],
+            'type' => [
+                'required',
+                Rule::in([
+                    strtolower(CourseType::FREE),
+                    strtolower(CourseType::GENERAL),
+                    strtolower(CourseType::SPECIAL),
+                    //strtolower(CourseType::EARN)
+                ])
+            ],
+
             'price' => 'required_if:type,'. strtolower(CourseType::GENERAL).','. strtolower(CourseType::SPECIAL).'|min:0|numeric',
             'points_earned' => 'required_if:course_type_id,' . strtolower(CourseType::EARN),
             'title' => 'required',

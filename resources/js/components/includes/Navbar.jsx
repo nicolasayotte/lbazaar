@@ -77,44 +77,42 @@ const Navbar = () => {
             >
                 {
                     ButtonComponent
-                    ? <ButtonComponent variant="outlined" color="inherit" children={item.name} />
-                    : (
-                        <ListItemButton>
-                            <ListItemText primary={item.name} sx={{ textAlign: { xs: 'left', md: 'center' } }} />
-                        </ListItemButton>
-                    )
+                        ? <ButtonComponent variant="outlined" color="inherit" children={item.name} />
+                        : (
+                            <ListItemButton>
+                                <ListItemText primary={item.name} sx={{ textAlign: { xs: 'left', md: 'center' } }} />
+                            </ListItemButton>
+                        )
                 }
             </Link>
         )
 
         if (isLoggedIn === item.auth) {
             return ParentComponent
-            ? <ParentComponent {...parentProps} key={item.name} children={output} />
-            : output
+                ? <ParentComponent {...parentProps} key={item.name} children={output} />
+                : output
         }
     })
 
     const drawer = (
         <Box onClick={toggleDrawer}>
             <Toolbar>
-                <Typography
-                    variant="h5"
-                    py={3}
-                    children="L-Earning Bazaar"
-                />
+                <img src="https://staging-lebazaar.s3.ap-northeast-1.amazonaws.com/uploads/logo-black.png" alt="Logo" style={{ padding: "12px", height: "80px" }} />
             </Toolbar>
             <Divider />
             <List>
                 {
                     isLoggedIn && (
                         <>
+                            {/*
                             <ListItem>
                                 <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ width: '100%' }}>
                                     <AccountBalanceWallet sx={{ mr: 'auto' }} />
-                                    <Typography children={ auth.user.user_wallet.points.toFixed(2) } />
+                                    <Typography children={auth.user.user_wallet.points.toFixed(2)} />
                                 </Stack>
                             </ListItem>
                             <Divider sx={{ my: 1 }} />
+                            */}
                             <ListItem disablePadding>
                                 <ListItemButton>
                                     <Typography
@@ -136,7 +134,7 @@ const Navbar = () => {
                         </Link>
                     </ListItem>
                 ))}
-                { authButtons(isLoggedIn, ListItem, {disablePadding: true}) }
+                {authButtons(isLoggedIn, ListItem, { disablePadding: true })}
             </List>
         </Box>
     )
@@ -163,14 +161,14 @@ const Navbar = () => {
             <AppBar position="fixed" color="primary" id="appNavbar">
                 <LanguageNavbar locale={locale} />
                 <Toolbar>
-                    <Typography variant="h6" sx={{ my: 3, mr: 4 }}>L-Earning Bazaar</Typography>
+                    <img src="https://staging-lebazaar.s3.ap-northeast-1.amazonaws.com/uploads/logo.png" alt="Logo" style={{ padding: "12px", height: "80px" }} />
                     <Stack direction="row" spacing={1} sx={{ mr: 'auto', display: { xs: "none", md: "flex" } }}>
                         <Nav />
                     </Stack>
                     <IconButton
                         color="inherit"
                         sx={{
-                            display: {xs: "flex", md: "none"},
+                            display: { xs: "flex", md: "none" },
                             marginLeft: "auto"
                         }}
                         onClick={toggleDrawer}
@@ -186,12 +184,14 @@ const Navbar = () => {
                                         children={`${auth.user.roles[0].name.toUpperCase()}`}
                                         sx={{ mr: 2 }}
                                     />
+                                    {/*
                                     <AccountBalanceWallet />
-                                    <Typography children={ auth.user.user_wallet.points.toFixed(2) } />
+                                    <Typography children={auth.user.user_wallet.points.toFixed(2)} />
+                                    */}
                                 </Stack>
                             )
                         }
-                        { authButtons(isLoggedIn, null, {}, Button) }
+                        {authButtons(isLoggedIn, null, {}, Button)}
                     </Stack>
                 </Toolbar>
             </AppBar>

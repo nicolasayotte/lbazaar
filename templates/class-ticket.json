@@ -1,0 +1,20 @@
+{
+  "{{asset_name}}": {
+    "name": "{{course_title}} — Cohort {{cohort}} Seat #{{seat_number}}",
+    "image": "{{image_cid}}",
+    "mediaType": "image/png",
+    "description": "Admission ticket for {{course_title}} (online).",
+    "course": {
+      "id": "{{course_id}}",
+      "title": "{{course_title}}",
+      "provider": "L-Earning Bazaar",
+      "teacher": "{{teacher_name}}"
+    },
+    "ticket": {
+      "valid_from": "{{valid_from}}",
+      "valid_until": "{{valid_until}}",
+      "terms_url": "https://.../tos#tickets",
+      "transferable": true
+    }
+  }
+}

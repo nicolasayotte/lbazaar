@@ -35,20 +35,24 @@ const Details = () => {
         type: ''
     })
 
+
+    // TODO Make this use NMKR Pay when relevant
+    // TODO Have the NMKR Pay link come from the database
     const handleBook = async (schedule_id) => {
         setDialog(dialog => ({
             ...dialog,
             open: true,
             title: translatables.texts.book,
             text: translatables.confirm.class.schedules.book,
-            submitUrl: getRoute('course.book', {schedule_id}),
+            submitUrl: getRoute('course.book', { schedule_id }),
+
             method: 'post',
             action: 'booked'
         }))
     }
 
     const handleBookNFT = async (schedule_id) => {
-    
+
         try {
             // get the UTXOs from wallet
             const cborUtxos = await walletAPI.getUtxos()
@@ -57,157 +61,157 @@ const Details = () => {
                 nft_name: nft.name,
                 utxos: cborUtxos
             })
-            .then(async response => {
-                const respObjCheck = await JSON.parse(response.data)
-                if (respObjCheck.status == 200) {
-                    
-                    let message = translatables.texts.nft_verify
-                    let hexMessage = ''
+                .then(async response => {
+                    const respObjCheck = await JSON.parse(response.data)
+                    if (respObjCheck.status == 200) {
 
-                    for (var i = 0, l = message.length; i < l; i++) {
-                        hexMessage += message.charCodeAt(i).toString(16);
-                    }
+                        let message = translatables.texts.nft_verify
+                        let hexMessage = ''
 
-                    try {
-                        const { signature, key } = await walletAPI.signData(respObjCheck.addrHex, hexMessage)
-                        
-                        await axios.post('/nft/verify', {
-                            signature: signature,
-                            spending_key: key,
-                            message: hexMessage,
-                            wallet_addr: respObjCheck.addrHex,
-                            nft_name : nft.name,
-                            serial_num : respObjCheck.serialNum
-                        })
-                        .then(async response => {
-                            const respObjVerify = await JSON.parse(response.data)
-                            
-                            if (respObjVerify.status == 200) {
-            
-                                dispatch(actions.success({
-                                    message: translatables.success.nft
-                                }))
-                                
-                                setDialog(dialog => ({
-                                    ...dialog,
-                                    open: true,
-                                    title: translatables.texts.book,
-                                    text: translatables.confirm.class.schedules.book,
-                                    submitUrl: getRoute('course.book', {schedule_id}),
-                                    method: 'post',
-                                    action: 'booked'
-                                }))
-                            } else {
-                                dispatch(actions.error({
-                                    message: translatables.nft_error.verify
-                                }))
-                            }
-                        })
-                        .catch(error => {
-                            throw console.error("handleNFTVerify: ", error)
-                        });
-                    } catch (error) {
-                        console.warn(error)
-
-                        if (error.code == 3 || error.code == -3 ) {
-                            // User has declined to sign Data, exit gracefully
-                            dispatch(actions.error({
-                                message: translatables.nft_error.verify
-                            }))
-                            return
+                        for (var i = 0, l = message.length; i < l; i++) {
+                            hexMessage += message.charCodeAt(i).toString(16);
                         }
 
-                        // Will try using a signed tx because some wallets don't support signData 
                         try {
-                            // get the UTXOs from wallet,
-                            const cborUtxos = await walletAPI.getUtxos()
-                            
-                            await axios.post('/wallet/build-hw-tx', {
-                                changeAddr: respObjCheck.addrHex,
-                                utxos: cborUtxos
-                            })
-                            .then(async response => {
-                                const respObjBuildHw = await JSON.parse(response.data)
-                                
-                                if (respObjBuildHw.status == 200) {
+                            const { signature, key } = await walletAPI.signData(respObjCheck.addrHex, hexMessage)
 
-                                    // Get user to sign the transaction
-                                    var walletSig
-                                    try {
-                                        walletSig = await walletAPI.signTx(respObjBuildHw.cborTx, true)
-                                    } catch (err) {
-                                        console.error(err)
+                            await axios.post('/nft/verify', {
+                                signature: signature,
+                                spending_key: key,
+                                message: hexMessage,
+                                wallet_addr: respObjCheck.addrHex,
+                                nft_name: nft.name,
+                                serial_num: respObjCheck.serialNum
+                            })
+                                .then(async response => {
+                                    const respObjVerify = await JSON.parse(response.data)
+
+                                    if (respObjVerify.status == 200) {
+
+                                        dispatch(actions.success({
+                                            message: translatables.success.nft
+                                        }))
+
+                                        setDialog(dialog => ({
+                                            ...dialog,
+                                            open: true,
+                                            title: translatables.texts.book,
+                                            text: translatables.confirm.class.schedules.book,
+                                            submitUrl: getRoute('course.book', { schedule_id }),
+                                            method: 'post',
+                                            action: 'booked'
+                                        }))
+                                    } else {
                                         dispatch(actions.error({
                                             message: translatables.nft_error.verify
                                         }))
-                                        return
                                     }
-                   
-                                    await axios.post('/nft/verify-hw', {
-                                        walletSig: walletSig,
-                                        cborTx: respObjBuildHw.cborTx,
-                                        wallet_addr: respObjCheck.addrHex,
-                                        nft_name : nft.name,
-                                        serial_num : respObjCheck.serialNum
-                                    })
+                                })
+                                .catch(error => {
+                                    throw console.error("handleNFTVerify: ", error)
+                                });
+                        } catch (error) {
+                            console.warn(error)
+
+                            if (error.code == 3 || error.code == -3) {
+                                // User has declined to sign Data, exit gracefully
+                                dispatch(actions.error({
+                                    message: translatables.nft_error.verify
+                                }))
+                                return
+                            }
+
+                            // Will try using a signed tx because some wallets don't support signData
+                            try {
+                                // get the UTXOs from wallet,
+                                const cborUtxos = await walletAPI.getUtxos()
+
+                                await axios.post('/wallet/build-hw-tx', {
+                                    changeAddr: respObjCheck.addrHex,
+                                    utxos: cborUtxos
+                                })
                                     .then(async response => {
-                                        const respObj = await JSON.parse(response.data);
-                                        if (respObj.status == 200) {
+                                        const respObjBuildHw = await JSON.parse(response.data)
 
-                                            dispatch(actions.success({
-                                                message: translatables.success.nft
-                                            }))
+                                        if (respObjBuildHw.status == 200) {
 
-                                            setDialog(dialog => ({
-                                                ...dialog,
-                                                open: true,
-                                                title: translatables.texts.book,
-                                                text: translatables.confirm.class.schedules.book,
-                                                submitUrl: getRoute('course.book', {schedule_id}),
-                                                method: 'post',
-                                                action: 'booked'
-                                            }))
+                                            // Get user to sign the transaction
+                                            var walletSig
+                                            try {
+                                                walletSig = await walletAPI.signTx(respObjBuildHw.cborTx, true)
+                                            } catch (err) {
+                                                console.error(err)
+                                                dispatch(actions.error({
+                                                    message: translatables.nft_error.verify
+                                                }))
+                                                return
+                                            }
+
+                                            await axios.post('/nft/verify-hw', {
+                                                walletSig: walletSig,
+                                                cborTx: respObjBuildHw.cborTx,
+                                                wallet_addr: respObjCheck.addrHex,
+                                                nft_name: nft.name,
+                                                serial_num: respObjCheck.serialNum
+                                            })
+                                                .then(async response => {
+                                                    const respObj = await JSON.parse(response.data);
+                                                    if (respObj.status == 200) {
+
+                                                        dispatch(actions.success({
+                                                            message: translatables.success.nft
+                                                        }))
+
+                                                        setDialog(dialog => ({
+                                                            ...dialog,
+                                                            open: true,
+                                                            title: translatables.texts.book,
+                                                            text: translatables.confirm.class.schedules.book,
+                                                            submitUrl: getRoute('course.book', { schedule_id }),
+                                                            method: 'post',
+                                                            action: 'booked'
+                                                        }))
+                                                    } else {
+                                                        console.error("NFT could not be validated")
+                                                        dispatch(actions.error({
+                                                            message: translatables.nft_error.verify
+                                                        }))
+                                                    }
+                                                })
+                                                .catch(error => {
+                                                    throw console.error("NFT could not be validated: ", error);
+                                                })
+
                                         } else {
-                                            console.error("NFT could not be validated")
+                                            console.error("NFT could not be validated");
                                             dispatch(actions.error({
                                                 message: translatables.nft_error.verify
                                             }))
                                         }
                                     })
                                     .catch(error => {
-                                        throw console.error("NFT could not be validated: ", error);
+                                        throw console.error("handleWalletVerify: ", error);
                                     })
 
-                                } else {
-                                    console.error("NFT could not be validated");
-                                    dispatch(actions.error({
-                                        message: translatables.nft_error.verify
-                                    }))
-                                }
-                            })
-                            .catch(error => {
-                                throw console.error("handleWalletVerify: ", error);
-                            })
-
-                        } catch (error) {
-                            console.error(error);
-                            dispatch(actions.error({
-                                message: translatables.nft_error.verify
-                            }))
+                            } catch (error) {
+                                console.error(error);
+                                dispatch(actions.error({
+                                    message: translatables.nft_error.verify
+                                }))
+                            }
                         }
-                    }
 
-                } else {
-                    console.error("No NFT found in user wallet");
-                    dispatch(actions.error({
-                        message: translatables.nft_error.not_found
-                    }))
-                }
-            })
-            .catch(error => {
-                throw console.error("handleNFTCheck: ", error);
-                
-            }); 
+                    } else {
+                        console.error("No NFT found in user wallet");
+                        dispatch(actions.error({
+                            message: translatables.nft_error.not_found
+                        }))
+                    }
+                })
+                .catch(error => {
+                    throw console.error("handleNFTCheck: ", error);
+
+                });
         } catch (error) {
             console.error("handleNFTCheck: ", error);
             dispatch(actions.error({
@@ -222,7 +226,7 @@ const Details = () => {
             open: true,
             title: translatables.texts.cancel,
             text: translatables.confirm.class.schedules.cancel,
-            submitUrl: getRoute('course.cancel', {schedule_id}),
+            submitUrl: getRoute('course.cancel', { schedule_id }),
             method: 'post',
             action: 'cancelled'
         }))
@@ -238,9 +242,25 @@ const Details = () => {
     const handleOnDialogSubmit = e => {
         e.preventDefault()
 
+        const popupWidth = 500;
+        const popupHeight = 700;
+
+        // Calculate the center of the screen
+        const left = window.top.outerWidth / 2 + window.top.screenX - (popupWidth / 2);
+        const top = window.top.outerHeight / 2 + window.top.screenY - (popupHeight / 2);
+
+        const popup = window.open(
+            "https://pay.nmkr.io/?p=31970d0c2a694954a416d36847e50375&n=aa680d6c884b4b10ba7e76ff3fd9ebcc",
+            "NFT-MAKER PRO Payment Gateway",
+            `popup=1, location=1, width=${popupWidth}, height=${popupHeight}, left=${left}, top=${top}`
+        );
+
+        console.log(popup)
+
         Inertia.visit(dialog.submitUrl, {
             method: dialog.method,
             errorBag: dialog.action,
+
             onSuccess: () => dispatch(actions.success({
                 message: translatables.success.class.booking[dialog.action]
             })),
@@ -252,7 +272,7 @@ const Details = () => {
 
     const handleOnFeedbacksLoad = () => {
         Inertia.visit(getRoute('course.details', { id: course.id }), {
-            data: {feedback_count: parseInt(feedbackCount) + parseInt(feedbacksPerPage)},
+            data: { feedback_count: parseInt(feedbackCount) + parseInt(feedbacksPerPage) },
             only: [
                 'feedbacks',
                 'feedbackCount'
@@ -262,7 +282,6 @@ const Details = () => {
     }
 
     const Feedbacks = () => {
-
         const CourseFeedbacks = () => feedbacks && feedbacks.length > 0 && feedbacks.map(feedback => (
             <Feedback
                 key={feedback.id}
@@ -366,7 +385,7 @@ const Details = () => {
 
         const dynamicInfos = {
             'General': { type: translatables.texts.price, value: course.price },
-            'Free': { type: translatables.texts.price, value: 'Free' },
+            'Free': { type: translatables.texts.price, value: translatables.texts.free },
             'Earn': { type: translatables.texts.points_earned, value: course.points_earned }
         }
 
@@ -374,7 +393,7 @@ const Details = () => {
 
         return (
             <Grid container spacing={2} sx={{ mb: 2 }}>
-                {   !nft &&
+                {!nft &&
                     classInfos.map((info, index) => (
                         <Grid item xs={12} md={4} key={index}>
                             <Paper sx={{ p: 2 }}>
@@ -395,7 +414,7 @@ const Details = () => {
                         </Grid>
                     ))
                 }
-                {   nft &&
+                {nft &&
                     <Grid item xs={12} md={4}>
                         <Paper sx={{ p: 2 }}>
                             <Typography
@@ -421,8 +440,8 @@ const Details = () => {
     const PackageInformation = () => {
 
         const packageCourses = course.course_package && course.course_package.courses && course.course_package.courses.length > 0
-                               ? course.course_package.courses.filter(packageCourse => packageCourse.id != course.id)
-                               : []
+            ? course.course_package.courses.filter(packageCourse => packageCourse.id != course.id)
+            : []
 
         const PackageCourses = () => packageCourses.map(packageCourse => <Course key={packageCourse.id} course={packageCourse} />)
 
@@ -453,11 +472,11 @@ const Details = () => {
                         <User user={course.professor} condensed={false} />
                         {nft && <Box mb={2}>
                             <WalletConnector onStakeKeyHash={setwalletStakeKeyDisplay}
-                                     walletAPI={walletAPI}
-                                     onWalletAPI={setWalletAPI}/>
+                                walletAPI={walletAPI}
+                                onWalletAPI={setWalletAPI} />
                         </Box>}
-                        {nft && walletAPI &&<CourseScheduleList data={schedules} handleOnBook={handleBookNFT} handleOnCancelBook={handleCancelBooking} />}
-                        {!nft &&<CourseScheduleList data={schedules} handleOnBook={handleBook} handleOnCancelBook={handleCancelBooking} />}
+                        {nft && walletAPI && <CourseScheduleList data={schedules} handleOnBook={handleBookNFT} handleOnCancelBook={handleCancelBooking} />}
+                        {!nft && <CourseScheduleList data={schedules} handleOnBook={handleBook} handleOnCancelBook={handleCancelBooking} />}
                         <PackageInformation />
                     </Grid>
                     <Grid item xs={12} md={4}>

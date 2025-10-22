@@ -13,6 +13,7 @@ class Nft extends Model
     protected $fillable = [
         'mph',
         'name',
+        'description',
         'points',
         'for_sale',
         'image_url'

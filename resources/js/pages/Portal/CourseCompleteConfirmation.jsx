@@ -19,7 +19,7 @@ const CourseCompleteConfirmation = () => {
 
     const { translatables, course, schedule, auth, errors } = usePage().props;
 
-    const {post, processing, } = useForm({
+    const { post, processing, } = useForm({
 
     })
 
@@ -47,7 +47,7 @@ const CourseCompleteConfirmation = () => {
     const [dialog, setDialog] = useState({
         open: false,
         title: '',
-        points: 0,
+        //points: 0,
         schedule_id: schedule.id,
         submitUrl: '',
         method: null,
@@ -67,7 +67,8 @@ const CourseCompleteConfirmation = () => {
     }
 
     const dialogForm = () => {
-
+        return <></>
+        /*
         return (
             <Box mt={1}>
                 <Input
@@ -79,6 +80,7 @@ const CourseCompleteConfirmation = () => {
                 />
             </Box>
         )
+        */
     }
 
     const handleOnDialogClose = () => {
@@ -91,13 +93,27 @@ const CourseCompleteConfirmation = () => {
     const handleOnDialogSubmit = e => {
         e.preventDefault()
 
-        Inertia.visit(dialog.submitUrl, {
-            method: dialog.method,
-            data: {
-                points: dialog.points,
-                schedule_id: dialog.schedule_id,
-            }
-        })
+        // TODO, actually get this from the database
+        //
+        if (dialog.submitUrl.startsWith('https://pay.')) {
+            // Specify the popup width and height
+            const popupWidth = 500;
+            const popupHeight = 700;
+
+            // Calculate the center of the screen
+            const left = window.top.outerWidth / 2 + window.top.screenX - (popupWidth / 2);
+            const top = window.top.outerHeight / 2 + window.top.screenY - (popupHeight / 2);
+
+            const popup = window.open(dialog.submitUrl, "NFT-MAKER PRO Payment Gateway", `popup=1, location=1, width=${popupWidth}, height=${popupHeight}, left=${left}, top=${top}`);
+        } else {
+            Inertia.visit(dialog.submitUrl, {
+                method: dialog.method,
+                data: {
+                    points: dialog.points,
+                    schedule_id: dialog.schedule_id,
+                }
+            })
+        }
     }
 
     return (
@@ -107,62 +123,64 @@ const CourseCompleteConfirmation = () => {
                     <Grid item xs={12} md={8} mx="auto" py={5}>
                         <Card>
                             <CardContent sx={{ p: 3 }}>
-                            <Typography variant="h5" align="center">{translatables.texts.complete_class} {course.title}?</Typography>
-                            <Grid item xs={12} md={11} mx="auto" py={4}>
-                                <Grid container alignItems="center" spacing={{ xs: 2, md: 5 }}>
-                                    <Grid item xs={12} md={4}>
-                                        <Avatar
-                                            src={course.professor.image}
-                                            variant="circular"
-                                            sx={{
-                                                width: 100,
-                                                height: 100,
-                                                maxWidth: '100%',
-                                                mx: 'auto'
-                                            }}
-                                        />
-                                        <Box textAlign="center" my={2}>
-                                            { course.professor.fullname }
-                                        </Box>
-                                    </Grid>
-                                    <Grid item xs={12} md={8}>
-                                        { course.professor.specialty }
-                                        <Divider sx={{ my: 2 }}/>
-                                        <Box display="flex" alignItems="center" mb={1}>
-                                            <Tooltip title="Date Joined" arrow>
-                                                <CalendarMonth/>
-                                            </Tooltip>
-                                            { course.professor.created_at }
-                                        </Box>
-                                        <Box display="flex" alignItems="center" mb={1}>
-                                            <Tooltip title="Email" arrow>
-                                                <Email/>
-                                            </Tooltip>
-                                            { course.professor.email }
-                                        </Box>
+                                <Typography variant="h5" align="center">{translatables.texts.complete_class} {course.title}?</Typography>
+                                <Grid item xs={12} md={11} mx="auto" py={4}>
+                                    <Grid container alignItems="center" spacing={{ xs: 2, md: 5 }}>
+                                        <Grid item xs={12} md={4}>
+                                            <Avatar
+                                                src={course.professor.image}
+                                                variant="circular"
+                                                sx={{
+                                                    width: 100,
+                                                    height: 100,
+                                                    maxWidth: '100%',
+                                                    mx: 'auto'
+                                                }}
+                                            />
+                                            <Box textAlign="center" my={2}>
+                                                {course.professor.fullname}
+                                            </Box>
+                                        </Grid>
+                                        <Grid item xs={12} md={8}>
+                                            {course.professor.specialty}
+                                            <Divider sx={{ my: 2 }} />
+                                            <Box display="flex" alignItems="center" mb={1}>
+                                                <Tooltip title="Date Joined" arrow>
+                                                    <CalendarMonth />
+                                                </Tooltip>
+                                                {course.professor.created_at}
+                                            </Box>
+                                            <Box display="flex" alignItems="center" mb={1}>
+                                                <Tooltip title="Email" arrow>
+                                                    <Email />
+                                                </Tooltip>
+                                                {course.professor.email}
+                                            </Box>
+                                        </Grid>
                                     </Grid>
                                 </Grid>
-                            </Grid>
 
-                            <Typography variant="subtitle1" align="center">"{translatables.texts.complete_class_confirmation_message}"</Typography>
+                                <Typography variant="subtitle1" align="center">"{translatables.texts.complete_class_confirmation_message}"</Typography>
 
                                 <Divider sx={{ my: 2 }} />
                                 <Grid container spacing={2}>
 
                                     <Grid item xs={12}>
                                         <Stack direction="row" spacing={1} justifyContent="end">
-                                        <Link href={getRoute('course.attend.index', { course_id: course.id, schedule_id: schedule.id })} >
-                                            <Button
-                                                variant="outlined"
-                                                children={translatables.texts.back}
+                                            <Link href={getRoute('course.attend.index', { course_id: course.id, schedule_id: schedule.id })} >
+                                                <Button
+                                                    variant="outlined"
+                                                    children={translatables.texts.back}
 
-                                            />
-                                        </Link>
+                                                />
+                                            </Link>
+                                            {/*
                                             <Button
                                                 onClick={handleOnDonatePoints}
                                                 variant="contained"
                                                 disabled={processing}
                                             >{translatables.texts.donate_points}</Button>
+                                            */}
                                             <Button
                                                 onClick={handleSubmit}
                                                 variant="contained"
@@ -182,7 +200,8 @@ const CourseCompleteConfirmation = () => {
                 handleSubmit={handleOnDialogSubmit}
                 children={dialogForm()}
                 disableSubmit={
-                   (dialog.points <= 0 || dialog.points.length <= 0 || dialog.points > auth.user.user_wallet.points)
+                    false
+                    /*(dialog.points <= 0 || dialog.points.length <= 0 || dialog.points > auth.user.user_wallet.points)*/
                 }
             />
         </Box>

@@ -7,7 +7,7 @@ import placeholderImg from "../../../../../../img/placeholder.png"
 const ClassInformationHeader = () => {
 
     const { course, translatables, nft } = usePage().props
-   
+
     const isEarn = course.course_type.type == 'Earn'
     const isFree = course.course_type.type == 'Free'
     const isLive = course.is_live
@@ -84,14 +84,14 @@ const ClassInformationHeader = () => {
                     {
                         !nft &&
                         <Box width={{ xs: '50%', md: 'auto' }}>
-                        <Typography variant="span" mr={1} children={translatables.texts.price} />
-                        <Chip size="small" label={price} />
+                            <Typography variant="span" mr={1} children={translatables.texts.price} />
+                            <Chip size="small" label={price} />
                         </Box>
                     }
                     {
                         nft &&
                         <Box width={{ xs: '50%', md: 'auto' }}>
-                        <Typography variant="span" mr={1} children={translatables.texts.nft} />
+                            <Typography variant="span" mr={1} children={translatables.texts.nft} />
                         </Box>
                     }
                     {
@@ -99,8 +99,8 @@ const ClassInformationHeader = () => {
                         <Box width={{ xs: '50%', md: 'auto' }}>
                             <Typography variant="span" mr={1} children={translatables.texts.points_earned} />
                             <Chip size="small" label={course.points_earned.toFixed(2)} />
-                        </Box> 
-                    }                    
+                        </Box>
+                    }
                     <Box width={{ xs: '50%', md: 'auto' }}>
                         <Typography variant="span" mr={1} children={translatables.texts.rating} />
                         <Chip size="small" label={course.overall_rating > 0 ? course.overall_rating.toFixed(1) : 0} />

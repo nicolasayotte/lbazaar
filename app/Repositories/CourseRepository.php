@@ -27,12 +27,12 @@ class CourseRepository extends BaseRepository
 
     public function getFeaturedClass($take = self::PER_PAGE)
     {
-        return $this->model->take($take)->orderBy('id', 'desc')->with(['professor', 'courseType', 'courseCategory'])->get();
+        return $this->model->take($take)->orderBy('id', 'desc')->with(['professor', 'courseType', 'categories'])->get();
     }
 
     public function getUpcomingClasses($take = self::PER_PAGE)
     {
-        return $this->model->take($take)->orderBy('id', 'desc')->with(['professor', 'courseType', 'courseCategory', 'coursePackage'])->get();
+        return $this->model->take($take)->orderBy('id', 'desc')->with(['professor', 'courseType', 'categories', 'coursePackage'])->get();
     }
 
     public function getLanguages()
@@ -42,16 +42,18 @@ class CourseRepository extends BaseRepository
 
     public function search($request)
     {
-        return $this->model->with(['professor', 'schedules', 'courseCategory', 'courseType', 'coursePackage'])
+        return $this->model->with(['professor', 'schedules', 'categories', 'courseType', 'coursePackage'])
             ->when($request->has('professor_id') && !empty($request->get('professor_id')), function ($q) use ($request)  {
                 return $q->where('professor_id', $request->get('professor_id'));
             })
             ->when($request->has('type_id') && !empty($request->get('type_id')), function ($q) use ($request)  {
                 return $q->where('course_type_id', $request->get('type_id'));
             })
-            ->when($request->has('category_id') && !empty($request->get('category_id')), function ($q) use ($request)  {
-                return $q->where('course_category_id', $request->get('category_id'));
-            })
+            ->when($request->filled('category_id'), fn($q) =>
+                $q->whereHas('categories', fn($q2) =>
+                    $q2->where('id', $request->category_id)
+                )
+            )
             ->when($request->has('language') && !empty($request->get('language')), function ($q) use ($request)  {
                 return $q->where('language', $request->get('language'));
             })
@@ -99,9 +101,11 @@ class CourseRepository extends BaseRepository
             ->when(@$filters['course_type'], function($q) use($filters) {
                 return $q->where('course_type_id', @$filters['course_type']);
             })
-            ->when(@$filters['category'], function($q) use($filters) {
-                return $q->where('course_category_id', @$filters['category']);
-            })
+            ->when(!empty($filters['category']), fn($q) =>
+                $q->whereHas('categories', fn($q2) =>
+                    $q2->where('id', $filters['category'])
+                )
+            )
             ->when(@$filters['status'], function($q) use($filters) {
                 return $q->where('statuses.name', $filters['status']);
             })
@@ -128,7 +132,7 @@ class CourseRepository extends BaseRepository
                         'professor',
                         'courseType',
                         'schedules',
-                        'courseCategory',
+                        'categories',
                         'feedbacks',
                         'feedbacks.user',
                         'coursePackage',
@@ -139,7 +143,7 @@ class CourseRepository extends BaseRepository
 
     public function findByIdManageClass($id)
     {
-        return $this->model->with(['courseType', 'schedules', 'courseCategory'])->findOrFail($id);
+        return $this->model->with(['courseType', 'schedules', 'categories'])->findOrFail($id);
     }
 
     public function findByIdManageClassFeedbacks($id)
@@ -154,26 +158,30 @@ class CourseRepository extends BaseRepository
 
     public function courseUpdate(CourseUpdateRequest $request)
     {
-        $course = $this->findOrFail($request->get('id'));
+        $course = $this->findOrFail($request->id);
 
-        $course->title = $request->get('title');
-        $course->description = $request->get('description');
-        $course->course_category_id = $request->get('course_category_id');
-        $course->language = $request->get('language');
-        $thumbnail = $request->file('imageThumbnail')[0];
-        try {
-            $path = $course->id . '/';
-            $filename = $thumbnail->getClientOriginalName();
-            $thumbnail->storeAs($path, $filename , 'thumbnail');
+        // basic fields
+        $course->fill($request->only([
+            'title','description','language','is_live',
+            'price','points_earned','max_participant',
+            'is_cancellable','days_before_cancellation','zoom_link','video_path'
+        ]));
+
+        // thumbnail upload
+        if ($file = $request->file('imageThumbnail')[0] ?? null) {
+            $path     = $course->id . '/';
+            $filename = $file->getClientOriginalName();
+            $file->storeAs($path, $filename, 'thumbnail');
             $course->image_thumbnail = $path . $filename;
-            $course->update();
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
-
-            return redirect()->back()->withErrors([
-                'error' => $e->getMessage()
-            ]);
         }
+
+        $course->save();
+
+        // —— new: sync MANY categories ——
+        $categoryIds = collect($request->get('categories', []))
+            ->map(fn($name) => CourseCategory::firstOrCreate(['name' => $name])->id)
+            ->toArray();
+        $course->categories()->sync($categoryIds);
 
         return redirect()->back();
     }
@@ -200,11 +208,19 @@ class CourseRepository extends BaseRepository
         $inputs['course_application_id'] = $courseApplication->id;
         $inputs['professor_id'] = auth()->user()->id;
         $inputs['is_live'] = $isLive;
-        $inputs['image_thumbnail'] = Asset::upload($request->files->get('image_thumbnail'));
+        if($request->hasFile('image_thumbnail')){
+            $inputs['image_thumbnail'] = Asset::upload($request->files->get('image_thumbnail'));
+        } else {
+            unset($inputs['image_thumbnail']);
+        }
 
         if (!$isLive) {
             $inputs['zoom_link'] = null;
-            $inputs['video_path'] = Asset::upload($request->files->get('video_path'));
+            if($request->hasFile('video_path')){
+                $inputs['video_path'] = Asset::upload($request->files->get('video_path'));
+            } else {
+                unset($inputs['video_path']);
+            }
         } else {
             $inputs['video_path'] = null;
             $inputs['video_link'] = null;
@@ -220,33 +236,23 @@ class CourseRepository extends BaseRepository
         $course = $this->findOrFail($id);
 
         $inputs = $request->all();
+        $inputs['is_live'] = $inputs['format'] === Course::LIVE;
 
-        $inputs['course_category_id'] = CourseCategory::firstOrCreate(['name' => $inputs['category']])->id;
-
-        $isLive = $inputs['format'] == Course::LIVE ? true : false;
-
-        $inputs['is_live'] = $isLive;
-
+        // files…
         if ($request->hasFile('image_thumbnail')) {
-            $inputs['image_thumbnail'] = Asset::upload($request->files->get('image_thumbnail'));
-        } else {
-            unset($inputs['image_thumbnail']);
+            $inputs['image_thumbnail'] = Asset::upload($request->file('image_thumbnail'));
+        }
+        if (! $inputs['is_live'] && $request->hasFile('video_path')) {
+            $inputs['video_path'] = Asset::upload($request->file('video_path'));
         }
 
-        if (!$isLive) {
-            $inputs['zoom_link'] = null;
+        $course->update(Arr::except($inputs, ['category']));
 
-            if ($request->hasFile('video_path')) {
-                $inputs['video_path'] = Asset::upload($request->files->get('video_path'));
-            } else {
-                unset($inputs['video_path']);
-            }
-        } else {
-            $inputs['video_path'] = null;
-            $inputs['video_link'] = null;
-        }
-
-        $course->update($inputs);
+        // —— new: sync MANY categories ——
+        $categoryIds = collect($request->get('categories', []))
+            ->map(fn($name) => CourseCategory::firstOrCreate(['name'=>$name])->id)
+            ->toArray();
+        $course->categories()->sync($categoryIds);
 
         return $course;
     }

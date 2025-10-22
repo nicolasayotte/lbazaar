@@ -10,6 +10,8 @@ use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\UserWalletController;
 use App\Http\Controllers\API\CourseApplicationController;
 use App\Http\Controllers\API\VoteController;
+use App\Http\Controllers\API\CertificateController;
+use Illuminate\Support\Facades\Log;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,8 +24,11 @@ use App\Http\Controllers\API\VoteController;
 |
 */
 
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+    // Return authenticated user with linked wallet
+    $user = $request->user()->load('userWallet');
+    return response()->json($user);
 });
 
 Route::post('/auth/login', [AuthController::class, 'authenticate']);
@@ -38,6 +43,11 @@ Route::prefix('/applications')->name('points.')->group(function() {
     Route::post('/class/create', [CourseApplicationController::class, 'create'])->name('class.create');
 });
 
+Route::prefix('/certificates')->middleware(['auth:sanctum'])->name('certificates.')->group(function() {
+    Route::post('/mint-and-airdrop', [CertificateController::class, 'mintAndAirdropCertificates'])->name('mint_airdrop');
+    Route::get('/completion-summary', [CertificateController::class, 'getCourseCompletionSummary'])->name('completion_summary');
+});
+
 Route::get('/categories',  function (Request $request) {
     return CourseCategory::all()->makeHidden(['created_at', 'updated_at', 'deleted_at']);
 });
@@ -46,4 +56,5 @@ Route::get('/countries',  function (Request $request) {
 });
 
 Route::post('/votes/register', [VoteController::class, 'register'])->name('votes.register');
+
 

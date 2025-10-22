@@ -17,6 +17,9 @@ class NftTransactions extends Model
         'serial_num',
         'course_id',
         'schedule_id',
-        'used'
+        'used',
+        'tx_id',
+        'mph',
+        'metadata'
     ];
 }

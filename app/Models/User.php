@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Mail;
 use Laratrust\Traits\LaratrustUserTrait;
 use Laravel\Sanctum\HasApiTokens;
 use App\Facades\Asset;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -27,6 +29,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public const RANDOM_PASSWORD_STRING_LENGTH = 8;
 
+    // Transactions use the value in the table, not this constant split
     public const COMMISSION = [
         Role::ADMIN => 20,
         Role::TEACHER => 80,
@@ -67,7 +70,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_temp_password',
         'classification_id',
         'university',
-        'email_verified_at'
+        'email_verified_at',
+        'custodial_address'
     ];
 
     /**
@@ -98,6 +102,28 @@ class User extends Authenticatable implements MustVerifyEmail
         'fullname',
         'completed_schedules'
     ];
+
+    /**
+     * Bootstrap model events to set custodial address after creation.
+     */
+    protected static function booted()
+    {
+        static::created(function ($user) {
+            // generate custodial_address via Node script
+            $script = base_path('web3/common/get-custodial-address.mjs');
+            $process = new Process(['node', $script, (string) $user->id]);
+            $process->run();
+            if (! $process->isSuccessful()) {
+                throw new ProcessFailedException($process);
+            }
+            $output = $process->getOutput();
+            $data = json_decode($output, true);
+            $address = $data['address'] ?? null;
+            $user->updateQuietly([
+                'custodial_address' => $address,
+            ]);
+        });
+    }
 
     public function getFullnameAttribute()
     {

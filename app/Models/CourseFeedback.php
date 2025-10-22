@@ -13,6 +13,7 @@ class CourseFeedback extends Model
     protected $fillable = [
         'user_id',
         'course_id',
+        'schedule_id',
         'rating',
         'comments'
     ];
@@ -27,6 +28,11 @@ class CourseFeedback extends Model
     public function course()
     {
         return $this->belongsTo(Course::class);
+    }
+
+    public function schedule()
+    {
+        return $this->belongsTo(CourseSchedule::class);
     }
 
     public function getCreatedAtAttribute($value)

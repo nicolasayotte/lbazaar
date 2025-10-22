@@ -23,7 +23,7 @@ class CourseTypeSeeder extends Seeder
         ];
 
         foreach ($types as $type) {
-            CourseType::create([
+            CourseType::updateOrCreate([
                 'name' => $type,
                 'type' => $type
             ]);

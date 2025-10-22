@@ -112,11 +112,11 @@ const AdminNavbar = ({ drawerWidth, window }) => {
             <ListItem>
                 <ListItemButton onClick={() => { setOpenSettings(!openSettings) }}>
                     <ListItemIcon children={<Settings />} />
-                    <ListItemText primary={translatables.title.settings}/>
+                    <ListItemText primary={translatables.title.settings} />
                     {
                         openSettings
-                        ? <ExpandLess />
-                        : <ExpandMore />
+                            ? <ExpandLess />
+                            : <ExpandMore />
                     }
                 </ListItemButton>
             </ListItem>
@@ -199,14 +199,16 @@ const AdminNavbar = ({ drawerWidth, window }) => {
                 '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
             }}
         >
-            <Toolbar sx={{ minHeight: navbarHeight }}/>
+            <Toolbar sx={{ minHeight: navbarHeight }} />
             <List>
+                {/*
                 <ListItem>
                     <ListItemButton>
                         <ListItemIcon children={<AccountBalanceWallet />} />
                         <ListItemText primary={auth && auth.user && auth.user.user_wallet && auth.user.user_wallet.points.toFixed(2)} />
                     </ListItemButton>
                 </ListItem>
+                */}
                 <ListItem key="profile">
                     {profileBtn}
                 </ListItem>
@@ -244,6 +246,7 @@ const AdminNavbar = ({ drawerWidth, window }) => {
                             spacing={1}
                             sx={{ display: { xs: 'none', md: 'flex' } }}
                         >
+                            {/*
                             <Stack
                                 direction="row"
                                 alignItems="center"
@@ -251,8 +254,9 @@ const AdminNavbar = ({ drawerWidth, window }) => {
                                 px={2}
                             >
                                 <AccountBalanceWallet />
-                                <Typography children={ auth.user.user_wallet.points.toFixed(2) } />
+                                <Typography children={auth.user.user_wallet.points.toFixed(2)} />
                             </Stack>
+                            */}
                             {profileBtn}
                             {logoutBtn}
                         </Stack>

@@ -24,6 +24,9 @@ class Asset
 
     public function upload(UploadedFile $file)
     {
+        if(is_null($file)) {
+            return false;
+        }
         $extension = $file->getClientOriginalExtension();
         $filename = md5($file->getClientOriginalName() . uniqid()) . '.' . $extension;
 

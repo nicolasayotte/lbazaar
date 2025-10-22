@@ -25,9 +25,12 @@ class CourseApplication extends Model
 
     protected $appends = ['status'];
 
+    protected $with = [
+        'categories',
+    ];
+
     protected $fillable = [
         'professor_id',
-        'course_category_id',
         'course_type_id',
         'nft_id',
         'price',
@@ -55,9 +58,9 @@ class CourseApplication extends Model
         return $this->belongsTo(CourseType::class);
     }
 
-    public function courseCategory()
+    public function categories()
     {
-        return $this->belongsTo(CourseCategory::class)->withTrashed();
+        return $this->belongsToMany(CourseCategory::class, 'course_category_course_application')->withTrashed();
     }
 
     public function nft()

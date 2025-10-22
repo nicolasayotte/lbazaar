@@ -1,6 +1,6 @@
 import { Link, usePage } from "@inertiajs/inertia-react"
 import { Delete, Search } from "@mui/icons-material"
-import { Box, Chip, IconButton, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
+import { Box, Chip, Button, IconButton, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
 import EmptyCard from "../../../../../components/common/EmptyCard"
 import { getRoute } from "../../../../../helpers/routes.helper"
 
@@ -18,15 +18,20 @@ const ScheduleTable = ({ data, handleOnDelete }) => {
         'Done': 'success'
     }
 
+    const handleOnMint = () => {
+        alert('Would open the wallet sign transaction popup with the students NFTs')
+    }
+
     const displayTableData = schedules => schedules.map((schedule, index) => {
 
+        schedule.status = 'Done'
         const startDate = schedule.formatted_start_datetime.split(' ')
         const isLive = schedule.course.is_live
         const ScheduleDate = () => (
             <Box>
                 <Typography variant="caption" color="primary" children={startDate[0]} display="block" />
-                <Typography variant="button" children={`${ startDate[1] } ${ startDate[2] } ${ startDate[3] }`} mr={1} />
-                <Typography variant="caption" children={`${ startDate[4] } ${ startDate[5] } ${startDate[6]}`} />
+                <Typography variant="button" children={`${startDate[1]} ${startDate[2]} ${startDate[3]}`} mr={1} />
+                <Typography variant="caption" children={`${startDate[4]} ${startDate[5]} ${startDate[6]}`} />
             </Box>
         )
 
@@ -34,7 +39,7 @@ const ScheduleTable = ({ data, handleOnDelete }) => {
             <TableRow key={index}>
                 <TableCell children={<ScheduleDate />} />
                 <TableCell align="center">
-                    { isLive?  schedule.total_bookings +  ' / ' + schedule.max_participant : schedule.total_bookings }
+                    {isLive ? schedule.total_bookings + ' / ' + schedule.max_participant : schedule.total_bookings}
                 </TableCell>
                 <TableCell align="center">
                     <Chip color={statusColors[schedule.status]} label={schedule.status} />
@@ -46,6 +51,13 @@ const ScheduleTable = ({ data, handleOnDelete }) => {
                                 <Search fontSize="inherit" />
                             </IconButton>
                         </Link>
+                        <Button
+                            disabled={schedule.status !== 'Done'}
+                            size="medium"
+                            onClick={() => handleOnMint(schedule.id)}
+                        >
+                            Mint
+                        </Button>
                         <IconButton
                             disabled={!schedule.is_deletable}
                             size="small"

@@ -51,10 +51,10 @@ class CourseFeedbackRepository extends BaseRepository
         ->paginate(self::PER_PAGE);
     }
 
-    public function updateOrCreate($user_id, $course_id, $form)
+    public function updateOrCreate($user_id, $course_id, $schedule_id, $form)
     {
         return $this->model->updateOrCreate(
-            ['user_id' => $user_id, 'course_id' => $course_id],
+            ['user_id' => $user_id, 'course_id' => $course_id, 'schedule_id' => $schedule_id],
             ['rating' => $form['rating'], 'comments' => $form['comments']]
         );
     }
@@ -68,5 +68,16 @@ class CourseFeedbackRepository extends BaseRepository
     public function isUserHasFeedback($user_id, $course_id)
     {
         return $this->model->where('user_id', $user_id)->where('course_id', $course_id)->exists();
+    }
+
+    public function findByUserCourseAndScheduleID($user_id, $course_id, $schedule_id)
+    {
+        $courseFeedback = $this->model->where('user_id', $user_id)->where('course_id', $course_id)->where('schedule_id', $schedule_id)->first();
+        return $courseFeedback != null ?  $courseFeedback : new CourseFeedback();
+    }
+
+    public function isUserHasScheduleFeedback($user_id, $course_id, $schedule_id)
+    {
+        return $this->model->where('user_id', $user_id)->where('course_id', $course_id)->where('schedule_id', $schedule_id)->exists();
     }
 }

@@ -1,59 +1,48 @@
-import { Buffer } from "buffer";
-import { blake2b } from "blakejs";
-import { mnemonicToEntropy } from 'bip39';
-import { Address, 
-         bytesToHex, 
-         PubKeyHash} from "@hyperionbt/helios";
-import pkg from '@stricahq/bip32ed25519';
-const { Bip32PrivateKey } = pkg;
+import { Buffer } from 'buffer';
+import { generateMnemonic, mnemonicToEntropy } from 'bip39';
+import { Address, bytesToHex, RootPrivateKey } from '@hyperionbt/helios';
 
-/***************************************************
-* Usage:
-* export ENTROPY="witness pipe egg awake hood false fury announce one wool diagram weird phone treat bacon"
-* node ./generate-private-key.mjs
-* @output {string} ROOT_KEY OWNER_PKH ADDRESS
-****************************************************/
+const isTestnet = process.env.NETWORK !== "mainnet"
 
-const hash28 = (data) => {
-    const hash = blake2b(data, undefined, 28);
-    return Buffer.from(hash);
-};
-
-function harden(num) {
-    return 0x80000000 + num;
-}
-
-const main = async () => {
-
-    if (!process.env.ENTROPY) {
-        console.error("ENTROPY must be set as an environment variable");
-        return;
+/**
+ * Generates:
+ *  - ROOT_KEY   : hex of the m/1852'/1815' root private key
+ *  - OWNER_PKH  : blake2b-224 hash of the first external pubkey
+ *  - ADDRESS    : enterprise (no-stake) mainnet Bech32 address
+ *
+ * Usage:
+ *   ENTROPY="your twelve-word mnemonic here" node generate-address.js
+ */
+async function main(mnemonic) {
+    // Always use a valid 24-word mnemonic if none provided
+    if (!mnemonic || mnemonic.trim() === '') {
+        const envMnemonic = process.env.ENTROPY;
+        if (envMnemonic && envMnemonic.trim() !== '') {
+            mnemonic = envMnemonic.trim();
+        } else {
+            mnemonic = generateMnemonic(256); // 24 words
+        }
     }
-    const entropy = mnemonicToEntropy(process.env.ENTROPY);
-    const buffer = Buffer.from(entropy, 'hex');
-    const rootKey = await Bip32PrivateKey.fromEntropy(buffer);
+    // Validate mnemonic
+    const words = mnemonic.trim().split(/\s+/);
+    if (![12, 15, 18, 21, 24].includes(words.length)) {
+        throw new Error(`Mnemonic must be 12, 15, 18, 21, or 24 words ${mnemonic}`);
+    }
+    const entropy = mnemonicToEntropy(mnemonic);
 
-    const accountKey = rootKey
-    .derive(harden(1852)) // purpose
-    .derive(harden(1815)) // coin type
-    .derive(harden(0)); // account #0
+    const entropyBytes = Array.from(Buffer.from(entropy, 'hex'));
+    const rootKey = new RootPrivateKey(entropyBytes);
 
-    const addrPubKey = accountKey
-    .derive(0) // external
-    .derive(0)
-    .toBip32PublicKey();
-
-    const key = [...rootKey.toBytes()];
-    const keyStore = bytesToHex(key);
-    console.log("ROOT_KEY=" + keyStore);
-
-    const pubKey = addrPubKey.toPublicKey().toBytes();
-    const pubKeyHash = bytesToHex(hash28(pubKey));
-    console.log("OWNER_PKH=" + pubKeyHash);
-
-    const pkh = PubKeyHash.fromHex(pubKeyHash);
-    const addr = Address.fromPubKeyHash(pkh);
-    console.log("ADDRESS=" + addr.toBech32());
+    const rootKeyHex = entropy; // 64 hex chars for 24-word mnemonic
+    const rootKeyFullHex = bytesToHex(rootKey.bytes); // full private key
+    const paymentHash = rootKey.deriveSpendingKey(0, 0).derivePubKey().pubKeyHash;
+    const enterpriseAddr = Address.fromHash(paymentHash, isTestnet).toBech32();
+    return {
+        ENTROPY: mnemonic,
+        ROOT_KEY: rootKeyHex,
+        ROOT_KEY_FULL: rootKeyFullHex,
+        OWNER_PKH: paymentHash.hex,
+        ADDRESS: enterpriseAddr,
+    }
 }
-
-main();
+main().then((res) => Object.entries(res).forEach(([key, val]) => console.log(`${key}=${val}`)))

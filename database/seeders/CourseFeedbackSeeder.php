@@ -23,7 +23,8 @@ class CourseFeedbackSeeder extends Seeder
             CourseFeedback::factory()
                         ->state(new Sequence([
                             'course_id' => $courseHistory->course_id,
-                            'user_id'   => $courseHistory->user_id
+                            'user_id'   => $courseHistory->user_id,
+                            'schedule_id' => $courseHistory->schedule_id
                         ]))
                         ->create();
         }

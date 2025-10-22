@@ -1,0 +1,20 @@
+
+ RUN  v3.2.4 /var/www/html/web3
+
+stderr | common/__tests__/network.spec.mjs > network utilities > throws when network is invalid
+getNetworkParams: network not set or invalid: invalidnet
+
+stderr | common/__tests__/utils.spec.mjs > utils helpers > getTokenNamesAddrs collects token names and addresses for matching policy hash
+mph.hex:  hash-2
+tokenMph.hex:  hash-2
+
+ ✓ common/__tests__/network.spec.mjs (2 tests) 13ms
+ ✓ common/__tests__/utils.spec.mjs (2 tests) 7ms
+ ✓ common/__tests__/minting-policy.spec.mjs (4 tests) 18ms
+ ✓ common/__tests__/certificate-metadata.spec.mjs (6 tests) 12ms
+
+ Test Files  4 passed (4)
+      Tests  14 passed (14)
+   Start at  18:02:10
+   Duration  354ms (transform 133ms, setup 45ms, collect 161ms, tests 49ms, environment 1ms, prepare 390ms)
+

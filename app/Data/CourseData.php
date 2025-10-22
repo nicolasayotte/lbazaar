@@ -11,7 +11,7 @@ class CourseData
 
     private $typeId;
 
-    private $categoryId;
+    private $categoryIds = [];
 
     private $nftId;
 
@@ -23,7 +23,7 @@ class CourseData
 
     private $type;
 
-    private $category;
+    private $categories = [];
 
     private $language;
 
@@ -58,9 +58,9 @@ class CourseData
         return $this;
     }
 
-    public function setCategory($category)
+    public function setCategories($categories)
     {
-        $this->category = $category;
+        $this->categories = $categories;
         return $this;
     }
 
@@ -77,17 +77,16 @@ class CourseData
         return $this;
     }
 
-    public function setCategoryId($categoryId): self
+    public function setCategoryIds($categoryIds): self
     {
-        $this->categoryId = $categoryId;
-
+        $this->categoryIds = $categoryIds;
         return $this;
     }
 
     public function setNftId($nftId)
     {
         $this->nftId = $nftId;
-        
+
         return $this;
     }
 
@@ -145,9 +144,9 @@ class CourseData
         return $this->type;
     }
 
-    public function getCategory()
+    public function getCategories()
     {
-        return $this->category;
+        return $this->categories;
     }
 
     public function getLanguage()
@@ -155,9 +154,9 @@ class CourseData
         return $this->language;
     }
 
-    public function getCategoryId()
+    public function getCategoryIds()
     {
-        return $this->categoryId;
+        return $this->categoryIds;
     }
 
     public function getNftId()
@@ -194,20 +193,22 @@ class CourseData
     {
         $courseManageData = new CourseData();
         $courseManageData->setId($course->id);
-        $courseManageData->setCategoryId($course->courseCategory->id);
+        // Set categories as array of names and ids
+        $categoryNames = $course->categories->pluck('name')->toArray();
+        $categoryIds = $course->categories->pluck('id')->toArray();
+        $courseManageData->setCategories($categoryNames);
+        $courseManageData->setCategoryIds($categoryIds);
         $courseManageData->setTypeId($course->courseType->id);
         $courseManageData->setTitle($course->title);
         $courseManageData->setDescription($course->description);
         $courseManageData->setType($course->courseType->name);
-        $courseManageData->setCategory($course->courseCategory->name);
-        
         if($course->nft) {
             $courseManageData->setNftId($course->nft->id);
-        }$courseManageData->setLanguage($course->language);
+        }
+        $courseManageData->setLanguage($course->language);
         $courseManageData->setPrice($course->price == null ? 0 : $course->price);
         $courseManageData->setPointsEarned($course->points_earned == null ? 0 : $course->points_earned);
         $courseManageData->setStatus(ucwords($course->status->name));
-
         return $courseManageData->getProperties();
     }
 
