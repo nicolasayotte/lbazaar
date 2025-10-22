@@ -1,19 +1,19 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, expect, it, vi } from "vitest";
 
-vi.mock('@hyperionbt/helios', () => ({
-  bytesToText: (bytes) => Buffer.from(bytes).toString('utf8'),
+vi.mock("@hyperionbt/helios", () => ({
+  bytesToText: (bytes) => Buffer.from(bytes).toString("utf8"),
   MintingPolicyHash: class {},
   UTxO: class {},
 }));
 
-import { getTokenNamesAddrs, toSchema } from '../utils.mjs';
+import { getTokenNamesAddrs, toSchema } from "../utils.mjs";
 
-describe('utils helpers', () => {
-  it('toSchema recursively converts objects and arrays to Helios schema', () => {
+describe("utils helpers", () => {
+  it("toSchema recursively converts objects and arrays to Helios schema", () => {
     const input = {
-      key: 'value',
+      key: "value",
       nested: {
-        list: [1, { inner: 'text' }],
+        list: [1, { inner: "text" }],
       },
     };
 
@@ -21,17 +21,17 @@ describe('utils helpers', () => {
 
     expect(result).toEqual({
       map: [
-        ['key', 'value'],
+        ["key", "value"],
         [
-          'nested',
+          "nested",
           {
             map: [
               [
-                'list',
+                "list",
                 [
                   1,
                   {
-                    map: [['inner', 'text']],
+                    map: [["inner", "text"]],
                   },
                 ],
               ],
@@ -42,20 +42,17 @@ describe('utils helpers', () => {
     });
   });
 
-  it('getTokenNamesAddrs collects token names and addresses for matching policy hash', async () => {
+  it("getTokenNamesAddrs collects token names and addresses for matching policy hash", async () => {
     const utxos = [
       {
         value: {
           assets: {
-            mintingPolicies: [
-              { hex: 'hash-1' },
-              { hex: 'hash-2' },
-            ],
+            mintingPolicies: [{ hex: "hash-1" }, { hex: "hash-2" }],
             getTokenNames: vi.fn((mph) => {
-              if (mph.hex === 'hash-2') {
+              if (mph.hex === "hash-2") {
                 return [
-                  { bytes: Buffer.from('(222)Course|169') },
-                  { bytes: Buffer.from('(222)Course|170') },
+                  { bytes: Buffer.from("(222)Course|169") },
+                  { bytes: Buffer.from("(222)Course|170") },
                 ];
               }
               return [];
@@ -64,17 +61,17 @@ describe('utils helpers', () => {
         },
         origOutput: {
           address: {
-            toBech32: () => 'addr_test1...',
+            toBech32: () => "addr_test1...",
           },
         },
       },
     ];
 
-    const tokenMph = { hex: 'hash-2' };
+    const tokenMph = { hex: "hash-2" };
 
     const result = await getTokenNamesAddrs(tokenMph, utxos);
 
-    expect(result.tokenNames).toEqual(['(222)Course|169', '(222)Course|170']);
-    expect(result.addresses).toEqual(['addr_test1...', 'addr_test1...']);
+    expect(result.tokenNames).toEqual(["(222)Course|169", "(222)Course|170"]);
+    expect(result.addresses).toEqual(["addr_test1...", "addr_test1..."]);
   });
 });

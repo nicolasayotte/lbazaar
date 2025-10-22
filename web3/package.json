@@ -5,8 +5,8 @@
     "description": "e-learning web3 nodejs package",
     "scripts": {
         "format": "prettier -w init run common",
-        "test": "NODE_OPTIONS=\"--env-file=../.env\" vitest run",
-        "test:watch": "NODE_OPTIONS=\"--env-file=../.env\" vitest"
+        "test": "node --env-file=../.env ./node_modules/.bin/vitest run > ../docs/test-reports/web-unit-tests.log 2>&1",
+        "test:watch": "node --env-file=../.env ./node_modules/.bin/vitest"
     },
     "dependencies": {
         "@blockfrost/blockfrost-js": "^6.0.0",

@@ -87,3 +87,45 @@ export function buildCustomMetadata(inputData) {
     ]
   };
 }
+
+/**
+ * Builds ticket metadata from template and input data
+ * @param {Object} inputData - The metadata input containing ticket details
+ * @param {string} assetName - The asset name for the ticket
+ * @param {string} imageUrl - IPFS URL for the ticket image
+ * @returns {Promise<Object>} CIP-25 compliant metadata object
+ */
+export async function buildTicketMetadata(inputData, assetName, imageUrl) {
+  try {
+    // Load the ticket template - resolve relative to project root
+    const projectRoot = path.resolve(__dirname, '../..');
+    const templatePath = path.join(projectRoot, 'templates', 'class-ticket.json');
+    const templateContent = await fs.readFile(templatePath, 'utf8');
+    let template = templateContent;
+
+    // Define template mappings
+    const mappings = {
+      '{{asset_name}}': assetName,
+      '{{course_title}}': inputData.course_title || '',
+      '{{cohort}}': inputData.cohort || '1',
+      '{{seat_number}}': inputData.seat_number || '',
+      '{{image_cid}}': imageUrl.replace('ipfs://', ''),
+      '{{course_id}}': inputData.course_id || '',
+      '{{teacher_name}}': inputData.teacher_name || '',
+      '{{valid_from}}': inputData.valid_from || '',
+      '{{valid_until}}': inputData.valid_until || ''
+    };
+
+    // Replace all template variables
+    for (const [placeholder, value] of Object.entries(mappings)) {
+      template = template.replace(new RegExp(placeholder.replace(/[{}]/g, '\\$&'), 'g'), value);
+    }
+
+    // Parse the populated template
+    const metadata = JSON.parse(template);
+
+    return metadata;
+  } catch (error) {
+    throw new Error(`Failed to build ticket metadata: ${error.message}`);
+  }
+}

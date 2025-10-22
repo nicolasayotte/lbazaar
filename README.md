@@ -137,7 +137,7 @@ npm install
 npm run dev
 ```
 
-From host 
+From host
 
 ## Run DB Migration
 
@@ -249,6 +249,19 @@ sail test
 ```
 
 ### Web3 Unit Tests
+
+```bash
+sail up -d
+sail bash
+# in the sail bash shell
+cd web3/
+npm run test
+```
+
+
+### Test reports
+
+All test reports get saved in ./docs/test-reports/
 
 # Logs
 
