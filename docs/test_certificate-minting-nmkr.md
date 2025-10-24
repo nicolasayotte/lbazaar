@@ -96,15 +96,39 @@ describe('build-certificate-tx-nmkr.mjs', () => {
     test('should mint and send NFT successfully', async () => {
       axios.post
         .mockResolvedValueOnce({ data: { uid: 'nft_123' } }) // Upload
-        .mockResolvedValueOnce({ data: { transactionHash: 'tx_123' } }); // Mint
+        .mockResolvedValueOnce({ data: { sendedNft: [{ initialMintTxHash: 'tx_123' }] } }); // Mint specific
 
       const { main } = await import('../web3/run/build-certificate-tx-nmkr.mjs');
       const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
 
       await main();
 
-      expect(axios.post).toHaveBeenCalledTimes(2);
-      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('transactionHash'));
+      // Verify upload call uses metadataOverride instead of metadataPlaceholder
+      expect(axios.post).toHaveBeenCalledWith(
+        'https://studio-api.preprod.nmkr.io/v2/UploadNft/proj_123',
+        expect.objectContaining({
+          metadataOverride: expect.any(String)
+        }),
+        expect.objectContaining({
+          headers: {
+            Authorization: 'Bearer mock_api_key',
+            'Content-Type': 'application/json'
+          }
+        })
+      );
+
+      // Verify mint call uses MintAndSendSpecific with nftUid
+      expect(axios.post).toHaveBeenCalledWith(
+        'https://studio-api.preprod.nmkr.io/v2/MintAndSendSpecific/proj_123/nft_123/1/addr_test1...',
+        undefined,
+        expect.objectContaining({
+          headers: {
+            Authorization: 'Bearer mock_api_key'
+          }
+        })
+      );
+
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('"status": 200'));
     });
 
     test('should handle API upload failure', async () => {
@@ -150,6 +174,7 @@ describe('build-certificate-tx-nmkr.mjs', () => {
       expect(response).toHaveProperty('nftUid');
       expect(response).toHaveProperty('transactionUrl');
       expect(response).toHaveProperty('metadata');
+      expect(response).toHaveProperty('mintedNftDetails');
     });
 
     test('should return correct error response structure', async () => {

@@ -25,17 +25,7 @@ describe("utils helpers", () => {
         [
           "nested",
           {
-            map: [
-              [
-                "list",
-                [
-                  1,
-                  {
-                    map: [["inner", "text"]],
-                  },
-                ],
-              ],
-            ],
+            map: [ [ "list", [ 1, { map: [["inner", "text"]], }, ], ], ],
           },
         ],
       ],

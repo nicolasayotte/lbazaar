@@ -42,7 +42,7 @@ const main = async () => {
     const firstAssetKey = Object.keys(certificateMetadata)[0];
     const nftMetadata = certificateMetadata[firstAssetKey];
 
-    // Upload NFT to NMKR
+    // Upload NFT to NMKR with metadata override
     const uploadResponse = await fetch(`${nmkrBaseUrl}/UploadNft/${projectUid}`, {
       method: 'POST',
       headers: {
@@ -50,17 +50,13 @@ const main = async () => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        assetname: certificateTokenName,
+        tokenname: certificateTokenName,
         displayname: nftMetadata.name || `Certificate - ${metadata.course_title}`,
         previewImageNft: {
           mimetype: 'image/png',
-          fileFromUrl: imageUrl.startsWith('ipfs://') ? imageUrl : `ipfs://${imageUrl}`
+          fileFromsUrl: imageUrl.startsWith('ipfs://') ? imageUrl : `ipfs://${imageUrl}`
         },
-        metadataPlaceholder: [
-          {
-            [assetNameHex]: nftMetadata
-          }
-        ]
+        metadataOverride: JSON.stringify(nftMetadata)
       })
     });
 
@@ -75,13 +71,12 @@ const main = async () => {
       throw new Error('NMKR Upload failed: No NFT UID returned');
     }
 
-    // For certificates, we'll use the direct minting approach
-    // Mint and send the NFT directly to the recipient
-    const mintResponse = await fetch(`${nmkrBaseUrl}/MintAndSendRandom/${projectUid}/1/${recipientAddress}`, {
-      method: 'POST',
+    // For certificates, we use deterministic minting to ensure specific NFT selection
+    // Mint and send the specific NFT directly to the recipient
+    const mintResponse = await fetch(`${nmkrBaseUrl}/MintAndSendSpecific/${projectUid}/${uploadResult.nftUid}/1/${recipientAddress}`, {
+      method: 'GET',
       headers: {
-        'Authorization': `Bearer ${nmkrApiKey}`,
-        'Content-Type': 'application/json'
+        'Authorization': `Bearer ${nmkrApiKey}`
       }
     });
 
@@ -106,14 +101,17 @@ const main = async () => {
       nftName: nftName,
       serialNum: serialNum,
       recipientAddress: recipientAddress,
-      transactionUrl: mintResult.transactionId
-        ? `${explorerBaseUrl}/${mintResult.transactionId}`
+      transactionUrl: mintResult.sendedNft && mintResult.sendedNft[0] && mintResult.sendedNft[0].initialMintTxHash
+        ? `${explorerBaseUrl}/${mintResult.sendedNft[0].initialMintTxHash}`
         : null,
-      transactionHash: mintResult.transactionId || null,
+      transactionHash: mintResult.sendedNft && mintResult.sendedNft[0] && mintResult.sendedNft[0].initialMintTxHash 
+        ? mintResult.sendedNft[0].initialMintTxHash 
+        : null,
       mintResult: mintResult,
       metadata: metadata,
       nmkrProjectUid: projectUid,
-      mintingPolicyHash: mintingPolicyHash
+      mintingPolicyHash: mintingPolicyHash,
+      mintedNftDetails: mintResult.sendedNft && mintResult.sendedNft[0] ? mintResult.sendedNft[0] : null
     };
 
     console.error('build-certificate-tx-nmkr: success');

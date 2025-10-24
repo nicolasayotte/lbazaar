@@ -1,8 +1,8 @@
 # Copilot Custom Instructions
 
 ## Repository Overview
-- Laravel 10 backend with Sanctum auth, queues, and scheduled jobs. Frontend uses React (Vite + Inertia) compiled via `npm run dev` inside Sail.
-- Postgres and Redis run through Laravel Sail. Storage for uploads lives in `public/uploads`; respect existing disk configuration when adding files.
+- Laravel 9 backend with Sanctum auth, queues, and scheduled jobs. Frontend uses React (Vite + Inertia) run via `npm run dev` inside Sail.
+- MySQL runs through Laravel Sail. Redis is supported but not currently configured in the Sail environment. Storage for uploads lives in `public/uploads`; respect existing disk configuration when adding files.
 - Keep the `/docs` knowledge base current with any new external integration (Cardano, NMKR, payments, etc.).
 
 ## Backend (Laravel) Guidelines
@@ -16,8 +16,6 @@
 
 ## Frontend (React + Vite) Guidelines
 - Components live under `resources/js`. Keep pages in `Pages/` and shared UI in `Components/`. Re-use hooks where possible; create them under `resources/js/hooks`.
-- Type everything with TypeScript definitions located alongside components (`.d.ts`) or in shared `types.ts` files.
-- Keep Tailwind utility usage consistent; prefer extracting shared styles into components over long utility chains.
 - Handle API calls through Inertia actions or dedicated API helpers; centralize error handling and toast notifications.
 - Whenever you add or rename routes, update both Laravel routes in `routes/` and matching frontend usages.
 
@@ -28,7 +26,7 @@
 - Snapshot, browser, or Dusk tests require a maintainer sign-off before adding extra dependencies.
 
 ## Frontend & Build Checks
-- Run `npm run lint` and `npm run test` (if configured) before pushing frontend changes. Keep Vite build (`npm run build`) clean of warnings.
+- Run `npm run build` to ensure assets compile cleanly before pushing frontend changes. Keep Vite build clean of warnings.
 - Ensure Inertia pages render both server-side props and client transitions without runtime errors.
 
 ## Documentation & Localization
@@ -41,7 +39,7 @@
 - When using `exec` or shell commands, encapsulate them in dedicated service classes, whitelist arguments, and log failures without leaking secrets.
 
 ## Contribution Workflow
-- Branch naming: `feature/<slug>`, `fix/<slug>`, or `hotfix/<slug>` depending on scope. Reference Jira ticket IDs where applicable.
+- Branch naming: `feat/<slug>`, `fix/<slug>`, or `hotfix/<slug>` depending on scope. Reference Jira ticket IDs where applicable.
 - Open PRs with: summary, testing evidence (commands + results), screenshots for UI changes, and checklist of touched docs/tests.
 - Request at least one reviewer. Keep commits focused; rebase instead of merge when cleaning history.
 
@@ -50,7 +48,8 @@
 - Ensure any backend glue code interacting with `/web3` command runners includes timeout handling and surfaces structured errors.
 
 ## Quick Test Commands
+(Launch the docker environment with `./vendor/bin/sail up -d` first)
 - Backend: `./vendor/bin/sail test`
 - Specific test: `./vendor/bin/sail test --filter FeatureName`
-- Frontend: `npm run lint`, `npm run test`
+- Frontend: `npm run build`
 - Combined smoke: run backend tests, then `npm run build` inside Sail to ensure assets compile.

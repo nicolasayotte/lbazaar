@@ -3,4 +3,45 @@ Course Feedback (Tests\Unit\CourseFeedback)
  [x] It can associate feedback with a specific schedule
  [x] It can give feedback without a schedule
 
-Certificate Controller (Tests\Unit\Http\Controllers\API\CertificateController)
+Certificate Service (Tests\Unit\Services\API\CertificateService)
+ [x] Mint and airdrop certificate with linked wallet
+ [x] Mint and airdrop certificate with custodial wallet
+ [x] Mint and airdrop certificate handles minting failure
+ [x] Create certificate metadata
+ [x] Get custodial wallet address success
+ [x] Get custodial wallet address failure
+ [x] Get linked wallet address success
+ [x] Get linked wallet address fallback to custodial
+ [x] Mint certificate nft success
+ [x] Mint certificate nft build failure
+ [x] Mint certificate nft submit failure
+ [x] Mint certificate nft missing template
+ [x] Record nft transaction
+ [x] Get user id from stake key
+ [x] Get user id from stake key not found
+ [x] Send certificate notification logs info
+ [x] Mint and airdrop certificate handles exceptions
+ [x] Get student wallet address uses linked when available
+ [x] Get student wallet address uses custodial when no stake key
+
+Course Application Category Relation (Tests\Feature\CourseApplicationCategoryRelation)
+ [x] A course application can have multiple categories
+ [x] A category can have multiple course applications
+
+Course Category Relation (Tests\Feature\CourseCategoryRelation)
+ [x] A course can have multiple categories
+ [x] A category can have multiple courses
+
+Certificate Controller (Tests\Feature\Http\Controllers\API\CertificateController)
+ [x] Mint and airdrop certificates requires authentication
+ [x] Mint and airdrop certificates validates required parameters
+ [x] Mint and airdrop certificates rejects unauthorized teacher
+ [x] Mint and airdrop certificates returns empty when no eligible students
+ [x] Mint and airdrop certificates processes eligible students successfully
+ [x] Mint and airdrop certificates handles service failures
+ [x] Get course completion summary returns teacher courses
+
+User Wallet Address (Tests\Feature\UserWalletAddress)
+ [x] User endpoint returns linked wallet address
+ [x] User endpoint always returns custodial wallet address
+

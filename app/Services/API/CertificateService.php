@@ -252,14 +252,26 @@ class CertificateService
      * Execute a shell command and return its output.
      *
      * @param string $command
+     * @param int $timeout Maximum execution time in seconds (default: 30)
      * @return string
      */
-    protected function runCommand(string $command): string
+    protected function runCommand(string $command, int $timeout = 30): string
     {
         $output = [];
         $returnVar = null;
 
-        exec($command, $output, $returnVar);
+        // Add timeout to the command using 'timeout' utility
+        $timedCommand = sprintf('timeout %d %s', $timeout, $command);
+        
+        exec($timedCommand, $output, $returnVar);
+
+        if ($returnVar === 124) { // timeout exit code
+            Log::error('Command execution timed out', [
+                'command' => $command,
+                'timeout' => $timeout,
+            ]);
+            throw new Exception("Command execution timed out after {$timeout} seconds");
+        }
 
         if ($returnVar !== 0) {
             Log::error('Command execution failed', [

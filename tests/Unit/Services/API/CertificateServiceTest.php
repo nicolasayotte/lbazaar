@@ -173,7 +173,7 @@ class CertificateServiceTest extends TestCase
 
     public function test_mint_and_airdrop_certificate_handles_minting_failure()
     {
-        $service = Mockery::mock(CertificateService::class)->makePartial();
+        $service = Mockery::mock(CertificateService::class)->makePartial()->shouldAllowMockingProtectedMethods();
         
         $service->shouldReceive('getStudentWalletAddress')
             ->once()
@@ -213,7 +213,7 @@ class CertificateServiceTest extends TestCase
 
     public function test_get_custodial_wallet_address_success()
     {
-        $service = Mockery::mock(CertificateService::class)->makePartial();
+        $service = Mockery::mock(CertificateService::class)->makePartial()->shouldAllowMockingProtectedMethods();
         
         // Mock the protected method by calling the actual service method
         $service->shouldReceive('runCommand')
@@ -232,7 +232,7 @@ class CertificateServiceTest extends TestCase
 
     public function test_get_custodial_wallet_address_failure()
     {
-        $service = Mockery::mock(CertificateService::class)->makePartial();
+        $service = Mockery::mock(CertificateService::class)->makePartial()->shouldAllowMockingProtectedMethods();
         
         // Mock failed exec response
         $service->shouldReceive('runCommand')
@@ -282,7 +282,7 @@ class CertificateServiceTest extends TestCase
         ];
 
         // Create a mock that doesn't call external scripts
-        $service = Mockery::mock(CertificateService::class)->makePartial();
+        $service = Mockery::mock(CertificateService::class)->makePartial()->shouldAllowMockingProtectedMethods();
         
         $service->shouldReceive('runCommand')
             ->twice() // build and submit
@@ -303,7 +303,7 @@ class CertificateServiceTest extends TestCase
 
     public function test_mint_certificate_nft_build_failure()
     {
-        $service = Mockery::mock(CertificateService::class)->makePartial();
+        $service = Mockery::mock(CertificateService::class)->makePartial()->shouldAllowMockingProtectedMethods();
         
         $certificateData = [
             'course_id' => $this->course->id,
@@ -328,7 +328,7 @@ class CertificateServiceTest extends TestCase
 
     public function test_mint_certificate_nft_submit_failure()
     {
-        $service = Mockery::mock(CertificateService::class)->makePartial();
+        $service = Mockery::mock(CertificateService::class)->makePartial()->shouldAllowMockingProtectedMethods();
         
         $certificateData = [
             'course_id' => $this->course->id,
@@ -452,11 +452,14 @@ class CertificateServiceTest extends TestCase
         $method->setAccessible(true);
 
         $method->invokeArgs($this->service, [$this->student, $this->course, $mintResult]);
+        
+        // Assert that we've reached this point without exceptions
+        $this->assertTrue(true);
     }
 
     public function test_mint_and_airdrop_certificate_handles_exceptions()
     {
-        $service = Mockery::mock(CertificateService::class)->makePartial();
+        $service = Mockery::mock(CertificateService::class)->makePartial()->shouldAllowMockingProtectedMethods();
         
         $service->shouldReceive('getStudentWalletAddress')
             ->once()
@@ -475,7 +478,7 @@ class CertificateServiceTest extends TestCase
     public function test_get_student_wallet_address_uses_linked_when_available()
     {
         // Just test that the method returns the expected result for linked wallet
-        $service = Mockery::mock(CertificateService::class)->makePartial();
+        $service = Mockery::mock(CertificateService::class)->makePartial()->shouldAllowMockingProtectedMethods();
         
         $service->shouldReceive('getLinkedWalletAddress')
             ->once()
@@ -497,7 +500,7 @@ class CertificateServiceTest extends TestCase
         $this->userWallet->update(['stake_key_hash' => null]);
         $this->student->update(['custodial_address' => null]);
 
-        $service = Mockery::mock(CertificateService::class)->makePartial();
+        $service = Mockery::mock(CertificateService::class)->makePartial()->shouldAllowMockingProtectedMethods();
         
         $service->shouldReceive('getCustodialWalletAddress')
             ->once()

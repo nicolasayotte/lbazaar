@@ -7,7 +7,9 @@ The `build-certificate-tx-nmkr.mjs` utility provides an alternative certificate 
 ## Features
 
 - **Template-based metadata**: Uses the same `certificate-metadata.mjs` utility and `templates/class-certificate.json` template
-- **NMKR API integration**: Leverages NMKR Studio API for NFT upload and minting
+- **NMKR API integration**: Leverages NMKR Studio API for NFT upload and deterministic minting
+- **Deterministic minting**: Uses `MintAndSendSpecific` to ensure exact NFT selection rather than random selection
+- **Metadata override**: Applies structured metadata directly to the NFT instead of using placeholders
 - **Network support**: Supports both mainnet and preprod networks
 - **Transaction tracking**: Returns explorer URLs for transaction monitoring
 - **Error handling**: Comprehensive error handling for API failures
@@ -62,9 +64,10 @@ node build-certificate-tx-nmkr.mjs \
   "recipientAddress": "addr_test1qp...",
   "transactionUrl": "https://preprod.cardanoscan.io/transaction/abc123...",
   "transactionHash": "abc123...",
-  "mintResult": { /* NMKR mint response */ },
+  "mintResult": { /* NMKR mint response with sendedNft array */ },
   "metadata": { /* Original metadata */ },
-  "nmkrProjectUid": "proj_12345..."
+  "nmkrProjectUid": "proj_12345...",
+  "mintedNftDetails": { /* Details of the minted NFT from sendedNft[0] */ }
 }
 ```
 
@@ -79,24 +82,34 @@ node build-certificate-tx-nmkr.mjs \
 
 ## NMKR API Flow
 
-1. **Upload NFT**: Creates NFT asset in NMKR project with metadata
-2. **Mint and Send**: Directly mints and sends the NFT to recipient address
+1. **Upload NFT**: Creates NFT asset in NMKR project with metadata override
+2. **Mint Specific**: Uses `MintAndSendSpecific` to mint the exact NFT created in step 1
 3. **Return Details**: Provides transaction hash and explorer URL for tracking
+
+This deterministic approach ensures:
+
+- Exact metadata control through `metadataOverride`
+- Predictable NFT selection via specific UID targeting
+- Consistent certificate generation without randomness
 
 ## Comparison with Direct Minting
 
-| Feature | Direct Minting | NMKR API |
-|---------|----------------|----------|
-| **Complexity** | High | Low |
+| Feature | Direct Minting | NMKR API (Deterministic) |
+|---------|----------------|---------------------------|
+| **Complexity** | High | Medium |
 | **Infrastructure** | Self-hosted | NMKR-hosted |
 | **Transaction fees** | Manual calculation | Handled by NMKR |
 | **Error handling** | Manual | Built-in |
 | **Metadata validation** | Manual | Automatic |
 | **Network management** | Manual | Simplified |
+| **NFT Selection** | Manual | Deterministic via UID |
+| **Metadata Control** | Full CIP-25 | Override + Template |
 
 ## Integration Notes
 
 - Uses the same metadata template system as the direct minting approach
 - Maintains compatibility with existing certificate metadata structure
 - Can be used as a drop-in replacement for `build-certificate-tx.mjs`
-- Returns different response format focused on transaction URL rather than CBOR
+- Returns enhanced response format with deterministic NFT details
+- Leverages `metadataOverride` for precise metadata control instead of placeholders
+- Uses `MintAndSendSpecific` to ensure exact NFT selection rather than random minting
