@@ -7,7 +7,7 @@ All scope items and deliverables defined for Milestone 3 have been fully complet
 
 Deliverables & Status
 - Code Features: 100%
-- Open source: https://github.com/lebazaarweb2/groundfloor
+- Open source: https://github.com/nicolasayotte/lbazaar/tree/catalyst/f12/milestone-3
 - Unit Test Results: docs/test-reports/*
 - Bug fixing report: we only added features this time around
 - Database / Migrations: Applied & verified
