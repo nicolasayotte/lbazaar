@@ -1,9 +1,11 @@
 <?php
 
 use App\Models\Country;
+use App\Models\Course;
 use App\Models\CourseCategory;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\UserController;
@@ -56,5 +58,44 @@ Route::get('/countries',  function (Request $request) {
 });
 
 Route::post('/votes/register', [VoteController::class, 'register'])->name('votes.register');
+
+if (app()->environment('local')) {
+    Route::post('/postman/token', function (Request $request) {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string'
+        ]);
+
+        $user = User::where('email', $request->input('email'))->first();
+
+        if (! $user || ! Hash::check($request->input('password'), $user->password)) {
+            return response()->json([
+                'message' => 'Invalid credentials'
+            ], 401);
+        }
+
+        return response()->json([
+            'token' => $user->createToken('postman-suite')->plainTextToken,
+        ]);
+    });
+
+    Route::middleware('auth:sanctum')->get('/postman/fixtures', function (Request $request) {
+        $teacher = User::where('email', 'postman-teacher@example.com')->first();
+        $otherTeacher = User::where('email', 'postman-other-teacher@example.com')->first();
+    $student = User::where('email', 'postman-student@example.com')->first();
+    $studentCustodial = User::where('email', 'postman-student-custodial@example.com')->first();
+        $mintableCourse = Course::where('title', 'Postman Mintable Course')->first();
+        $emptyCourse = Course::where('title', 'Postman Empty Course')->first();
+
+        return response()->json([
+            'teacher' => $teacher ? $teacher->only(['id', 'email']) : null,
+            'other_teacher' => $otherTeacher ? $otherTeacher->only(['id', 'email']) : null,
+            'student' => $student ? $student->only(['id', 'email']) : null,
+            'student_custodial' => $studentCustodial ? $studentCustodial->only(['id', 'email']) : null,
+            'mintable_course_id' => optional($mintableCourse)->id,
+            'empty_course_id' => optional($emptyCourse)->id,
+        ]);
+    });
+}
 
 

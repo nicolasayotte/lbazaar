@@ -1,0 +1,428 @@
+{
+  "info": {
+    "_postman_id": "f0d1bf5e-9cc5-42d4-9463-8ea4b79d24c5",
+    "name": "Lbazaar PHPUnit Parity",
+    "description": "Postman suite mirroring high-level API scenarios covered by Laravel Feature tests.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login as Teacher",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{teacher_email}}\",\n  \"password\": \"{{teacher_password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseurl}}/api/postman/token",
+              "host": ["{{baseurl}}"],
+              "path": ["api", "postman", "token"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('returns 200', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.environment.set('teacher_token', json.token);",
+                  "pm.test('token captured', function () { pm.expect(pm.environment.get('teacher_token')).to.be.ok; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login as Other Teacher",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{other_teacher_email}}\",\n  \"password\": \"{{other_teacher_password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseurl}}/api/postman/token",
+              "host": ["{{baseurl}}"],
+              "path": ["api", "postman", "token"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('returns 200', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.environment.set('other_teacher_token', json.token);",
+                  "pm.test('token captured', function () { pm.expect(pm.environment.get('other_teacher_token')).to.be.ok; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login as Student (linked wallet)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{student_email}}\",\n  \"password\": \"{{student_password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseurl}}/api/postman/token",
+              "host": ["{{baseurl}}"],
+              "path": ["api", "postman", "token"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('returns 200', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.environment.set('student_token', json.token);",
+                  "pm.test('token captured', function () { pm.expect(pm.environment.get('student_token')).to.be.ok; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login as Student (custodial)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{student_custodial_email}}\",\n  \"password\": \"{{student_custodial_password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseurl}}/api/postman/token",
+              "host": ["{{baseurl}}"],
+              "path": ["api", "postman", "token"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('returns 200', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.environment.set('student_custodial_token', json.token);",
+                  "pm.test('token captured', function () { pm.expect(pm.environment.get('student_custodial_token')).to.be.ok; });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Fixtures",
+      "item": [
+        {
+          "name": "Fetch Fixture Ids",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{teacher_token}}" }
+            ],
+            "url": {
+              "raw": "{{baseurl}}/api/postman/fixtures",
+              "host": ["{{baseurl}}"],
+              "path": ["api", "postman", "fixtures"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('returns 200', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.environment.set('mintable_course_id', json.mintable_course_id);",
+                  "pm.environment.set('empty_course_id', json.empty_course_id);",
+                  "pm.test('mintable course detected', function () { pm.expect(pm.environment.get('mintable_course_id')).to.be.ok; });",
+                  "pm.test('empty course detected', function () { pm.expect(pm.environment.get('empty_course_id')).to.be.ok; });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Certificates",
+      "item": [
+        {
+          "name": "Mint & Airdrop requires auth (401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"course_id\": {{mintable_course_id}}\n}"
+            },
+            "url": {
+              "raw": "{{baseurl}}/api/certificates/mint-and-airdrop",
+              "host": ["{{baseurl}}"],
+              "path": ["api", "certificates", "mint-and-airdrop"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('returns 401 without token', function () { pm.response.to.have.status(401); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Mint & Airdrop validates input (422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{teacher_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseurl}}/api/certificates/mint-and-airdrop",
+              "host": ["{{baseurl}}"],
+              "path": ["api", "certificates", "mint-and-airdrop"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('returns 422 on validation failure', function () { pm.response.to.have.status(422); });",
+                  "var json = pm.response.json();",
+                  "pm.test('includes course_id error', function () { pm.expect(json.errors).to.have.property('course_id'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Mint & Airdrop rejects foreign teacher (403)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{other_teacher_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"course_id\": {{mintable_course_id}}\n}"
+            },
+            "url": {
+              "raw": "{{baseurl}}/api/certificates/mint-and-airdrop",
+              "host": ["{{baseurl}}"],
+              "path": ["api", "certificates", "mint-and-airdrop"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('returns 403 for non-owner teacher', function () { pm.response.to.have.status(403); });",
+                  "var json = pm.response.json();",
+                  "pm.test('contains permission message', function () { pm.expect(json.message).to.eql('You do not have permission to mint certificates for this course.'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Mint & Airdrop reports empty course (404)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{teacher_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"course_id\": {{empty_course_id}}\n}"
+            },
+            "url": {
+              "raw": "{{baseurl}}/api/certificates/mint-and-airdrop",
+              "host": ["{{baseurl}}"],
+              "path": ["api", "certificates", "mint-and-airdrop"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('returns 404 when no students eligible', function () { pm.response.to.have.status(404); });",
+                  "var json = pm.response.json();",
+                  "pm.test('includes zero eligible count', function () { pm.expect(json.data.eligible_students_count).to.eql(0); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Mint & Airdrop succeeds when service available (200)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{teacher_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"course_id\": {{mintable_course_id}}\n}"
+            },
+            "url": {
+              "raw": "{{baseurl}}/api/certificates/mint-and-airdrop",
+              "host": ["{{baseurl}}"],
+              "path": ["api", "certificates", "mint-and-airdrop"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('returns 200 when certificate service is configured', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('marks certificate run as successful', function () { pm.expect(json.success).to.be.true; });",
+                  "pm.test('yields result entries', function () { pm.expect(json.data.results || []).to.be.an('array').that.is.not.empty; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Completion summary for teacher",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{teacher_token}}" }
+            ],
+            "url": {
+              "raw": "{{baseurl}}/api/certificates/completion-summary",
+              "host": ["{{baseurl}}"],
+              "path": ["api", "certificates", "completion-summary"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('returns 200 for summary', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('payload advertises success', function () { pm.expect(json.success).to.be.true; });",
+                  "pm.test('payload includes schedules array', function () { pm.expect(json.data).to.be.an('array'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Current user exposes linked wallet",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{student_token}}" }
+            ],
+            "url": {
+              "raw": "{{baseurl}}/api/user",
+              "host": ["{{baseurl}}"],
+              "path": ["api", "user"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('returns 200 for linked wallet user', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('stake key matches fixture', function () { pm.expect(json.user_wallet.stake_key_hash).to.eql('addr_test1qpmocklinkedaddress'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Current user falls back to custodial wallet",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{student_custodial_token}}" }
+            ],
+            "url": {
+              "raw": "{{baseurl}}/api/user",
+              "host": ["{{baseurl}}"],
+              "path": ["api", "user"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('returns 200 for custodial user', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('custodial address is present', function () { pm.expect(json.custodial_address).to.match(/^addr/); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

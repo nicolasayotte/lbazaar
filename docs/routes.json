@@ -1,0 +1,100 @@
+[
+	{
+		"domain": null,
+		"method": "POST",
+		"uri": "api\/applications\/class\/create",
+		"name": "points.class.create",
+		"action": "App\\Http\\Controllers\\API\\CourseApplicationController@create",
+		"middleware": ["api"]
+	},
+	{
+		"domain": null,
+		"method": "POST",
+		"uri": "api\/applications\/teachers\/create",
+		"name": "points.teachers.create",
+		"action": "App\\Http\\Controllers\\API\\UserController@create",
+		"middleware": ["api"]
+	},
+	{
+		"domain": null,
+		"method": "POST",
+		"uri": "api\/auth\/login",
+		"name": null,
+		"action": "App\\Http\\Controllers\\API\\AuthController@authenticate",
+		"middleware": ["api"]
+	},
+	{
+		"domain": null,
+		"method": "GET|HEAD",
+		"uri": "api\/categories",
+		"name": null,
+		"action": "Closure",
+		"middleware": ["api"]
+	},
+	{
+		"domain": null,
+		"method": "GET|HEAD",
+		"uri": "api\/certificates\/completion-summary",
+		"name": "certificates.completion_summary",
+		"action": "App\\Http\\Controllers\\API\\CertificateController@getCourseCompletionSummary",
+		"middleware": [
+			"api",
+			"App\\Http\\Middleware\\Authenticate:sanctum",
+			"App\\Http\\Middleware\\Authenticate",
+			"App\\Http\\Middleware\\TeacherMiddleware"
+		]
+	},
+	{
+		"domain": null,
+		"method": "POST",
+		"uri": "api\/certificates\/mint-and-airdrop",
+		"name": "certificates.mint_airdrop",
+		"action": "App\\Http\\Controllers\\API\\CertificateController@mintAndAirdropCertificates",
+		"middleware": [
+			"api",
+			"App\\Http\\Middleware\\Authenticate:sanctum",
+			"App\\Http\\Middleware\\Authenticate",
+			"App\\Http\\Middleware\\TeacherMiddleware"
+		]
+	},
+	{
+		"domain": null,
+		"method": "GET|HEAD",
+		"uri": "api\/countries",
+		"name": null,
+		"action": "Closure",
+		"middleware": ["api"]
+	},
+	{
+		"domain": null,
+		"method": "POST",
+		"uri": "api\/points\/exchange",
+		"name": "points.exchange",
+		"action": "App\\Http\\Controllers\\API\\UserWalletController@exchange",
+		"middleware": ["api"]
+	},
+	{
+		"domain": null,
+		"method": "POST",
+		"uri": "api\/points\/feed",
+		"name": "points.feed",
+		"action": "App\\Http\\Controllers\\API\\UserWalletController@feed",
+		"middleware": ["api"]
+	},
+	{
+		"domain": null,
+		"method": "GET|HEAD",
+		"uri": "api\/user",
+		"name": null,
+		"action": "Closure",
+		"middleware": ["api", "App\\Http\\Middleware\\Authenticate:sanctum"]
+	},
+	{
+		"domain": null,
+		"method": "POST",
+		"uri": "api\/votes\/register",
+		"name": "votes.register",
+		"action": "App\\Http\\Controllers\\API\\VoteController@register",
+		"middleware": ["api"]
+	}
+]

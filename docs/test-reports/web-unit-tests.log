@@ -8,13 +8,13 @@ stderr | common/__tests__/utils.spec.mjs > utils helpers > getTokenNamesAddrs co
 mph.hex:  hash-2
 tokenMph.hex:  hash-2
 
- ✓ common/__tests__/network.spec.mjs (2 tests) 11ms
+ ✓ common/__tests__/network.spec.mjs (2 tests) 13ms
  ✓ common/__tests__/utils.spec.mjs (2 tests) 5ms
- ✓ common/__tests__/certificate-metadata.spec.mjs (6 tests) 7ms
- ✓ common/__tests__/minting-policy.spec.mjs (4 tests) 15ms
+ ✓ common/__tests__/minting-policy.spec.mjs (4 tests) 19ms
+ ✓ common/__tests__/certificate-metadata.spec.mjs (6 tests) 11ms
 
  Test Files  4 passed (4)
       Tests  14 passed (14)
-   Start at  19:18:40
-   Duration  342ms (transform 111ms, setup 42ms, collect 141ms, tests 37ms, environment 1ms, prepare 405ms)
+   Start at  16:01:07
+   Duration  377ms (transform 139ms, setup 38ms, collect 163ms, tests 49ms, environment 1ms, prepare 457ms)
 
