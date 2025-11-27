@@ -5,7 +5,7 @@
     "description": "e-learning web3 nodejs package",
     "scripts": {
         "format": "prettier -w init run common",
-        "test": "node --env-file=../.env ./node_modules/.bin/vitest run > ../docs/test-reports/web-unit-tests.log 2>&1",
+        "test": "node --env-file=../.env ./node_modules/.bin/vitest run --reporter=verbose > ../docs/test-reports/web-unit-tests.log 2>&1",
         "test:show": "node --env-file=../.env ./node_modules/.bin/vitest run --reporter=verbose",
         "test:watch": "node --env-file=../.env ./node_modules/.bin/vitest"
     },

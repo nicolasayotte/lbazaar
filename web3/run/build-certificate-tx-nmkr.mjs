@@ -127,4 +127,9 @@ const main = async () => {
   }
 };
 
-main();
+export { main };
+
+// Auto-execute when run directly (not imported as module)
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main();
+}

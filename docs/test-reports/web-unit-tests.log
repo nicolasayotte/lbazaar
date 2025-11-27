@@ -1,5 +1,5 @@
 
- RUN  v3.2.4 /var/www/html/web3
+ RUN  v3.2.4 /home/fence/src/cardano/lbazaar/web3
 
 stderr | common/__tests__/network.spec.mjs > network utilities > throws when network is invalid
 getNetworkParams: network not set or invalid: invalidnet
@@ -8,13 +8,59 @@ stderr | common/__tests__/utils.spec.mjs > utils helpers > getTokenNamesAddrs co
 mph.hex:  hash-2
 tokenMph.hex:  hash-2
 
- ✓ common/__tests__/network.spec.mjs (2 tests) 13ms
- ✓ common/__tests__/utils.spec.mjs (2 tests) 5ms
- ✓ common/__tests__/minting-policy.spec.mjs (4 tests) 19ms
- ✓ common/__tests__/certificate-metadata.spec.mjs (6 tests) 11ms
+ ✓ common/__tests__/utils.spec.mjs > utils helpers > toSchema recursively converts objects and arrays to Helios schema 2ms
+ ✓ common/__tests__/utils.spec.mjs > utils helpers > getTokenNamesAddrs collects token names and addresses for matching policy hash 2ms
+ ✓ common/__tests__/network.spec.mjs > network utilities > returns network parameters for allowed network 13ms
+ ✓ common/__tests__/network.spec.mjs > network utilities > throws when network is invalid 4ms
+ ✓ common/__tests__/minting-policy.spec.mjs > minting-policy helpers > calculateMintingPolicyHash uses single-signature policy when NMKR_PKH absent 13ms
+ ✓ common/__tests__/minting-policy.spec.mjs > minting-policy helpers > calculateMintingPolicyHash uses multi-signature policy when requested 2ms
+ ✓ common/__tests__/minting-policy.spec.mjs > minting-policy helpers > shouldUseMultiSigPolicy reflects NMKR_PKH presence 1ms
+ ✓ common/__tests__/minting-policy.spec.mjs > minting-policy helpers > getMintingPolicyHash returns correct hash based on multi-sig flag 2ms
+ ✓ common/__tests__/certificate-metadata.spec.mjs > certificate-metadata helpers > buildCertificateMetadata uses actual template and replaces placeholders correctly 5ms
+ ✓ common/__tests__/certificate-metadata.spec.mjs > certificate-metadata helpers > buildCertificateMetadata falls back to defaults when fields missing 3ms
+ ✓ common/__tests__/certificate-metadata.spec.mjs > certificate-metadata helpers > buildTicketMetadata uses actual template and replaces placeholders correctly 1ms
+ ✓ common/__tests__/certificate-metadata.spec.mjs > certificate-metadata helpers > buildTicketMetadata falls back to defaults when fields missing 1ms
+ ✓ common/__tests__/certificate-metadata.spec.mjs > certificate-metadata helpers > buildCIP25Metadata wraps certificate metadata with policy 1ms
+ ✓ common/__tests__/certificate-metadata.spec.mjs > certificate-metadata helpers > buildCustomMetadata returns descriptive messages 0ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Mock Data Generators > createMockCertificateMetadata creates valid metadata 2ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Mock Data Generators > createMockCertificateMetadata accepts overrides 0ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Mock Data Generators > createMockArgv generates correct arguments for NMKR script 0ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Mock Data Generators > createMockArgv generates correct arguments for direct minting script 0ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Mock Data Generators > createMockEnv provides all required environment variables 0ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Mock Data Generators > createMockEnv accepts overrides 0ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Token Name Generation > getExpectedTokenNames generates correct reference token 0ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Token Name Generation > getExpectedTokenNames generates correct certificate token 0ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Token Name Generation > handles different course names and serial numbers 0ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Response Validation > validateSuccessResponse checks required fields 2ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Response Validation > validateSuccessResponse validates specific fields 1ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Response Validation > validateErrorResponse checks error structure 0ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Response Validation > validateErrorResponse can check specific error messages 0ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Network Configuration > provides mainnet configuration 0ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Network Configuration > provides preprod configuration 0ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Network Configuration > mainnet and preprod have different URLs 1ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Validation Patterns > cardanoAddress pattern matches valid testnet addresses 0ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Validation Patterns > cardanoAddress pattern matches valid mainnet addresses 0ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Validation Patterns > transactionHash pattern matches valid hashes 0ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Validation Patterns > policyId pattern matches valid policy IDs 0ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Validation Patterns > ipfsHash pattern matches valid IPFS hashes 0ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Validation Patterns > assetNameHex pattern matches hexadecimal strings 0ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Environment Variable Defaults > provides sensible ADA amount defaults 0ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Environment Variable Defaults > defaults to preprod network 0ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Environment Variable Defaults > provides default TTL 0ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Token Name Format Validation > reference token uses (100) prefix 0ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Token Name Format Validation > certificate token uses (222) prefix 0ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Token Name Format Validation > tokens use pipe separator 0ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Token Name Format Validation > tokens preserve name and serial number 0ms
+ ✓ run/__tests__/build-certificate-tx-nmkr.integration.spec.mjs > build-certificate-tx-nmkr integration tests > Parameter validation > should exist as a module 4ms
+ ✓ run/__tests__/build-certificate-tx-nmkr.integration.spec.mjs > build-certificate-tx-nmkr integration tests > Environment setup > should read NETWORK environment variable 1ms
+ ✓ run/__tests__/build-certificate-tx-nmkr.integration.spec.mjs > build-certificate-tx-nmkr integration tests > Environment setup > should read NMKR_API_KEY environment variable 1ms
+ ✓ run/__tests__/build-certificate-tx-nmkr.integration.spec.mjs > build-certificate-tx-nmkr integration tests > Transaction link generation > should return transaction link on successful minting 13ms
+ ✓ run/__tests__/build-certificate-tx-nmkr.integration.spec.mjs > build-certificate-tx-nmkr integration tests > Transaction link generation > should use mainnet explorer URL when NETWORK=mainnet 20ms
+ ✓ run/__tests__/build-certificate-tx-nmkr.integration.spec.mjs > build-certificate-tx-nmkr integration tests > Transaction link generation > should handle missing transaction hash gracefully 2ms
+ ✓ run/__tests__/build-certificate-tx-nmkr.integration.spec.mjs > build-certificate-tx-nmkr integration tests > Transaction link generation > should handle API errors and return error response 2ms
 
- Test Files  4 passed (4)
-      Tests  14 passed (14)
-   Start at  16:01:07
-   Duration  377ms (transform 139ms, setup 38ms, collect 163ms, tests 49ms, environment 1ms, prepare 457ms)
+ Test Files  6 passed (6)
+      Tests  50 passed (50)
+   Start at  23:05:31
+   Duration  455ms (transform 287ms, setup 57ms, collect 401ms, tests 113ms, environment 1ms, prepare 694ms)
 
