@@ -1,11 +1,57 @@
-# ignore files that doesn't need to be in a Docker context
-# git, package, and output directories
+# Git and version control
 .git
-.vagrant
+.gitignore
+.gitattributes
+
+# IDE and editor files
 .vscode
+.idea
+.vagrant
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment files (use volumes instead)
+.env
+.env.*
+!.env.example
+
+# Dependencies (will be installed in container)
 node_modules
-public/build
 vendor
 
-# files
+# Build artifacts (will be built in container)
+public/build
+public/hot
+public/storage
+
+# Laravel cache and logs
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+bootstrap/cache/*
+
+# Testing
+tests
+phpunit.xml
+.phpunit.result.cache
+coverage
+
+# Documentation
+docs
 *.md
+!README.md
+
+# CI/CD
+.github
+.gitlab-ci.yml
+
+# Temporary files
+*.log
+*.tmp
+*.cache
+
+# OS files
+Thumbs.db

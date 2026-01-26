@@ -46,6 +46,15 @@ npm run format                    # Format with Prettier
 
 Test reports are saved to `docs/test-reports/`.
 
+### Local Production Testing
+Before deploying to staging/production, test with the production Docker image locally:
+
+```bash
+./test-prod.sh full-test      # Complete pre-deployment test suite
+```
+
+**Why:** Catches environment differences (Nginx vs Apache, Alpine vs Ubuntu, missing PHP extensions). See `docs/LOCAL_PROD_TESTING.md` for full documentation.
+
 ## Architecture
 
 ### Backend (Laravel)

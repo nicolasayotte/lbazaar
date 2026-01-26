@@ -263,6 +263,30 @@ npm run test
 
 All test reports get saved in ./docs/test-reports/
 
+### Local Production Testing (Recommended Before Deployment)
+
+Test your code with the **production Docker image** on your local machine to catch environment-specific bugs:
+
+```bash
+# Quick start (recommended before deploying)
+./test-prod.sh full-test
+
+# Or step-by-step:
+./test-prod.sh start         # Build and start production-like environment
+./test-prod.sh migrate       # Run migrations
+./test-prod.sh test          # Run all tests
+# Visit http://localhost:8080 for manual testing
+./test-prod.sh clean         # Cleanup when done
+```
+
+**Why use this?**
+- Catches Nginx vs Apache differences
+- Catches Alpine vs Ubuntu differences
+- Catches missing PHP extensions
+- Tests with production Dockerfile
+
+**See full documentation:** [docs/LOCAL_PROD_TESTING.md](docs/LOCAL_PROD_TESTING.md)
+
 # Logs
 
 ## Getting to the logs
@@ -306,16 +330,11 @@ export DOCKER_BUILDKIT=0
 # get the latest branch
 git checkout staging; git pull
 
-# execute build script. It will as for Github username and token (generated from step 1)
-.staging.sh
+# execute build script. It will ask for Github username and token (generated from step 1)
+./staging.sh
 
-# Install npm packages?
-docker container ls
-container_id="<id>"
-docker exec -it $container_id /bin/bash
-
-cd ./web3
-npm install
+# Note: web3 npm packages are now automatically installed during Docker build
+# No manual npm install step required
 
 #  Check https://stage.l-e-bazaar.com/ to make sure changes have been published
 ```
@@ -340,10 +359,12 @@ sudo su
 #   allow docker not load cache
 export DOCKER_BUILDKIT=0
 
-#   Execute build script. It will as for Github username and token (generated from step 1)
+#   Execute build script. It will ask for Github username and token (generated from step 1)
 ./production.sh -v patch
 ./production.sh -v minor
 ./production.sh -v major
+
+#   Note: web3 npm packages are now automatically installed during Docker build
 
 #   Check https://l-e-bazaar.com/ to make sure changes have been published
 ```

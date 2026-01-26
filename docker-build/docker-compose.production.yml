@@ -6,9 +6,24 @@ services:
             - 443:443
         volumes:
             - /var/.secrets/.env.production:/app/.env:ro
-            - ./nginx/vhost.conf:/opt/docker/etc/nginx/vhost.conf
+            - ./nginx/vhost.conf:/opt/docker/etc/nginx/vhost.conf:ro
             - /var/log/app:/app/storage/logs
             - /var/log/nginx/:/var/log/nginx
         environment:
             LOG_STDOUT: '/var/log/nginx/access.log'
             LOG_STDERR: '/var/log/nginx/error.log'
+        restart: unless-stopped
+        healthcheck:
+            test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
+            interval: 30s
+            timeout: 3s
+            start_period: 40s
+            retries: 3
+        deploy:
+            resources:
+                limits:
+                    cpus: '2'
+                    memory: 2G
+                reservations:
+                    cpus: '0.5'
+                    memory: 512M

@@ -1,34 +1,65 @@
 # syntax=docker/dockerfile:1
 # Build Node dependencies
-FROM node:lts-alpine3.16 as nodeBuild
+FROM node:lts-alpine3.16@sha256:1eabdb1aa3f6e68558c08501572731db560d10c2194a67d3417103b0a9868693 as nodeBuild
 WORKDIR /app
-COPY package*  ./
+
+# Copy package files and install dependencies (cached layer)
+# Note: Need ALL dependencies (including dev) to build frontend assets
+COPY package.json package-lock.json ./
+RUN npm ci
+
+# Copy frontend source and build
 COPY public ./public
 COPY vite.config.js ./vite.config.js
 COPY resources ./resources
-RUN npm install \
-    && npm run build
-WORKDIR /web3
-RUN npm install
+RUN npm run build
+
+# Build web3 module dependencies
+WORKDIR /app/web3
+COPY web3/package.json web3/package-lock.json ./
+RUN npm ci --only=production
 
 
-FROM webdevops/php-nginx:8.1-alpine AS base
+FROM webdevops/php-nginx:8.2-alpine@sha256:98ddca4511ff822f069c7e894c2276b92175801d57117d4ceb546cb6941ea213 AS base
 
 # Uncomment this to test in local using MacBook M1 chip
 # RUN wget -O "/usr/local/bin/go-replace" "https://github.com/webdevops/goreplace/releases/download/1.1.2/gr-arm64-linux" \
 #     && chmod +x "/usr/local/bin/go-replace" \
 #     && "/usr/local/bin/go-replace" --version
 
-# Install Laravel dependencies
+# Install Laravel required PHP extensions
 RUN docker-php-ext-install \
     bcmath \
     pdo_mysql
 
 WORKDIR /app
-ENV WEB_DOCUMENT_ROOT /app/public
+ENV WEB_DOCUMENT_ROOT=/app/public
 
-COPY ./ ./
-COPY --from=nodeBuild /app/public/build ./public/build
-RUN apk add nodejs npm
-RUN composer install --no-interaction --optimize-autoloader
+# Copy dependency manifests first for better layer caching
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --no-interaction --optimize-autoloader --no-scripts
+
+# Install Node.js for web3 runtime
+RUN apk add --no-cache nodejs npm
+
+# Copy application code
+COPY --chown=application:application ./ ./
+
+# Copy built assets from nodeBuild stage
+COPY --from=nodeBuild --chown=application:application /app/public/build ./public/build
+COPY --from=nodeBuild --chown=application:application /app/web3/node_modules ./web3/node_modules
+
+# Run post-autoload optimization
+RUN composer dump-autoload --optimize
+
+# Ensure proper ownership
 RUN chown -R application:application .
+
+# Switch to non-root user for security
+USER application
+
+# Add health check for container orchestration
+HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost/ || exit 1
+
+EXPOSE 80 443
