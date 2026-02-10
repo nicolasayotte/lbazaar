@@ -35,7 +35,7 @@ const Create = () => {
         is_cancellable: course && course.is_cancellable && course.is_cancellable > 0 ? true : false,
         days_before_cancellation: course && course.days_before_cancellation ? course.days_before_cancellation : 1,
         course_package_id: course && course.course_package ? course.course_package.id : '',
-        category: initialData && initialData.course_category && initialData.course_category.name
+        categories: initialData && initialData.categories ? initialData.categories.map(cat => cat.name) : []
     })
 
     const [imgPreview, setImgPreview] = useState(course && course.image_thumbnail ? course.image_thumbnail : null)
@@ -199,18 +199,17 @@ const Create = () => {
                                         </Grid>
                                         <Grid item xs={12}>
                                             <Autocomplete
+                                                multiple
                                                 freeSolo
                                                 options={categories.map(category => category.name)}
                                                 fullWidth
                                                 size="small"
-                                                value={data.category}
-                                                inputValue={data.category}
-                                                onInputChange={(e, newValue) => setData('category', newValue)}
+                                                value={data.categories}
+                                                onChange={(e, newValue) => setData('categories', newValue)}
                                                 renderInput={params =>
                                                     <Input
                                                         {...params}
                                                         label={translatables.texts.category}
-                                                        value={data.category}
                                                         errors={errors}
                                                     />
                                                 }

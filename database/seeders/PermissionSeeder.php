@@ -16,14 +16,12 @@ class PermissionSeeder extends Seeder
      */
     public function run()
     {
-        $permissions = [];
-
         foreach (Permission::SCOPES as $scope) {
             foreach (Permission::ACTIONS as $action) {
-                $permissions[]['name'] = $action . '-' . $scope;
+                Permission::firstOrCreate([
+                    'name' => $action . '-' . $scope
+                ]);
             }
         }
-
-        DB::table('permissions')->insert($permissions);
     }
 }

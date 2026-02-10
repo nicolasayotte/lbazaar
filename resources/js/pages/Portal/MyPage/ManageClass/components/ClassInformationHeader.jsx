@@ -72,7 +72,11 @@ const ClassInformationHeader = () => {
                     </Box>
                     <Box width={{ xs: '50%', md: 'auto' }}>
                         <Typography variant="span" mr={1} children={translatables.texts.category} />
-                        <Chip size="small" label={course.course_category && course.course_category.name} />
+                        <Stack direction="row" spacing={0.5} display="inline-flex">
+                            {course.categories?.map((category, index) => (
+                                <Chip key={index} size="small" label={category.name} />
+                            ))}
+                        </Stack>
                     </Box>
                     {
                         isLive &&

@@ -42,11 +42,6 @@ class CourseSchedule extends Model
         return $this->hasOneThrough(CourseType::class, Course::class, 'id', 'id', 'course_id', 'course_type_id');
     }
 
-    public function courseCategory()
-    {
-        return $this->hasOneThrough(CourseCategory::class, Course::class, 'id', 'id', 'course_id', 'course_category_id');
-    }
-
     public function course()
     {
         return $this->belongsTo(Course::class);
@@ -86,13 +81,13 @@ class CourseSchedule extends Model
 
     public function getStatusAttribute()
     {
-        $timezone = new DateTimeZone(env('APP_TIMEZONE'));
+        $timezone = config('app.timezone', 'UTC');
 
-        $now = Carbon::parse(new DateTime('now', $timezone));
+        $now = Carbon::now($timezone);
 
-        $start = Carbon::parse(new DateTime($this->start_datetime, $timezone));
+        $start = Carbon::parse($this->start_datetime, $timezone);
 
-        $end = Carbon::parse(new DateTime($this->end_datetime, $timezone));
+        $end = Carbon::parse($this->end_datetime, $timezone);
 
         if ($now->gt($end) || $this->is_completed) return ucwords(Status::DONE);
 

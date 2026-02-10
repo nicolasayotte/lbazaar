@@ -26,7 +26,8 @@ class SearchClassRequest extends FormRequest
         return [
             'search_text'   => 'nullable',
             'type_id'       => 'integer|nullable',
-            'category_id'   => 'integer|nullable',
+            'category_ids'  => 'array|nullable',
+            'category_ids.*' => 'integer|exists:course_categories,id',
             'language'      => 'nullable',
             'professor_id'  => 'integer|nullable',
             'year'          => 'digits:4|nullable'

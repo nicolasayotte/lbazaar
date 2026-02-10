@@ -12,7 +12,7 @@ This is to inform you that your class application titled **"{{ $courseApplicatio
 | ----------- | ----------------------------------------------- |
 | Title       | {{ @$courseApplication->title }}                |
 | Type        | {{ @$courseApplication->courseType->name }}     |
-| Category    | {{ @$courseApplication->courseCategory->name }} |
+| Category    | {{ @$courseApplication->categories->pluck('name')->join(', ') }} |
 </x-mail::table>
 </x-mail::panel>
 

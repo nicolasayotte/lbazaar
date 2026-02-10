@@ -310,6 +310,7 @@ return [
         'cancel_class_booking' => 'Cancel Booking',
         'cancellable' => 'Cancellable',
         'category' => 'Category',
+        'categories' => 'Categories',
         'certification' => 'Certification',
         'change_password' => 'Change Password',
         'check_schedules' => 'Check Schedule',

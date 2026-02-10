@@ -311,6 +311,7 @@ return [
         'cancel_class_booking'=> '予約キャンセル',
         'cancellable'=> 'キャンセル可能',
         'category'=> '分類(JA)',
+        'categories' => 'カテゴリー',
         'certification'=> '授賞',
         'change_password'=> 'パスワード変更',
         'check_schedules'=> 'スケジュール確認',

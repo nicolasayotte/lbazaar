@@ -1,5 +1,5 @@
-import { Box, Button, Pagination, Grid, Typography, Container, Card, CardContent } from "@mui/material";
-import { useForm, usePage } from '@inertiajs/inertia-react'
+import { Box, Button, Pagination, Grid, Typography, Container, Card, CardContent, Autocomplete, Chip, TextField } from "@mui/material";
+import { useForm, usePage, router } from '@inertiajs/inertia-react'
 import Course from "../../../components/cards/Course";
 import Input from "../../../components/forms/Input";
 import { displaySelectOptions, handleOnChange, handleOnSelectChange } from "../../../helpers/form.helper";
@@ -13,7 +13,7 @@ const SearchCourse = () => {
     const {
         search_text,
         type_id,
-        category_id,
+        category_ids,
         language,
         professor_id,
         page,
@@ -30,7 +30,7 @@ const SearchCourse = () => {
     const { data: filters, setData: setFilters, get, errors, processing, transform } = useForm({
         search_text,
         type_id,
-        category_id,
+        category_ids: category_ids || [],
         language,
         professor_id,
         from,
@@ -115,20 +115,47 @@ const SearchCourse = () => {
                                             </Input>
                                         </Grid>
                                         <Grid item xs={12} sm={12}>
-                                            <Input
-                                                label={translatables.texts.category}
-                                                select
-                                                name="category_id"
-                                                value={filters.category_id}
-                                                onChange={e => handleOnSelectChange(e, filters, transform, handleFilterSubmit)}
-                                                errors={errors}
-                                                InputLabelProps={{
-                                                    shrink: true
+                                            <Autocomplete
+                                                multiple
+                                                options={course_categories}
+                                                getOptionLabel={(option) => option.name}
+                                                value={course_categories.filter(cat =>
+                                                    (filters.category_ids || []).includes(cat.id)
+                                                )}
+                                                onChange={(e, newValue) => {
+                                                    const ids = newValue.map(v => v.id);
+
+                                                    const newFilters = {
+                                                        ...filters,
+                                                        category_ids: ids,
+                                                        page: 1
+                                                    };
+
+                                                    // Update form state for UI consistency
+                                                    setFilters(newFilters);
+
+                                                    // Use router.get directly with explicit data
+                                                    router.get(routes['course.index'], newFilters);
                                                 }}
-                                            >
-                                                <option value="">All</option>
-                                                {displaySelectOptions(course_categories)}
-                                            </Input>
+                                                renderTags={(value, getTagProps) =>
+                                                    value.map((option, index) => (
+                                                        <Chip
+                                                            label={option.name}
+                                                            size="small"
+                                                            {...getTagProps({ index })}
+                                                            key={index}
+                                                        />
+                                                    ))
+                                                }
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        label={translatables.texts.category}
+                                                        size="small"
+                                                        placeholder={filters.category_ids?.length ? '' : 'All'}
+                                                    />
+                                                )}
+                                            />
                                         </Grid>
                                         <Grid item xs={12} sm={12}>
                                             <Input

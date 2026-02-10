@@ -156,7 +156,11 @@ const Attend = () => {
                     }
                     <TableRow>
                         <TableCell children={translatables.texts.category} />
-                        <TableCell align="right" children={course.course_category.name} />
+                        <TableCell align="right">
+                            {course.categories?.map((category, index) => (
+                                index > 0 ? `, ${category.name}` : category.name
+                            ))}
+                        </TableCell>
                     </TableRow>
                 </TableBody>
             </Table>

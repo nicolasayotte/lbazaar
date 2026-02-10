@@ -1,38 +1,77 @@
 Catalyst Fund 12 – Project ID F12-1200107
+
 Milestone 3 Completion Report
-Date: 2025-10-22
+
+Date: 2026-01-26
+
 
 Executive Summary
-All scope items and deliverables defined for Milestone 3 have been fully completed, validated, and integrated into the project codebase and operational processes. No open blockers, technical debt specific to this milestone, or unresolved risks remain. The project is on schedule and aligned with the originally approved Catalyst proposal.
+
+All scope items and deliverables defined for Milestone 3 have been fully completed, validated, and integrated into the project codebase and operational processes. No open blockers, technical debt specific to this milestone, or unresolved risks remain. The project is on schedule as per the milestone change and aligned with the originally approved Catalyst proposal.
+
 
 Deliverables & Status
+
 - Code Features: 100%
-- Open source: https://github.com/lebazaarweb2/groundfloor
+
+- Open source: https://github.com/nicolasayotte/lbazaar/releases/tag/catalyst%2Ff12%2Fmilestone-3
+
 - Unit Test Results: docs/test-reports/*
+
+ -- NMKR tests video: https://www.youtube.com/watch?v=ySbeN1e1GM4
+
+ -- API tests video: https://www.youtube.com/watch?v=MiKdPWGPsOM
+
+ -- Web3 tests video: https://www.youtube.com/watch?v=YmR91zg_jXg
+
 - Bug fixing report: we only added features this time around
+
 - Database / Migrations: Applied & verified
+
 - Service Integrations (Cardano / NMKR / Blockfrost)
+
 - Factories & Tests: Added for new functionalities, all pass
+
 - Documentation: Updated in `docs/` directory (including this report)
+
 - Configuration & ENV Samples: In sync with new requirements
 
+
 Marketing report:
+
 Here is the [report](https://docs.google.com/document/d/10n--BNIvElVkGkmVX0UV8OIQ67eEfc1Y1OyC8pKFrWw/edit?usp=sharing) and the questions asked in the survey, although not always answered exactly, were:
 
+
 1. What do you think about this platform, which allows users to learn global knowledge and share insights from people working in local communities?
+
 2. What are your thoughts on this learning platform where students can earn income by selling what they have learned through experiential learning?
+
 3. Would you like to introduce this platform in your school?
+
 4. If there are any potential obstacles to implementing it, please let us know.
+
 5. If you have any other comments or requests, please share them.
 
+
 Verification & Evidence
-- Branch: main
+
+- Release tag: catalyst/f12/milestone-3
+
 - Tests: php unit test suite green
+
 - Tests: web3/ nodejs test suite green
+
 - Further testing can happen when the frontend is completed
 
+
 Budget & Scope Alignment
+
 - Milestone delivered within approved scope: difficulties were encountered with regards to supporting credit card payments in a way that is legal in Japan (initial target demographic). For a while it seemed NMKR Pay might not work so we had to look for other options, then it turned out it might be ok. For now we have implemented backend functions with NMKR Pay.
 
+
 Licensing & Compliance
-- Decided on a Open Source licence
+
+- Decided on a Open Source license
+
+
+

@@ -92,7 +92,7 @@ class CourseController extends Controller
                 'from'                  => @$request['from'] ?? '',
                 'to'                    => @$request['to'] ?? '',
                 'search_text'           => @$request['search_text'] ?? '',
-                'category_id'           => @$request['category_id'] ?? '',
+                'category_ids'          => array_map('intval', @$request['category_ids'] ?? []),
                 'type_id'               => @$request['type_id'] ?? '',
                 'status'                => @$request['status'] ?? '',
                 'language'              => @$request['language'] ?? '',
@@ -125,12 +125,12 @@ class CourseController extends Controller
             'title'            => $course->title,
             'description'      => $course->raw_description,
             'author'           => $course->professor->fullname,
-            'keywords'         => implode(', ', [$course->title, $course->courseCategory->name])
+            'keywords'         => implode(', ', array_merge([$course->title], $course->categories->pluck('name')->toArray()))
         ])->withViewData([
             'title'            => $course->title,
             'description'      => $course->raw_description,
             'author'           => $course->professor->fullname,
-            'keywords'         => implode(', ', [$course->title, $course->courseCategory->name])
+            'keywords'         => implode(', ', array_merge([$course->title], $course->categories->pluck('name')->toArray()))
         ]);
     }
 
@@ -323,7 +323,7 @@ class CourseController extends Controller
 
     public function edit($id)
     {
-        $course = $this->courseRepository->with(['courseType', 'courseCategory', 'coursePackage'])->findOrFail($id);
+        $course = $this->courseRepository->with(['courseType', 'categories', 'coursePackage'])->findOrFail($id);
         $nftId = $course['nft_id'];
         return Inertia::render('Portal/Course/Create', [
             'course'     => $course,
@@ -386,7 +386,7 @@ class CourseController extends Controller
 
     public function attend($course_id, $schedule_id)
     {
-        $course = $this->courseRepository->with(['professor', 'courseType', 'coursePackage', 'coursePackage.courses', 'courseCategory', 'exams'])->findOrFail($course_id);
+        $course = $this->courseRepository->with(['professor', 'courseType', 'coursePackage', 'coursePackage.courses', 'categories', 'exams'])->findOrFail($course_id);
         $schedule = $this->courseScheduleRepository->findOrFail($schedule_id);
 
         $isBooked = $schedule->students()->where('users.id', auth()->user()->id)->first();
@@ -436,7 +436,7 @@ class CourseController extends Controller
 
     public function watch($course_id, $schedule_id)
     {
-        $course = $this->courseRepository->with(['professor', 'courseType', 'coursePackage', 'courseCategory', 'exams'])->findOrFail($course_id);
+        $course = $this->courseRepository->with(['professor', 'courseType', 'coursePackage', 'categories', 'exams'])->findOrFail($course_id);
         $schedule = $this->courseScheduleRepository->findOrFail($schedule_id);
 
         $booking = auth()->user()->courseHistories()

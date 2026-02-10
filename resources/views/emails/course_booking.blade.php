@@ -12,7 +12,7 @@ This is to inform you that you booked a class titled **"{{ $course->title }}"**.
 | ----------- | ----------------------------------------------- |
 | Title       | {{ @$course->title }}                           |
 | Type        | {{ @$course->courseType->name }}                |
-| Category    | {{ @$course->courseCategory->name }}            |
+| Category    | {{ @$course->categories->pluck('name')->join(', ') }} |
 | Schedule    | {{ @$schedule->simple_start_datetime }}         |
 </x-mail::table>
 </x-mail::panel>

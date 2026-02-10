@@ -21,7 +21,7 @@ class CourseScheduleRepository extends BaseRepository
     public function getUpcomingCourseSchedule($take = self::PER_PAGE)
     {
         return $this->model
-                    ->with(['course', 'course.professor', 'course.courseType', 'course.courseCategory'])
+                    ->with(['course', 'course.professor', 'course.courseType', 'course.categories'])
                     ->where('start_datetime', '>=', Carbon::now('Asia/Tokyo'))
                     ->take($take)
                     ->orderBy('id', 'desc')
@@ -137,7 +137,7 @@ class CourseScheduleRepository extends BaseRepository
     public function findByCourseId($id)
     {
         return $this->model
-                    ->with(['course', 'course.courseType', 'course.courseCategory', 'courseHistory'])
+                    ->with(['course', 'course.courseType', 'course.categories', 'courseHistory'])
                     ->where('course_id', $id)
                     ->where('is_completed', 0)
                     ->orderBy('start_datetime', 'ASC')

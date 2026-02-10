@@ -89,7 +89,11 @@ const Course = ({ course, schedule = null, showDescription = true, viewDetailId 
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <Box display="flex" justifyContent="space-between" alignItems="center" mb={1} width="100%">
-                                <Chip label={course.course_category.name} size="small" />
+                                <Stack direction="row" spacing={0.5} flexWrap="wrap">
+                                    {course.categories?.map((category, index) => (
+                                        <Chip key={index} label={category.name} size="small" />
+                                    ))}
+                                </Stack>
                                 <Stack direction="row" spacing={1}>
                                     <Package />
                                     <Chip color={courseTypeColors[course.course_type.name]} label={course.course_type.name} size="small" variant="outlined" />

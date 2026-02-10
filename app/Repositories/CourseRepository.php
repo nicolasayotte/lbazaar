@@ -49,11 +49,12 @@ class CourseRepository extends BaseRepository
             ->when($request->has('type_id') && !empty($request->get('type_id')), function ($q) use ($request)  {
                 return $q->where('course_type_id', $request->get('type_id'));
             })
-            ->when($request->filled('category_id'), fn($q) =>
-                $q->whereHas('categories', fn($q2) =>
-                    $q2->where('id', $request->category_id)
-                )
-            )
+            ->when($request->filled('category_ids'), function($q) use ($request) {
+                foreach ($request->category_ids as $categoryId) {
+                    $q->whereHas('categories', fn($q2) => $q2->where('id', $categoryId));
+                }
+                return $q;
+            })
             ->when($request->has('language') && !empty($request->get('language')), function ($q) use ($request)  {
                 return $q->where('language', $request->get('language'));
             })
