@@ -3,7 +3,9 @@
 namespace App\Services\API;
 
 use App\Models\Course;
+use App\Models\CourseHistory;
 use App\Models\User;
+use App\Models\UserExam;
 use App\Models\UserWallet;
 use App\Models\Nft;
 use App\Models\NftTransactions;
@@ -388,7 +390,7 @@ class CertificateService
 
     /**
      * Send certificate notification email to student
-     * 
+     *
      * @param User $student
      * @param Course $course
      * @param array $mintResult
@@ -415,5 +417,299 @@ class CertificateService
                 'error' => $e->getMessage()
             ]);
         }
+    }
+
+    /**
+     * Update certificate status in course history
+     *
+     * @param int $courseId
+     * @param int $studentId
+     * @param string $status
+     * @param int|null $scheduleId
+     * @param string|null $txHash
+     * @return void
+     */
+    public function updateCertificateStatus(
+        int $courseId,
+        int $studentId,
+        string $status,
+        ?int $scheduleId = null,
+        ?string $txHash = null
+    ): void
+    {
+        // Build query
+        $query = CourseHistory::where('course_id', $courseId)
+            ->where('user_id', $studentId);
+
+        // Add schedule_id filter if provided
+        if ($scheduleId !== null) {
+            $query->where('course_schedule_id', $scheduleId);
+        }
+
+        // Get the course history record
+        $courseHistory = $query->first();
+
+        if (!$courseHistory) {
+            Log::warning('Course history not found for certificate status update', [
+                'course_id' => $courseId,
+                'student_id' => $studentId,
+                'schedule_id' => $scheduleId,
+                'status' => $status
+            ]);
+            return;
+        }
+
+        // Update certificate status
+        $courseHistory->certificate_status = $status;
+
+        // Save tx_hash if provided
+        if ($txHash !== null) {
+            $courseHistory->certificate_tx_hash = $txHash;
+        }
+
+        // Set certificate_minted_at if status is 'minted'
+        if ($status === 'minted') {
+            $courseHistory->certificate_minted_at = now();
+        }
+
+        $courseHistory->save();
+
+        // Log the status change
+        Log::info('Certificate status updated', [
+            'course_id' => $courseId,
+            'student_id' => $studentId,
+            'schedule_id' => $scheduleId,
+            'status' => $status,
+            'tx_hash' => $txHash
+        ]);
+    }
+
+    /**
+     * Get eligible students with certificate status for a course
+     *
+     * @param Course $course
+     * @return array
+     */
+    public function getEligibleStudentsWithStatus(Course $course): array
+    {
+        try {
+            // Get all completed course histories
+            $completedHistories = CourseHistory::with(['user', 'user.userWallet', 'courseSchedule'])
+                ->where('course_id', $course->id)
+                ->whereNotNull('completed_at')
+                ->where(function($q) {
+                    $q->where('is_cancelled', false)
+                      ->orWhere('is_cancelled', 0)
+                      ->orWhereNull('is_cancelled');
+                })
+                ->get();
+
+            $students = [];
+
+            foreach ($completedHistories as $history) {
+                $student = $history->user;
+
+                if (!$student) {
+                    continue;
+                }
+
+                // Check if student has passed all exams
+                $hasPassedExams = $this->hasPassedAllExams(
+                    $student->id,
+                    $history->course_schedule_id
+                );
+
+                if (!$hasPassedExams) {
+                    continue;
+                }
+
+                // Get certificate transaction if exists
+                $certificateTransaction = NftTransactions::where('user_id', $student->id)
+                    ->where('course_id', $course->id)
+                    ->first();
+
+                // Determine status
+                $status = 'eligible';
+                $txHash = null;
+                $mintedAt = null;
+
+                if ($certificateTransaction) {
+                    $status = 'minted';
+                    $txHash = $certificateTransaction->tx_id;
+                    $mintedAt = $certificateTransaction->created_at;
+                }
+
+                $students[] = [
+                    'id' => $student->id,
+                    'name' => $student->fullname,
+                    'email' => $student->email,
+                    'completed_at' => $history->completed_at,
+                    'certificate_status' => $status,
+                    'tx_hash' => $txHash,
+                    'minted_at' => $mintedAt,
+                ];
+            }
+
+            return [
+                'success' => true,
+                'message' => 'Eligible students retrieved successfully',
+                'data' => [
+                    'course_id' => $course->id,
+                    'course_title' => $course->title,
+                    'students' => $students,
+                    'total_eligible' => count($students)
+                ]
+            ];
+
+        } catch (Exception $e) {
+            Log::error('Failed to get eligible students with status', [
+                'course_id' => $course->id,
+                'error' => $e->getMessage()
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'Failed to retrieve eligible students: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Get certificate status for a specific student in a course
+     *
+     * @param Course $course
+     * @param User $student
+     * @return array
+     */
+    public function getCertificateStatusForStudent(Course $course, User $student): array
+    {
+        try {
+            // Check if student completed the course
+            $courseHistory = CourseHistory::where('course_id', $course->id)
+                ->where('user_id', $student->id)
+                ->whereNotNull('completed_at')
+                ->where(function($q) {
+                    $q->where('is_cancelled', false)
+                      ->orWhere('is_cancelled', 0)
+                      ->orWhereNull('is_cancelled');
+                })
+                ->first();
+
+            if (!$courseHistory) {
+                return [
+                    'success' => false,
+                    'message' => 'Student has not completed this course',
+                    'data' => [
+                        'student_id' => $student->id,
+                        'course_id' => $course->id,
+                        'status' => 'not_completed'
+                    ]
+                ];
+            }
+
+            // Check if student passed all exams
+            $hasPassedExams = $this->hasPassedAllExams(
+                $student->id,
+                $courseHistory->course_schedule_id
+            );
+
+            if (!$hasPassedExams) {
+                return [
+                    'success' => false,
+                    'message' => 'Student has not passed all required exams',
+                    'data' => [
+                        'student_id' => $student->id,
+                        'course_id' => $course->id,
+                        'status' => 'not_eligible'
+                    ]
+                ];
+            }
+
+            // Get certificate transaction if exists
+            $certificateTransaction = NftTransactions::where('user_id', $student->id)
+                ->where('course_id', $course->id)
+                ->first();
+
+            if ($certificateTransaction) {
+                // Certificate already minted
+                $network = config('app.cardano_network', 'preprod');
+                $explorerUrl = $network === 'mainnet'
+                    ? "https://cardanoscan.io/transaction/{$certificateTransaction->tx_id}"
+                    : "https://preprod.cardanoscan.io/transaction/{$certificateTransaction->tx_id}";
+
+                return [
+                    'success' => true,
+                    'message' => 'Certificate already minted',
+                    'data' => [
+                        'student_id' => $student->id,
+                        'course_id' => $course->id,
+                        'status' => 'minted',
+                        'tx_hash' => $certificateTransaction->tx_id,
+                        'explorer_url' => $explorerUrl,
+                        'minted_at' => $certificateTransaction->created_at,
+                        'nft_name' => $certificateTransaction->nft_name,
+                        'metadata' => json_decode($certificateTransaction->metadata, true)
+                    ]
+                ];
+            }
+
+            // Student is eligible but certificate not minted yet
+            return [
+                'success' => true,
+                'message' => 'Student is eligible for certificate',
+                'data' => [
+                    'student_id' => $student->id,
+                    'course_id' => $course->id,
+                    'status' => 'eligible',
+                    'completed_at' => $courseHistory->completed_at
+                ]
+            ];
+
+        } catch (Exception $e) {
+            Log::error('Failed to get certificate status for student', [
+                'course_id' => $course->id,
+                'student_id' => $student->id,
+                'error' => $e->getMessage()
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'Failed to retrieve certificate status: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Check if a student has passed all exams for a specific course schedule
+     *
+     * @param int $studentId
+     * @param int $scheduleId
+     * @return bool
+     */
+    protected function hasPassedAllExams(int $studentId, int $scheduleId): bool
+    {
+        // Import UserExam model if not already imported
+        if (!class_exists('App\Models\UserExam')) {
+            return true; // If no exam system, consider as passed
+        }
+
+        // Get total exams for this schedule
+        $totalExams = UserExam::where('user_id', $studentId)
+            ->where('course_schedule_id', $scheduleId)
+            ->count();
+
+        // Get passed exams for this schedule
+        $passedExams = UserExam::where('user_id', $studentId)
+            ->where('course_schedule_id', $scheduleId)
+            ->where('is_passed', 1)
+            ->count();
+
+        // If no exams exist, consider as passed (some courses might not have exams)
+        if ($totalExams === 0) {
+            return true;
+        }
+
+        // All exams must be passed
+        return $totalExams === $passedExams;
     }
 }
