@@ -13,6 +13,7 @@ use App\Http\Controllers\API\UserWalletController;
 use App\Http\Controllers\API\CourseApplicationController;
 use App\Http\Controllers\API\VoteController;
 use App\Http\Controllers\API\CertificateController;
+use App\Http\Controllers\API\CoursePaymentController;
 use Illuminate\Support\Facades\Log;
 
 /*
@@ -48,6 +49,12 @@ Route::prefix('/applications')->name('points.')->group(function() {
 Route::prefix('/certificates')->middleware(['auth:sanctum'])->name('certificates.')->group(function() {
     Route::post('/mint-and-airdrop', [CertificateController::class, 'mintAndAirdropCertificates'])->name('mint_airdrop');
     Route::get('/completion-summary', [CertificateController::class, 'getCourseCompletionSummary'])->name('completion_summary');
+
+    // New certificate API endpoints
+    Route::get('/courses/{course}/eligible-students', [CertificateController::class, 'getEligibleStudents'])->name('eligible_students');
+    Route::post('/courses/{course}/students/{student}/mint', [CertificateController::class, 'mintSingleCertificate'])->name('mint_single');
+    Route::post('/courses/{course}/batch-mint', [CertificateController::class, 'batchMintCertificates'])->name('batch_mint');
+    Route::get('/courses/{course}/students/{student}/status', [CertificateController::class, 'getCertificateStatus'])->name('certificate_status');
 });
 
 Route::get('/categories',  function (Request $request) {
@@ -58,6 +65,9 @@ Route::get('/countries',  function (Request $request) {
 });
 
 Route::post('/votes/register', [VoteController::class, 'register'])->name('votes.register');
+
+// Blockfrost Webhooks
+Route::post('/webhook/blockfrost/purchase', [CoursePaymentController::class, 'handlePurchaseWebhook'])->name('webhook.purchase');
 
 if (app()->environment('local')) {
     Route::post('/postman/token', function (Request $request) {

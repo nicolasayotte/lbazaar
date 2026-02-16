@@ -173,6 +173,10 @@ Route::prefix('classes')->name('course.')->group(function() {
         Route::post('/{schedule_id}/book', [CourseController::class, 'book'])->name('book');
         Route::post('/{schedule_id}/cancel', [CourseController::class, 'cancel'])->name('cancel');
 
+        # Course Purchase (ADA Payment)
+        Route::post('/{schedule_id}/build-purchase-tx', [CourseController::class, 'buildPurchaseTx'])->name('purchase.build');
+        Route::post('/{schedule_id}/submit-purchase-tx', [CourseController::class, 'submitPurchaseTx'])->name('purchase.submit');
+
         #send donation
         Route::post('/send-donation', [CourseController::class, 'sendDonation'])->name('send.donation');
 
@@ -318,6 +322,7 @@ Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function()
             Route::get('/feedbacks', [ManageCourseController::class, 'feedbacks'])->name('feedbacks');
             Route::get('/exams', [ExamController::class, 'index'])->name('exams');
             Route::get('/schedules', [CourseScheduleController::class, 'index'])->name('schedules');
+            Route::get('/certificates', [ManageCourseController::class, 'certificates'])->name('certificates');
         });
     });
 });
