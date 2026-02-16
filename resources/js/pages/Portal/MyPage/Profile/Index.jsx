@@ -2,7 +2,7 @@
 import routes from "../../../../helpers/routes.helper"
 import ProfileForm from "./components/ProfileForm"
 import PasswordForm from "../../../../components/common/forms/PasswordForm"
-import UserPoints from "../../../../components/cards/UserPoints"
+
 import WalletConnector from "../../../../components/cards/WalletConnector"
 import { Box, Grid } from "@mui/material"
 import { useState } from "react"
@@ -37,11 +37,6 @@ const Index = ({ auth, countries, errors, translatables }) => {
                                      walletAPI={walletAPI}
                                      onWalletAPI={setWalletAPI}/>
                 </Box>
-                {walletStakeKeyDisplay && <Box mb={2}>
-                    <UserPoints walletStakeKeyHash={walletStakeKeyDisplay}
-                                walletAPI={walletAPI}/>
-                </Box>}
-                
             </Grid>
 
         </Grid>

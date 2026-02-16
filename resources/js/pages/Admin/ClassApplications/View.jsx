@@ -261,10 +261,6 @@ const View = () => {
                                     <TableCell width="50%" children={translatables.texts.name} />
                                     <TableCell align="right" children={nft.name}/>
                                 </TableRow>}
-                                {!nft && <TableRow>
-                                    <TableCell width="50%" children={translatables.texts.points_earned} />
-                                    <TableCell align="right" children={courseApplication.points_earned}/>
-                                </TableRow>}
                                 {nft && <TableRow>
                                     <TableCell width="50%" children={translatables.texts.points} />
                                     <TableCell align="right" children={nft.points}/>

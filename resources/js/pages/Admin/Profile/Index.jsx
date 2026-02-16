@@ -4,7 +4,7 @@ import ProfileForm from "./components/ProfileForm"
 import PasswordForm from "../../../components/common/forms/PasswordForm"
 import { Grid, Typography } from "@mui/material"
 import { usePage } from "@inertiajs/inertia-react"
-import UserPoints from "../../../components/cards/UserPoints"
+
 
 const Index = () => {
 
@@ -26,12 +26,6 @@ const Index = () => {
                         errors={errors.profile}
                         translatables={translatables}
                         routes={routes}
-                    />
-                </Grid>
-                <Grid item xs={12} md={4}>
-                    <UserPoints
-                        translatables={translatables}
-                        user={auth.user}
                     />
                 </Grid>
                 <Grid item xs={12} md={8}>

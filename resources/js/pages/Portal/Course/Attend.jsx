@@ -147,13 +147,6 @@ const Attend = () => {
                             <TableCell align="right" children={course.course_type.type == 'Free' ? 'Free' : course.price} />
                         </TableRow>
                     }
-                    {
-                        course.course_type.type == 'Earn' &&
-                        <TableRow>
-                            <TableCell children={translatables.texts.points_earned} />
-                            <TableCell align="right" children={course.points_earned} />
-                        </TableRow>
-                    }
                     <TableRow>
                         <TableCell children={translatables.texts.category} />
                         <TableCell align="right">

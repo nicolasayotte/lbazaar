@@ -15,7 +15,6 @@ const WalletHistoryTable = ({ data }) => {
                 <TableCell children={row.type} align="center"/>
                 <TableCell children={row.amount} align="center"/>
                 <TableCell children={row.transaction_details} align="center"/>
-                <TableCell children={row.points_after} align="center"/>
                 <TableCell children={row.transaction_datetime} align="center"/>
             </TableRow>
         )
@@ -39,7 +38,6 @@ const WalletHistoryTable = ({ data }) => {
                             </Box>
                         </TableCell>
                         <TableCell children={translatables.texts.content} align="center"/>
-                        <TableCell children={translatables.texts.wallet_balance} align="center"/>
                         <TableCell children={translatables.texts.transaction_date} align="center"/>
                     </TableRow>
                 </TableHead>

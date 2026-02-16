@@ -26,7 +26,6 @@ const Course = ({ course, schedule = null, showDescription = true, viewDetailId 
 
     const courseTypeColors = {
         'General': 'default',
-        'Earn': 'primary',
         'Free': 'success',
         'Special': 'warning'
     }

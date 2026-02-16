@@ -201,14 +201,6 @@ const AdminNavbar = ({ drawerWidth, window }) => {
         >
             <Toolbar sx={{ minHeight: navbarHeight }} />
             <List>
-                {/*
-                <ListItem>
-                    <ListItemButton>
-                        <ListItemIcon children={<AccountBalanceWallet />} />
-                        <ListItemText primary={auth && auth.user && auth.user.user_wallet && auth.user.user_wallet.points.toFixed(2)} />
-                    </ListItemButton>
-                </ListItem>
-                */}
                 <ListItem key="profile">
                     {profileBtn}
                 </ListItem>
@@ -246,17 +238,6 @@ const AdminNavbar = ({ drawerWidth, window }) => {
                             spacing={1}
                             sx={{ display: { xs: 'none', md: 'flex' } }}
                         >
-                            {/*
-                            <Stack
-                                direction="row"
-                                alignItems="center"
-                                spacing={0.5}
-                                px={2}
-                            >
-                                <AccountBalanceWallet />
-                                <Typography children={auth.user.user_wallet.points.toFixed(2)} />
-                            </Stack>
-                            */}
                             {profileBtn}
                             {logoutBtn}
                         </Stack>

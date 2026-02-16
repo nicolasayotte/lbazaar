@@ -161,10 +161,6 @@ const View = () => {
                                         <TableCell width="50%" children={translatables.texts.price} />
                                         <TableCell align="right" children={courseApplication.price} />
                                     </TableRow>
-                                    <TableRow>
-                                        <TableCell width="50%" children={translatables.texts.points_earned} />
-                                        <TableCell align="right" children={courseApplication.points_earned} />
-                                    </TableRow>
                                 </TableBody>
                             )}
 
