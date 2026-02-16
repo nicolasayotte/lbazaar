@@ -339,17 +339,8 @@ const Create = () => {
                                                 disabled
                                             />
                                         </Grid>
-                                        <Grid item xs={12}>
-                                            <Input
-                                                label={translatables.texts.points_earned}
-                                                value={data.points_earned ? data.points_earned : '0.00'}
-                                                inputProps={{ readOnly: true }}
-                                                InputLabelProps={{ shrink: true }}
-                                                disabled
-                                            />
-                                        </Grid>
                                     </Grid>
-                                </CardContent> 
+                                </CardContent>
                                 }
                                 {
                                 nft && <CardContent>
@@ -376,7 +367,7 @@ const Create = () => {
                                             />
                                         </Grid>
                                     </Grid>
-                                </CardContent> 
+                                </CardContent>
                                 }
                             </Card>
                             <Card sx={{ mb: 2 }}>

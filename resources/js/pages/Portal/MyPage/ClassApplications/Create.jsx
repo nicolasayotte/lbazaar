@@ -1,5 +1,5 @@
 import { Link, useForm, usePage } from "@inertiajs/inertia-react"
-import { Autocomplete, Breadcrumbs, Button, Grid, Paper, TextField, Typography } from "@mui/material"
+import { Autocomplete, Box, Breadcrumbs, Button, FormControlLabel, Grid, Paper, Switch, TextField, Typography } from "@mui/material"
 import Input from "../../../../components/forms/Input"
 import TextEditorInput from "../../../../components/forms/TextEditorInput"
 import { displaySelectOptions, handleEditorOnChange, handleOnChange } from "../../../../helpers/form.helper"
@@ -7,13 +7,12 @@ import routes from "../../../../helpers/routes.helper"
 
 const Create = () => {
 
-    
+
     const { translatables, categoryOptions, nftOptions } = usePage().props
 
     const typeOptions = [
         { name: 'General', value: 'general' },
         { name: 'Free', value: 'free' },
-        { name: 'Earn', value: 'earn' },
         { name: 'Special', value: 'special' },
     ]
 
@@ -37,9 +36,9 @@ const Create = () => {
         lecture_frequency: 'daily',
         length: '',
         price: 0,
-        points_earned: 0,
         seats: 0,
-        description: ''
+        description: '',
+        certificate_enabled: false
     })
 
     const handleOnSubmit = e => {
@@ -124,7 +123,7 @@ const Create = () => {
                                     />
                                 </Grid>
                             }
-                            {   
+                            {
                                 data.type === 'special' &&
                                 <Grid item xs={12} md={4}>
                                     <Autocomplete
@@ -143,18 +142,6 @@ const Create = () => {
                                             errors={errors}
                                         />
                                         }
-                                    />
-                                </Grid>
-                            }
-                            {
-                                data.type === 'earn' &&
-                                <Grid item xs={12} md={4}>
-                                    <Input
-                                        label={translatables.texts.points_earned}
-                                        name="points_earned"
-                                        value={data.points_earned}
-                                        onChange={e => handleOnChange(e, setData)}
-                                        errors={errors}
                                     />
                                 </Grid>
                             }
@@ -236,6 +223,24 @@ const Create = () => {
                                     onChange={e => handleOnChange(e, setData)}
                                     errors={errors}
                                 />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Box sx={{ mt: 2 }}>
+                                    <FormControlLabel
+                                        control={
+                                            <Switch
+                                                checked={data.certificate_enabled}
+                                                onChange={(e) => setData('certificate_enabled', e.target.checked)}
+                                            />
+                                        }
+                                        label="Enable completion certificate (NFT)"
+                                    />
+                                    {data.certificate_enabled && (
+                                        <Typography variant="caption" color="textSecondary" display="block" sx={{ ml: 4 }}>
+                                            Students will receive an NFT certificate when they complete this course
+                                        </Typography>
+                                    )}
+                                </Box>
                             </Grid>
                         </Grid>
                     </Paper>

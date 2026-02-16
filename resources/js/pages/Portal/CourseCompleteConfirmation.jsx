@@ -47,7 +47,6 @@ const CourseCompleteConfirmation = () => {
     const [dialog, setDialog] = useState({
         open: false,
         title: '',
-        //points: 0,
         schedule_id: schedule.id,
         submitUrl: '',
         method: null,
@@ -55,33 +54,7 @@ const CourseCompleteConfirmation = () => {
         type: '',
     })
 
-    const handleOnDonatePoints = () => {
-        setDialog(dialog => ({
-            ...dialog,
-            open: true,
-            title: translatables.texts.donate_points,
-            submitUrl: routes["course.send.donation"],
-            method: 'post',
-            action: 'donate'
-        }))
-    }
-
-    const dialogForm = () => {
-        return <></>
-        /*
-        return (
-            <Box mt={1}>
-                <Input
-                    label={translatables.texts.points}
-                    type="number"
-                    name="points"
-                    value={dialog.points}
-                    onChange={e => setDialog(dialog => ({ ...dialog, points: e.target.value }))}
-                />
-            </Box>
-        )
-        */
-    }
+    const dialogForm = () => <></>
 
     const handleOnDialogClose = () => {
         setDialog(dialog => ({
@@ -174,13 +147,6 @@ const CourseCompleteConfirmation = () => {
 
                                                 />
                                             </Link>
-                                            {/*
-                                            <Button
-                                                onClick={handleOnDonatePoints}
-                                                variant="contained"
-                                                disabled={processing}
-                                            >{translatables.texts.donate_points}</Button>
-                                            */}
                                             <Button
                                                 onClick={handleSubmit}
                                                 variant="contained"
@@ -199,10 +165,7 @@ const CourseCompleteConfirmation = () => {
                 handleClose={handleOnDialogClose}
                 handleSubmit={handleOnDialogSubmit}
                 children={dialogForm()}
-                disableSubmit={
-                    false
-                    /*(dialog.points <= 0 || dialog.points.length <= 0 || dialog.points > auth.user.user_wallet.points)*/
-                }
+                disableSubmit={false}
             />
         </Box>
     )

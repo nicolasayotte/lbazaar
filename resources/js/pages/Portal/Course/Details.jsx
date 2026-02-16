@@ -1,4 +1,5 @@
-import { Box, Grid, Typography, Card, CardContent, Container, Divider, Chip, Paper, CircularProgress, Stack, Button } from "@mui/material";
+import { Box, Grid, Typography, Card, CardContent, Container, Divider, Chip, Paper, CircularProgress, Stack, Button, LinearProgress } from "@mui/material";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import Feedback from "../../../components/cards/Feedback";
 import { usePage } from "@inertiajs/inertia-react"
 import ConfirmationDialog from "../../../components/common/ConfirmationDialog"
@@ -35,6 +36,88 @@ const Details = () => {
         type: ''
     })
 
+
+    const [purchaseLoading, setPurchaseLoading] = useState(false)
+    const [purchaseStep, setPurchaseStep] = useState('idle')
+
+    const isGeneralCourse = course.course_type && course.course_type.type === 'General'
+
+    const handleBuyWithAda = async (schedule_id) => {
+        if (!walletAPI) {
+            dispatch(actions.error({
+                message: translatables.wallet_error.not_connected
+            }))
+            return
+        }
+
+        try {
+            setPurchaseLoading(true)
+            setPurchaseStep('building')
+
+            // Get UTXOs and change address from wallet
+            const cborUtxos = await walletAPI.getUtxos()
+            const changeAddress = await walletAPI.getChangeAddress()
+
+            // Build transaction via backend
+            const buildResponse = await axios.post(
+                getRoute('course.purchase.build', { schedule_id }),
+                { cborUtxos: cborUtxos.join(',') }
+            )
+
+            const buildData = typeof buildResponse.data === 'string'
+                ? JSON.parse(buildResponse.data)
+                : buildResponse.data
+
+            if (!buildData.success) {
+                throw new Error(buildData.message || 'Failed to build transaction')
+            }
+
+            // Sign transaction with wallet
+            setPurchaseStep('signing')
+            let walletSig
+            try {
+                walletSig = await walletAPI.signTx(buildData.data.cborTx, true)
+            } catch (signError) {
+                if (signError.code === 3 || signError.code === -3) {
+                    dispatch(actions.error({
+                        message: translatables.wallet_error.verify
+                    }))
+                    return
+                }
+                throw signError
+            }
+
+            // Submit signed transaction
+            setPurchaseStep('submitting')
+            const submitResponse = await axios.post(
+                getRoute('course.purchase.submit', { schedule_id }),
+                { cborSig: walletSig, cborTx: buildData.data.cborTx }
+            )
+
+            const submitData = typeof submitResponse.data === 'string'
+                ? JSON.parse(submitResponse.data)
+                : submitResponse.data
+
+            if (!submitData.success) {
+                throw new Error(submitData.message || 'Failed to submit transaction')
+            }
+
+            dispatch(actions.success({
+                message: translatables.success.class.booking.booked
+            }))
+
+            Inertia.visit(getRoute('course.details', { id: course.id }))
+
+        } catch (error) {
+            console.error('Purchase error:', error)
+            dispatch(actions.error({
+                message: error.response?.data?.message || error.message || translatables.error
+            }))
+        } finally {
+            setPurchaseLoading(false)
+            setPurchaseStep('idle')
+        }
+    }
 
     // TODO Make this use NMKR Pay when relevant
     // TODO Have the NMKR Pay link come from the database
@@ -385,8 +468,7 @@ const Details = () => {
 
         const dynamicInfos = {
             'General': { type: translatables.texts.price, value: course.price },
-            'Free': { type: translatables.texts.price, value: translatables.texts.free },
-            'Earn': { type: translatables.texts.points_earned, value: course.points_earned }
+            'Free': { type: translatables.texts.price, value: translatables.texts.free }
         }
 
         classInfos.push(dynamicInfos[course.course_type.type])
@@ -470,13 +552,45 @@ const Details = () => {
                             </CardContent>
                         </Card>
                         <User user={course.professor} condensed={false} />
-                        {nft && <Box mb={2}>
+                        {(nft || isGeneralCourse) && <Box mb={2}>
                             <WalletConnector onStakeKeyHash={setwalletStakeKeyDisplay}
                                 walletAPI={walletAPI}
                                 onWalletAPI={setWalletAPI} />
                         </Box>}
+                        {isGeneralCourse && auth && auth.user && (
+                            <Box sx={{ mb: 2 }}>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    fullWidth
+                                    disabled={!walletAPI || purchaseLoading}
+                                    onClick={() => {
+                                        if (schedules && schedules.length > 0) {
+                                            handleBuyWithAda(schedules[0].id)
+                                        }
+                                    }}
+                                    startIcon={purchaseLoading ? <CircularProgress size={20} color="inherit" /> : <AccountBalanceWalletIcon />}
+                                    sx={{ py: 1.5 }}
+                                >
+                                    {purchaseLoading
+                                        ? translatables.texts.processing
+                                        : `${translatables.texts.buy_with_ada} - ${course.price} JPY`
+                                    }
+                                </Button>
+                                {purchaseLoading && (
+                                    <Box sx={{ mt: 1 }}>
+                                        <LinearProgress />
+                                        <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+                                            {purchaseStep === 'building' && translatables.texts.building_transaction}
+                                            {purchaseStep === 'signing' && translatables.texts.sign_in_wallet}
+                                            {purchaseStep === 'submitting' && translatables.texts.submitting_transaction}
+                                        </Typography>
+                                    </Box>
+                                )}
+                            </Box>
+                        )}
                         {nft && walletAPI && <CourseScheduleList data={schedules} handleOnBook={handleBookNFT} handleOnCancelBook={handleCancelBooking} />}
-                        {!nft && <CourseScheduleList data={schedules} handleOnBook={handleBook} handleOnCancelBook={handleCancelBooking} />}
+                        {!nft && <CourseScheduleList data={schedules} handleOnBook={isGeneralCourse ? handleBuyWithAda : handleBook} handleOnCancelBook={handleCancelBooking} />}
                         <PackageInformation />
                     </Grid>
                     <Grid item xs={12} md={4}>

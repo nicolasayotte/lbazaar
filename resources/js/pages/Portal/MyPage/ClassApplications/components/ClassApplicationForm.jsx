@@ -14,8 +14,6 @@ const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions,
 
     const dispatch = useDispatch()
 
-    const [isEarned, setIsEarned] = useState(false);
-
     const [isPaidClass, setIsPaidClass] = useState(false);
 
     const [disabledForm, setDisabledForm] = useState(false);
@@ -24,7 +22,6 @@ const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions,
         course_category_id: '',
         course_type_id: '',
         price: '',
-        price_earned: '',
         title: '',
         description: '',
         language: '',
@@ -77,23 +74,15 @@ const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions,
 
         const input = e.target
 
-        const isEarned = input.selectedIndex === 3
-
         const isPaidClass = input.selectedIndex === 1 || input.selectedIndex === 4
 
-        if (isEarned) {
-            setIsEarned(true)
-            setIsPaidClass(false)
-        } else if (isPaidClass) {
+        if (isPaidClass) {
             setIsPaidClass(true)
-            setIsEarned(false)
         } else {
-            setIsEarned(false)
             setIsPaidClass(false)
 
             setData(data => ({
                 ...data,
-                price_earned: 0,
                 price: 0
             }))
         }
@@ -115,14 +104,8 @@ const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions,
     }
 
     useEffect(() => {
-        if (typeInput && typeInput.selectedIndex === 3) {
-            setIsEarned(true)
-            setIsPaidClass(true)
-        }
-
         if (typeInput && (typeInput.selectedIndex === 1 || typeInput.selectedIndex === 4)) {
             setIsPaidClass(true)
-            setIsEarned(false)
         }
     }, [typeInput])
 
@@ -233,22 +216,6 @@ const ClassApplicationForm = ({ errors, auth, messages, routes, categoryOptions,
                                     shrink: true
                                 }}
                                 value={data.price}
-                                onChange={e => handleOnChange(e, setData)}
-                                errors={errors}
-                                disabled={disabledForm}
-                            />
-                        </Grid>
-                    }
-                    {
-                        (isEarned) &&
-                        <Grid item xs={12} md={6}>
-                            <Input
-                                label="Price earned"
-                                name="price_earned"
-                                InputLabelProps={{
-                                    shrink: true
-                                }}
-                                value={data.price_earned}
                                 onChange={e => handleOnChange(e, setData)}
                                 errors={errors}
                                 disabled={disabledForm}
