@@ -28,6 +28,7 @@ const ManageClassTabs = ({ tabValue = 'schedules', id }) => {
                 <Tab label={translatables.title.schedules.index} value="schedules"/>
                 <Tab label={translatables.title.exams} value="exams" />
                 <Tab label={translatables.title.feedbacks} value="feedbacks" />
+                <Tab label={translatables.title.certificates} value="certificates" />
             </Tabs>
             <Divider sx={{ mb: 2 }} />
         </>

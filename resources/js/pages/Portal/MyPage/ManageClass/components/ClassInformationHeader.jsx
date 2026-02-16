@@ -8,10 +8,9 @@ const ClassInformationHeader = () => {
 
     const { course, translatables, nft } = usePage().props
 
-    const isEarn = course.course_type.type == 'Earn'
     const isFree = course.course_type.type == 'Free'
     const isLive = course.is_live
-    const price = (isEarn || isFree) ? translatables.texts.free : course.price
+    const price = isFree ? translatables.texts.free : course.price
 
     const typeColors = {
         'Free': 'success',
@@ -96,13 +95,6 @@ const ClassInformationHeader = () => {
                         nft &&
                         <Box width={{ xs: '50%', md: 'auto' }}>
                             <Typography variant="span" mr={1} children={translatables.texts.nft} />
-                        </Box>
-                    }
-                    {
-                        isEarn &&
-                        <Box width={{ xs: '50%', md: 'auto' }}>
-                            <Typography variant="span" mr={1} children={translatables.texts.points_earned} />
-                            <Chip size="small" label={course.points_earned.toFixed(2)} />
                         </Box>
                     }
                     <Box width={{ xs: '50%', md: 'auto' }}>
