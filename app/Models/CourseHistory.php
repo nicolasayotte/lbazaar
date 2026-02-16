@@ -20,7 +20,22 @@ class CourseHistory extends Model
         'course_schedule_id',
         'completed_at',
         'is_cancelled',
-        'is_watched'
+        'is_watched',
+        'certificate_status',
+        'certificate_tx_hash',
+        'certificate_minted_at',
+        'payment_status',
+        'payment_tx_hash',
+        'payment_ada_amount',
+        'payment_submitted_at',
+        'payment_confirmed_at'
+    ];
+
+    protected $casts = [
+        'certificate_minted_at' => 'datetime',
+        'payment_submitted_at' => 'datetime',
+        'payment_confirmed_at' => 'datetime',
+        'payment_ada_amount' => 'decimal:6'
     ];
 
     public function courseSchedule()

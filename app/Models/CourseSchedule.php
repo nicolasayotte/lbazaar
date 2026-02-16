@@ -59,7 +59,7 @@ class CourseSchedule extends Model
 
     public function getSimpleStartDatetimeAttribute()
     {
-        return Carbon::parse($this->start_datetime, env('APP_TIMEZONE'))->format('M d, Y \a\t\ h:i A T');
+        return Carbon::parse($this->start_datetime, config('app.timezone', 'UTC'))->format('M d, Y \a\t\ h:i A T');
     }
 
     public function courseHistories()
@@ -113,7 +113,7 @@ class CourseSchedule extends Model
     {
         $course = $this->course()->first();
 
-        $timezone = new DateTimeZone(env('APP_TIMEZONE'));
+        $timezone = new DateTimeZone(config('app.timezone', 'UTC'));
 
         $now = Carbon::parse(new DateTime('now', $timezone));
 

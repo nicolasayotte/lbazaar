@@ -109,6 +109,11 @@ class User extends Authenticatable implements MustVerifyEmail
     protected static function booted()
     {
         static::created(function ($user) {
+            // Skip web3 call if custodial_address is already set (for testing)
+            if ($user->custodial_address) {
+                return;
+            }
+
             // generate custodial_address via Node script
             $script = base_path('web3/common/get-custodial-address.mjs');
             $process = new Process(['node', $script, (string) $user->id]);

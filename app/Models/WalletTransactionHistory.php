@@ -16,6 +16,7 @@ class WalletTransactionHistory extends Model
     public const COMMISSION = 'commission';
     public const BOOK = 'book';
     public const REFUND = 'refund';
+    public const PURCHASE = 'purchase';
 
     public const DONATE = 'donate';
 
@@ -85,6 +86,9 @@ class WalletTransactionHistory extends Model
                 break;
             case(self::REFUND):
                 $transactionDetails = getTranslation('texts.wallet_refund_details') ." ". $this->getCourseNameAttribute();
+                break;
+            case(self::PURCHASE):
+                $transactionDetails = getTranslation('texts.wallet_purchase_details') ." ". $this->getCourseNameAttribute();
                 break;
             case(self::SCHEDULE_FEE):
                 $transactionDetails = getTranslation('texts.wallet_schedule_fee') ." ". $this->getCourseNameAttribute();

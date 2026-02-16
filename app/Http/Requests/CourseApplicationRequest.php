@@ -70,7 +70,8 @@ class CourseApplicationRequest extends FormRequest
             'price'             => $priceRules,
             'points_earned'     => $pointsRules,
             'seats'             => $seatsRules,
-            'description'       => 'required'
+            'description'       => 'required',
+            'certificate_enabled' => 'nullable|boolean'
         ];
     }
 

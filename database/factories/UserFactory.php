@@ -54,6 +54,11 @@ class UserFactory extends Factory
     public function configure()
     {
         return $this->afterCreating(function (User $user) {
+            // Skip web3 call if custodial_address is already set (for testing)
+            if ($user->custodial_address) {
+                return;
+            }
+
             // call Node script to get custodial address JSON
             $script = base_path('web3/common/get-custodial-address.mjs');
             $process = new Process(['node', $script, (string) $user->id]);

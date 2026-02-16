@@ -44,9 +44,13 @@ class CourseApplication extends Model
         'approved_at',
         'length',
         'lecture_frequency',
-        'data'
+        'data',
+        'certificate_enabled'
     ];
 
+    protected $casts = [
+        'certificate_enabled' => 'boolean'
+    ];
 
     public function professor()
     {

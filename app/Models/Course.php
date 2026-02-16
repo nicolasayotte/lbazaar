@@ -37,7 +37,8 @@ class Course extends Model
         "course_application_id",
         "max_participant",
         "is_cancellable",
-        "days_before_cancellation"
+        "days_before_cancellation",
+        "certificate_enabled"
     ];
 
     protected $appends = [
@@ -49,7 +50,8 @@ class Course extends Model
 
     protected $casts = [
         'price' => 'float',
-        'points_earned' => 'float'
+        'points_earned' => 'float',
+        'certificate_enabled' => 'boolean'
     ];
 
     protected $with = [
