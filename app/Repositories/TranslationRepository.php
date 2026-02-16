@@ -69,6 +69,13 @@ class TranslationRepository extends BaseRepository
      */
     public static function getTranslation($key = '')
     {
-        return Translation::where('key', $key)->first()->{app()->getLocale()};
+        $translation = Translation::where('key', $key)->first();
+
+        // Fallback to lang files if database is empty (test environment)
+        if (!$translation) {
+            return trans($key);
+        }
+
+        return $translation->{app()->getLocale()};
     }
 }

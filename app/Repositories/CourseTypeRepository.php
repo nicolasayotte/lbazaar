@@ -26,7 +26,7 @@ class CourseTypeRepository extends BaseRepository
 
     public function getDropdownData()
     {
-        return $this->model->all()->map(function($data) {
+        return $this->model->where('id', '!=', CourseType::EARN_ID)->get()->map(function($data) {
             return [
                 'id'   => $data->id,
                 'name' => $data->name

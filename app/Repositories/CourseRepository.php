@@ -209,6 +209,7 @@ class CourseRepository extends BaseRepository
         $inputs['course_application_id'] = $courseApplication->id;
         $inputs['professor_id'] = auth()->user()->id;
         $inputs['is_live'] = $isLive;
+        $inputs['certificate_enabled'] = $courseApplication->certificate_enabled ?? false;
         if($request->hasFile('image_thumbnail')){
             $inputs['image_thumbnail'] = Asset::upload($request->files->get('image_thumbnail'));
         } else {
