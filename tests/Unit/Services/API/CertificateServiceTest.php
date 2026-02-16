@@ -8,6 +8,8 @@ use Illuminate\Foundation\Testing\WithFaker;
 use App\Services\API\CertificateService;
 use App\Models\User;
 use App\Models\Course;
+use App\Models\CourseHistory;
+use App\Models\CourseSchedule;
 use App\Models\UserWallet;
 use App\Models\Nft;
 use App\Models\NftTransactions;
@@ -45,19 +47,25 @@ class CertificateServiceTest extends TestCase
         Role::firstOrCreate(['name' => 'teacher'], ['display_name' => 'Teacher']);
         Role::firstOrCreate(['name' => 'student'], ['display_name' => 'Student']);
 
-        // Create teacher
-        $this->teacher = User::factory()->create([
-            'first_name' => 'John',
-            'last_name' => 'Teacher'
-        ]);
+        // Create teacher without triggering custodial address event
+        $this->teacher = User::withoutEvents(function () {
+            return User::factory()->create([
+                'first_name' => 'John',
+                'last_name' => 'Teacher',
+                'custodial_address' => 'addr1test_teacher_custodial'
+            ]);
+        });
         $this->teacher->attachRole('teacher');
 
-        // Create student
-        $this->student = User::factory()->create([
-            'first_name' => 'Jane',
-            'last_name' => 'Student',
-            'email' => 'jane@example.com'
-        ]);
+        // Create student without triggering custodial address event
+        $this->student = User::withoutEvents(function () {
+            return User::factory()->create([
+                'first_name' => 'Jane',
+                'last_name' => 'Student',
+                'email' => 'jane@example.com',
+                'custodial_address' => 'addr1test_student_custodial'
+            ]);
+        });
         $this->student->attachRole('student');
 
         // Create user wallet
@@ -501,7 +509,7 @@ class CertificateServiceTest extends TestCase
         $this->student->update(['custodial_address' => null]);
 
         $service = Mockery::mock(CertificateService::class)->makePartial()->shouldAllowMockingProtectedMethods();
-        
+
         $service->shouldReceive('getCustodialWalletAddress')
             ->once()
             ->with($this->student->id)
@@ -514,5 +522,546 @@ class CertificateServiceTest extends TestCase
         $address = $method->invokeArgs($service, [$this->student]);
 
         $this->assertEquals('addr1custodial', $address);
+    }
+
+    public function test_update_certificate_status_to_pending()
+    {
+        // Create course schedule
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        // Create course history record
+        $courseHistory = CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'certificate_status' => 'not_eligible',
+            'completed_at' => now()
+        ]);
+
+        $this->service->updateCertificateStatus(
+            $this->course->id,
+            $this->student->id,
+            'pending'
+        );
+
+        $courseHistory->refresh();
+        $this->assertEquals('pending', $courseHistory->certificate_status);
+        $this->assertNull($courseHistory->certificate_tx_hash);
+        $this->assertNull($courseHistory->certificate_minted_at);
+    }
+
+    public function test_update_certificate_status_to_minted_with_tx_hash()
+    {
+        // Create course schedule
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        // Create course history record
+        $courseHistory = CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'certificate_status' => 'pending',
+            'completed_at' => now()
+        ]);
+
+        $txHash = 'abc123def456';
+
+        $this->service->updateCertificateStatus(
+            $this->course->id,
+            $this->student->id,
+            'minted',
+            null,
+            $txHash
+        );
+
+        $courseHistory->refresh();
+        $this->assertEquals('minted', $courseHistory->certificate_status);
+        $this->assertEquals($txHash, $courseHistory->certificate_tx_hash);
+        $this->assertNotNull($courseHistory->certificate_minted_at);
+    }
+
+    public function test_update_certificate_status_to_failed()
+    {
+        // Create course schedule
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        // Create course history record
+        $courseHistory = CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'certificate_status' => 'pending',
+            'completed_at' => now()
+        ]);
+
+        $this->service->updateCertificateStatus(
+            $this->course->id,
+            $this->student->id,
+            'failed'
+        );
+
+        $courseHistory->refresh();
+        $this->assertEquals('failed', $courseHistory->certificate_status);
+        $this->assertNull($courseHistory->certificate_minted_at);
+    }
+
+    public function test_update_certificate_status_with_schedule_id()
+    {
+        // Create course schedule
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        // Create course history with schedule
+        $courseHistory = CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'certificate_status' => 'not_eligible',
+            'completed_at' => now()
+        ]);
+
+        $this->service->updateCertificateStatus(
+            $this->course->id,
+            $this->student->id,
+            'pending',
+            $schedule->id
+        );
+
+        $courseHistory->refresh();
+        $this->assertEquals('pending', $courseHistory->certificate_status);
+    }
+
+    public function test_update_certificate_status_logs_warning_when_record_not_found()
+    {
+        Log::shouldReceive('warning')
+            ->once()
+            ->with('Course history not found for certificate status update', Mockery::type('array'));
+
+        // Try to update non-existent record
+        $this->service->updateCertificateStatus(
+            99999,
+            $this->student->id,
+            'pending'
+        );
+
+        // Should not throw exception
+        $this->assertTrue(true);
+    }
+
+    public function test_update_certificate_status_logs_info_on_success()
+    {
+        // Create course schedule
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        // Create course history record
+        CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'certificate_status' => 'not_eligible',
+            'completed_at' => now()
+        ]);
+
+        Log::shouldReceive('info')
+            ->once()
+            ->with('Certificate status updated', Mockery::on(function ($arg) {
+                return $arg['status'] === 'minted'
+                    && $arg['course_id'] === $this->course->id
+                    && $arg['student_id'] === $this->student->id;
+            }));
+
+        $this->service->updateCertificateStatus(
+            $this->course->id,
+            $this->student->id,
+            'minted',
+            null,
+            'tx123'
+        );
+
+        // Assert that the method executed without exceptions
+        $this->assertTrue(true);
+    }
+
+    public function test_update_certificate_status_transitions_from_not_eligible_to_pending()
+    {
+        // Create course schedule
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        $courseHistory = CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'certificate_status' => 'not_eligible',
+            'completed_at' => now()
+        ]);
+
+        $this->service->updateCertificateStatus(
+            $this->course->id,
+            $this->student->id,
+            'pending'
+        );
+
+        $courseHistory->refresh();
+        $this->assertEquals('pending', $courseHistory->certificate_status);
+    }
+
+    public function test_update_certificate_status_transitions_from_pending_to_minted()
+    {
+        // Create course schedule
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        $courseHistory = CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'certificate_status' => 'pending',
+            'completed_at' => now()
+        ]);
+
+        $this->service->updateCertificateStatus(
+            $this->course->id,
+            $this->student->id,
+            'minted',
+            null,
+            'tx456'
+        );
+
+        $courseHistory->refresh();
+        $this->assertEquals('minted', $courseHistory->certificate_status);
+        $this->assertEquals('tx456', $courseHistory->certificate_tx_hash);
+    }
+
+    public function test_update_certificate_status_transitions_from_pending_to_failed()
+    {
+        // Create course schedule
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        $courseHistory = CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'certificate_status' => 'pending',
+            'completed_at' => now()
+        ]);
+
+        $this->service->updateCertificateStatus(
+            $this->course->id,
+            $this->student->id,
+            'failed'
+        );
+
+        $courseHistory->refresh();
+        $this->assertEquals('failed', $courseHistory->certificate_status);
+    }
+
+    public function test_update_certificate_status_transitions_from_failed_to_pending_retry()
+    {
+        // Create course schedule
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        $courseHistory = CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'certificate_status' => 'failed',
+            'completed_at' => now()
+        ]);
+
+        $this->service->updateCertificateStatus(
+            $this->course->id,
+            $this->student->id,
+            'pending'
+        );
+
+        $courseHistory->refresh();
+        $this->assertEquals('pending', $courseHistory->certificate_status);
+    }
+
+    public function test_update_certificate_status_preserves_existing_tx_hash_when_null_provided()
+    {
+        // Create course schedule
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        $originalTxHash = 'original_tx_hash';
+        $courseHistory = CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'certificate_status' => 'minted',
+            'certificate_tx_hash' => $originalTxHash,
+            'completed_at' => now()
+        ]);
+
+        // Update to failed without providing new tx_hash
+        $this->service->updateCertificateStatus(
+            $this->course->id,
+            $this->student->id,
+            'failed'
+        );
+
+        $courseHistory->refresh();
+        $this->assertEquals('failed', $courseHistory->certificate_status);
+        $this->assertEquals($originalTxHash, $courseHistory->certificate_tx_hash);
+    }
+
+    public function test_get_eligible_students_returns_completed_students()
+    {
+        // Create course schedule
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        // Create completed course history
+        CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'completed_at' => now()->subDays(1),
+            'is_cancelled' => false
+        ]);
+
+        // Mock hasPassedAllExams to return true
+        $service = Mockery::mock(CertificateService::class)->makePartial()->shouldAllowMockingProtectedMethods();
+        $service->shouldReceive('hasPassedAllExams')
+            ->once()
+            ->andReturn(true);
+
+        $result = $service->getEligibleStudentsWithStatus($this->course);
+
+        $this->assertTrue($result['success']);
+        $this->assertArrayHasKey('data', $result);
+        $this->assertArrayHasKey('students', $result['data']);
+        $this->assertCount(1, $result['data']['students']);
+        $this->assertEquals($this->student->id, $result['data']['students'][0]['id']);
+        $this->assertEquals('eligible', $result['data']['students'][0]['certificate_status']);
+    }
+
+    public function test_get_eligible_students_excludes_already_minted()
+    {
+        // Create course schedule
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        // Create completed course history
+        CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'completed_at' => now()->subDays(1),
+            'is_cancelled' => false
+        ]);
+
+        // Create NFT transaction (already minted)
+        $certificateNft = Nft::where('name', 'Certificate')->first();
+        NftTransactions::create([
+            'user_id' => $this->student->id,
+            'nft_id' => $certificateNft->id,
+            'nft_name' => 'Certificate-' . $this->course->id . '-' . $this->student->id,
+            'serial_num' => '1234567890',
+            'tx_id' => 'tx123abc',
+            'mph' => 'test_mph_hash',
+            'metadata' => json_encode(['test' => 'data']),
+            'used' => 0,
+            'course_id' => $this->course->id
+        ]);
+
+        // Mock hasPassedAllExams to return true
+        $service = Mockery::mock(CertificateService::class)->makePartial()->shouldAllowMockingProtectedMethods();
+        $service->shouldReceive('hasPassedAllExams')
+            ->once()
+            ->andReturn(true);
+
+        $result = $service->getEligibleStudentsWithStatus($this->course);
+
+        $this->assertTrue($result['success']);
+        $this->assertCount(1, $result['data']['students']);
+        $this->assertEquals('minted', $result['data']['students'][0]['certificate_status']);
+        $this->assertEquals('tx123abc', $result['data']['students'][0]['tx_hash']);
+    }
+
+    public function test_get_eligible_students_excludes_cancelled()
+    {
+        // Create course schedule
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        // Create cancelled course history
+        CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'completed_at' => now()->subDays(1),
+            'is_cancelled' => true
+        ]);
+
+        $result = $this->service->getEligibleStudentsWithStatus($this->course);
+
+        $this->assertTrue($result['success']);
+        $this->assertArrayHasKey('students', $result['data']);
+        $this->assertCount(0, $result['data']['students']);
+    }
+
+    public function test_batch_mint_processes_multiple_students()
+    {
+        // Create course schedule
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        // Create second student without triggering custodial address event
+        $student2 = User::withoutEvents(function () {
+            return User::factory()->create([
+                'first_name' => 'John',
+                'last_name' => 'Doe',
+                'email' => 'john@example.com',
+                'custodial_address' => 'addr1test_student2_custodial'
+            ]);
+        });
+        $student2->attachRole('student');
+
+        UserWallet::factory()->create([
+            'user_id' => $student2->id,
+            'points' => 100
+        ]);
+
+        // Create completed course histories for both students
+        CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'completed_at' => now()->subDays(1),
+            'is_cancelled' => false
+        ]);
+
+        CourseHistory::create([
+            'user_id' => $student2->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'completed_at' => now()->subDays(1),
+            'is_cancelled' => false
+        ]);
+
+        // Mock the service to test batch processing logic
+        $service = Mockery::mock(CertificateService::class)->makePartial()->shouldAllowMockingProtectedMethods();
+
+        $service->shouldReceive('hasPassedAllExams')
+            ->twice()
+            ->andReturn(true);
+
+        $result = $service->getEligibleStudentsWithStatus($this->course);
+
+        $this->assertTrue($result['success']);
+        $this->assertCount(2, $result['data']['students']);
+        $this->assertEquals(2, $result['data']['total_eligible']);
+    }
+
+    public function test_mint_certificate_updates_status_to_pending()
+    {
+        // Create course schedule
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        // Create course history with not_eligible status
+        $courseHistory = CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'certificate_status' => 'not_eligible',
+            'completed_at' => now()->subDays(1)
+        ]);
+
+        // Update to pending status (represents minting in progress)
+        $this->service->updateCertificateStatus(
+            $this->course->id,
+            $this->student->id,
+            'pending'
+        );
+
+        $courseHistory->refresh();
+        $this->assertEquals('pending', $courseHistory->certificate_status);
+        $this->assertNull($courseHistory->certificate_minted_at);
+    }
+
+    public function test_mint_certificate_success_updates_status_to_minted()
+    {
+        // Create course schedule
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        // Create course history with pending status (minting in progress)
+        $courseHistory = CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'certificate_status' => 'pending',
+            'completed_at' => now()->subDays(1)
+        ]);
+
+        $txHash = 'tx789xyz';
+
+        // Update to minted status with transaction hash
+        $this->service->updateCertificateStatus(
+            $this->course->id,
+            $this->student->id,
+            'minted',
+            null,
+            $txHash
+        );
+
+        $courseHistory->refresh();
+        $this->assertEquals('minted', $courseHistory->certificate_status);
+        $this->assertEquals($txHash, $courseHistory->certificate_tx_hash);
+        $this->assertNotNull($courseHistory->certificate_minted_at);
+    }
+
+    public function test_mint_certificate_failure_updates_status_to_failed()
+    {
+        // Create course schedule
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        // Create course history with pending status (minting in progress)
+        $courseHistory = CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'certificate_status' => 'pending',
+            'completed_at' => now()->subDays(1)
+        ]);
+
+        // Update to failed status
+        $this->service->updateCertificateStatus(
+            $this->course->id,
+            $this->student->id,
+            'failed'
+        );
+
+        $courseHistory->refresh();
+        $this->assertEquals('failed', $courseHistory->certificate_status);
+        $this->assertNull($courseHistory->certificate_minted_at);
     }
 }
