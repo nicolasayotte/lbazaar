@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\BuildPurchaseTxRequest;
 use App\Http\Requests\CourseRequest;
 use App\Http\Requests\SearchClassRequest;
+use App\Http\Requests\SubmitPurchaseTxRequest;
+use App\Services\API\CoursePurchaseService;
 use App\Mail\CourseBooking;
 use App\Models\CourseHistory;
 use App\Models\CourseSchedule;
@@ -244,6 +247,41 @@ class CourseController extends Controller
         return redirect()->back();
     }
 
+    /**
+     * Build unsigned purchase transaction for ADA payment
+     */
+    public function buildPurchaseTx($schedule_id, BuildPurchaseTxRequest $request)
+    {
+        $schedule = CourseSchedule::findOrFail($schedule_id)->load('course');
+
+        $purchaseService = app(CoursePurchaseService::class);
+        $result = $purchaseService->buildPurchaseTransaction($schedule, auth()->user());
+
+        return response()->json($result, $result['success'] ? 200 : 400);
+    }
+
+    /**
+     * Submit signed purchase transaction
+     */
+    public function submitPurchaseTx($schedule_id, SubmitPurchaseTxRequest $request)
+    {
+        $schedule = CourseSchedule::findOrFail($schedule_id)->load('course');
+
+        $purchaseService = app(CoursePurchaseService::class);
+        $result = $purchaseService->submitPurchaseTransaction(
+            $schedule,
+            auth()->user(),
+            $request->input('cborSig'),
+            $request->input('cborTx')
+        );
+
+        if ($result['success']) {
+            $this->sendBookEmailCourse($schedule);
+        }
+
+        return response()->json($result, $result['success'] ? 200 : 400);
+    }
+
     public function cancel($schedule_id)
     {
         $courseHistory = $this->courseHistoryRepository->findByUserAndCourseScheduleID(auth()->user()->id, $schedule_id)->first();
@@ -253,6 +291,7 @@ class CourseController extends Controller
         $teacherWallet = $schedule->course->professor()->first()->userWallet()->first();
 
         if(isset($courseHistory) && $schedule->is_cancellable) {
+            // Earn type kept for backwards compatibility with existing courses
             if ($schedule->course->courseType->name == CourseType::GENERAL ||
                 $schedule->course->courseType->name == CourseType::EARN) {
 
@@ -503,42 +542,9 @@ class CourseController extends Controller
 
     private function giveRewards($course_id, $schedule_id)
     {
-        $course = $this->courseRepository->with(['courseType', 'professor'])->findOrFail($course_id);
-
-        $courseHistory = auth()->user()->courseHistories()
-                        ->where('course_id', $course_id)
-                        ->where('course_schedule_id', $schedule_id)
-                        ->first();
-
-        if ($course->courseType->type != CourseType::EARN) return 0;
-
-        $userWallet = auth()->user()->userWallet()->first();
-        $adminWallet = $this->userRepository->getAdmin()->userWallet()->first();
-        $teacherWallet = $course->professor()->first()->userWallet()->first();
-
-        // TODO rethink this method for EARN classes to be in Ada, disable for now
-        // $pointsToGive = $course->points_earned;
-        // $teacherCommission = (int)($course->points_earned / 100 * ($course->professor()->first()->commission_earn_rate));
-        $pointsToGive = 0;
-        $teacherCommission = 0;
-
-        $pointsToGive = $pointsToGive - $teacherCommission;
-
-        // Update admin points
-        // $newUserPoints =  $userWallet->points + $pointsToGive;
-        // $newUserPoints =  $userWallet->points + $course->points_earned;
-        // $this->updateWalletHistory($userWallet, WalletTransactionHistory::EARN, $newUserPoints, $courseHistory);
-        // $this->updateWallet($userWallet, $newUserPoints);
-
-        // $newTeacherPoints = $teacherWallet->points + $teacherCommission;
-        // $this->updateWalletHistory($teacherWallet, WalletTransactionHistory::COMMISSION, $newTeacherPoints, $courseHistory);
-        // $this->updateWallet($teacherWallet, $newTeacherPoints);
-
-        // $newAdminPoints =  $adminWallet->points - $course->points_earned;
-        // $this->updateWalletHistory($adminWallet, WalletTransactionHistory::DEDUCT, $newAdminPoints, $courseHistory);
-        // $this->updateWallet($adminWallet, $newAdminPoints);
-
-        return $pointsToGive;
+        // Points system removed from UI. Earn courses can no longer be created,
+        // but existing courses remain functional. Always returns 0.
+        return 0;
     }
 
     public function sendBookEmailCourse($schedule)

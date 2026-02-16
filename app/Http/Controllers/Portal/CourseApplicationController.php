@@ -68,7 +68,7 @@ class CourseApplicationController extends Controller
 
     public function store(CourseApplicationRequest $request)
     {
-        
+
         $inputs = $request->all();
         $inputs['is_live'] = $inputs['format'] == Course::LIVE ? true : false;
         $inputs['max_participant'] =  $inputs['is_live']? $inputs['seats'] : 0;
@@ -76,9 +76,10 @@ class CourseApplicationController extends Controller
         $inputs['professor_id'] = auth()->user()->id;
         $inputs['course_type_id'] = $this->courseTypeRepository->findByName($inputs['type'])->id;
         $inputs['course_category_id'] = $this->courseCategoryRepository->firstOrCreate($inputs['category'])->id;
-        if ($inputs['nft_name']) {
+        if (!empty($inputs['nft_name'])) {
             $inputs['nft_id'] = $this->nftRepository->findByName($inputs['nft_name'])->id;
         }
+        $inputs['certificate_enabled'] = $request->input('certificate_enabled', false);
         $courseApplication = $this->courseApplicationRepository->create($inputs);
 
         $vote = $this->voteRepository->generateNewId($courseApplication);

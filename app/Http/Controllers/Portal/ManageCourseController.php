@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CourseUpdateRequest;
+use App\Models\Course;
 use App\Models\CourseHistory;
 use App\Repositories\CourseCategoryRepository;
 use App\Repositories\NftRepository;
@@ -13,6 +14,7 @@ use App\Repositories\CourseRepository;
 use App\Repositories\CourseTypeRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class ManageCourseController extends Controller
@@ -74,5 +76,91 @@ class ManageCourseController extends Controller
         ])->withViewData([
             'title'     => $this->baseTitle . getTranslation('title.feedbacks'),
         ]);
+    }
+
+    public function certificates($id, Request $request)
+    {
+        // Verify teacher owns the course
+        $course = Course::where('id', $id)
+            ->where('professor_id', Auth::id())
+            ->firstOrFail();
+
+        $students = $this->getCompletedStudents($id);
+
+        return Inertia::render('Portal/MyPage/ManageClass/Certificates', [
+            'course'    => $this->courseRepository->findByIdManageClass($id),
+            'students'  => $students,
+            'tabValue'  => 'certificates',
+            'courseId'  => (int) $id,
+            'title'     => $this->baseTitle . getTranslation('title.certificates')
+        ])->withViewData([
+            'title'     => $this->baseTitle . getTranslation('title.certificates'),
+        ]);
+    }
+
+    /**
+     * Get completed students with certificate status
+     *
+     * @param int $courseId
+     * @return array
+     */
+    protected function getCompletedStudents($courseId)
+    {
+        $completedHistories = CourseHistory::where('course_id', $courseId)
+            ->whereNotNull('completed_at')
+            ->with(['user', 'user.userWallet', 'courseSchedule'])
+            ->get();
+
+        return $completedHistories->map(function ($history) {
+            // Determine certificate status
+            $certificateStatus = $history->certificate_status;
+
+            // If no status set, determine if eligible
+            if (!$certificateStatus) {
+                $certificateStatus = $this->hasPassedAllExams($history->user->id, $history->course_schedule_id)
+                    ? 'eligible'
+                    : 'failed';
+            }
+
+            return [
+                'id' => $history->user->id,
+                'name' => $history->user->fullname ?? $history->user->name,
+                'email' => $history->user->email,
+                'wallet_address' => $history->user->userWallet->address ?? null,
+                'completed_at' => $history->completed_at,
+                'certificate_status' => $certificateStatus,
+                'certificate_tx_hash' => $history->certificate_tx_hash,
+                'certificate_minted_at' => $history->certificate_minted_at,
+            ];
+        })->toArray();
+    }
+
+    /**
+     * Check if a student has passed all exams for a specific course schedule
+     *
+     * @param int $studentId
+     * @param int $scheduleId
+     * @return bool
+     */
+    protected function hasPassedAllExams($studentId, $scheduleId)
+    {
+        // Get total exams for this schedule
+        $totalExams = \App\Models\UserExam::where('user_id', $studentId)
+            ->where('course_schedule_id', $scheduleId)
+            ->count();
+
+        // Get passed exams for this schedule
+        $passedExams = \App\Models\UserExam::where('user_id', $studentId)
+            ->where('course_schedule_id', $scheduleId)
+            ->where('is_passed', 1)
+            ->count();
+
+        // If no exams exist, consider it as passed (some courses might not have exams)
+        if ($totalExams === 0) {
+            return true;
+        }
+
+        // All exams must be passed
+        return $totalExams === $passedExams;
     }
 }
