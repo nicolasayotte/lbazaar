@@ -366,6 +366,254 @@
       ]
     },
     {
+      "name": "Certificate Management",
+      "item": [
+        {
+          "name": "GET Eligible Students - Success (200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{teacher_token}}" }
+            ],
+            "url": {
+              "raw": "{{baseurl}}/api/certificates/courses/{{mintable_course_id}}/eligible-students",
+              "host": ["{{baseurl}}"],
+              "path": ["api", "certificates", "courses", "{{mintable_course_id}}", "eligible-students"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('returns 200', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('response has success field', function () { pm.expect(json.success).to.be.true; });",
+                  "pm.test('response has data field with students array', function () { pm.expect(json.data).to.be.an('object'); pm.expect(json.data.students).to.be.an('array'); });",
+                  "pm.test('students array contains required fields', function () { if (json.data.students.length > 0) { pm.expect(json.data.students[0]).to.have.property('id'); pm.expect(json.data.students[0]).to.have.property('name'); pm.expect(json.data.students[0]).to.have.property('email'); pm.expect(json.data.students[0]).to.have.property('certificate_status'); } });",
+                  "if (json.data.students && json.data.students.length > 0) { pm.environment.set('eligible_student_id', json.data.students[0].id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Eligible Students - Requires Auth (401)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseurl}}/api/certificates/courses/{{mintable_course_id}}/eligible-students",
+              "host": ["{{baseurl}}"],
+              "path": ["api", "certificates", "courses", "{{mintable_course_id}}", "eligible-students"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('returns 401 without token', function () { pm.response.to.have.status(401); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Eligible Students - Requires Ownership (403)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{other_teacher_token}}" }
+            ],
+            "url": {
+              "raw": "{{baseurl}}/api/certificates/courses/{{mintable_course_id}}/eligible-students",
+              "host": ["{{baseurl}}"],
+              "path": ["api", "certificates", "courses", "{{mintable_course_id}}", "eligible-students"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('returns 403 for non-owner teacher', function () { pm.response.to.have.status(403); });",
+                  "var json = pm.response.json();",
+                  "pm.test('contains permission message', function () { pm.expect(json.message).to.include('permission'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Certificate Status - Success (200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{teacher_token}}" }
+            ],
+            "url": {
+              "raw": "{{baseurl}}/api/certificates/courses/{{mintable_course_id}}/students/{{eligible_student_id}}/status",
+              "host": ["{{baseurl}}"],
+              "path": ["api", "certificates", "courses", "{{mintable_course_id}}", "students", "{{eligible_student_id}}", "status"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('returns 200', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('response has success field', function () { pm.expect(json.success).to.be.true; });",
+                  "pm.test('response has data with status', function () { pm.expect(json.data).to.be.an('object'); pm.expect(json.data.status).to.be.a('string'); });",
+                  "pm.test('status is valid value', function () { var validStatuses = ['not_eligible', 'eligible', 'minted', 'pending']; pm.expect(validStatuses).to.include(json.data.status); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Mint Single Certificate - Success (200/202)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{teacher_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseurl}}/api/certificates/courses/{{mintable_course_id}}/students/{{eligible_student_id}}/mint",
+              "host": ["{{baseurl}}"],
+              "path": ["api", "certificates", "courses", "{{mintable_course_id}}", "students", "{{eligible_student_id}}", "mint"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('returns 200 or 202', function () { pm.expect(pm.response.code).to.be.oneOf([200, 202]); });",
+                  "var json = pm.response.json();",
+                  "pm.test('response has success field', function () { pm.expect(json).to.have.property('success'); });",
+                  "pm.test('response has message field', function () { pm.expect(json).to.have.property('message'); });",
+                  "if (json.success) { pm.test('successful mint has transaction_id', function () { pm.expect(json.transaction_id || json.data.transaction_id).to.be.ok; }); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Batch Mint - Success (200)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{teacher_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"student_ids\": [{{eligible_student_id}}]\n}"
+            },
+            "url": {
+              "raw": "{{baseurl}}/api/certificates/courses/{{mintable_course_id}}/batch-mint",
+              "host": ["{{baseurl}}"],
+              "path": ["api", "certificates", "courses", "{{mintable_course_id}}", "batch-mint"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('returns 200', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('response has success field', function () { pm.expect(json.success).to.be.true; });",
+                  "pm.test('response has message field', function () { pm.expect(json.message).to.be.a('string'); });",
+                  "pm.test('response data has success_count', function () { pm.expect(json.data.success_count).to.be.a('number'); });",
+                  "pm.test('response data has failure_count', function () { pm.expect(json.data.failure_count).to.be.a('number'); });",
+                  "pm.test('response data has results array', function () { pm.expect(json.data.results).to.be.an('array'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Batch Mint - Validates student_ids (422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{teacher_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseurl}}/api/certificates/courses/{{mintable_course_id}}/batch-mint",
+              "host": ["{{baseurl}}"],
+              "path": ["api", "certificates", "courses", "{{mintable_course_id}}", "batch-mint"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('returns 422 on validation failure', function () { pm.response.to.have.status(422); });",
+                  "var json = pm.response.json();",
+                  "pm.test('includes student_ids error', function () { pm.expect(json.errors || json.message).to.be.ok; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Mint Single - Requires Teacher Role (403)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{student_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseurl}}/api/certificates/courses/{{mintable_course_id}}/students/{{eligible_student_id}}/mint",
+              "host": ["{{baseurl}}"],
+              "path": ["api", "certificates", "courses", "{{mintable_course_id}}", "students", "{{eligible_student_id}}", "mint"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('returns 403 for student role', function () { pm.response.to.have.status(403); });",
+                  "var json = pm.response.json();",
+                  "pm.test('contains permission or role message', function () { pm.expect(json.message.toLowerCase()).to.match(/permission|role|unauthorized|forbidden/); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "User",
       "item": [
         {
