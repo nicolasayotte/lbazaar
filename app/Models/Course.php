@@ -189,4 +189,16 @@ class Course extends Model
     {
         return strip_tags($this->description);
     }
+
+    public function getPriceInAdaAttribute()
+    {
+        $rawPrice = $this->attributes['price'] ?? null;
+
+        if (!$rawPrice || $rawPrice <= 0) {
+            return null;
+        }
+
+        $exchangeRateService = app(\App\Services\API\ExchangeRateService::class);
+        return $exchangeRateService->jpyToAda(floatval($rawPrice));
+    }
 }

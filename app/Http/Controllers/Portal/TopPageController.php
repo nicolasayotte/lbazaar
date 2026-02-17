@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Repositories\CourseScheduleRepository;
 use App\Repositories\CourseRepository;
 use App\Repositories\UserRepository;
+use App\Services\API\ExchangeRateService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -23,6 +24,10 @@ class TopPageController extends Controller
         $featuredTeachers = $userRepository->getFeaturedTeachers(User::FEATURED_TEACHERS_COUNT_DISPLAY);
         $featuredClasses = $courseRepository->getFeaturedClass(Course::FEATURED_CLASS_COUNT_DISPLAY);
         $featuredCourseSchedule = $courseScheduleRepository->getUpcomingCourseSchedule(CourseSchedule::COMING_SOON_COUNT_DISPLAY);
+
+        // Add price_in_ada to featured courses
+        $exchangeRateService = app(ExchangeRateService::class);
+        $exchangeRateService->addPriceInAdaToCourses($featuredClasses);
 
         return Inertia::render('Portal/TopPage', [
                 'courses'           => $featuredClasses,

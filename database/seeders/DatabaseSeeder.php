@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             CourseApplicationSeeder::class,
             CourseSeeder::class,
             EmailSettingsSeeder::class,
+            ExchangeRateSettingSeeder::class,
             InquirySeeder::class,
             TeacherInformationSeeder::class,
             TranslationSeeder::class,

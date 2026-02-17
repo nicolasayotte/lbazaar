@@ -4,6 +4,7 @@ import { getRoute } from "../../helpers/routes.helper"
 import placeholderImg from "../../../img/placeholder.png"
 import { CalendarMonth } from "@mui/icons-material";
 import { usePage } from "@inertiajs/inertia-react"
+import { formatDualPrice, parseJpy } from "../../helpers/currency.helper"
 
 const Course = ({ course, schedule = null, showDescription = true, viewDetailId = "id", imagePosition = "left" }) => {
 
@@ -32,7 +33,7 @@ const Course = ({ course, schedule = null, showDescription = true, viewDetailId 
 
     const Price = () => (
         course.course_type && course.course_type.name == 'General' && course.price
-        ? <Typography children={course.price} variant="h6" />
+        ? <Typography children={formatDualPrice(parseJpy(course.price), course.price_in_ada)} variant="h6" />
         : <span />
     )
 

@@ -9,6 +9,7 @@ use App\Repositories\CourseApplicationRepository;
 use App\Repositories\CourseCategoryRepository;
 use App\Repositories\NftRepository;
 use App\Repositories\CourseTypeRepository;
+use App\Services\API\ExchangeRateService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -33,8 +34,14 @@ class CourseApplicationController extends Controller
 
     public function index(Request $request)
     {
+        $courseApplications = $this->courseApplicationRepository->get($request->all());
+
+        // Add price_in_ada to course applications
+        $exchangeRateService = app(ExchangeRateService::class);
+        $exchangeRateService->addPriceInAdaToCourses($courseApplications);
+
         return Inertia::render('Admin/ClassApplications/Index', [
-            'courseApplications' => $this->courseApplicationRepository->get($request->all()),
+            'courseApplications' => $courseApplications,
             'categoryOptions'    => $this->courseCategoryRepository->getDropdownData(),
             'nftOptions'         => $this->nftRepository->getDropdownData(),
             'typeOptions'        => $this->courseTypeRepository->getDropdownData(),
