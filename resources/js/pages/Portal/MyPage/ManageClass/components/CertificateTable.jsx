@@ -23,7 +23,7 @@ const CertificateTable = ({ students, onMint, onRetry, minting = {}, translatabl
     }
 
     const getExplorerUrl = (txHash) => {
-        // Use config-based explorer URL from backend
+        if (!explorerUrl) return null
         return `${explorerUrl}/transaction/${txHash}`
     }
 
@@ -48,30 +48,43 @@ const CertificateTable = ({ students, onMint, onRetry, minting = {}, translatabl
                 )}
                 {showRetryButton && (
                     <Tooltip title={translatables.texts.retry}>
-                        <IconButton
-                            size="small"
-                            color="primary"
-                            onClick={() => onRetry(student.id)}
-                            disabled={isMinting}
-                        >
-                            <Replay fontSize="small" />
-                        </IconButton>
+                        <span>
+                            <IconButton
+                                size="small"
+                                color="primary"
+                                onClick={() => onRetry(student.id)}
+                                disabled={isMinting}
+                            >
+                                <Replay fontSize="small" />
+                            </IconButton>
+                        </span>
                     </Tooltip>
                 )}
-                {hasTxHash && (
-                    <Link
-                        href={getExplorerUrl(student.certificate_tx_hash)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        underline="none"
-                    >
+                {hasTxHash && (() => {
+                    const url = getExplorerUrl(student.certificate_tx_hash)
+                    return url ? (
+                        <Link
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            underline="none"
+                        >
+                            <Tooltip title={translatables.texts.view_transaction}>
+                                <IconButton size="small" color="primary">
+                                    <OpenInNew fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                        </Link>
+                    ) : (
                         <Tooltip title={translatables.texts.view_transaction}>
-                            <IconButton size="small" color="primary">
-                                <OpenInNew fontSize="small" />
-                            </IconButton>
+                            <span>
+                                <IconButton size="small" color="primary" disabled>
+                                    <OpenInNew fontSize="small" />
+                                </IconButton>
+                            </span>
                         </Tooltip>
-                    </Link>
-                )}
+                    )
+                })()}
                 {!showMintButton && !showRetryButton && !hasTxHash && '-'}
             </Stack>
         )
@@ -88,16 +101,23 @@ const CertificateTable = ({ students, onMint, onRetry, minting = {}, translatabl
                     <StatusBadge status={student.certificate_status} />
                 </TableCell>
                 <TableCell align="center">
-                    {hasTxHash ? (
-                        <Link
-                            href={getExplorerUrl(student.certificate_tx_hash)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            sx={{ fontSize: '0.875rem' }}
-                        >
-                            {student.certificate_tx_hash.substring(0, 8)}...
-                        </Link>
-                    ) : '-'}
+                    {hasTxHash ? (() => {
+                        const url = getExplorerUrl(student.certificate_tx_hash)
+                        return url ? (
+                            <Link
+                                href={url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                sx={{ fontSize: '0.875rem' }}
+                            >
+                                {student.certificate_tx_hash.substring(0, 8)}...
+                            </Link>
+                        ) : (
+                            <span style={{ fontSize: '0.875rem' }}>
+                                {student.certificate_tx_hash.substring(0, 8)}...
+                            </span>
+                        )
+                    })() : '-'}
                 </TableCell>
                 <TableCell align="center">
                     {actionButtons}

@@ -1,5 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
+
+// Mock EmptyCard to avoid usePage dependency
+vi.mock('../../../../../components/common/EmptyCard', () => ({
+    default: () => <div data-testid="empty-card">No records found</div>
+}));
+
 import CertificateTable from './CertificateTable';
 
 describe('CertificateTable', () => {
@@ -373,6 +379,57 @@ describe('CertificateTable', () => {
 
             expect(explorerLink).toBeTruthy();
             expect(explorerLink?.getAttribute('href')).toBe(`${mockExplorerUrl}/transaction/abc123def456`);
+        });
+
+        it('should render tx hash as plain text when explorerUrl is undefined', () => {
+            const students = [
+                {
+                    id: 1,
+                    name: 'Alice Smith',
+                    certificate_status: 'minted',
+                    certificate_tx_hash: 'abc123def456',
+                    completed_at: '2023-01-15'
+                }
+            ];
+
+            render(
+                <CertificateTable
+                    students={students}
+                    onMint={mockOnMint}
+                    onRetry={mockOnRetry}
+                    translatables={mockTranslatables}
+                    explorerUrl={undefined}
+                />
+            );
+
+            // Truncated hash appears as plain text, not a link
+            expect(screen.getByText('abc123de...')).toBeInTheDocument();
+            const links = screen.queryAllByRole('link');
+            expect(links.length).toBe(0);
+        });
+
+        it('should not crash when explorerUrl is null', () => {
+            const students = [
+                {
+                    id: 1,
+                    name: 'Alice Smith',
+                    certificate_status: 'minted',
+                    certificate_tx_hash: 'abc123def456',
+                    completed_at: '2023-01-15'
+                }
+            ];
+
+            expect(() => render(
+                <CertificateTable
+                    students={students}
+                    onMint={mockOnMint}
+                    onRetry={mockOnRetry}
+                    translatables={mockTranslatables}
+                    explorerUrl={null}
+                />
+            )).not.toThrow();
+
+            expect(screen.getByText('abc123de...')).toBeInTheDocument();
         });
     });
 });

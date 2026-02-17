@@ -1,6 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import Certificates from './Certificates';
+
+// Mock @inertiajs/inertia to prevent real HTTP calls
+vi.mock('@inertiajs/inertia', () => ({
+    Inertia: {
+        post: vi.fn(),
+        get: vi.fn(),
+        put: vi.fn(),
+        delete: vi.fn(),
+        visit: vi.fn(),
+    }
+}));
+
 import { Inertia } from '@inertiajs/inertia';
 
 // Mock the usePage hook
