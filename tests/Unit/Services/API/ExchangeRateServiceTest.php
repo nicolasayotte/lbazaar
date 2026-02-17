@@ -332,6 +332,30 @@ class ExchangeRateServiceTest extends TestCase
         $this->assertCount(0, $result);
     }
 
+    public function test_adds_price_in_ada_gracefully_when_no_setting_exists()
+    {
+        // Arrange: Delete fallback setting and mock API failure
+        Setting::where('slug', 'ada-to-jpy')->delete();
+
+        Http::fake([
+            'api.coingecko.com/api/v3/simple/price*' => Http::response([], 500)
+        ]);
+
+        Cache::flush();
+
+        $course1 = \App\Models\Course::factory()->make(['price' => 5000]);
+        $course2 = \App\Models\Course::factory()->make(['price' => 2500]);
+        $courses = collect([$course1, $course2]);
+
+        // Act: Should NOT throw; should degrade gracefully
+        $result = $this->service->addPriceInAdaToCourses($courses);
+
+        // Assert: All courses get null price_in_ada, collection is returned
+        $this->assertNull($course1->price_in_ada);
+        $this->assertNull($course2->price_in_ada);
+        $this->assertCount(2, $result);
+    }
+
     public function test_adds_price_in_ada_to_course_applications()
     {
         // Arrange: Mock rate at 50.0 JPY per ADA

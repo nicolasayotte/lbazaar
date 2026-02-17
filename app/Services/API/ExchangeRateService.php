@@ -91,7 +91,17 @@ class ExchangeRateService
      */
     public function addPriceInAdaToCourses(iterable $courses): iterable
     {
-        $rate = $this->getAdaJpyRate();
+        try {
+            $rate = $this->getAdaJpyRate();
+        } catch (\Throwable $e) {
+            Log::critical('Exchange rate unavailable; price_in_ada will be null for all courses', [
+                'error' => $e->getMessage(),
+            ]);
+            foreach ($courses as $course) {
+                $course->price_in_ada = null;
+            }
+            return $courses;
+        }
 
         foreach ($courses as $course) {
             $rawPrice = $course->price ?? null;
