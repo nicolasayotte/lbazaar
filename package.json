@@ -6,10 +6,12 @@
         "test": "vitest run --reporter=verbose > docs/test-reports/js-unit-tests.log 2>&1",
         "test:watch": "vitest --watch",
         "test:coverage": "vitest --coverage",
-        "postman:test": "npx --yes newman run postman/lbazaar.postman_collection.json -e postman/local.postman_environment.json > docs/test-reports/postman-tests.log 2>&1",
+        "test:postman": "newman run postman/lbazaar.postman_collection.json -e postman/local.postman_environment.json > docs/test-reports/postman-tests.log 2>&1",
+        "test:web3": "cd web3 && npm test",
         "test:browser": "npx playwright test --reporter=list > docs/test-reports/playwright-tests.log 2>&1",
         "test:browser:ui": "npx playwright test --ui",
-        "test:browser:headed": "npx playwright test --headed"
+        "test:browser:headed": "npx playwright test --headed",
+        "test:all": "npm run test && npm run test:web3 && npm run test:postman && npm run test:browser"
     },
     "devDependencies": {
         "@playwright/test": "^1.58.2",
@@ -24,6 +26,7 @@
         "postcss": "^8.1.14",
         "sass": "^1.55.0",
         "vite": "^3.0.0",
+        "newman": "^6.2.1",
         "vitest": "^0.34.6"
     },
     "dependencies": {
