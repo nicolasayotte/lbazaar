@@ -31,4 +31,21 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'coingecko' => [
+        'api_url' => env('COINGECKO_API_URL', 'https://api.coingecko.com/api/v3'),
+        'cache_ttl' => env('EXCHANGE_RATE_CACHE_TTL', 600),
+        'fallback_cache_ttl' => env('EXCHANGE_RATE_FALLBACK_CACHE_TTL', 60),
+        'fallback_rate' => env('EXCHANGE_RATE_FALLBACK', '50'),
+    ],
+
+    'cardano' => [
+        'explorer_url' => env('CARDANO_EXPLORER_URL', 'https://preprod.cardanoscan.io'),
+    ],
+
+    'stripe' => [
+        'key' => env('STRIPE_KEY'),
+        'secret' => env('STRIPE_SECRET'),
+        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+    ],
+
 ];

@@ -14,10 +14,12 @@ use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\WalletTransactionHistoryController as AdminWalletController;
 use App\Http\Controllers\Portal\AuthPortalController;
 use App\Http\Controllers\Portal\CourseApplicationController as PortalClassApplicationController;
+use App\Http\Controllers\Portal\CheckoutController;
 use App\Http\Controllers\Portal\CourseController;
 use App\Http\Controllers\Portal\CourseFeedbackController;
 use App\Http\Controllers\Portal\CourseHistoryController;
 use App\Http\Controllers\Portal\CourseScheduleController;
+use App\Http\Controllers\Portal\CertificateController as PortalCertificateController;
 use App\Http\Controllers\Portal\UserBadgeController;
 use App\Http\Controllers\Portal\ExamController;
 use App\Http\Controllers\Portal\ForgotPasswordController;
@@ -239,6 +241,12 @@ Route::prefix('portal')->name('portal.')->group(function() {
     });
 });
 
+# Stripe Checkout Pages
+Route::middleware('auth')->prefix('/checkout')->name('checkout.')->group(function() {
+    Route::get('/success', [CheckoutController::class, 'success'])->name('success');
+    Route::get('/cancel', [CheckoutController::class, 'cancel'])->name('cancel');
+});
+
 # Email verification
 Route::get('/email/verify', [RegisterStudentController::class, 'verifyEmail'])->name('verify.email');
 Route::get('/email/verify/{id}/{hash}', [RegisterStudentController::class, 'verificationHanlder'])->middleware(['signed'])->name('verification.verify');
@@ -294,6 +302,12 @@ Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function()
     Route::prefix('/badges')->name('badges.')->group(function() {
         Route::get('/claimAll', [UserBadgeController::class, 'claimAllBadges'])->name('claimAll');
         Route::get('/', [UserBadgeController::class, 'index'])->name('index');
+    });
+
+    # Certificates (Student view of earned certificates)
+    Route::prefix('/certificates')->name('certificates.')->group(function() {
+        Route::get('/', [PortalCertificateController::class, 'index'])->name('index');
+        Route::get('/{courseHistoryId}/status', [PortalCertificateController::class, 'getStatus'])->name('status');
     });
 
 

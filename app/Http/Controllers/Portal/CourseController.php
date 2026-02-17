@@ -7,7 +7,9 @@ use App\Http\Requests\BuildPurchaseTxRequest;
 use App\Http\Requests\CourseRequest;
 use App\Http\Requests\SearchClassRequest;
 use App\Http\Requests\SubmitPurchaseTxRequest;
+use App\Services\API\CertificateService;
 use App\Services\API\CoursePurchaseService;
+use App\Services\API\ExchangeRateService;
 use App\Mail\CourseBooking;
 use App\Models\CourseHistory;
 use App\Models\CourseSchedule;
@@ -84,6 +86,10 @@ class CourseController extends Controller
 
         $courses = $this->courseRepository->search($request);
 
+        // Add price_in_ada to courses collection
+        $exchangeRateService = app(ExchangeRateService::class);
+        $exchangeRateService->addPriceInAdaToCourses($courses);
+
         return Inertia::render('Portal/Course/Search', [
                 'course_types'          => $types,
                 'course_categories'     => $categories,
@@ -115,6 +121,10 @@ class CourseController extends Controller
         $nft = isset($nftId) ? $this->nftRepository->getNftById($nftId): null;
         $schedules = $this->courseScheduleRepository->findByCourseId($course->id);
         $feedbacks = $this->courseFeedbackRepository->loadByCourseId($id, $feedbackCount);
+
+        // Add price_in_ada to course
+        $exchangeRateService = app(ExchangeRateService::class);
+        $exchangeRateService->addPriceInAdaToCourses([$course]);
 
         return Inertia::render('Portal/Course/Details', [
             'course'           => $course,
@@ -567,12 +577,28 @@ class CourseController extends Controller
             return redirect()->route('course.details', ['id' => $course_id]);
         }
 
+        $course = $this->courseRepository->findOrFail($course_id)->load('professor');
+        $schedule = $this->courseScheduleRepository->findOrFail($schedule_id);
+
+        // Get certificate status for this course/schedule if certificate enabled
+        $certificateData = null;
+
+        if ($course->certificate_enabled) {
+            $certificateService = app(CertificateService::class);
+            $certificateData = $certificateService->getCertificateDataForCompletion(
+                $course_id,
+                auth()->id(),
+                $schedule_id
+            );
+        }
+
         return Inertia::render('Portal/CourseCompleteConfirmation', [
-            'course'    => $this->courseRepository->findOrFail($course_id)->load('professor'),
-            'schedule'  => $this->courseScheduleRepository->findOrFail($schedule_id),
-            'title'     =>  getTranslation('texts.complete_class')
+            'course'      => $course,
+            'schedule'    => $schedule,
+            'certificate' => $certificateData,
+            'title'       => getTranslation('texts.complete_class')
         ])->withViewData([
-            'title'     => getTranslation('texts.complete_class')
+            'title' => getTranslation('texts.complete_class')
         ]);
     }
 

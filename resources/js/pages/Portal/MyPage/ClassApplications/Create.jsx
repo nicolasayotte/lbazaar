@@ -115,11 +115,13 @@ const Create = () => {
                                 data.type === 'general' &&
                                 <Grid item xs={12} md={4}>
                                     <Input
-                                        label={translatables.texts.price}
+                                        label={`${translatables.texts.price} (JPY)`}
                                         name="price"
+                                        type="number"
                                         value={data.price}
                                         onChange={e => handleOnChange(e, setData)}
                                         errors={errors}
+                                        inputProps={{ min: 0, step: 100 }}
                                     />
                                 </Grid>
                             }

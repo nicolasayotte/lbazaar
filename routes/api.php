@@ -14,6 +14,7 @@ use App\Http\Controllers\API\CourseApplicationController;
 use App\Http\Controllers\API\VoteController;
 use App\Http\Controllers\API\CertificateController;
 use App\Http\Controllers\API\CoursePaymentController;
+use App\Http\Controllers\API\StripeController;
 use Illuminate\Support\Facades\Log;
 
 /*
@@ -68,6 +69,16 @@ Route::post('/votes/register', [VoteController::class, 'register'])->name('votes
 
 // Blockfrost Webhooks
 Route::post('/webhook/blockfrost/purchase', [CoursePaymentController::class, 'handlePurchaseWebhook'])->name('webhook.purchase');
+
+// Stripe payment routes (authenticated)
+Route::prefix('/stripe')->middleware(['auth:sanctum'])->name('stripe.')->group(function() {
+    Route::post('/payment-intent/{course}', [StripeController::class, 'createPaymentIntent'])
+        ->middleware('throttle:payment-intent')
+        ->name('payment_intent');
+});
+
+// Stripe webhook (no auth, CSRF exempt, signature verified in controller)
+Route::post('/stripe/webhook', [StripeController::class, 'webhook'])->name('stripe.webhook');
 
 if (app()->environment('local')) {
     Route::post('/postman/token', function (Request $request) {

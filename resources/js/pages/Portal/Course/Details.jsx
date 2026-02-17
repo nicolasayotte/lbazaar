@@ -1,5 +1,6 @@
-import { Box, Grid, Typography, Card, CardContent, Container, Divider, Chip, Paper, CircularProgress, Stack, Button, LinearProgress } from "@mui/material";
+import { Box, Grid, Typography, Card, CardContent, Container, Divider, Chip, Paper, CircularProgress, Stack, Button, LinearProgress, Dialog, DialogTitle, DialogContent } from "@mui/material";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
+import CreditCardIcon from "@mui/icons-material/CreditCard";
 import Feedback from "../../../components/cards/Feedback";
 import { usePage } from "@inertiajs/inertia-react"
 import ConfirmationDialog from "../../../components/common/ConfirmationDialog"
@@ -8,11 +9,13 @@ import { useDispatch } from "react-redux"
 import { getRoute } from "../../../helpers/routes.helper"
 import { Inertia } from "@inertiajs/inertia"
 import { actions } from "../../../store/slices/ToasterSlice"
+import { formatDualPrice, parseJpy } from "../../../helpers/currency.helper"
 import CourseScheduleList from "./components/CourseScheduleList";
 import { grey } from "@mui/material/colors";
 import Course from "../../../components/cards/Course";
 import User from "../../../components/cards/User";
 import WalletConnector from "../../../components/cards/WalletConnector"
+import StripeCheckout from "../../../components/payments/StripeCheckout";
 import axios from "axios";
 
 
@@ -39,6 +42,10 @@ const Details = () => {
 
     const [purchaseLoading, setPurchaseLoading] = useState(false)
     const [purchaseStep, setPurchaseStep] = useState('idle')
+
+    const [showStripeCheckout, setShowStripeCheckout] = useState(false)
+    const [clientSecret, setClientSecret] = useState(null)
+    const [stripeLoading, setStripeLoading] = useState(false)
 
     const isGeneralCourse = course.course_type && course.course_type.type === 'General'
 
@@ -117,6 +124,40 @@ const Details = () => {
             setPurchaseLoading(false)
             setPurchaseStep('idle')
         }
+    }
+
+    const handlePayWithCard = async () => {
+        if (!auth || !auth.user) {
+            dispatch(actions.error({
+                message: translatables.error || 'Please log in to continue'
+            }))
+            return
+        }
+
+        try {
+            setStripeLoading(true)
+            const response = await axios.post(`/api/stripe/payment-intent/${course.id}`)
+            const data = response.data
+
+            if (data.success && data.data?.client_secret) {
+                setClientSecret(data.data.client_secret)
+                setShowStripeCheckout(true)
+            } else {
+                throw new Error(data.message || 'Failed to initialize payment')
+            }
+        } catch (error) {
+            console.error('Payment initialization error:', error)
+            dispatch(actions.error({
+                message: error.response?.data?.message || error.message || translatables.error || 'Payment initialization failed'
+            }))
+        } finally {
+            setStripeLoading(false)
+        }
+    }
+
+    const handleStripeCancel = () => {
+        setShowStripeCheckout(false)
+        setClientSecret(null)
     }
 
     // TODO Make this use NMKR Pay when relevant
@@ -467,7 +508,7 @@ const Details = () => {
         ]
 
         const dynamicInfos = {
-            'General': { type: translatables.texts.price, value: course.price },
+            'General': { type: translatables.texts.price, value: formatDualPrice(parseJpy(course.price), course.price_in_ada) },
             'Free': { type: translatables.texts.price, value: translatables.texts.free }
         }
 
@@ -574,7 +615,7 @@ const Details = () => {
                                 >
                                     {purchaseLoading
                                         ? translatables.texts.processing
-                                        : `${translatables.texts.buy_with_ada} - ${course.price} JPY`
+                                        : `${translatables.texts.buy_with_ada} - ${formatDualPrice(parseJpy(course.price), course.price_in_ada)}`
                                     }
                                 </Button>
                                 {purchaseLoading && (
@@ -587,6 +628,20 @@ const Details = () => {
                                         </Typography>
                                     </Box>
                                 )}
+                                <Button
+                                    variant="outlined"
+                                    color="primary"
+                                    fullWidth
+                                    disabled={stripeLoading}
+                                    onClick={handlePayWithCard}
+                                    startIcon={stripeLoading ? <CircularProgress size={20} color="inherit" /> : <CreditCardIcon />}
+                                    sx={{ py: 1.5, mt: 1 }}
+                                >
+                                    {stripeLoading
+                                        ? (translatables?.texts?.loading || 'Loading...')
+                                        : `${translatables?.texts?.pay_with_card || 'Pay with Credit Card'} - ¥${course.price?.toLocaleString()}`
+                                    }
+                                </Button>
                             </Box>
                         )}
                         {nft && walletAPI && <CourseScheduleList data={schedules} handleOnBook={handleBookNFT} handleOnCancelBook={handleCancelBooking} />}
@@ -604,6 +659,20 @@ const Details = () => {
                 handleClose={handleOnDialogClose}
                 handleConfirm={handleOnDialogSubmit}
             />
+            <Dialog open={showStripeCheckout} onClose={handleStripeCancel} maxWidth="sm" fullWidth>
+                <DialogTitle>
+                    {translatables?.texts?.complete_payment || 'Complete Payment'}
+                </DialogTitle>
+                <DialogContent>
+                    <StripeCheckout
+                        clientSecret={clientSecret}
+                        course={course}
+                        onSuccess={() => setShowStripeCheckout(false)}
+                        onCancel={handleStripeCancel}
+                        translatables={translatables}
+                    />
+                </DialogContent>
+            </Dialog>
         </Box>
     )
 }
