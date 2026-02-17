@@ -11,6 +11,13 @@ use Inertia\Inertia;
 
 class CheckoutController extends Controller
 {
+    private ExchangeRateService $exchangeRateService;
+
+    public function __construct(ExchangeRateService $exchangeRateService)
+    {
+        $this->exchangeRateService = $exchangeRateService;
+    }
+
     public function success(Request $request)
     {
         $courseId = $request->query('course_id');
@@ -28,8 +35,7 @@ class CheckoutController extends Controller
 
         // Add price_in_ada to course if present
         if ($course) {
-            $exchangeRateService = app(ExchangeRateService::class);
-            $exchangeRateService->addPriceInAdaToCourses([$course]);
+            $this->exchangeRateService->addPriceInAdaToCourses([$course]);
         }
 
         return Inertia::render('Portal/Checkout/Success', [
@@ -48,8 +54,7 @@ class CheckoutController extends Controller
 
         // Add price_in_ada to course if present
         if ($course) {
-            $exchangeRateService = app(ExchangeRateService::class);
-            $exchangeRateService->addPriceInAdaToCourses([$course]);
+            $this->exchangeRateService->addPriceInAdaToCourses([$course]);
         }
 
         return Inertia::render('Portal/Checkout/Cancel', [

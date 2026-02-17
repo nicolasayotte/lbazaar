@@ -25,13 +25,16 @@ class CourseApplicationController extends Controller
 
     private $voteRepository;
 
-    public function __construct()
+    private ExchangeRateService $exchangeRateService;
+
+    public function __construct(ExchangeRateService $exchangeRateService)
     {
         $this->courseApplicationRepository = new CourseApplicationRepository();
         $this->courseCategoryRepository    = new CourseCategoryRepository();
         $this->courseTypeRepository        = new CourseTypeRepository();
         $this->nftRepository               = new NftRepository();
         $this->voteRepository              = new VoteRepository();
+        $this->exchangeRateService         = $exchangeRateService;
     }
 
     public function index(Request $request)
@@ -39,8 +42,7 @@ class CourseApplicationController extends Controller
         $courseApplications = $this->courseApplicationRepository->getMyCourseApplications($request->all());
 
         // Add price_in_ada to course applications
-        $exchangeRateService = app(ExchangeRateService::class);
-        $exchangeRateService->addPriceInAdaToCourses($courseApplications);
+        $this->exchangeRateService->addPriceInAdaToCourses($courseApplications);
 
         return Inertia::render('Portal/MyPage/ClassApplications/Index', [
             'courseApplications' => $courseApplications,

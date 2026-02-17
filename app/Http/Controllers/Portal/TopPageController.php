@@ -15,6 +15,13 @@ use Inertia\Inertia;
 
 class TopPageController extends Controller
 {
+    private ExchangeRateService $exchangeRateService;
+
+    public function __construct(ExchangeRateService $exchangeRateService)
+    {
+        $this->exchangeRateService = $exchangeRateService;
+    }
+
     public function index()
     {
         $courseRepository = new CourseRepository();
@@ -26,8 +33,7 @@ class TopPageController extends Controller
         $featuredCourseSchedule = $courseScheduleRepository->getUpcomingCourseSchedule(CourseSchedule::COMING_SOON_COUNT_DISPLAY);
 
         // Add price_in_ada to featured courses
-        $exchangeRateService = app(ExchangeRateService::class);
-        $exchangeRateService->addPriceInAdaToCourses($featuredClasses);
+        $this->exchangeRateService->addPriceInAdaToCourses($featuredClasses);
 
         return Inertia::render('Portal/TopPage', [
                 'courses'           => $featuredClasses,

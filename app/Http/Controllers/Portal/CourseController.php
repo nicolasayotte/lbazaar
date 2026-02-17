@@ -60,7 +60,9 @@ class CourseController extends Controller
 
     public $courseFeedbackRepository;
 
-    public function __construct()
+    public ExchangeRateService $exchangeRateService;
+
+    public function __construct(ExchangeRateService $exchangeRateService)
     {
         $this->courseTypeRepository = new CourseTypeRepository();
         $this->courseCategoryRepository = new CourseCategoryRepository();
@@ -73,6 +75,7 @@ class CourseController extends Controller
         $this->walletTransactionHistoryRepository = new WalletTransactionHistoryRepository();
         $this->coursePackageRepository = new CoursePackageRepository();
         $this->courseFeedbackRepository = new CourseFeedbackRepository();
+        $this->exchangeRateService = $exchangeRateService;
     }
 
     public function index(SearchClassRequest $request)
@@ -87,8 +90,7 @@ class CourseController extends Controller
         $courses = $this->courseRepository->search($request);
 
         // Add price_in_ada to courses collection
-        $exchangeRateService = app(ExchangeRateService::class);
-        $exchangeRateService->addPriceInAdaToCourses($courses);
+        $this->exchangeRateService->addPriceInAdaToCourses($courses);
 
         return Inertia::render('Portal/Course/Search', [
                 'course_types'          => $types,
@@ -123,8 +125,7 @@ class CourseController extends Controller
         $feedbacks = $this->courseFeedbackRepository->loadByCourseId($id, $feedbackCount);
 
         // Add price_in_ada to course
-        $exchangeRateService = app(ExchangeRateService::class);
-        $exchangeRateService->addPriceInAdaToCourses([$course]);
+        $this->exchangeRateService->addPriceInAdaToCourses([$course]);
 
         return Inertia::render('Portal/Course/Details', [
             'course'           => $course,
