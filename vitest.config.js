@@ -5,6 +5,7 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./resources/js/vitest.setup.js'],
+    exclude: ['web3/**', 'node_modules/**', 'tests/Browser/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov', 'html'],
