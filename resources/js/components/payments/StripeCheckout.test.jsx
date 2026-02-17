@@ -1,14 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import StripeCheckout from './StripeCheckout';
 
-// Mock Stripe modules
-const mockConfirmPayment = vi.fn();
-const mockStripe = {
-    confirmPayment: mockConfirmPayment,
-};
-const mockElements = {};
+// Use vi.hoisted to define mock values before hoisted vi.mock calls
+const { mockConfirmPayment, mockStripe, mockElements } = vi.hoisted(() => {
+    const mockConfirmPayment = vi.fn();
+    const mockStripe = { confirmPayment: mockConfirmPayment };
+    const mockElements = {};
+    return { mockConfirmPayment, mockStripe, mockElements };
+});
 
 vi.mock('@stripe/stripe-js', () => ({
     loadStripe: vi.fn(() => Promise.resolve(mockStripe)),
@@ -17,9 +17,11 @@ vi.mock('@stripe/stripe-js', () => ({
 vi.mock('@stripe/react-stripe-js', () => ({
     Elements: ({ children }) => <div data-testid="stripe-elements">{children}</div>,
     PaymentElement: () => <div data-testid="payment-element">Payment Element</div>,
-    useStripe: () => mockStripe,
+    useStripe: vi.fn(() => mockStripe),
     useElements: () => mockElements,
 }));
+
+import StripeCheckout from './StripeCheckout';
 
 describe('StripeCheckout', () => {
     const mockTranslatables = {
@@ -139,7 +141,7 @@ describe('StripeCheckout', () => {
             );
 
             expect(screen.getByText('Cancel')).toBeInTheDocument();
-            expect(screen.getByText(/Pay/)).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: /Pay/ })).toBeInTheDocument();
         });
     });
 
@@ -237,9 +239,9 @@ describe('StripeCheckout', () => {
         });
 
         it('does not submit if stripe is not loaded', async () => {
-            // Mock useStripe to return null
-            const originalModule = await import('@stripe/react-stripe-js');
-            vi.mocked(originalModule.useStripe).mockReturnValueOnce(null);
+            // Mock useStripe to return null for this test
+            const { useStripe } = await import('@stripe/react-stripe-js');
+            useStripe.mockReturnValueOnce(null);
 
             render(
                 <StripeCheckout
