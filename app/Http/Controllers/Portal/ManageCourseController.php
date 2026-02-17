@@ -92,6 +92,7 @@ class ManageCourseController extends Controller
             'students'  => $students,
             'tabValue'  => 'certificates',
             'courseId'  => (int) $id,
+            'explorerUrl' => config('services.cardano.explorer_url'),
             'title'     => $this->baseTitle . getTranslation('title.certificates')
         ])->withViewData([
             'title'     => $this->baseTitle . getTranslation('title.certificates'),

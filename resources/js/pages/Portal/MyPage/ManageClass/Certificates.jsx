@@ -5,7 +5,7 @@ import { Inertia } from "@inertiajs/inertia"
 import CertificateTable from "./components/CertificateTable"
 
 const Certificates = () => {
-    const { course, students, translatables } = usePage().props
+    const { course, students, translatables, explorerUrl } = usePage().props
 
     // Track minting state for individual students
     const [minting, setMinting] = useState({})
@@ -135,6 +135,7 @@ const Certificates = () => {
                         onRetry={handleRetryMint}
                         minting={minting}
                         translatables={translatables}
+                        explorerUrl={explorerUrl}
                     />
                 </Box>
             )}

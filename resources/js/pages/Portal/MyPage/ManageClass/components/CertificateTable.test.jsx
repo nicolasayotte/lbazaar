@@ -19,6 +19,7 @@ describe('CertificateTable', () => {
 
     const mockOnMint = vi.fn();
     const mockOnRetry = vi.fn();
+    const mockExplorerUrl = 'https://preprod.cardanoscan.io';
 
     beforeEach(() => {
         vi.clearAllMocks();
@@ -32,6 +33,7 @@ describe('CertificateTable', () => {
                     onMint={mockOnMint}
                     onRetry={mockOnRetry}
                     translatables={mockTranslatables}
+                    explorerUrl={mockExplorerUrl}
                 />
             );
 
@@ -46,6 +48,7 @@ describe('CertificateTable', () => {
                     onMint={mockOnMint}
                     onRetry={mockOnRetry}
                     translatables={mockTranslatables}
+                    explorerUrl={mockExplorerUrl}
                 />
             );
 
@@ -66,6 +69,7 @@ describe('CertificateTable', () => {
                     onMint={mockOnMint}
                     onRetry={mockOnRetry}
                     translatables={mockTranslatables}
+                    explorerUrl={mockExplorerUrl}
                 />
             );
 
@@ -84,6 +88,7 @@ describe('CertificateTable', () => {
                     onMint={mockOnMint}
                     onRetry={mockOnRetry}
                     translatables={mockTranslatables}
+                    explorerUrl={mockExplorerUrl}
                 />
             );
 
@@ -107,6 +112,7 @@ describe('CertificateTable', () => {
                     onMint={mockOnMint}
                     onRetry={mockOnRetry}
                     translatables={mockTranslatables}
+                    explorerUrl={mockExplorerUrl}
                 />
             );
 
@@ -125,6 +131,7 @@ describe('CertificateTable', () => {
                     onMint={mockOnMint}
                     onRetry={mockOnRetry}
                     translatables={mockTranslatables}
+                    explorerUrl={mockExplorerUrl}
                 />
             );
 
@@ -143,6 +150,7 @@ describe('CertificateTable', () => {
                     onMint={mockOnMint}
                     onRetry={mockOnRetry}
                     translatables={mockTranslatables}
+                    explorerUrl={mockExplorerUrl}
                 />
             );
 
@@ -161,6 +169,7 @@ describe('CertificateTable', () => {
                     onMint={mockOnMint}
                     onRetry={mockOnRetry}
                     translatables={mockTranslatables}
+                    explorerUrl={mockExplorerUrl}
                 />
             );
 
@@ -181,6 +190,7 @@ describe('CertificateTable', () => {
                     onMint={mockOnMint}
                     onRetry={mockOnRetry}
                     translatables={mockTranslatables}
+                    explorerUrl={mockExplorerUrl}
                 />
             );
 
@@ -198,6 +208,7 @@ describe('CertificateTable', () => {
                     onMint={mockOnMint}
                     onRetry={mockOnRetry}
                     translatables={mockTranslatables}
+                    explorerUrl={mockExplorerUrl}
                 />
             );
 
@@ -217,6 +228,7 @@ describe('CertificateTable', () => {
                     onMint={mockOnMint}
                     onRetry={mockOnRetry}
                     translatables={mockTranslatables}
+                    explorerUrl={mockExplorerUrl}
                 />
             );
 
@@ -238,6 +250,7 @@ describe('CertificateTable', () => {
                     onMint={mockOnMint}
                     onRetry={mockOnRetry}
                     translatables={mockTranslatables}
+                    explorerUrl={mockExplorerUrl}
                 />
             );
 
@@ -325,6 +338,7 @@ describe('CertificateTable', () => {
                     onMint={mockOnMint}
                     onRetry={mockOnRetry}
                     translatables={mockTranslatables}
+                    explorerUrl={mockExplorerUrl}
                 />
             );
 
@@ -348,16 +362,17 @@ describe('CertificateTable', () => {
                     onMint={mockOnMint}
                     onRetry={mockOnRetry}
                     translatables={mockTranslatables}
+                    explorerUrl={mockExplorerUrl}
                 />
             );
 
             const links = screen.getAllByRole('link');
             const explorerLink = links.find(link =>
-                link.getAttribute('href')?.includes('cardanoscan.io')
+                link.getAttribute('href')?.includes('transaction/abc123def456')
             );
 
             expect(explorerLink).toBeTruthy();
-            expect(explorerLink?.getAttribute('href')).toContain('abc123def456');
+            expect(explorerLink?.getAttribute('href')).toBe(`${mockExplorerUrl}/transaction/abc123def456`);
         });
     });
 });

@@ -16,15 +16,15 @@ const StatusBadge = ({ status }) => {
     return <Chip color={config.color} label={config.label} size="small" />
 }
 
-const CertificateTable = ({ students, onMint, onRetry, minting = {}, translatables }) => {
+const CertificateTable = ({ students, onMint, onRetry, minting = {}, translatables, explorerUrl }) => {
 
     if (!students || students.length === 0) {
         return <EmptyCard />
     }
 
     const getExplorerUrl = (txHash) => {
-        // Using preprod network from .env
-        return `https://preprod.cardanoscan.io/transaction/${txHash}`
+        // Use config-based explorer URL from backend
+        return `${explorerUrl}/transaction/${txHash}`
     }
 
     const displayTableData = students.map((student, index) => {

@@ -632,10 +632,7 @@ class CertificateService
 
             if ($certificateTransaction) {
                 // Certificate already minted
-                $network = config('app.cardano_network', 'preprod');
-                $explorerUrl = $network === 'mainnet'
-                    ? "https://cardanoscan.io/transaction/{$certificateTransaction->tx_id}"
-                    : "https://preprod.cardanoscan.io/transaction/{$certificateTransaction->tx_id}";
+                $explorerUrl = config('services.cardano.explorer_url') . '/tx/' . $certificateTransaction->tx_id;
 
                 return [
                     'success' => true,
@@ -680,6 +677,62 @@ class CertificateService
     }
 
     /**
+     * Get all certificates earned by a student
+     *
+     * @param int $userId
+     * @return array
+     */
+    public function getStudentCertificates(int $userId): array
+    {
+        try {
+            $certificates = CourseHistory::where('user_id', $userId)
+                ->whereNotNull('completed_at')
+                ->where('is_cancelled', false)
+                ->whereHas('course', function($q) {
+                    $q->where('certificate_enabled', true);
+                })
+                ->with(['course.professor'])
+                ->orderBy('completed_at', 'desc')
+                ->get()
+                ->map(function($history) {
+                    return [
+                        'id' => $history->id,
+                        'course_id' => $history->course_id,
+                        'course_name' => $history->course->title,
+                        'professor_name' => $history->course->professor->fullname,
+                        'completed_at' => $history->completed_at,
+                        'certificate_status' => $history->certificate_status ?? 'not_eligible',
+                        'certificate_tx_hash' => $history->certificate_tx_hash,
+                        'certificate_minted_at' => $history->certificate_minted_at,
+                        'certificate_image_url' => $history->certificate_image_url,
+                        'certificate_explorer_url' => $history->certificate_explorer_url,
+                    ];
+                })
+                ->values()
+                ->toArray();
+
+            return [
+                'success' => true,
+                'message' => 'Certificates retrieved successfully',
+                'data' => [
+                    'certificates' => $certificates
+                ]
+            ];
+
+        } catch (Exception $e) {
+            Log::error('Failed to retrieve student certificates', [
+                'user_id' => $userId,
+                'error' => $e->getMessage()
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'Failed to retrieve certificates: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
      * Check if a student has passed all exams for a specific course schedule
      *
      * @param int $studentId
@@ -711,5 +764,55 @@ class CertificateService
 
         // All exams must be passed
         return $totalExams === $passedExams;
+    }
+
+    /**
+     * Get certificate data for course completion confirmation page
+     *
+     * @param int $courseId
+     * @param int $studentId
+     * @param int $scheduleId
+     * @return array|null
+     */
+    public function getCertificateDataForCompletion(int $courseId, int $studentId, int $scheduleId): ?array
+    {
+        try {
+            // Find course history record
+            $courseHistory = CourseHistory::where('user_id', $studentId)
+                ->where('course_id', $courseId)
+                ->where('course_schedule_id', $scheduleId)
+                ->first();
+
+            // Return null if course not completed
+            if (!$courseHistory || !$courseHistory->completed_at) {
+                return null;
+            }
+
+            // Determine certificate status
+            $certificateStatus = $courseHistory->certificate_status ?? 'not_eligible';
+            $explorerUrl = null;
+
+            // Build explorer URL if certificate is minted
+            if ($certificateStatus === 'minted' && $courseHistory->certificate_tx_hash) {
+                $explorerUrl = config('services.cardano.explorer_url') . '/tx/' . $courseHistory->certificate_tx_hash;
+            }
+
+            return [
+                'status' => $certificateStatus,
+                'tx_hash' => $courseHistory->certificate_tx_hash,
+                'explorer_url' => $explorerUrl,
+                'minted_at' => $courseHistory->certificate_minted_at,
+            ];
+
+        } catch (Exception $e) {
+            Log::error('Failed to get certificate data for completion', [
+                'course_id' => $courseId,
+                'student_id' => $studentId,
+                'schedule_id' => $scheduleId,
+                'error' => $e->getMessage()
+            ]);
+
+            return null;
+        }
     }
 }

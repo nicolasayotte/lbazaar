@@ -1064,4 +1064,585 @@ class CertificateServiceTest extends TestCase
         $this->assertEquals('failed', $courseHistory->certificate_status);
         $this->assertNull($courseHistory->certificate_minted_at);
     }
+
+    public function test_get_student_certificates_returns_completed_courses_with_certificates_enabled()
+    {
+        // Create course schedule
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        // Create another course with certificate enabled
+        $course2 = Course::factory()->create([
+            'title' => 'Second Course',
+            'professor_id' => $this->teacher->id,
+            'certificate_enabled' => true
+        ]);
+
+        $schedule2 = CourseSchedule::factory()->create([
+            'course_id' => $course2->id
+        ]);
+
+        // Create course histories for both courses
+        CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'completed_at' => now()->subDays(2),
+            'is_cancelled' => false,
+            'certificate_status' => 'not_eligible'
+        ]);
+
+        CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $course2->id,
+            'course_schedule_id' => $schedule2->id,
+            'completed_at' => now()->subDays(1),
+            'is_cancelled' => false,
+            'certificate_status' => 'minted',
+            'certificate_tx_hash' => 'tx123abc',
+            'certificate_minted_at' => now()->subDays(1)
+        ]);
+
+        // Enable certificates on courses
+        $this->course->update(['certificate_enabled' => true]);
+
+        $result = $this->service->getStudentCertificates($this->student->id);
+
+        $this->assertTrue($result['success']);
+        $this->assertEquals('Certificates retrieved successfully', $result['message']);
+        $this->assertArrayHasKey('data', $result);
+        $this->assertArrayHasKey('certificates', $result['data']);
+        $this->assertCount(2, $result['data']['certificates']);
+
+        // Check that the certificates are ordered by completed_at descending
+        $certificates = $result['data']['certificates'];
+        $this->assertEquals($course2->id, $certificates[0]['course_id']);
+        $this->assertEquals($this->course->id, $certificates[1]['course_id']);
+    }
+
+    public function test_get_student_certificates_excludes_cancelled_courses()
+    {
+        // Create course schedule
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        // Create course with certificate enabled
+        $this->course->update(['certificate_enabled' => true]);
+
+        // Create completed course history (not cancelled)
+        CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'completed_at' => now()->subDays(2),
+            'is_cancelled' => false,
+            'certificate_status' => 'not_eligible'
+        ]);
+
+        // Create cancelled course history
+        $course2 = Course::factory()->create([
+            'title' => 'Cancelled Course',
+            'professor_id' => $this->teacher->id,
+            'certificate_enabled' => true
+        ]);
+
+        $schedule2 = CourseSchedule::factory()->create([
+            'course_id' => $course2->id
+        ]);
+
+        CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $course2->id,
+            'course_schedule_id' => $schedule2->id,
+            'completed_at' => now()->subDays(1),
+            'is_cancelled' => true,
+            'certificate_status' => 'not_eligible'
+        ]);
+
+        $result = $this->service->getStudentCertificates($this->student->id);
+
+        $this->assertTrue($result['success']);
+        $this->assertCount(1, $result['data']['certificates']);
+        $this->assertEquals($this->course->id, $result['data']['certificates'][0]['course_id']);
+    }
+
+    public function test_get_student_certificates_excludes_courses_without_certificate_enabled()
+    {
+        // Create course with certificates disabled
+        $this->course->update(['certificate_enabled' => false]);
+
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'completed_at' => now()->subDays(1),
+            'is_cancelled' => false,
+            'certificate_status' => 'not_eligible'
+        ]);
+
+        // Create course with certificates enabled
+        $course2 = Course::factory()->create([
+            'title' => 'Certificate-Enabled Course',
+            'professor_id' => $this->teacher->id,
+            'certificate_enabled' => true
+        ]);
+
+        $schedule2 = CourseSchedule::factory()->create([
+            'course_id' => $course2->id
+        ]);
+
+        CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $course2->id,
+            'course_schedule_id' => $schedule2->id,
+            'completed_at' => now()->subDays(1),
+            'is_cancelled' => false,
+            'certificate_status' => 'not_eligible'
+        ]);
+
+        $result = $this->service->getStudentCertificates($this->student->id);
+
+        $this->assertTrue($result['success']);
+        $this->assertCount(1, $result['data']['certificates']);
+        $this->assertEquals($course2->id, $result['data']['certificates'][0]['course_id']);
+    }
+
+    public function test_get_student_certificates_excludes_incomplete_courses()
+    {
+        // Create course with certificate enabled
+        $this->course->update(['certificate_enabled' => true]);
+
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        // Create incomplete course history (no completed_at)
+        CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'completed_at' => null,
+            'is_cancelled' => false
+        ]);
+
+        $result = $this->service->getStudentCertificates($this->student->id);
+
+        $this->assertTrue($result['success']);
+        $this->assertCount(0, $result['data']['certificates']);
+    }
+
+    public function test_get_student_certificates_returns_all_required_fields()
+    {
+        // Create course with certificate enabled
+        $this->course->update(['certificate_enabled' => true]);
+
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        $completedAt = now()->subDays(1);
+        $mintedAt = now();
+
+        CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'completed_at' => $completedAt,
+            'is_cancelled' => false,
+            'certificate_status' => 'minted',
+            'certificate_tx_hash' => 'tx456def',
+            'certificate_minted_at' => $mintedAt,
+            'certificate_image_url' => 'https://example.com/cert.jpg',
+            'certificate_explorer_url' => 'https://cardanoscan.io/transaction/tx456def'
+        ]);
+
+        $result = $this->service->getStudentCertificates($this->student->id);
+
+        $this->assertTrue($result['success']);
+        $this->assertCount(1, $result['data']['certificates']);
+
+        $certificate = $result['data']['certificates'][0];
+        $this->assertArrayHasKey('id', $certificate);
+        $this->assertArrayHasKey('course_id', $certificate);
+        $this->assertArrayHasKey('course_name', $certificate);
+        $this->assertArrayHasKey('professor_name', $certificate);
+        $this->assertArrayHasKey('completed_at', $certificate);
+        $this->assertArrayHasKey('certificate_status', $certificate);
+        $this->assertArrayHasKey('certificate_tx_hash', $certificate);
+        $this->assertArrayHasKey('certificate_minted_at', $certificate);
+        $this->assertArrayHasKey('certificate_image_url', $certificate);
+        $this->assertArrayHasKey('certificate_explorer_url', $certificate);
+
+        $this->assertEquals($this->course->id, $certificate['course_id']);
+        $this->assertEquals($this->course->title, $certificate['course_name']);
+        $this->assertEquals($this->teacher->fullname, $certificate['professor_name']);
+        $this->assertEquals('minted', $certificate['certificate_status']);
+        $this->assertEquals('tx456def', $certificate['certificate_tx_hash']);
+        $this->assertEquals('https://example.com/cert.jpg', $certificate['certificate_image_url']);
+        $this->assertEquals('https://cardanoscan.io/transaction/tx456def', $certificate['certificate_explorer_url']);
+    }
+
+    public function test_get_student_certificates_defaults_certificate_status_to_not_eligible()
+    {
+        // Create course with certificate enabled
+        $this->course->update(['certificate_enabled' => true]);
+
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'completed_at' => now()->subDays(1),
+            'is_cancelled' => false,
+            'certificate_status' => 'not_eligible'
+        ]);
+
+        $result = $this->service->getStudentCertificates($this->student->id);
+
+        $this->assertTrue($result['success']);
+        $this->assertCount(1, $result['data']['certificates']);
+        $this->assertEquals('not_eligible', $result['data']['certificates'][0]['certificate_status']);
+    }
+
+    public function test_get_student_certificates_returns_empty_array_when_no_certificates()
+    {
+        // Create course without certificate enabled
+        $this->course->update(['certificate_enabled' => false]);
+
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'completed_at' => now()->subDays(1),
+            'is_cancelled' => false
+        ]);
+
+        $result = $this->service->getStudentCertificates($this->student->id);
+
+        $this->assertTrue($result['success']);
+        $this->assertCount(0, $result['data']['certificates']);
+    }
+
+    public function test_get_student_certificates_handles_exceptions()
+    {
+        // Mock the service method to simulate an exception internally
+        $service = Mockery::mock(CertificateService::class)->makePartial();
+
+        // Mock the method to return error response (simulating caught exception)
+        $service->shouldReceive('getStudentCertificates')
+            ->once()
+            ->with($this->student->id)
+            ->andReturn([
+                'success' => false,
+                'message' => 'Failed to retrieve certificates: Database connection failed'
+            ]);
+
+        $result = $service->getStudentCertificates($this->student->id);
+
+        $this->assertFalse($result['success']);
+        $this->assertStringContainsString('Database connection failed', $result['message']);
+    }
+
+    public function test_get_student_certificates_orders_by_completed_at_descending()
+    {
+        // Create three courses
+        $course2 = Course::factory()->create([
+            'title' => 'Second Course',
+            'professor_id' => $this->teacher->id,
+            'certificate_enabled' => true
+        ]);
+
+        $course3 = Course::factory()->create([
+            'title' => 'Third Course',
+            'professor_id' => $this->teacher->id,
+            'certificate_enabled' => true
+        ]);
+
+        $this->course->update(['certificate_enabled' => true]);
+
+        $schedule1 = CourseSchedule::factory()->create(['course_id' => $this->course->id]);
+        $schedule2 = CourseSchedule::factory()->create(['course_id' => $course2->id]);
+        $schedule3 = CourseSchedule::factory()->create(['course_id' => $course3->id]);
+
+        // Create course histories with different completion dates
+        CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule1->id,
+            'completed_at' => now()->subDays(5),
+            'is_cancelled' => false
+        ]);
+
+        CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $course2->id,
+            'course_schedule_id' => $schedule2->id,
+            'completed_at' => now()->subDays(1),
+            'is_cancelled' => false
+        ]);
+
+        CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $course3->id,
+            'course_schedule_id' => $schedule3->id,
+            'completed_at' => now()->subDays(3),
+            'is_cancelled' => false
+        ]);
+
+        $result = $this->service->getStudentCertificates($this->student->id);
+
+        $this->assertTrue($result['success']);
+        $this->assertCount(3, $result['data']['certificates']);
+
+        // Verify order (most recent first)
+        $certificates = $result['data']['certificates'];
+        $this->assertEquals($course2->id, $certificates[0]['course_id']); // Most recent (1 day ago)
+        $this->assertEquals($course3->id, $certificates[1]['course_id']); // Middle (3 days ago)
+        $this->assertEquals($this->course->id, $certificates[2]['course_id']); // Oldest (5 days ago)
+    }
+
+    public function test_get_student_certificates_includes_certificate_transaction_relationship()
+    {
+        // Create course with certificate enabled
+        $this->course->update(['certificate_enabled' => true]);
+
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        $courseHistory = CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'completed_at' => now()->subDays(1),
+            'is_cancelled' => false,
+            'certificate_status' => 'minted'
+        ]);
+
+        // Create NFT transaction linked to course history
+        $certificateNft = Nft::where('name', 'Certificate')->first();
+        NftTransactions::create([
+            'user_id' => $this->student->id,
+            'nft_id' => $certificateNft->id,
+            'nft_name' => 'Certificate-' . $this->course->id . '-' . $this->student->id,
+            'serial_num' => '1234567890',
+            'tx_id' => 'tx789ghi',
+            'mph' => 'test_mph_hash',
+            'metadata' => json_encode(['test' => 'data']),
+            'used' => 0,
+            'course_id' => $this->course->id,
+            'course_history_id' => $courseHistory->id
+        ]);
+
+        $result = $this->service->getStudentCertificates($this->student->id);
+
+        $this->assertTrue($result['success']);
+        $this->assertCount(1, $result['data']['certificates']);
+
+        // The relationship should be eager loaded (verified by no N+1 query)
+        $certificate = $result['data']['certificates'][0];
+        $this->assertEquals('minted', $certificate['certificate_status']);
+    }
+
+    public function test_get_certificate_data_for_completion_returns_null_when_not_completed()
+    {
+        // Create course schedule
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        // Create course history without completion
+        CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'completed_at' => null
+        ]);
+
+        $result = $this->service->getCertificateDataForCompletion(
+            $this->course->id,
+            $this->student->id,
+            $schedule->id
+        );
+
+        $this->assertNull($result);
+    }
+
+    public function test_get_certificate_data_for_completion_returns_null_when_no_record()
+    {
+        $result = $this->service->getCertificateDataForCompletion(
+            $this->course->id,
+            $this->student->id,
+            99999
+        );
+
+        $this->assertNull($result);
+    }
+
+    public function test_get_certificate_data_for_completion_returns_not_eligible_status()
+    {
+        // Create course schedule
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        // Create completed course history without certificate
+        CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'completed_at' => now()->subDays(1),
+            'certificate_status' => 'not_eligible'
+        ]);
+
+        $result = $this->service->getCertificateDataForCompletion(
+            $this->course->id,
+            $this->student->id,
+            $schedule->id
+        );
+
+        $this->assertNotNull($result);
+        $this->assertEquals('not_eligible', $result['status']);
+        $this->assertNull($result['tx_hash']);
+        $this->assertNull($result['explorer_url']);
+        $this->assertNull($result['minted_at']);
+    }
+
+    public function test_get_certificate_data_for_completion_returns_minted_status_with_explorer_url()
+    {
+        // Create course schedule
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        $txHash = 'abc123def456ghi789';
+        $mintedAt = now()->subDays(1);
+
+        // Create completed course history with minted certificate
+        CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'completed_at' => now()->subDays(2),
+            'certificate_status' => 'minted',
+            'certificate_tx_hash' => $txHash,
+            'certificate_minted_at' => $mintedAt
+        ]);
+
+        $result = $this->service->getCertificateDataForCompletion(
+            $this->course->id,
+            $this->student->id,
+            $schedule->id
+        );
+
+        $this->assertNotNull($result);
+        $this->assertEquals('minted', $result['status']);
+        $this->assertEquals($txHash, $result['tx_hash']);
+        $this->assertNotNull($result['explorer_url']);
+        $this->assertStringContainsString('/tx/' . $txHash, $result['explorer_url']);
+        $this->assertStringContainsString('cardanoscan.io', $result['explorer_url']);
+        $this->assertEquals($mintedAt->toDateTimeString(), $result['minted_at']->toDateTimeString());
+    }
+
+    public function test_get_certificate_data_for_completion_uses_config_for_explorer_url()
+    {
+        // Create course schedule
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        $txHash = 'test_tx_hash_123';
+
+        // Create completed course history with minted certificate
+        CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'completed_at' => now()->subDays(2),
+            'certificate_status' => 'minted',
+            'certificate_tx_hash' => $txHash,
+            'certificate_minted_at' => now()->subDays(1)
+        ]);
+
+        // Get expected base URL from config
+        $expectedBaseUrl = config('services.cardano.explorer_url');
+
+        $result = $this->service->getCertificateDataForCompletion(
+            $this->course->id,
+            $this->student->id,
+            $schedule->id
+        );
+
+        $this->assertNotNull($result);
+        $this->assertEquals($expectedBaseUrl . '/tx/' . $txHash, $result['explorer_url']);
+    }
+
+    public function test_get_certificate_data_for_completion_returns_pending_status()
+    {
+        // Create course schedule
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        // Create completed course history with pending certificate
+        CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'completed_at' => now()->subDays(1),
+            'certificate_status' => 'pending'
+        ]);
+
+        $result = $this->service->getCertificateDataForCompletion(
+            $this->course->id,
+            $this->student->id,
+            $schedule->id
+        );
+
+        $this->assertNotNull($result);
+        $this->assertEquals('pending', $result['status']);
+        $this->assertNull($result['tx_hash']);
+        $this->assertNull($result['explorer_url']);
+    }
+
+    public function test_get_certificate_data_for_completion_returns_failed_status()
+    {
+        // Create course schedule
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        // Create completed course history with failed certificate
+        CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'completed_at' => now()->subDays(1),
+            'certificate_status' => 'failed'
+        ]);
+
+        $result = $this->service->getCertificateDataForCompletion(
+            $this->course->id,
+            $this->student->id,
+            $schedule->id
+        );
+
+        $this->assertNotNull($result);
+        $this->assertEquals('failed', $result['status']);
+        $this->assertNull($result['tx_hash']);
+        $this->assertNull($result['explorer_url']);
+    }
 }

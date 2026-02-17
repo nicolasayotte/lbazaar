@@ -1,45 +1,69 @@
-import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
+import { OpenInNew } from "@mui/icons-material"
+import { Chip, CircularProgress, IconButton, Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from "@mui/material"
 import EmptyCard from "../../../../../components/common/EmptyCard"
 import { usePage } from '@inertiajs/inertia-react'
+
+const StatusBadge = ({ status }) => {
+    const statusConfig = {
+        'not_eligible': { color: 'info', label: 'Eligible' },
+        'pending': { color: 'warning', label: 'Pending' },
+        'minted': { color: 'success', label: 'Minted' },
+        'failed': { color: 'error', label: 'Failed' }
+    }
+
+    const config = statusConfig[status] || { color: 'default', label: status || 'N/A' }
+
+    return <Chip color={config.color} label={config.label} size="small" />
+}
+
+const formatDate = (dateString) => {
+    if (!dateString) return '-'
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+    })
+}
 
 const BadgesTable = ({ data }) => {
     const { translatables } = usePage().props
 
-
-    if (data && data.length <= 0) {
-        data.push({
-            type: 'student',
-            name: 'Certificate of Completion - Calculus',
-            formatted_datetime: 'Tuesday, Mar 19 2024 12:06 AM',
-        })
-        // TODO put this back
-        // return <EmptyCard />
+    if (!data || data.length <= 0) {
+        return <EmptyCard />
     }
 
-    const handleMint = (name) => {
-        const popupWidth = 500;
-        const popupHeight = 700;
+    const displayTableData = data.map((certificate, index) => {
+        const hasTxHash = certificate.certificate_tx_hash && certificate.certificate_status === 'minted'
+        const isMinting = certificate.certificate_status === 'pending'
 
-        // Calculate the center of the screen
-        const left = window.top.outerWidth / 2 + window.top.screenX - (popupWidth / 2);
-        const top = window.top.outerHeight / 2 + window.top.screenY - (popupHeight / 2);
-
-        const popup = window.open(
-            "https://pay.nmkr.io/?p=31970d0c2a694954a416d36847e50375&n=aa680d6c884b4b10ba7e76ff3fd9ebcc",
-            "NFT-MAKER PRO Payment Gateway",
-            `popup=1, location=1, width=${popupWidth}, height=${popupHeight}, left=${left}, top=${top}`
-        );
-        console.debug('handleMint', popup)
-    }
-
-    const displayTableData = rows => rows.map((row, index) => {
         return (
             <TableRow key={index}>
-                <TableCell children={row.type} align="center" />
-                <TableCell children={row.name} align="center" />
-                <TableCell children={row.formatted_datetime} align="center" />
+                <TableCell>{certificate.course_name || '-'}</TableCell>
+                <TableCell align="center">{certificate.professor_name || '-'}</TableCell>
+                <TableCell align="center">{formatDate(certificate.completed_at)}</TableCell>
                 <TableCell align="center">
-                    <Button onClick={() => handleMint(row.name)}>Mint</Button>
+                    <StatusBadge status={certificate.certificate_status} />
+                </TableCell>
+                <TableCell align="center">
+                    {isMinting && (
+                        <CircularProgress size={20} />
+                    )}
+                    {hasTxHash && (
+                        <Tooltip title={translatables.texts.view_transaction || 'View on Cardano Explorer'}>
+                            <Link
+                                href={certificate.certificate_explorer_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                underline="none"
+                            >
+                                <IconButton size="small" color="primary">
+                                    <OpenInNew fontSize="small" />
+                                </IconButton>
+                            </Link>
+                        </Tooltip>
+                    )}
+                    {!isMinting && !hasTxHash && '-'}
                 </TableCell>
             </TableRow>
         )
@@ -50,14 +74,15 @@ const BadgesTable = ({ data }) => {
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell children={translatables.texts.type} align="center" />
-                        <TableCell children={translatables.texts.badge_name} align="center" />
-                        <TableCell children={translatables.texts.date} align="center" />
-                        <TableCell align="center" />
+                        <TableCell>{translatables.texts.course_title || 'Course'}</TableCell>
+                        <TableCell align="center">{translatables.texts.professor || 'Instructor'}</TableCell>
+                        <TableCell align="center">{translatables.texts.completed_date || 'Completed'}</TableCell>
+                        <TableCell align="center">{translatables.texts.status || 'Status'}</TableCell>
+                        <TableCell align="center">{translatables.texts.transaction || 'Transaction'}</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {displayTableData(data)}
+                    {displayTableData}
                 </TableBody>
             </Table>
         </TableContainer>

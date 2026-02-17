@@ -88,9 +88,12 @@ const main = async () => {
     const mintResult = await mintResponse.json();
 
     // Build transaction URL for tracking
-    const explorerBaseUrl = network === 'mainnet'
-      ? 'https://cardanoscan.io/transaction'
-      : 'https://preprod.cardanoscan.io/transaction';
+    // Use environment variable if set, otherwise fall back to default based on network
+    const explorerBaseUrl = process.env.CARDANO_EXPLORER_URL
+      ? process.env.CARDANO_EXPLORER_URL + '/transaction'
+      : (network === 'mainnet'
+          ? 'https://cardanoscan.io/transaction'
+          : 'https://preprod.cardanoscan.io/transaction');
 
     // Get the minting policy hash for consistency with direct minting
     const mintingPolicyHash = await getMintingPolicyHash();

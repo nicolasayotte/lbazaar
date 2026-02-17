@@ -3,6 +3,7 @@ import { Block, Check, Search } from "@mui/icons-material"
 import { Chip, IconButton, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
 import EmptyCard from "../../../../components/common/EmptyCard"
 import { getRoute } from "../../../../helpers/routes.helper"
+import { formatDualPrice } from "../../../../helpers/currency.helper"
 
 const ClassApplicationTable = ({ data }) => {
 
@@ -24,7 +25,7 @@ const ClassApplicationTable = ({ data }) => {
                 <TableCell children={row.professor_name}/>
                 <TableCell align="center" children={row.type}/>
                 <TableCell align="center" children={row.category}/>
-                <TableCell align="center" children={row.nft_id ? 'NFT' : row.price}/>
+                <TableCell align="center" children={row.nft_id ? 'NFT' : (row.price ? formatDualPrice(row.price, row.price_in_ada) : '-')}/>
                 <TableCell align="center" children={row.created_at}/>
                 <TableCell align="center">
                     <Chip size="small" label={row.status} color={statusColors[row.status]}/>
