@@ -356,7 +356,7 @@ class CertificateController extends Controller
             // Mint certificate for the student
             $result = $this->certificateService->mintAndAirdropCertificate($course, $student);
 
-            return response()->json($result, $result['success'] ? 200 : 400);
+            return response()->json($result, 200);
 
         } catch (Exception $e) {
             Log::error('Failed to mint single certificate', [

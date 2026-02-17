@@ -1,0 +1,9 @@
+
+Running 4 tests using 4 workers
+
+  ✓  2 [chromium] › tests/Browser/top-page.spec.js:42:9 › Login Page › has a submit button (674ms)
+  ✓  4 [chromium] › tests/Browser/top-page.spec.js:33:9 › Login Page › renders the portal login form (727ms)
+  ✓  1 [chromium] › tests/Browser/top-page.spec.js:16:9 › Top Page › loads the top page with welcome title (859ms)
+  ✓  3 [chromium] › tests/Browser/top-page.spec.js:22:9 › Top Page › displays navigation elements (929ms)
+
+  4 passed (2.1s)

@@ -3,12 +3,16 @@
     "scripts": {
         "dev": "vite",
         "build": "vite build",
-        "test": "vitest",
+        "test": "vitest run --reporter=verbose > docs/test-reports/js-unit-tests.log 2>&1",
         "test:watch": "vitest --watch",
         "test:coverage": "vitest --coverage",
-        "postman:test": "npx --yes newman run postman/lbazaar.postman_collection.json -e postman/local.postman_environment.json"
+        "postman:test": "npx --yes newman run postman/lbazaar.postman_collection.json -e postman/local.postman_environment.json > docs/test-reports/postman-tests.log 2>&1",
+        "test:browser": "npx playwright test --reporter=list > docs/test-reports/playwright-tests.log 2>&1",
+        "test:browser:ui": "npx playwright test --ui",
+        "test:browser:headed": "npx playwright test --headed"
     },
     "devDependencies": {
+        "@playwright/test": "^1.58.2",
         "@testing-library/dom": "^10.4.1",
         "@testing-library/jest-dom": "^6.9.1",
         "@testing-library/react": "^16.3.2",

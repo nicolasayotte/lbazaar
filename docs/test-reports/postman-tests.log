@@ -1,0 +1,145 @@
+(node:196493) [DEP0176] DeprecationWarning: fs.F_OK is deprecated, use fs.constants.F_OK instead
+(Use `node --trace-deprecation ...` to show where the warning was created)
+newman
+
+Lbazaar PHPUnit Parity
+
+❏ Auth
+↳ Login as Teacher
+  POST http://localhost:8080/api/postman/token [200 OK, 333B, 134ms]
+  ✓  returns 200
+  ✓  token captured
+
+↳ Login as Other Teacher
+  POST http://localhost:8080/api/postman/token [200 OK, 334B, 90ms]
+  ✓  returns 200
+  ✓  token captured
+
+↳ Login as Student (linked wallet)
+  POST http://localhost:8080/api/postman/token [200 OK, 334B, 90ms]
+  ✓  returns 200
+  ✓  token captured
+
+↳ Login as Student (custodial)
+  POST http://localhost:8080/api/postman/token [200 OK, 334B, 90ms]
+  ✓  returns 200
+  ✓  token captured
+
+❏ Fixtures
+↳ Fetch Fixture Ids
+  GET http://localhost:8080/api/postman/fixtures [200 OK, 591B, 43ms]
+  ✓  returns 200
+  ✓  mintable course detected
+  ✓  empty course detected
+
+❏ Certificates
+↳ Mint & Airdrop requires auth (401)
+  POST http://localhost:8080/api/certificates/mint-and-airdrop [401 Unauthorized, 262B, 18ms]
+  ✓  returns 401 without token
+
+↳ Mint & Airdrop validates input (422)
+  POST http://localhost:8080/api/certificates/mint-and-airdrop [422 Unprocessable Content, 397B, 23ms]
+  ✓  returns 422 on validation failure
+  ✓  includes course_id error
+
+↳ Mint & Airdrop rejects foreign teacher (403)
+  POST http://localhost:8080/api/certificates/mint-and-airdrop [403 Forbidden, 372B, 38ms]
+  ✓  returns 403 for non-owner teacher
+  ✓  contains permission message
+
+↳ Mint & Airdrop reports empty course (404)
+  POST http://localhost:8080/api/certificates/mint-and-airdrop [404 Not Found, 412B, 46ms]
+  ✓  returns 404 when no students eligible
+  ✓  includes zero eligible count
+
+↳ Mint & Airdrop succeeds when service available (200)
+  POST http://localhost:8080/api/certificates/mint-and-airdrop [200 OK, 824B, 31ms]
+  ✓  returns 200 when certificate service is configured
+  ✓  marks certificate run as successful
+  ✓  yields result entries
+
+↳ Completion summary for teacher
+  GET http://localhost:8080/api/certificates/completion-summary [200 OK, 624B, 29ms]
+  ✓  returns 200 for summary
+  ✓  payload advertises success
+  ✓  payload includes schedules array
+
+❏ Certificate Management
+↳ GET Eligible Students - Success (200)
+  GET http://localhost:8080/api/certificates/courses/524/eligible-students [200 OK, 614B, 29ms]
+  ✓  returns 200
+  ✓  response has success field
+  ✓  response has data field with students array
+  ✓  students array contains required fields
+
+↳ GET Eligible Students - Requires Auth (401)
+  GET http://localhost:8080/api/certificates/courses/524/eligible-students [401 Unauthorized, 262B, 17ms]
+  ✓  returns 401 without token
+
+↳ GET Eligible Students - Requires Ownership (403)
+  GET http://localhost:8080/api/certificates/courses/524/eligible-students [403 Forbidden, 357B, 38ms]
+  ✓  returns 403 for non-owner teacher
+  ✓  contains permission message
+
+↳ GET Certificate Status - Success (200)
+  GET http://localhost:8080/api/certificates/courses/524/students/1154/status [200 OK, 435B, 29ms]
+  ✓  returns 200
+  ✓  response has success field
+  ✓  response has data with status
+  ✓  status is valid value
+
+↳ POST Mint Single Certificate - Success (200/202)
+  POST http://localhost:8080/api/certificates/courses/524/students/1154/mint [200 OK, 481B, 29ms]
+  ✓  returns 200 or 202
+  ✓  response has success field
+  ✓  response has message field
+
+↳ POST Batch Mint - Success (200)
+  POST http://localhost:8080/api/certificates/courses/524/batch-mint [200 OK, 624B, 27ms]
+  ✓  returns 200
+  ✓  response has success field
+  ✓  response has message field
+  ✓  response data has success_count
+  ✓  response data has failure_count
+  ✓  response data has results array
+
+↳ POST Batch Mint - Validates student_ids (422)
+  POST http://localhost:8080/api/certificates/courses/524/batch-mint [422 Unprocessable Content, 403B, 25ms]
+  ✓  returns 422 on validation failure
+  ✓  includes student_ids error
+
+↳ POST Mint Single - Requires Teacher Role (403)
+  POST http://localhost:8080/api/certificates/courses/524/students/1154/mint [403 Forbidden, 325B, 49ms]
+  ✓  returns 403 for student role
+  ✓  contains permission or role message
+
+❏ User
+↳ Current user exposes linked wallet
+  GET http://localhost:8080/api/user [200 OK, 1.08kB, 22ms]
+  ✓  returns 200 for linked wallet user
+  ✓  stake key matches fixture
+
+↳ Current user falls back to custodial wallet
+  GET http://localhost:8080/api/user [200 OK, 1.06kB, 36ms]
+  ✓  returns 200 for custodial user
+  ✓  custodial address is present
+
+┌─────────────────────────┬───────────────────┬───────────────────┐
+│                         │          executed │            failed │
+├─────────────────────────┼───────────────────┼───────────────────┤
+│              iterations │                 1 │                 0 │
+├─────────────────────────┼───────────────────┼───────────────────┤
+│                requests │                21 │                 0 │
+├─────────────────────────┼───────────────────┼───────────────────┤
+│            test-scripts │                21 │                 0 │
+├─────────────────────────┼───────────────────┼───────────────────┤
+│      prerequest-scripts │                 0 │                 0 │
+├─────────────────────────┼───────────────────┼───────────────────┤
+│              assertions │                52 │                 0 │
+├─────────────────────────┴───────────────────┴───────────────────┤
+│ total run duration: 1216ms                                      │
+├─────────────────────────────────────────────────────────────────┤
+│ total data received: 4.78kB (approx)                            │
+├─────────────────────────────────────────────────────────────────┤
+│ average response time: 44ms [min: 17ms, max: 134ms, s.d.: 29ms] │
+└─────────────────────────────────────────────────────────────────┘

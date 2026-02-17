@@ -17,13 +17,21 @@ class TeacherMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
+        $isApiRequest = $request->expectsJson() || $request->is('api/*');
+
         // Check if not authenticated, then redirect to login
         if (is_null(@$request->user())) {
+            if ($isApiRequest) {
+                return response()->json(['message' => 'Not authenticated.'], 401);
+            }
             return redirect()->route('portal.login');
         }
 
         // Check if authenticated is not teacher, then redirect to top page
         if (!$request->user()->hasRole(Role::TEACHER)) {
+            if ($isApiRequest) {
+                return response()->json(['message' => 'Forbidden. Teacher role required.'], 403);
+            }
             return redirect()->route('top');
         }
 
