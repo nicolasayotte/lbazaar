@@ -1,9 +1,62 @@
 
 Running 4 tests using 4 workers
 
-  ✓  2 [chromium] › tests/Browser/top-page.spec.js:42:9 › Login Page › has a submit button (674ms)
-  ✓  4 [chromium] › tests/Browser/top-page.spec.js:33:9 › Login Page › renders the portal login form (727ms)
-  ✓  1 [chromium] › tests/Browser/top-page.spec.js:16:9 › Top Page › loads the top page with welcome title (859ms)
-  ✓  3 [chromium] › tests/Browser/top-page.spec.js:22:9 › Top Page › displays navigation elements (929ms)
+  ✘  1 [chromium] › tests/Browser/top-page.spec.js:16:9 › Top Page › loads the top page with welcome title (3ms)
+  ✘  3 [chromium] › tests/Browser/top-page.spec.js:22:9 › Top Page › displays navigation elements (3ms)
+  ✘  4 [chromium] › tests/Browser/top-page.spec.js:42:9 › Login Page › has a submit button (2ms)
+  ✘  2 [chromium] › tests/Browser/top-page.spec.js:33:9 › Login Page › renders the portal login form (3ms)
 
-  4 passed (2.1s)
+
+  1) [chromium] › tests/Browser/top-page.spec.js:16:9 › Top Page › loads the top page with welcome title 
+
+    Error: browserType.launch: Executable doesn't exist at /home/sail/.cache/ms-playwright/chromium_headless_shell-1208/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+  2) [chromium] › tests/Browser/top-page.spec.js:22:9 › Top Page › displays navigation elements ────
+
+    Error: browserType.launch: Executable doesn't exist at /home/sail/.cache/ms-playwright/chromium_headless_shell-1208/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+  3) [chromium] › tests/Browser/top-page.spec.js:33:9 › Login Page › renders the portal login form ─
+
+    Error: browserType.launch: Executable doesn't exist at /home/sail/.cache/ms-playwright/chromium_headless_shell-1208/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+  4) [chromium] › tests/Browser/top-page.spec.js:42:9 › Login Page › has a submit button ───────────
+
+    Error: browserType.launch: Executable doesn't exist at /home/sail/.cache/ms-playwright/chromium_headless_shell-1208/chrome-headless-shell-linux64/chrome-headless-shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+  4 failed
+    [chromium] › tests/Browser/top-page.spec.js:16:9 › Top Page › loads the top page with welcome title 
+    [chromium] › tests/Browser/top-page.spec.js:22:9 › Top Page › displays navigation elements ─────
+    [chromium] › tests/Browser/top-page.spec.js:33:9 › Login Page › renders the portal login form ──
+    [chromium] › tests/Browser/top-page.spec.js:42:9 › Login Page › has a submit button ────────────

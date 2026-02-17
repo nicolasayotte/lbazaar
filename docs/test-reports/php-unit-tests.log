@@ -1,1 +1,19 @@
-Course Feedback (Tests\Unit\CourseFeedback)
+Exchange Rate Service (Tests\Unit\Services\API\ExchangeRateService)
+ [x] Fetches rate from coingecko api
+ [x] Caches exchange rate
+ [x] Falls back to database setting on api failure
+ [x] Handles missing cardano data in response
+ [x] Converts jpy to ada correctly
+ [x] Jpy to ada rounds to two decimals
+ [x] Jpy to ada handles zero jpy
+ [x] Throws exception when no setting exists
+ [x] Caches fallback rate separately from successful rate
+ [x] Fallback rate uses shorter cache ttl
+ [x] Successful api response not affected by fallback cache
+ [x] Validates fallback rate on api failure
+ [x] Adds price in ada to courses collection
+ [x] Adds price in ada to empty collection
+ [x] Adds price in ada gracefully when no setting exists
+ [x] Adds price in ada to course applications
+ [x] Batch computation fetches rate only once
+

@@ -1,19 +1,21 @@
 # Testing Strategy
 
-> **AI Context Summary**: Test pyramid: Unit (PHPUnit for services, Vitest for React/web3) → Integration (PHPUnit Feature for controllers) → E2E (Postman). Run `sail test` for PHP, `npm test` for React, `cd web3 && npm test` for blockchain (writes to log, use `npm run test:show` for terminal output). Tests use DatabaseTransactions trait. Mock web3 exec() calls in service tests. Web3 tests use `.spec.mjs` extension. Coverage target: 80% services, 70% controllers/components.
+> **AI Context Summary**: Test pyramid: Unit (PHPUnit for services, Vitest for React/web3) → Integration (PHPUnit Feature for controllers) → E2E (Postman) → Browser (Playwright). Run `sail test` for PHP, `npm test` for React, `cd web3 && npm test` for blockchain (writes to log, use `npm run test:show` for terminal output), `npm run test:browser` for Playwright browser tests. Tests use DatabaseTransactions trait. Mock web3 exec() calls in service tests. Web3 tests use `.spec.mjs` extension. Browser tests use `.spec.js` in `tests/Browser/`. Coverage target: 80% services, 70% controllers/components.
 
 ## Overview
 
 Le Bazaar follows a **test pyramid strategy** with three layers:
 
 ```
-       /\
-      /E2E\          Postman API tests (limited)
-     /------\
-    /  INT   \       PHPUnit Feature tests + Vitest integration
-   /----------\
-  /   UNIT     \     PHPUnit Unit tests + Vitest unit tests
- /--------------\
+      /\
+     /BRW\           Playwright browser tests (smoke, user flows)
+    /------\
+   / E2E    \        Postman API tests (limited)
+  /----------\
+ /   INT      \      PHPUnit Feature tests + Vitest integration
+/--------------\
+/    UNIT       \    PHPUnit Unit tests + Vitest unit tests
+/----------------\
 ```
 
 ## Test Organization
@@ -57,6 +59,14 @@ resources/js/
 └── helpers/
     └── __tests__/
         └── currency.helper.test.js
+```
+
+### Browser Tests (Playwright)
+
+```
+tests/
+└── Browser/
+    └── top-page.spec.js        (smoke test: top page + login)
 ```
 
 ### Web3 Tests (Vitest)
@@ -131,6 +141,43 @@ cd web3 && npm run test:watch
 # Specific test file
 cd web3 && npm run test:show utils.spec.mjs
 ```
+
+### Browser Tests (Playwright)
+
+Playwright runs on the **host machine** (not inside the Sail container), testing real user flows in a Chromium browser against the running app.
+
+**Prerequisites**: Sail must be running at `localhost:8080` (`sail up -d`).
+
+```bash
+# Install Chromium browser (first time only)
+npx playwright install --with-deps chromium
+
+# Run all browser tests
+npm run test:browser
+
+# Run in headed mode (see the browser)
+npm run test:browser:headed
+
+# Run with interactive UI
+npm run test:browser:ui
+
+# Run a specific test file
+npx playwright test tests/Browser/top-page.spec.js
+```
+
+**File location**: `tests/Browser/*.spec.js`
+
+**Writing new tests**:
+```javascript
+import { test, expect } from '@playwright/test';
+
+test('example test', async ({ page }) => {
+    await page.goto('/');
+    await expect(page).toHaveTitle(/LE BAZAAR/i);
+});
+```
+
+**Configuration**: `playwright.config.js` at project root. Base URL defaults to `http://localhost:8080` (override with `APP_URL` env var).
 
 ### E2E Tests (Postman)
 

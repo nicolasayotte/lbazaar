@@ -1,145 +1,460 @@
-(node:196493) [DEP0176] DeprecationWarning: fs.F_OK is deprecated, use fs.constants.F_OK instead
-(Use `node --trace-deprecation ...` to show where the warning was created)
+npm warn deprecated har-validator@5.1.5: this library is no longer supported
+npm warn deprecated uuid@3.4.0: Please upgrade  to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
+npm warn deprecated @faker-js/faker@5.5.3: Please update to a newer version.
 newman
 
 Lbazaar PHPUnit Parity
 
 ❏ Auth
 ↳ Login as Teacher
-  POST http://localhost:8080/api/postman/token [200 OK, 333B, 134ms]
-  ✓  returns 200
-  ✓  token captured
+  POST http://localhost:8080/api/postman/token [errored]
+     connect ECONNREFUSED 127.0.0.1:8080
+  2. returns 200
+  3⠄ JSONError in test-script
 
 ↳ Login as Other Teacher
-  POST http://localhost:8080/api/postman/token [200 OK, 334B, 90ms]
-  ✓  returns 200
-  ✓  token captured
+  POST http://localhost:8080/api/postman/token [errored]
+     connect ECONNREFUSED 127.0.0.1:8080
+  5. returns 200
+  6⠄ JSONError in test-script
 
 ↳ Login as Student (linked wallet)
-  POST http://localhost:8080/api/postman/token [200 OK, 334B, 90ms]
-  ✓  returns 200
-  ✓  token captured
+  POST http://localhost:8080/api/postman/token [errored]
+     connect ECONNREFUSED 127.0.0.1:8080
+  8. returns 200
+  9⠄ JSONError in test-script
 
 ↳ Login as Student (custodial)
-  POST http://localhost:8080/api/postman/token [200 OK, 334B, 90ms]
-  ✓  returns 200
-  ✓  token captured
+  POST http://localhost:8080/api/postman/token [errored]
+     connect ECONNREFUSED 127.0.0.1:8080
+ 11. returns 200
+ 12⠄ JSONError in test-script
 
 ❏ Fixtures
 ↳ Fetch Fixture Ids
-  GET http://localhost:8080/api/postman/fixtures [200 OK, 591B, 43ms]
-  ✓  returns 200
-  ✓  mintable course detected
-  ✓  empty course detected
+  GET http://localhost:8080/api/postman/fixtures [errored]
+     connect ECONNREFUSED 127.0.0.1:8080
+ 14. returns 200
+ 15⠄ JSONError in test-script
 
 ❏ Certificates
 ↳ Mint & Airdrop requires auth (401)
-  POST http://localhost:8080/api/certificates/mint-and-airdrop [401 Unauthorized, 262B, 18ms]
-  ✓  returns 401 without token
+  POST http://localhost:8080/api/certificates/mint-and-airdrop [errored]
+     connect ECONNREFUSED 127.0.0.1:8080
+ 17. returns 401 without token
 
 ↳ Mint & Airdrop validates input (422)
-  POST http://localhost:8080/api/certificates/mint-and-airdrop [422 Unprocessable Content, 397B, 23ms]
-  ✓  returns 422 on validation failure
-  ✓  includes course_id error
+  POST http://localhost:8080/api/certificates/mint-and-airdrop [errored]
+     connect ECONNREFUSED 127.0.0.1:8080
+ 19. returns 422 on validation failure
+ 20⠄ JSONError in test-script
 
 ↳ Mint & Airdrop rejects foreign teacher (403)
-  POST http://localhost:8080/api/certificates/mint-and-airdrop [403 Forbidden, 372B, 38ms]
-  ✓  returns 403 for non-owner teacher
-  ✓  contains permission message
+  POST http://localhost:8080/api/certificates/mint-and-airdrop [errored]
+     connect ECONNREFUSED 127.0.0.1:8080
+ 22. returns 403 for non-owner teacher
+ 23⠄ JSONError in test-script
 
 ↳ Mint & Airdrop reports empty course (404)
-  POST http://localhost:8080/api/certificates/mint-and-airdrop [404 Not Found, 412B, 46ms]
-  ✓  returns 404 when no students eligible
-  ✓  includes zero eligible count
+  POST http://localhost:8080/api/certificates/mint-and-airdrop [errored]
+     connect ECONNREFUSED 127.0.0.1:8080
+ 25. returns 404 when no students eligible
+ 26⠄ JSONError in test-script
 
 ↳ Mint & Airdrop succeeds when service available (200)
-  POST http://localhost:8080/api/certificates/mint-and-airdrop [200 OK, 824B, 31ms]
-  ✓  returns 200 when certificate service is configured
-  ✓  marks certificate run as successful
-  ✓  yields result entries
+  POST http://localhost:8080/api/certificates/mint-and-airdrop [errored]
+     connect ECONNREFUSED 127.0.0.1:8080
+ 28. returns 200 when certificate service is configured
+ 29⠄ JSONError in test-script
 
 ↳ Completion summary for teacher
-  GET http://localhost:8080/api/certificates/completion-summary [200 OK, 624B, 29ms]
-  ✓  returns 200 for summary
-  ✓  payload advertises success
-  ✓  payload includes schedules array
+  GET http://localhost:8080/api/certificates/completion-summary [errored]
+     connect ECONNREFUSED 127.0.0.1:8080
+ 31. returns 200 for summary
+ 32⠄ JSONError in test-script
 
 ❏ Certificate Management
 ↳ GET Eligible Students - Success (200)
-  GET http://localhost:8080/api/certificates/courses/524/eligible-students [200 OK, 614B, 29ms]
-  ✓  returns 200
-  ✓  response has success field
-  ✓  response has data field with students array
-  ✓  students array contains required fields
+  GET http://localhost:8080/api/certificates/courses//eligible-students [errored]
+     connect ECONNREFUSED 127.0.0.1:8080
+ 34. returns 200
+ 35⠄ JSONError in test-script
 
 ↳ GET Eligible Students - Requires Auth (401)
-  GET http://localhost:8080/api/certificates/courses/524/eligible-students [401 Unauthorized, 262B, 17ms]
-  ✓  returns 401 without token
+  GET http://localhost:8080/api/certificates/courses//eligible-students [errored]
+     connect ECONNREFUSED 127.0.0.1:8080
+ 37. returns 401 without token
 
 ↳ GET Eligible Students - Requires Ownership (403)
-  GET http://localhost:8080/api/certificates/courses/524/eligible-students [403 Forbidden, 357B, 38ms]
-  ✓  returns 403 for non-owner teacher
-  ✓  contains permission message
+  GET http://localhost:8080/api/certificates/courses//eligible-students [errored]
+     connect ECONNREFUSED 127.0.0.1:8080
+ 39. returns 403 for non-owner teacher
+ 40⠄ JSONError in test-script
 
 ↳ GET Certificate Status - Success (200)
-  GET http://localhost:8080/api/certificates/courses/524/students/1154/status [200 OK, 435B, 29ms]
-  ✓  returns 200
-  ✓  response has success field
-  ✓  response has data with status
-  ✓  status is valid value
+  GET http://localhost:8080/api/certificates/courses//students/{{eligible_student_id}}/status [errored]
+     connect ECONNREFUSED 127.0.0.1:8080
+ 42. returns 200
+ 43⠄ JSONError in test-script
 
 ↳ POST Mint Single Certificate - Success (200/202)
-  POST http://localhost:8080/api/certificates/courses/524/students/1154/mint [200 OK, 481B, 29ms]
-  ✓  returns 200 or 202
-  ✓  response has success field
-  ✓  response has message field
+  POST http://localhost:8080/api/certificates/courses//students/{{eligible_student_id}}/mint [errored]
+     connect ECONNREFUSED 127.0.0.1:8080
+ 45. returns 200 or 202
+ 46⠄ JSONError in test-script
 
 ↳ POST Batch Mint - Success (200)
-  POST http://localhost:8080/api/certificates/courses/524/batch-mint [200 OK, 624B, 27ms]
-  ✓  returns 200
-  ✓  response has success field
-  ✓  response has message field
-  ✓  response data has success_count
-  ✓  response data has failure_count
-  ✓  response data has results array
+  POST http://localhost:8080/api/certificates/courses//batch-mint [errored]
+     connect ECONNREFUSED 127.0.0.1:8080
+ 48. returns 200
+ 49⠄ JSONError in test-script
 
 ↳ POST Batch Mint - Validates student_ids (422)
-  POST http://localhost:8080/api/certificates/courses/524/batch-mint [422 Unprocessable Content, 403B, 25ms]
-  ✓  returns 422 on validation failure
-  ✓  includes student_ids error
+  POST http://localhost:8080/api/certificates/courses//batch-mint [errored]
+     connect ECONNREFUSED 127.0.0.1:8080
+ 51. returns 422 on validation failure
+ 52⠄ JSONError in test-script
 
 ↳ POST Mint Single - Requires Teacher Role (403)
-  POST http://localhost:8080/api/certificates/courses/524/students/1154/mint [403 Forbidden, 325B, 49ms]
-  ✓  returns 403 for student role
-  ✓  contains permission or role message
+  POST http://localhost:8080/api/certificates/courses//students/{{eligible_student_id}}/mint [errored]
+     connect ECONNREFUSED 127.0.0.1:8080
+ 54. returns 403 for student role
+ 55⠄ JSONError in test-script
 
 ❏ User
 ↳ Current user exposes linked wallet
-  GET http://localhost:8080/api/user [200 OK, 1.08kB, 22ms]
-  ✓  returns 200 for linked wallet user
-  ✓  stake key matches fixture
+  GET http://localhost:8080/api/user [errored]
+     connect ECONNREFUSED 127.0.0.1:8080
+ 57. returns 200 for linked wallet user
+ 58⠄ JSONError in test-script
 
 ↳ Current user falls back to custodial wallet
-  GET http://localhost:8080/api/user [200 OK, 1.06kB, 36ms]
-  ✓  returns 200 for custodial user
-  ✓  custodial address is present
+  GET http://localhost:8080/api/user [errored]
+     connect ECONNREFUSED 127.0.0.1:8080
+ 60. returns 200 for custodial user
+ 61⠄ JSONError in test-script
 
-┌─────────────────────────┬───────────────────┬───────────────────┐
-│                         │          executed │            failed │
-├─────────────────────────┼───────────────────┼───────────────────┤
-│              iterations │                 1 │                 0 │
-├─────────────────────────┼───────────────────┼───────────────────┤
-│                requests │                21 │                 0 │
-├─────────────────────────┼───────────────────┼───────────────────┤
-│            test-scripts │                21 │                 0 │
-├─────────────────────────┼───────────────────┼───────────────────┤
-│      prerequest-scripts │                 0 │                 0 │
-├─────────────────────────┼───────────────────┼───────────────────┤
-│              assertions │                52 │                 0 │
-├─────────────────────────┴───────────────────┴───────────────────┤
-│ total run duration: 1216ms                                      │
-├─────────────────────────────────────────────────────────────────┤
-│ total data received: 4.78kB (approx)                            │
-├─────────────────────────────────────────────────────────────────┤
-│ average response time: 44ms [min: 17ms, max: 134ms, s.d.: 29ms] │
-└─────────────────────────────────────────────────────────────────┘
+┌─────────────────────────┬──────────┬──────────┐
+│                         │ executed │   failed │
+├─────────────────────────┼──────────┼──────────┤
+│              iterations │        1 │        0 │
+├─────────────────────────┼──────────┼──────────┤
+│                requests │       21 │       21 │
+├─────────────────────────┼──────────┼──────────┤
+│            test-scripts │       21 │       19 │
+├─────────────────────────┼──────────┼──────────┤
+│      prerequest-scripts │        0 │        0 │
+├─────────────────────────┼──────────┼──────────┤
+│              assertions │       21 │       21 │
+├─────────────────────────┴──────────┴──────────┤
+│ total run duration: 331ms                     │
+├───────────────────────────────────────────────┤
+│ total data received: 0B (approx)              │
+└───────────────────────────────────────────────┘
+
+[31m   # [39m[31m failure        [39m[31m detail                                                                             [39m
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 01.  Error                                                                                              
+                      connect ECONNREFUSED 127.0.0.1:8080                                                
+                      at request                                                                         
+                      inside ""                                                                          
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 02.  AssertionError  returns 200                                                                        
+                      expected PostmanResponse{ …(5) } to have property 'code'                           
+                      at assertion:0 in test-script                                                      
+                      inside "Auth / Login as Teacher"                                                   
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 03.  JSONError                                                                                          
+                      "undefined" is not valid JSON                                                      
+                      at test-script                                                                     
+                      inside "Auth / Login as Teacher"                                                   
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 04.  Error                                                                                              
+                      connect ECONNREFUSED 127.0.0.1:8080                                                
+                      at request                                                                         
+                      inside ""                                                                          
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 05.  AssertionError  returns 200                                                                        
+                      expected PostmanResponse{ …(5) } to have property 'code'                           
+                      at assertion:0 in test-script                                                      
+                      inside "Auth / Login as Other Teacher"                                             
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 06.  JSONError                                                                                          
+                      "undefined" is not valid JSON                                                      
+                      at test-script                                                                     
+                      inside "Auth / Login as Other Teacher"                                             
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 07.  Error                                                                                              
+                      connect ECONNREFUSED 127.0.0.1:8080                                                
+                      at request                                                                         
+                      inside ""                                                                          
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 08.  AssertionError  returns 200                                                                        
+                      expected PostmanResponse{ …(5) } to have property 'code'                           
+                      at assertion:0 in test-script                                                      
+                      inside "Auth / Login as Student (linked wallet)"                                   
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 09.  JSONError                                                                                          
+                      "undefined" is not valid JSON                                                      
+                      at test-script                                                                     
+                      inside "Auth / Login as Student (linked wallet)"                                   
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 10.  Error                                                                                              
+                      connect ECONNREFUSED 127.0.0.1:8080                                                
+                      at request                                                                         
+                      inside ""                                                                          
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 11.  AssertionError  returns 200                                                                        
+                      expected PostmanResponse{ …(5) } to have property 'code'                           
+                      at assertion:0 in test-script                                                      
+                      inside "Auth / Login as Student (custodial)"                                       
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 12.  JSONError                                                                                          
+                      "undefined" is not valid JSON                                                      
+                      at test-script                                                                     
+                      inside "Auth / Login as Student (custodial)"                                       
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 13.  Error                                                                                              
+                      connect ECONNREFUSED 127.0.0.1:8080                                                
+                      at request                                                                         
+                      inside ""                                                                          
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 14.  AssertionError  returns 200                                                                        
+                      expected PostmanResponse{ …(5) } to have property 'code'                           
+                      at assertion:0 in test-script                                                      
+                      inside "Fixtures / Fetch Fixture Ids"                                              
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 15.  JSONError                                                                                          
+                      "undefined" is not valid JSON                                                      
+                      at test-script                                                                     
+                      inside "Fixtures / Fetch Fixture Ids"                                              
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 16.  Error                                                                                              
+                      connect ECONNREFUSED 127.0.0.1:8080                                                
+                      at request                                                                         
+                      inside ""                                                                          
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 17.  AssertionError  returns 401 without token                                                          
+                      expected PostmanResponse{ …(5) } to have property 'code'                           
+                      at assertion:0 in test-script                                                      
+                      inside "Certificates / Mint & Airdrop requires auth (401)"                         
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 18.  Error                                                                                              
+                      connect ECONNREFUSED 127.0.0.1:8080                                                
+                      at request                                                                         
+                      inside ""                                                                          
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 19.  AssertionError  returns 422 on validation failure                                                  
+                      expected PostmanResponse{ …(5) } to have property 'code'                           
+                      at assertion:0 in test-script                                                      
+                      inside "Certificates / Mint & Airdrop validates input (422)"                       
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 20.  JSONError                                                                                          
+                      "undefined" is not valid JSON                                                      
+                      at test-script                                                                     
+                      inside "Certificates / Mint & Airdrop validates input (422)"                       
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 21.  Error                                                                                              
+                      connect ECONNREFUSED 127.0.0.1:8080                                                
+                      at request                                                                         
+                      inside ""                                                                          
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 22.  AssertionError  returns 403 for non-owner teacher                                                  
+                      expected PostmanResponse{ …(5) } to have property 'code'                           
+                      at assertion:0 in test-script                                                      
+                      inside "Certificates / Mint & Airdrop rejects foreign teacher (403)"               
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 23.  JSONError                                                                                          
+                      "undefined" is not valid JSON                                                      
+                      at test-script                                                                     
+                      inside "Certificates / Mint & Airdrop rejects foreign teacher (403)"               
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 24.  Error                                                                                              
+                      connect ECONNREFUSED 127.0.0.1:8080                                                
+                      at request                                                                         
+                      inside ""                                                                          
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 25.  AssertionError  returns 404 when no students eligible                                              
+                      expected PostmanResponse{ …(5) } to have property 'code'                           
+                      at assertion:0 in test-script                                                      
+                      inside "Certificates / Mint & Airdrop reports empty course (404)"                  
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 26.  JSONError                                                                                          
+                      "undefined" is not valid JSON                                                      
+                      at test-script                                                                     
+                      inside "Certificates / Mint & Airdrop reports empty course (404)"                  
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 27.  Error                                                                                              
+                      connect ECONNREFUSED 127.0.0.1:8080                                                
+                      at request                                                                         
+                      inside ""                                                                          
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 28.  AssertionError  returns 200 when certificate service is configured                                 
+                      expected PostmanResponse{ …(5) } to have property 'code'                           
+                      at assertion:0 in test-script                                                      
+                      inside "Certificates / Mint & Airdrop succeeds when service available (200)"       
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 29.  JSONError                                                                                          
+                      "undefined" is not valid JSON                                                      
+                      at test-script                                                                     
+                      inside "Certificates / Mint & Airdrop succeeds when service available (200)"       
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 30.  Error                                                                                              
+                      connect ECONNREFUSED 127.0.0.1:8080                                                
+                      at request                                                                         
+                      inside ""                                                                          
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 31.  AssertionError  returns 200 for summary                                                            
+                      expected PostmanResponse{ …(5) } to have property 'code'                           
+                      at assertion:0 in test-script                                                      
+                      inside "Certificates / Completion summary for teacher"                             
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 32.  JSONError                                                                                          
+                      "undefined" is not valid JSON                                                      
+                      at test-script                                                                     
+                      inside "Certificates / Completion summary for teacher"                             
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 33.  Error                                                                                              
+                      connect ECONNREFUSED 127.0.0.1:8080                                                
+                      at request                                                                         
+                      inside ""                                                                          
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 34.  AssertionError  returns 200                                                                        
+                      expected PostmanResponse{ …(5) } to have property 'code'                           
+                      at assertion:0 in test-script                                                      
+                      inside "Certificate Management / GET Eligible Students - Success (200)"            
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 35.  JSONError                                                                                          
+                      "undefined" is not valid JSON                                                      
+                      at test-script                                                                     
+                      inside "Certificate Management / GET Eligible Students - Success (200)"            
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 36.  Error                                                                                              
+                      connect ECONNREFUSED 127.0.0.1:8080                                                
+                      at request                                                                         
+                      inside ""                                                                          
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 37.  AssertionError  returns 401 without token                                                          
+                      expected PostmanResponse{ …(5) } to have property 'code'                           
+                      at assertion:0 in test-script                                                      
+                      inside "Certificate Management / GET Eligible Students - Requires Auth (401)"      
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 38.  Error                                                                                              
+                      connect ECONNREFUSED 127.0.0.1:8080                                                
+                      at request                                                                         
+                      inside ""                                                                          
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 39.  AssertionError  returns 403 for non-owner teacher                                                  
+                      expected PostmanResponse{ …(5) } to have property 'code'                           
+                      at assertion:0 in test-script                                                      
+                      inside "Certificate Management / GET Eligible Students - Requires Ownership (403)" 
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 40.  JSONError                                                                                          
+                      "undefined" is not valid JSON                                                      
+                      at test-script                                                                     
+                      inside "Certificate Management / GET Eligible Students - Requires Ownership (403)" 
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 41.  Error                                                                                              
+                      connect ECONNREFUSED 127.0.0.1:8080                                                
+                      at request                                                                         
+                      inside ""                                                                          
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 42.  AssertionError  returns 200                                                                        
+                      expected PostmanResponse{ …(5) } to have property 'code'                           
+                      at assertion:0 in test-script                                                      
+                      inside "Certificate Management / GET Certificate Status - Success (200)"           
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 43.  JSONError                                                                                          
+                      "undefined" is not valid JSON                                                      
+                      at test-script                                                                     
+                      inside "Certificate Management / GET Certificate Status - Success (200)"           
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 44.  Error                                                                                              
+                      connect ECONNREFUSED 127.0.0.1:8080                                                
+                      at request                                                                         
+                      inside ""                                                                          
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 45.  AssertionError  returns 200 or 202                                                                 
+                      expected undefined to be one of [ 200, 202 ]                                       
+                      at assertion:0 in test-script                                                      
+                      inside "Certificate Management / POST Mint Single Certificate - Success (200/202)" 
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 46.  JSONError                                                                                          
+                      "undefined" is not valid JSON                                                      
+                      at test-script                                                                     
+                      inside "Certificate Management / POST Mint Single Certificate - Success (200/202)" 
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 47.  Error                                                                                              
+                      connect ECONNREFUSED 127.0.0.1:8080                                                
+                      at request                                                                         
+                      inside ""                                                                          
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 48.  AssertionError  returns 200                                                                        
+                      expected PostmanResponse{ …(5) } to have property 'code'                           
+                      at assertion:0 in test-script                                                      
+                      inside "Certificate Management / POST Batch Mint - Success (200)"                  
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 49.  JSONError                                                                                          
+                      "undefined" is not valid JSON                                                      
+                      at test-script                                                                     
+                      inside "Certificate Management / POST Batch Mint - Success (200)"                  
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 50.  Error                                                                                              
+                      connect ECONNREFUSED 127.0.0.1:8080                                                
+                      at request                                                                         
+                      inside ""                                                                          
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 51.  AssertionError  returns 422 on validation failure                                                  
+                      expected PostmanResponse{ …(5) } to have property 'code'                           
+                      at assertion:0 in test-script                                                      
+                      inside "Certificate Management / POST Batch Mint - Validates student_ids (422)"    
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 52.  JSONError                                                                                          
+                      "undefined" is not valid JSON                                                      
+                      at test-script                                                                     
+                      inside "Certificate Management / POST Batch Mint - Validates student_ids (422)"    
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 53.  Error                                                                                              
+                      connect ECONNREFUSED 127.0.0.1:8080                                                
+                      at request                                                                         
+                      inside ""                                                                          
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 54.  AssertionError  returns 403 for student role                                                       
+                      expected PostmanResponse{ …(5) } to have property 'code'                           
+                      at assertion:0 in test-script                                                      
+                      inside "Certificate Management / POST Mint Single - Requires Teacher Role (403)"   
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 55.  JSONError                                                                                          
+                      "undefined" is not valid JSON                                                      
+                      at test-script                                                                     
+                      inside "Certificate Management / POST Mint Single - Requires Teacher Role (403)"   
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 56.  Error                                                                                              
+                      connect ECONNREFUSED 127.0.0.1:8080                                                
+                      at request                                                                         
+                      inside ""                                                                          
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 57.  AssertionError  returns 200 for linked wallet user                                                 
+                      expected PostmanResponse{ …(5) } to have property 'code'                           
+                      at assertion:0 in test-script                                                      
+                      inside "User / Current user exposes linked wallet"                                 
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 58.  JSONError                                                                                          
+                      "undefined" is not valid JSON                                                      
+                      at test-script                                                                     
+                      inside "User / Current user exposes linked wallet"                                 
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 59.  Error                                                                                              
+                      connect ECONNREFUSED 127.0.0.1:8080                                                
+                      at request                                                                         
+                      inside ""                                                                          
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 60.  AssertionError  returns 200 for custodial user                                                     
+                      expected PostmanResponse{ …(5) } to have property 'code'                           
+                      at assertion:0 in test-script                                                      
+                      inside "User / Current user falls back to custodial wallet"                        
+[90m     [39m[90m                [39m[90m                                                                                    [39m
+ 61.  JSONError                                                                                          
+                      "undefined" is not valid JSON                                                      
+                      at test-script                                                                     
+                      inside "User / Current user falls back to custodial wallet"                        

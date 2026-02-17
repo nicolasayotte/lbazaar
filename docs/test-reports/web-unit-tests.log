@@ -10,18 +10,18 @@ tokenMph.hex:  hash-2
 
  ✓ common/__tests__/utils.spec.mjs > utils helpers > toSchema recursively converts objects and arrays to Helios schema 2ms
  ✓ common/__tests__/utils.spec.mjs > utils helpers > getTokenNamesAddrs collects token names and addresses for matching policy hash 2ms
- ✓ common/__tests__/network.spec.mjs > network utilities > returns network parameters for allowed network 13ms
+ ✓ common/__tests__/network.spec.mjs > network utilities > returns network parameters for allowed network 11ms
  ✓ common/__tests__/network.spec.mjs > network utilities > throws when network is invalid 4ms
- ✓ common/__tests__/minting-policy.spec.mjs > minting-policy helpers > calculateMintingPolicyHash uses single-signature policy when NMKR_PKH absent 13ms
- ✓ common/__tests__/minting-policy.spec.mjs > minting-policy helpers > calculateMintingPolicyHash uses multi-signature policy when requested 2ms
- ✓ common/__tests__/minting-policy.spec.mjs > minting-policy helpers > shouldUseMultiSigPolicy reflects NMKR_PKH presence 1ms
- ✓ common/__tests__/minting-policy.spec.mjs > minting-policy helpers > getMintingPolicyHash returns correct hash based on multi-sig flag 2ms
- ✓ common/__tests__/certificate-metadata.spec.mjs > certificate-metadata helpers > buildCertificateMetadata uses actual template and replaces placeholders correctly 5ms
- ✓ common/__tests__/certificate-metadata.spec.mjs > certificate-metadata helpers > buildCertificateMetadata falls back to defaults when fields missing 3ms
+ ✓ common/__tests__/certificate-metadata.spec.mjs > certificate-metadata helpers > buildCertificateMetadata uses actual template and replaces placeholders correctly 4ms
+ ✓ common/__tests__/certificate-metadata.spec.mjs > certificate-metadata helpers > buildCertificateMetadata falls back to defaults when fields missing 1ms
  ✓ common/__tests__/certificate-metadata.spec.mjs > certificate-metadata helpers > buildTicketMetadata uses actual template and replaces placeholders correctly 1ms
  ✓ common/__tests__/certificate-metadata.spec.mjs > certificate-metadata helpers > buildTicketMetadata falls back to defaults when fields missing 1ms
  ✓ common/__tests__/certificate-metadata.spec.mjs > certificate-metadata helpers > buildCIP25Metadata wraps certificate metadata with policy 1ms
  ✓ common/__tests__/certificate-metadata.spec.mjs > certificate-metadata helpers > buildCustomMetadata returns descriptive messages 0ms
+ ✓ common/__tests__/minting-policy.spec.mjs > minting-policy helpers > calculateMintingPolicyHash uses single-signature policy when NMKR_PKH absent 14ms
+ ✓ common/__tests__/minting-policy.spec.mjs > minting-policy helpers > calculateMintingPolicyHash uses multi-signature policy when requested 2ms
+ ✓ common/__tests__/minting-policy.spec.mjs > minting-policy helpers > shouldUseMultiSigPolicy reflects NMKR_PKH presence 2ms
+ ✓ common/__tests__/minting-policy.spec.mjs > minting-policy helpers > getMintingPolicyHash returns correct hash based on multi-sig flag 2ms
  ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Mock Data Generators > createMockCertificateMetadata creates valid metadata 2ms
  ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Mock Data Generators > createMockCertificateMetadata accepts overrides 0ms
  ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Mock Data Generators > createMockArgv generates correct arguments for NMKR script 0ms
@@ -31,13 +31,13 @@ tokenMph.hex:  hash-2
  ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Token Name Generation > getExpectedTokenNames generates correct reference token 0ms
  ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Token Name Generation > getExpectedTokenNames generates correct certificate token 0ms
  ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Token Name Generation > handles different course names and serial numbers 0ms
- ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Response Validation > validateSuccessResponse checks required fields 2ms
- ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Response Validation > validateSuccessResponse validates specific fields 1ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Response Validation > validateSuccessResponse checks required fields 1ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Response Validation > validateSuccessResponse validates specific fields 0ms
  ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Response Validation > validateErrorResponse checks error structure 0ms
  ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Response Validation > validateErrorResponse can check specific error messages 0ms
  ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Network Configuration > provides mainnet configuration 0ms
  ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Network Configuration > provides preprod configuration 0ms
- ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Network Configuration > mainnet and preprod have different URLs 1ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Network Configuration > mainnet and preprod have different URLs 0ms
  ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Validation Patterns > cardanoAddress pattern matches valid testnet addresses 0ms
  ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Validation Patterns > cardanoAddress pattern matches valid mainnet addresses 0ms
  ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Validation Patterns > transactionHash pattern matches valid hashes 0ms
@@ -54,13 +54,36 @@ tokenMph.hex:  hash-2
  ✓ run/__tests__/build-certificate-tx-nmkr.integration.spec.mjs > build-certificate-tx-nmkr integration tests > Parameter validation > should exist as a module 4ms
  ✓ run/__tests__/build-certificate-tx-nmkr.integration.spec.mjs > build-certificate-tx-nmkr integration tests > Environment setup > should read NETWORK environment variable 1ms
  ✓ run/__tests__/build-certificate-tx-nmkr.integration.spec.mjs > build-certificate-tx-nmkr integration tests > Environment setup > should read NMKR_API_KEY environment variable 1ms
- ✓ run/__tests__/build-certificate-tx-nmkr.integration.spec.mjs > build-certificate-tx-nmkr integration tests > Transaction link generation > should return transaction link on successful minting 13ms
- ✓ run/__tests__/build-certificate-tx-nmkr.integration.spec.mjs > build-certificate-tx-nmkr integration tests > Transaction link generation > should use mainnet explorer URL when NETWORK=mainnet 20ms
- ✓ run/__tests__/build-certificate-tx-nmkr.integration.spec.mjs > build-certificate-tx-nmkr integration tests > Transaction link generation > should handle missing transaction hash gracefully 2ms
- ✓ run/__tests__/build-certificate-tx-nmkr.integration.spec.mjs > build-certificate-tx-nmkr integration tests > Transaction link generation > should handle API errors and return error response 2ms
+ ✓ run/__tests__/build-certificate-tx-nmkr.integration.spec.mjs > build-certificate-tx-nmkr integration tests > Transaction link generation > should return transaction link on successful minting 14ms
+ ✓ run/__tests__/build-certificate-tx-nmkr.integration.spec.mjs > build-certificate-tx-nmkr integration tests > Transaction link generation > should use mainnet explorer URL when NETWORK=mainnet 3ms
+ ✓ run/__tests__/build-certificate-tx-nmkr.integration.spec.mjs > build-certificate-tx-nmkr integration tests > Transaction link generation > should handle missing transaction hash gracefully 14ms
+ ✓ run/__tests__/build-certificate-tx-nmkr.integration.spec.mjs > build-certificate-tx-nmkr integration tests > Transaction link generation > should handle API errors and return error response 8ms
+ ✓ run/__tests__/submit-purchase-tx.spec.mjs > submit-purchase-tx.mjs > Payment Verification > verifies teacher payment exists in outputs 15ms
+ ✓ run/__tests__/submit-purchase-tx.spec.mjs > submit-purchase-tx.mjs > Payment Verification > verifies admin payment exists in outputs 13ms
+ ✓ run/__tests__/submit-purchase-tx.spec.mjs > submit-purchase-tx.mjs > Payment Verification > returns error when teacher payment not found 10ms
+ ✓ run/__tests__/submit-purchase-tx.spec.mjs > submit-purchase-tx.mjs > Payment Verification > returns error when admin payment not found 3ms
+ ✓ run/__tests__/submit-purchase-tx.spec.mjs > submit-purchase-tx.mjs > Transaction Submission > returns txId on successful submission 13ms
+ ✓ run/__tests__/submit-purchase-tx.spec.mjs > submit-purchase-tx.mjs > Transaction Submission > returns 500 on submission error 2ms
+ ✓ run/__tests__/submit-purchase-tx.spec.mjs > submit-purchase-tx.mjs > Amount Conversion > converts lovelace to ADA in response 2ms
+ ✓ run/__tests__/submit-purchase-tx.spec.mjs > submit-purchase-tx.mjs > Amount Conversion > converts whole ADA amounts correctly 2ms
+ ✓ run/__tests__/submit-purchase-tx.spec.mjs > submit-purchase-tx.mjs > Signature Handling > adds user signature to transaction 2ms
+ ✓ run/__tests__/submit-purchase-tx.spec.mjs > submit-purchase-tx.mjs > Response Format > includes timestamp in success response 2ms
+ ✓ run/__tests__/submit-purchase-tx.spec.mjs > submit-purchase-tx.mjs > Response Format > includes timestamp in error response 2ms
+ ✓ run/__tests__/submit-purchase-tx.spec.mjs > submit-purchase-tx.mjs > Transaction Reconstruction > reconstructs transaction from CBOR 2ms
+ ✓ run/__tests__/build-purchase-tx.spec.mjs > build-purchase-tx.mjs > Commission Calculation > calculates admin commission correctly 16ms
+ ✓ run/__tests__/build-purchase-tx.spec.mjs > build-purchase-tx.mjs > Commission Calculation > handles fractional commission percentages 14ms
+ ✓ run/__tests__/build-purchase-tx.spec.mjs > build-purchase-tx.mjs > Transaction Outputs > creates two transaction outputs 9ms
+ ✓ run/__tests__/build-purchase-tx.spec.mjs > build-purchase-tx.mjs > Transaction Outputs > creates outputs with correct addresses and amounts 4ms
+ ✓ run/__tests__/build-purchase-tx.spec.mjs > build-purchase-tx.mjs > Error Handling - Insufficient Funds > returns 501 when insufficient funds 11ms
+ ✓ run/__tests__/build-purchase-tx.spec.mjs > build-purchase-tx.mjs > Error Handling - General Errors > returns 500 on other errors 2ms
+ ✓ run/__tests__/build-purchase-tx.spec.mjs > build-purchase-tx.mjs > Success Response > returns cborTx on success 2ms
+ ✓ run/__tests__/build-purchase-tx.spec.mjs > build-purchase-tx.mjs > Metadata > adds transaction metadata with course purchase message 3ms
+ ✓ run/__tests__/build-purchase-tx.spec.mjs > build-purchase-tx.mjs > Stake Key Validation > validates stake key hash matches change address 2ms
+ ✓ run/__tests__/build-purchase-tx.spec.mjs > build-purchase-tx.mjs > Network Configuration > uses testnet configuration when NETWORK is not mainnet 3ms
+ ✓ run/__tests__/build-purchase-tx.spec.mjs > build-purchase-tx.mjs > Signers > adds both owner and user wallet as signers 2ms
 
- Test Files  6 passed (6)
-      Tests  50 passed (50)
-   Start at  23:05:31
-   Duration  455ms (transform 287ms, setup 57ms, collect 401ms, tests 113ms, environment 1ms, prepare 694ms)
+ Test Files  8 passed (8)
+      Tests  73 passed (73)
+   Start at  15:01:27
+   Duration  549ms (transform 437ms, setup 106ms, collect 672ms, tests 248ms, environment 2ms, prepare 1.12s)
 
