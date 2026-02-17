@@ -1,8 +1,1 @@
-Manage Class Certificates (Tests\Feature\ManageClassCertificates)
- [x] Teacher can access own course certificates page
- [x] Teacher cannot access other teachers certificates page
- [x] Certificates page shows correct student data
- [x] Certificates page only shows completed students
- [x] Guest cannot access certificates page
- [x] Non teacher cannot access certificates page
-
+Course Feedback (Tests\Unit\CourseFeedback)

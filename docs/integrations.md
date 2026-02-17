@@ -624,6 +624,254 @@ sail artisan tinker
 sail mysql -e "SELECT 1"
 ```
 
+## 8. Stripe Payment Integration
+
+### Purpose
+
+Credit card payment processing for course purchases (alternative to ADA cryptocurrency).
+
+### Configuration
+
+**Location**: `config/services.php`
+- `services.stripe.key` - Publishable key (frontend)
+- `services.stripe.secret` - Secret key (backend)
+- `services.stripe.webhook_secret` - Webhook signing secret
+
+**Environment Variables**:
+```env
+# .env
+STRIPE_KEY=pk_test_xxx  # or pk_live_xxx
+STRIPE_SECRET=sk_test_xxx  # or sk_live_xxx
+STRIPE_WEBHOOK_SECRET=whsec_xxx
+VITE_STRIPE_PUBLIC_KEY="${STRIPE_KEY}"  # Frontend key
+```
+
+### API Endpoints
+
+| Endpoint | Purpose | Auth |
+|----------|---------|------|
+| `POST /api/stripe/payment-intent/{course}` | Create PaymentIntent | Required |
+| `POST /api/stripe/webhook` | Receive Stripe webhooks | Signature verified |
+
+### Key Files
+
+| File | Purpose |
+|------|---------|
+| `app/Services/API/StripeService.php` | Payment processing logic |
+| `app/Http/Controllers/API/StripeController.php` | API endpoints |
+| `app/Models/StripePayment.php` | Payment records |
+| `resources/js/components/payments/StripeCheckout.jsx` | Frontend payment form |
+
+### JPY Zero-Decimal Currency
+
+JPY amounts are whole numbers (¥1000 = amount 1000, not 100000).
+
+**Example**:
+```php
+// Course costs ¥1000
+$course->price_jpy = 1000;
+
+// Stripe amount (NO multiplication for JPY)
+$stripeAmount = $course->price_jpy;  // 1000
+
+// Other currencies require multiplication
+$stripeAmount = $course->price_usd * 100;  // $10.00 = 1000 cents
+```
+
+### Webhook Setup
+
+**Local Development**:
+```bash
+# Terminal 1: Start Sail
+sail up -d
+
+# Terminal 2: Forward webhooks
+stripe listen --forward-to localhost:8000/api/stripe/webhook
+```
+
+**Production**:
+1. Configure in Stripe Dashboard → Webhooks
+2. Add endpoint: `https://lebazaar.com/api/stripe/webhook`
+3. Select events: `payment_intent.succeeded`, `payment_intent.payment_failed`
+4. Copy signing secret to `STRIPE_WEBHOOK_SECRET`
+
+**Events Handled**:
+- `payment_intent.succeeded` - Payment completed, enroll student
+- `payment_intent.payment_failed` - Payment failed, update status
+
+### Security
+
+- **CSRF Exempt**: Webhook endpoint uses Stripe signature verification instead
+- **No Card Storage**: Card data handled entirely by Stripe (PCI compliant)
+- **3D Secure**: Handled automatically by Stripe Elements
+- **Signature Verification**: All webhooks verified using `constructEvent()`
+
+**Verification Pattern**:
+```php
+// StripeService::handleWebhook()
+$event = \Stripe\Webhook::constructEvent(
+    $payload,
+    $signature,
+    config('services.stripe.webhook_secret')
+);
+```
+
+### Test Cards
+
+| Card Type | Number | Use Case |
+|-----------|--------|----------|
+| Success | 4242 4242 4242 4242 | Standard test payment |
+| JCB | 3566 0020 2036 0505 | Japan-specific card |
+| Decline | 4000 0000 0000 0002 | Test payment failure |
+| 3D Secure | 4000 0025 0000 3155 | Test authentication flow |
+
+**Using Test Cards**:
+- Use any future expiry date (e.g., 12/34)
+- Use any 3-digit CVC
+- Use any billing postal code
+
+### Japan Compliance
+
+**JCB Card Support**: Enabled in Stripe Dashboard (payment methods → JCB)
+
+**Tokutei Sho-torihiki Ho** (Specified Commercial Transactions Act):
+- Legal disclosure page required for Japanese e-commerce
+- Must include: business name, address, contact info, return policy, payment terms
+- Implementation: `/legal/disclosure` page
+
+### Error Handling
+
+**Payment Failures**:
+```php
+// StripeService::createPaymentIntent()
+try {
+    $paymentIntent = \Stripe\PaymentIntent::create([...]);
+} catch (\Stripe\Exception\CardException $e) {
+    // Card declined
+    return ['success' => false, 'message' => $e->getMessage()];
+} catch (\Stripe\Exception\ApiErrorException $e) {
+    // Stripe API error
+    return ['success' => false, 'message' => 'Payment processing error'];
+}
+```
+
+**Webhook Failures**:
+- Stripe retries failed webhooks automatically
+- Idempotency handled by `lockForUpdate()` on stripe_payments table
+- See [docs/gotchas.md](./gotchas.md) for webhook debugging
+
+## 9. CoinGecko Exchange Rate API
+
+### Purpose
+
+Fetch real-time ADA to JPY exchange rates for course pricing and payment calculations.
+
+### Configuration
+
+**Location**: `config/services.php`
+- `services.coingecko.api_url` - CoinGecko API base URL
+- `services.coingecko.cache_ttl` - Cache duration for successful API responses (default: 600 seconds)
+- `services.coingecko.fallback_cache_ttl` - Cache duration for fallback rates (default: 60 seconds)
+- `services.coingecko.fallback_rate` - Initial fallback rate for seeder (default: 50)
+
+**Environment Variables**:
+```env
+# .env
+COINGECKO_API_URL=https://api.coingecko.com/api/v3
+EXCHANGE_RATE_CACHE_TTL=600
+EXCHANGE_RATE_FALLBACK_CACHE_TTL=60
+EXCHANGE_RATE_FALLBACK=50
+```
+
+### Fallback System
+
+**CRITICAL**: Exchange rate fallback must be configured in the settings table before production use.
+
+**Setup**:
+```bash
+# Run seeder to create fallback setting
+sail artisan db:seed --class=ExchangeRateSettingSeeder
+
+# Verify setting exists
+sail artisan tinker
+>>> \App\Models\Setting::where('slug', 'ada-to-jpy')->first()
+```
+
+**Fallback Behavior**:
+1. Primary: Fetch rate from CoinGecko API (cached 600 seconds)
+2. Fallback: Use rate from settings table (cached 60 seconds)
+3. No Fallback: Throws exception if setting not configured
+
+**Update Fallback Rate**:
+```bash
+# Via admin dashboard (recommended)
+# Navigate to: /admin/settings → Exchange Rate
+
+# Via database
+sail mysql
+UPDATE settings SET value = '65.5' WHERE slug = 'ada-to-jpy';
+
+# Via tinker
+sail artisan tinker
+>>> $setting = \App\Models\Setting::where('slug', 'ada-to-jpy')->first();
+>>> $setting->value = '65.5';
+>>> $setting->save();
+```
+
+**Important Notes**:
+- Fallback rate should be updated regularly to match current market rates
+- Production deployments MUST verify fallback setting exists
+- AppServiceProvider logs warnings if fallback rate is suspicious (< 10 or > 1000 JPY per ADA)
+
+### API Endpoints
+
+| Endpoint | Purpose |
+|----------|---------|
+| `GET /simple/price?ids=cardano&vs_currencies=jpy` | Fetch ADA to JPY rate |
+
+### Usage Pattern
+
+```php
+// app/Services/API/ExchangeRateService.php
+use App\Services\API\ExchangeRateService;
+
+$service = new ExchangeRateService();
+
+// Get current exchange rate
+$rate = $service->getAdaJpyRate();  // e.g., 65.5 (JPY per ADA)
+
+// Convert JPY to ADA
+$ada = $service->jpyToAda(1000);  // e.g., 15.27 ADA
+```
+
+### Error Handling
+
+**API Failure**:
+- CoinGecko API unreachable → Falls back to database setting
+- Invalid response → Falls back to database setting
+- Network timeout → Falls back to database setting
+
+**Fallback Missing**:
+```php
+// If setting not configured, throws exception:
+try {
+    $rate = $service->getAdaJpyRate();
+} catch (\Exception $e) {
+    // "Exchange rate fallback not configured. Run: php artisan db:seed --class=ExchangeRateSettingSeeder"
+}
+```
+
+### Rate Limits
+
+CoinGecko free tier:
+- 50 requests/minute
+- 10,000 requests/month
+
+**Mitigation**:
+- Successful rates cached for 10 minutes
+- Fallback rates cached for 60 seconds
+- Use caching to minimize API calls
+
 ## Cross-References
 
 - **Architecture**: See [docs/architecture.md](./architecture.md) for integration layer

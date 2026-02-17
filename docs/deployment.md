@@ -103,12 +103,22 @@ sail artisan migrate --force
 
 # Verify migrations applied
 sail mysql -e "SELECT migration, batch FROM migrations ORDER BY id DESC LIMIT 10;"
+
+# Run required seeders (CRITICAL for new deployments)
+sail artisan db:seed --class=ExchangeRateSettingSeeder
+
+# Verify critical settings exist
+sail artisan tinker
+>>> \App\Models\Setting::where('slug', 'ada-to-jpy')->first()
+>>> exit
 ```
 
 **⚠️ WARNING**:
 - Migrations cannot be rolled back automatically
 - Test migrations on staging first
 - Backup database before running migrations
+- **CRITICAL**: ExchangeRateSettingSeeder must be run before processing payments
+- Deployment will fail if exchange rate fallback not configured
 
 ### Step 2: Web3 Environment Verification
 

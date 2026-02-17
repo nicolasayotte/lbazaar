@@ -1,6 +1,6 @@
 # Testing Strategy
 
-> **AI Context Summary**: Test pyramid: Unit (PHPUnit for services, Vitest for web3) → Integration (PHPUnit Feature for controllers) → E2E (Postman). Run `sail test` for PHP, `cd web3 && npm test` for Node. Tests use DatabaseTransactions trait. Mock web3 exec() calls in service tests. Coverage target: 80% services, 70% controllers.
+> **AI Context Summary**: Test pyramid: Unit (PHPUnit for services, Vitest for React/web3) → Integration (PHPUnit Feature for controllers) → E2E (Postman). Run `sail test` for PHP, `npm test` for React, `cd web3 && npm test` for blockchain (writes to log, use `npm run test:show` for terminal output). Tests use DatabaseTransactions trait. Mock web3 exec() calls in service tests. Web3 tests use `.spec.mjs` extension. Coverage target: 80% services, 70% controllers/components.
 
 ## Overview
 
@@ -40,17 +40,41 @@ tests/
 └── TestCase.php (base class)
 ```
 
+### Frontend Tests (Vitest + React Testing Library)
+
+```
+resources/js/
+├── components/
+│   └── payments/
+│       └── StripeCheckout.test.jsx
+├── pages/
+│   └── Portal/
+│       └── MyPage/
+│           └── ManageClass/
+│               ├── Certificates.test.jsx
+│               └── components/
+│                   └── CertificateTable.test.jsx
+└── helpers/
+    └── __tests__/
+        └── currency.helper.test.js
+```
+
 ### Web3 Tests (Vitest)
 
 ```
 web3/
 ├── common/
 │   └── __tests__/
-│       ├── utils.test.mjs
-│       └── certificate-metadata.test.mjs
+│       ├── utils.spec.mjs
+│       ├── certificate-metadata.spec.mjs
+│       ├── minting-policy.spec.mjs
+│       └── network.spec.mjs
 └── run/
     └── __tests__/
-        └── build-certificate-tx.test.mjs
+        ├── build-certificate-tx-nmkr.integration.spec.mjs
+        ├── build-purchase-tx.spec.mjs
+        ├── certificate-tx-utils.spec.mjs
+        └── submit-purchase-tx.spec.mjs
 ```
 
 ## Running Tests
@@ -74,20 +98,38 @@ sail test --coverage
 sail test --stop-on-failure
 ```
 
-### Web3 Tests
+### Frontend Tests
 
 ```bash
-# All web3 tests
+# All frontend tests (from project root)
+npm test
+
+# Watch mode (re-run on file changes)
+npm run test:watch
+
+# Coverage report
+npm run test:coverage
+
+# Specific test file
+npm test StripeCheckout.test.jsx
+```
+
+### Web3 Tests
+
+**Note**: Web3 tests have their own package.json and dependencies in the `web3/` directory.
+
+```bash
+# All web3 tests (run from web3 directory)
 cd web3 && npm test
+
+# Show output in terminal (default writes to log file)
+cd web3 && npm run test:show
 
 # Watch mode (re-run on file changes)
 cd web3 && npm run test:watch
 
 # Specific test file
-cd web3 && npm test utils.test.mjs
-
-# Coverage report
-cd web3 && npm test -- --coverage
+cd web3 && npm run test:show utils.spec.mjs
 ```
 
 ### E2E Tests (Postman)
@@ -311,6 +353,119 @@ class CertificateControllerTest extends TestCase
 - Test validation rules
 - Test HTTP status codes and JSON structure
 
+## Writing Frontend Tests
+
+### React Component Test Pattern
+
+**Location**: `resources/js/components/`, `resources/js/pages/`
+
+**Purpose**: Test React component rendering, user interactions, and integration with Inertia.
+
+**Template**:
+```javascript
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import StripeCheckout from './StripeCheckout';
+
+describe('StripeCheckout', () => {
+    const mockProps = {
+        courseId: 1,
+        courseName: 'Test Course',
+        priceAda: 100,
+        priceJpy: 15000,
+        onSuccess: vi.fn(),
+        onCancel: vi.fn()
+    };
+
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    it('renders checkout form with course details', () => {
+        render(<StripeCheckout {...mockProps} />);
+
+        expect(screen.getByText('Test Course')).toBeInTheDocument();
+        expect(screen.getByText('¥15,000')).toBeInTheDocument();
+    });
+
+    it('calls onSuccess when payment succeeds', async () => {
+        render(<StripeCheckout {...mockProps} />);
+
+        const submitButton = screen.getByRole('button', { name: /pay/i });
+        fireEvent.click(submitButton);
+
+        await waitFor(() => {
+            expect(mockProps.onSuccess).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    it('validates required fields before submission', async () => {
+        render(<StripeCheckout {...mockProps} />);
+
+        const submitButton = screen.getByRole('button', { name: /pay/i });
+        fireEvent.click(submitButton);
+
+        expect(await screen.findByText(/required/i)).toBeInTheDocument();
+        expect(mockProps.onSuccess).not.toHaveBeenCalled();
+    });
+
+    it('disables submit button during processing', async () => {
+        render(<StripeCheckout {...mockProps} />);
+
+        const submitButton = screen.getByRole('button', { name: /pay/i });
+        fireEvent.click(submitButton);
+
+        expect(submitButton).toBeDisabled();
+    });
+});
+```
+
+**Key Points**:
+- Use `@testing-library/react` for component rendering and queries
+- Test user interactions with `fireEvent` or `userEvent`
+- Use `waitFor` for async operations
+- Mock Inertia calls with `vi.mock('@inertiajs/inertia')`
+- Test accessibility (screen readers, keyboard navigation)
+
+### Helper/Utility Test Pattern
+
+**Location**: `resources/js/helpers/__tests__/`
+
+**Purpose**: Test JavaScript utility functions.
+
+**Template**:
+```javascript
+import { describe, it, expect } from 'vitest';
+import { formatCurrency, convertAdaToJpy } from '../currency.helper';
+
+describe('currency.helper', () => {
+    describe('formatCurrency', () => {
+        it('formats JPY correctly', () => {
+            expect(formatCurrency(15000, 'JPY')).toBe('¥15,000');
+        });
+
+        it('formats ADA correctly', () => {
+            expect(formatCurrency(100.5, 'ADA')).toBe('₳100.50');
+        });
+
+        it('handles zero values', () => {
+            expect(formatCurrency(0, 'JPY')).toBe('¥0');
+        });
+    });
+
+    describe('convertAdaToJpy', () => {
+        it('converts ADA to JPY at given rate', () => {
+            expect(convertAdaToJpy(100, 150)).toBe(15000);
+        });
+
+        it('rounds to nearest integer', () => {
+            expect(convertAdaToJpy(100, 150.7)).toBe(15070);
+        });
+    });
+});
+```
+
 ## Writing Web3 Tests
 
 ### Unit Test Pattern (Utilities)
@@ -319,10 +474,12 @@ class CertificateControllerTest extends TestCase
 
 **Purpose**: Test pure functions in isolation.
 
+**File naming**: Use `.spec.mjs` extension
+
 **Template**:
 ```javascript
 import { describe, it, expect, vi } from 'vitest';
-import { validateAddress, getTokenNamesAddrs } from '../utils.mjs';
+import { validateAddress } from '../utils.mjs';
 
 describe('utils.mjs', () => {
     describe('validateAddress', () => {
@@ -342,46 +499,6 @@ describe('utils.mjs', () => {
             expect(validateAddress(mainnetAddr)).toBe(true);
         });
     });
-
-    describe('getTokenNamesAddrs', () => {
-        it('should extract token names from UTXOs', async () => {
-            // Arrange: Mock UTXO
-            const mockUtxo = {
-                value: {
-                    assets: {
-                        mintingPolicies: [{ hex: 'abc123' }],
-                        getTokenNames: vi.fn().mockReturnValue([
-                            { bytes: new TextEncoder().encode('Token1') },
-                            { bytes: new TextEncoder().encode('Token2') }
-                        ])
-                    }
-                },
-                origOutput: {
-                    address: {
-                        toBech32: vi.fn().mockReturnValue('addr_test1...')
-                    }
-                }
-            };
-
-            // Act
-            const result = await getTokenNamesAddrs(
-                { hex: 'abc123' },
-                [mockUtxo]
-            );
-
-            // Assert
-            expect(result.tokenNames).toContain('Token1');
-            expect(result.tokenNames).toContain('Token2');
-            expect(result.addresses).toHaveLength(1);
-            expect(result.addresses[0]).toBe('addr_test1...');
-        });
-
-        it('should return empty arrays when no tokens found', async () => {
-            const result = await getTokenNamesAddrs({ hex: 'abc123' }, []);
-            expect(result.tokenNames).toEqual([]);
-            expect(result.addresses).toEqual([]);
-        });
-    });
 });
 ```
 
@@ -389,6 +506,8 @@ describe('utils.mjs', () => {
 - Use `vi.fn()` for mocking
 - Test edge cases (null, empty, invalid input)
 - Test both success and error paths
+- Files use `.spec.mjs` extension (NOT `.test.mjs`)
+- Web3 tests run from `web3/` directory with separate package.json
 
 ## Test Data Management
 
@@ -484,6 +603,8 @@ Mail::assertSent(EnrollmentConfirmation::class, function ($mail) use ($student) 
 |-----------|-----------------|----------------|
 | Services (PHP) | 80% | 90% |
 | Controllers (PHP) | 70% | 80% |
+| Frontend Components (React) | 70% | 80% |
+| Frontend Helpers (JS) | 80% | 90% |
 | Web3 Utilities (JS) | 80% | 90% |
 | Web3 CLI Scripts (JS) | 60% | 75% |
 | Overall Project | 75% | 85% |
@@ -511,8 +632,11 @@ jobs:
       - name: Run backend tests
         run: ./vendor/bin/sail test --coverage
 
+      - name: Run frontend tests
+        run: npm test -- --coverage
+
       - name: Run web3 tests
-        run: cd web3 && npm test -- --coverage
+        run: cd web3 && npm run test:show
 ```
 
 ## Debugging Tests
@@ -530,14 +654,30 @@ sail test --testdox
 sail test --filter test_name --debug
 ```
 
-### Vitest Debugging
+### Vitest Debugging (Frontend)
+
+```bash
+# Run in watch mode
+npm run test:watch
+
+# Debug specific test
+npm test -- --reporter=verbose StripeCheckout.test.jsx
+
+# Run with UI
+npm test -- --ui
+```
+
+### Vitest Debugging (Web3)
 
 ```bash
 # Run in watch mode
 cd web3 && npm run test:watch
 
+# Show output in terminal (default writes to log file)
+cd web3 && npm run test:show
+
 # Debug specific test
-cd web3 && npm test -- --reporter=verbose utils.test.mjs
+cd web3 && npm run test:show utils.spec.mjs
 ```
 
 ### Common Issues
@@ -559,6 +699,25 @@ npm install
 
 ---
 
+**Issue**: Frontend tests fail with "Cannot find module" or React import errors
+
+**Solution**:
+```bash
+# Install dependencies from project root
+npm install
+
+# Clear Vite cache
+rm -rf node_modules/.vite
+```
+
+---
+
+**Issue**: Web3 test output not visible
+
+**Solution**: Use `npm run test:show` instead of `npm test` (default writes to log file)
+
+---
+
 **Issue**: Tests pass locally but fail in CI
 
 **Solution**: Check environment variables in CI config, ensure test database is created
@@ -568,20 +727,23 @@ npm install
 ### DO
 
 ✅ **Use DatabaseTransactions** for tests that touch the database
-✅ **Mock external dependencies** (APIs, exec calls, email)
+✅ **Mock external dependencies** (APIs, exec calls, email, Stripe)
 ✅ **Test both success and failure paths**
 ✅ **Use factories** for test data creation
 ✅ **Keep tests fast** (< 5 seconds per test)
 ✅ **Name tests descriptively** (`test_method_does_what_when_condition`)
-✅ **Test at the right layer** (unit for logic, feature for HTTP)
+✅ **Test at the right layer** (unit for logic, feature for HTTP, component for UI)
+✅ **Test accessibility** in React components (keyboard nav, screen readers)
+✅ **Use `.spec.mjs` extension** for web3 tests (project convention)
 
 ### DON'T
 
-❌ **Don't test framework code** (e.g., Eloquent relationships)
-❌ **Don't use real API calls** in tests (mock them)
-❌ **Don't share state between tests** (use setUp/tearDown)
-❌ **Don't test implementation details** (test behavior)
+❌ **Don't test framework code** (e.g., Eloquent relationships, React internals)
+❌ **Don't use real API calls** in tests (mock Stripe, Blockfrost, etc.)
+❌ **Don't share state between tests** (use setUp/tearDown, beforeEach)
+❌ **Don't test implementation details** (test behavior, not internal state)
 ❌ **Don't skip cleanup** (always use DatabaseTransactions or manual cleanup)
+❌ **Don't mix test file extensions** (use `.spec.mjs` for web3, `.test.jsx` for React)
 
 ## Cross-References
 

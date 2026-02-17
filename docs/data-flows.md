@@ -525,6 +525,231 @@ process.stdout.write(JSON.stringify({
 }));
 ```
 
+## Flow 6: Credit Card Course Purchase (Stripe)
+
+**Trigger**: Student clicks "Pay with Credit Card" on course details page.
+
+### Step-by-Step Flow
+
+```
+1. Student clicks "Pay with Credit Card" button
+        ↓
+2. POST /api/stripe/payment-intent/{course} via axios
+        ↓
+3. StripeController::createPaymentIntent()
+   ├─ Validates via StripeCheckoutRequest
+   │  ├─ User is not professor
+   │  ├─ User not already enrolled
+   │  └─ Course exists and is available
+   │
+   └─ Calls StripeService::createPaymentIntent($course, $user)
+      ├─ Calculates amount (¥1000 = 1000, no multiplication for JPY)
+      ├─ Creates Stripe PaymentIntent
+      │
+      └─ Stripe API: PaymentIntent::create([
+            'amount' => $course->price_jpy,
+            'currency' => 'jpy',
+            'metadata' => ['course_id' => ..., 'user_id' => ...]
+         ])
+         │
+      ├─ Records pending payment in stripe_payments table
+      │  ├─ payment_intent_id
+      │  ├─ amount, currency
+      │  ├─ status: 'pending'
+      │
+      └─ Returns: {
+            "success": true,
+            "data": {
+              "client_secret": "pi_xxx_secret_xxx",
+              "amount": 1000,
+              "currency": "jpy"
+            }
+         }
+         │
+         ▼
+4. Frontend receives client_secret
+   ├─ Opens Dialog with StripeCheckout component
+   └─ Renders Stripe Elements (CardElement)
+        │
+        ▼
+5. Student enters card details
+   ├─ Card number: 4242 4242 4242 4242
+   ├─ Expiry: 12/34
+   └─ CVC: 123
+        │
+        ▼
+6. Student clicks "Pay" button
+        ↓
+7. Stripe.js: stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: `/checkout/success?course_id=${courseId}`
+      }
+   })
+   ├─ Stripe handles 3D Secure if required
+   ├─ Processes payment
+   └─ Redirects to return_url with payment_intent param
+        │
+        ▼
+8. Stripe webhook: POST /api/stripe/webhook
+   Event: payment_intent.succeeded
+        ↓
+9. StripeService::handleWebhook()
+   ├─ Verifies signature: Webhook::constructEvent()
+   │
+   └─ Calls handlePaymentSuccess($paymentIntent)
+      │
+      └─ DB::transaction(function() {
+            ├─ Finds stripe_payments record (lockForUpdate)
+            ├─ Checks if already processed (idempotency)
+            │
+            ├─ Creates CourseHistory enrollment
+            │  ├─ user_id, course_id
+            │  └─ enrolled_at: now()
+            │
+            ├─ Updates stripe_payments
+            │  ├─ status: 'succeeded'
+            │  └─ processed_at: now()
+            │
+            └─ Commits transaction
+         })
+         │
+         ▼
+10. Stripe redirects to /checkout/success?course_id=123&payment_intent=pi_xxx
+        ↓
+11. CheckoutController::success()
+    ├─ Finds course and payment details
+    │
+    └─ Inertia::render('Checkout/Success', [
+          'course' => $course,
+          'payment' => $payment,
+          'enrollment' => $enrollment
+       ])
+       │
+       ▼
+12. React renders success page with enrollment confirmation
+```
+
+### Code Locations
+
+| Step | File | Method/Line Range |
+|------|------|------------------|
+| Create PaymentIntent | `app/Http/Controllers/API/StripeController.php` | createPaymentIntent() |
+| Payment service | `app/Services/API/StripeService.php` | createPaymentIntent() |
+| Webhook handler | `app/Services/API/StripeService.php` | handleWebhook() |
+| Payment success | `app/Services/API/StripeService.php` | handlePaymentSuccess() |
+| Frontend component | `resources/js/components/payments/StripeCheckout.jsx` | Full file |
+| Success page | `app/Http/Controllers/CheckoutController.php` | success() |
+
+### Request Format
+
+**Create PaymentIntent**:
+```http
+POST /api/stripe/payment-intent/123
+Authorization: Bearer {sanctum_token}
+Content-Type: application/json
+```
+
+**Webhook**:
+```http
+POST /api/stripe/webhook
+Stripe-Signature: t=1234,v1=abc...
+Content-Type: application/json
+
+{
+  "type": "payment_intent.succeeded",
+  "data": {
+    "object": {
+      "id": "pi_xxx",
+      "amount": 1000,
+      "currency": "jpy",
+      "status": "succeeded",
+      "metadata": {
+        "course_id": "123",
+        "user_id": "456"
+      }
+    }
+  }
+}
+```
+
+### Response Format
+
+**Create PaymentIntent Success**:
+```json
+{
+  "success": true,
+  "data": {
+    "client_secret": "pi_xxx_secret_xxx",
+    "amount": 1000,
+    "currency": "jpy"
+  }
+}
+```
+
+**Webhook Acknowledgement**:
+```json
+{
+  "received": true
+}
+```
+
+### Error Flow
+
+**Payment Failure**:
+```
+1. Card declined or error occurs
+        ↓
+2. Stripe sends payment_intent.payment_failed webhook
+        ↓
+3. StripeService::handlePaymentFailed($paymentIntent)
+   ├─ Updates stripe_payments.status = 'failed'
+   ├─ Records failure reason
+   └─ No enrollment created
+        │
+        ▼
+4. Frontend shows error in Stripe Elements form
+   └─ User can retry with different card
+```
+
+**Validation Errors**:
+```json
+{
+  "success": false,
+  "message": "Validation failed",
+  "errors": {
+    "course_id": ["You are already enrolled in this course"]
+  }
+}
+```
+
+### Critical Points
+
+1. **Idempotency**:
+   - `lockForUpdate()` prevents duplicate enrollments from duplicate webhooks
+   - Checks `stripe_payments.status` before processing
+   - Same webhook can be received multiple times (Stripe retries)
+
+2. **Zero-Decimal Currency**:
+   - JPY ¥1000 = amount 1000 (no multiplication)
+   - USD $10.00 = amount 1000 (multiply by 100)
+   - See [docs/integrations.md](./integrations.md) for currency handling
+
+3. **Raw Payload Verification**:
+   - Webhook signature requires raw request body
+   - Uses `$request->getContent()` not `$request->all()`
+   - Prevents tampering with webhook data
+
+4. **Async Nature**:
+   - Payment confirmation happens via webhook, not frontend redirect
+   - Webhook may arrive before redirect completes
+   - Success page queries database for enrollment status
+
+5. **3D Secure**:
+   - Handled entirely by Stripe.js
+   - Additional authentication modal shown if required
+   - No additional backend logic needed
+
 ## Cross-References
 
 - **Architecture**: See [docs/architecture.md](./architecture.md) for layer definitions

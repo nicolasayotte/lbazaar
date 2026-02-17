@@ -1,7 +1,7 @@
 ---
 name: planner
 description: Analyzes features/bugs and creates detailed task descriptions for builder execution
-model: sonnet
+model: sonnet-1m
 tools: [Read, Glob, Grep, Task]
 color: purple
 ---
