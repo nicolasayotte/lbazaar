@@ -198,7 +198,11 @@ class Course extends Model
             return null;
         }
 
-        $exchangeRateService = app(\App\Services\API\ExchangeRateService::class);
-        return $exchangeRateService->jpyToAda(floatval($rawPrice));
+        try {
+            $exchangeRateService = app(\App\Services\API\ExchangeRateService::class);
+            return $exchangeRateService->jpyToAda(floatval($rawPrice));
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 }

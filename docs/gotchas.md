@@ -509,6 +509,52 @@ When something breaks, check in this order:
 7. ✅ Browser console errors? (F12 → Console tab)
 8. ✅ Network tab shows 500 errors? (F12 → Network tab)
 
+## 16. Eloquent Accessors Ignore `setAttribute()` — Always Recompute
+
+### Symptom
+
+A method catches an exception and sets `$model->some_attribute = null`, but a
+test assertion on `$model->some_attribute` still throws the original exception.
+
+### Cause
+
+Eloquent accessors (`getSomeAttributeAttribute()`) **always recompute on read**
+— they ignore any value previously stored via `setAttribute()` or direct
+assignment. So this pattern silently breaks:
+
+❌ **BAD** — catch block is bypassed on next read:
+```php
+try {
+    $course->price_in_ada = $service->compute();
+} catch (\Throwable $e) {
+    $course->price_in_ada = null; // stored in $attributes...
+}
+
+$course->price_in_ada; // ...but accessor fires AGAIN here and re-throws
+```
+
+### Solution
+
+Put the error handling **inside the accessor itself**:
+
+✅ **GOOD**:
+```php
+public function getPriceInAdaAttribute()
+{
+    try {
+        return app(ExchangeRateService::class)->jpyToAda($this->attributes['price']);
+    } catch (\Throwable $e) {
+        return null; // degrade gracefully
+    }
+}
+```
+
+### Debugging Tip
+
+If a test assertion (not the method under test) throws an unexpected exception,
+suspect an accessor firing during the assertion read. Add a breakpoint or
+`dd()` inside the accessor to confirm.
+
 ## Cross-References
 
 - **Architecture**: See [docs/architecture.md](./architecture.md) for system structure

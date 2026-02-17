@@ -1,19 +1,151 @@
-Exchange Rate Service (Tests\Unit\Services\API\ExchangeRateService)
- [x] Fetches rate from coingecko api
- [x] Caches exchange rate
- [x] Falls back to database setting on api failure
- [x] Handles missing cardano data in response
- [x] Converts jpy to ada correctly
- [x] Jpy to ada rounds to two decimals
- [x] Jpy to ada handles zero jpy
- [x] Throws exception when no setting exists
- [x] Caches fallback rate separately from successful rate
- [x] Fallback rate uses shorter cache ttl
- [x] Successful api response not affected by fallback cache
- [x] Validates fallback rate on api failure
- [x] Adds price in ada to courses collection
- [x] Adds price in ada to empty collection
- [x] Adds price in ada gracefully when no setting exists
- [x] Adds price in ada to course applications
- [x] Batch computation fetches rate only once
+Course Feedback (Tests\Unit\CourseFeedback)
+ [x] Course feedback can reference course and schedule
+ [x] It can associate feedback with a specific schedule
+ [x] It can give feedback without a schedule
 
+Batch Mint Certificates Request (Tests\Unit\Http\Requests\API\BatchMintCertificatesRequest)
+ [x] Authorize returns false when user not authenticated
+ [x] Authorize returns false when user is not teacher
+ [x] Authorize returns false when teacher does not own course
+ [x] Authorize returns true when teacher owns course
+ [x] Authorize returns false when course id is missing
+ [x] Rules require course id
+ [x] Rules require student ids array
+ [x] Rules validate each student id
+ [x] Rules allow optional schedule id
+ [x] Validation fails when course id is missing
+ [x] Validation fails when student ids is missing
+ [x] Validation fails when student ids is empty array
+ [x] Validation fails when student ids is not array
+ [x] Validation fails when course does not exist
+ [x] Validation fails when student does not exist
+ [x] Validation passes with valid single student
+ [x] Validation passes with valid multiple students
+ [x] Validation passes with optional schedule id
+ [x] Custom messages exist
+ [x] Custom message for student ids required
+ [x] Custom message for student ids min
+ [x] Failed validation behavior through reflection
+ [x] Failed authorization behavior through reflection
+ [x] Validation fails with custom message when no students selected
+
+Mint Single Certificate Request (Tests\Unit\Http\Requests\API\MintSingleCertificateRequest)
+ [x] Authorize returns false when user not authenticated
+ [x] Authorize returns false when user is not teacher
+ [x] Authorize returns false when teacher does not own course
+ [x] Authorize returns true when teacher owns course
+ [x] Authorize returns false when course id is missing
+ [x] Rules require course id
+ [x] Rules require student id
+ [x] Rules allow optional schedule id
+ [x] Validation fails when course id is missing
+ [x] Validation fails when student id is missing
+ [x] Validation fails when course does not exist
+ [x] Validation fails when student does not exist
+ [x] Validation passes with valid data
+ [x] Validation passes with optional schedule id
+ [x] Failed validation behavior through reflection
+ [x] Failed authorization behavior through reflection
+
+Stripe Checkout Request (Tests\Unit\Http\Requests\StripeCheckoutRequest)
+ [x] Authorize returns false when user not authenticated
+ [x] Authorize returns false when course not provided
+ [x] Authorize returns false when user is course professor
+ [x] Authorize returns false when user already enrolled
+ [x] Authorize returns true when user can purchase course
+ [x] Rules allow optional course schedule id
+ [x] Validation passes without course schedule id
+ [x] Validation passes with valid course schedule id
+ [x] Validation fails when course schedule id is not integer
+ [x] Validation fails when course schedule does not exist
+ [x] Failed validation behavior through reflection
+ [x] Failed authorization behavior through reflection
+
+Course History (Tests\Unit\Models\CourseHistory)
+ [x] Certificate transaction relationship works with single record eager loading
+ [x] Certificate transaction relationship works with eager loading
+ [x] Certificate transaction returns null when no transaction exists
+ [x] Certificate transaction matches all composite keys
+ [x] Certificate transaction does not match wrong user
+ [x] Certificate image url from transaction metadata
+ [x] Certificate image url returns null when no transaction
+ [x] Certificate explorer url generation
+ [x] Certificate explorer url returns null without tx hash
+ [x] Multiple students with eager loading see correct certificates
+
+Course Pricing (Tests\Unit\Models\CoursePricing)
+ [x] Course price in ada accessor returns converted value
+ [x] Course price in ada returns null when no price
+ [x] Course price in ada returns null when price is zero
+ [x] Course application does not have price in ada accessor
+ [x] Price in ada not auto appended to json
+
+Stripe Payment (Tests\Unit\Models\StripePayment)
+ [x] Hidden fields not serialized
+ [x] Hidden fields accessible internally
+
+Course Type Repository (Tests\Unit\Repositories\CourseTypeRepository)
+ [x] Get dropdown data excludes earn type
+ [x] Get dropdown data returns correct structure
+ [x] Existing earn courses remain accessible
+ [x] Find by name still works for earn
+ [x] Pluck by id returns all types including earn
+ [x] Dropdown data only excludes earn not other types
+
+Certificate Service (Tests\Unit\Services\API\CertificateService)
+ [x] Mint and airdrop certificate with linked wallet
+ [x] Mint and airdrop certificate with custodial wallet
+ [x] Mint and airdrop certificate handles minting failure
+ [x] Create certificate metadata
+ [x] Get custodial wallet address success
+ [x] Get custodial wallet address failure
+ [x] Get linked wallet address success
+ [x] Get linked wallet address fallback to custodial
+ [x] Mint certificate nft success
+ [x] Mint certificate nft build failure
+ [x] Mint certificate nft submit failure
+ [x] Mint certificate nft missing template
+ [x] Record nft transaction
+ [x] Get user id from stake key
+ [x] Get user id from stake key not found
+ [x] Send certificate notification logs info
+ [x] Mint and airdrop certificate handles exceptions
+ [x] Get student wallet address uses linked when available
+ [x] Get student wallet address uses custodial when no stake key
+ [ ] Update certificate status to pending
+ [ ] Update certificate status to minted with tx hash
+ [ ] Update certificate status to failed
+ [ ] Update certificate status with schedule id
+ [x] Update certificate status logs warning when record not found
+ [ ] Update certificate status logs info on success
+ [ ] Update certificate status transitions from not eligible to pending
+ [ ] Update certificate status transitions from pending to minted
+ [ ] Update certificate status transitions from pending to failed
+ [ ] Update certificate status transitions from failed to pending retry
+ [x] Update certificate status preserves existing tx hash when null provided
+ [x] Get eligible students returns completed students
+ [x] Get eligible students excludes already minted
+ [x] Get eligible students excludes cancelled
+ [x] Batch mint processes multiple students
+ [ ] Mint certificate updates status to pending
+ [ ] Mint certificate success updates status to minted
+ [ ] Mint certificate failure updates status to failed
+ [ ] Get student certificates returns completed courses with certificates enabled
+ [ ] Get student certificates excludes cancelled courses
+ [ ] Get student certificates excludes courses without certificate enabled
+ [x] Get student certificates excludes incomplete courses
+ [ ] Get student certificates returns all required fields
+ [ ] Get student certificates defaults certificate status to not eligible
+ [x] Get student certificates returns empty array when no certificates
+ [x] Get student certificates handles exceptions
+ [x] Get student certificates orders by completed at descending
+ [x] Get student certificates includes certificate transaction relationship
+ [x] Get certificate data for completion returns null when not completed
+ [x] Get certificate data for completion returns null when no record
+ [ ] Get certificate data for completion returns not eligible status
+ [x] Get certificate data for completion returns minted status with explorer url
+ [x] Get certificate data for completion uses config for explorer url
+ [ ] Get certificate data for completion returns pending status
+ [x] Get certificate data for completion returns failed status
+
+Course Purchase Service (Tests\Unit\Services\API\CoursePurchaseService)

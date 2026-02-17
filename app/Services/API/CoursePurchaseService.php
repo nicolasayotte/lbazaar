@@ -28,78 +28,78 @@ class CoursePurchaseService
      */
     public function buildPurchaseTransaction(CourseSchedule $schedule, User $user): array
     {
-        try {
-            $userWallet = $user->userWallet()->first();
-            if (!$userWallet || !$userWallet->stake_key_hash) {
-                return [
-                    'success' => false,
-                    'message' => 'User wallet not connected. Please connect your wallet first.'
-                ];
-            }
-
-            $teacherWallet = $schedule->course->professor->userWallet()->first();
-            $admin = $this->userRepository->getAdmin();
-            $adminWallet = $admin->userWallet()->first();
-
-            if (!$teacherWallet || !$adminWallet) {
-                return [
-                    'success' => false,
-                    'message' => 'System wallets not configured. Please contact support.'
-                ];
-            }
-
-            $adaTotalAmount = $this->convertJpyToAda($schedule->course->price);
-            $adminCommissionSetting = Setting::where('slug', 'admin-commission')->first();
-            $adminCommissionPercent = $adminCommissionSetting ? floatval($adminCommissionSetting->value) : 20;
-
-            $cborUtxos = request()->input('cborUtxos', '');
-
-            $cmd = $this->buildWeb3Command('run/build-purchase-tx.mjs', [
-                $userWallet->stake_key_hash,
-                $userWallet->address,
-                $cborUtxos,
-                (string) $adaTotalAmount,
-                $teacherWallet->address,
-                $adminWallet->address,
-                (string) $adminCommissionPercent
-            ]);
-
-            $response = $this->runCommand($cmd);
-            $responseJSON = json_decode($response, true);
-
-            if (!is_array($responseJSON) || ($responseJSON['status'] ?? null) !== 200) {
-                $errorMsg = $responseJSON['error'] ?? 'Failed to build transaction';
-                $status = $responseJSON['status'] ?? 500;
-                return [
-                    'success' => false,
-                    'message' => $errorMsg,
-                    'insufficientFunds' => $status === 501
-                ];
-            }
-
+        $userWallet = $user->userWallet()->first();
+        if (!$userWallet || !$userWallet->stake_key_hash) {
             return [
-                'success' => true,
-                'message' => 'Transaction built successfully',
-                'data' => [
-                    'cborTx' => $responseJSON['cborTx'],
-                    'adaAmount' => $adaTotalAmount,
-                    'teacherAmount' => $responseJSON['teacherAmount'] ?? null,
-                    'adminAmount' => $responseJSON['adminAmount'] ?? null,
-                ]
+                'success' => false,
+                'message' => 'User wallet not connected. Please connect your wallet first.'
             ];
+        }
 
+        $professor = $schedule->course->professor;
+        $teacherWallet = $professor ? $professor->userWallet()->first() : null;
+        $admin = $this->userRepository->getAdmin();
+        $adminWallet = $admin ? $admin->userWallet()->first() : null;
+
+        if (!$teacherWallet || !$adminWallet) {
+            return [
+                'success' => false,
+                'message' => 'System wallets not configured. Please contact support.'
+            ];
+        }
+
+        $adaTotalAmount = $this->convertJpyToAda($schedule->course->price);
+        $adminCommissionSetting = Setting::where('slug', 'admin-commission')->first();
+        $adminCommissionPercent = $adminCommissionSetting ? floatval($adminCommissionSetting->value) : 20;
+
+        $cborUtxos = request()->input('cborUtxos', '');
+
+        $cmd = $this->buildWeb3Command('run/build-purchase-tx.mjs', [
+            $userWallet->stake_key_hash,
+            $userWallet->address,
+            $cborUtxos,
+            (string) $adaTotalAmount,
+            $teacherWallet->address,
+            $adminWallet->address,
+            (string) $adminCommissionPercent
+        ]);
+
+        try {
+            $response = $this->runCommand($cmd);
         } catch (Exception $e) {
-            Log::error('Build purchase transaction failed', [
+            Log::error('Build purchase transaction: web3 command failed', [
                 'schedule_id' => $schedule->id,
-                'user_id' => $user->id,
-                'error' => $e->getMessage()
+                'user_id'     => $user->id,
+                'error'       => $e->getMessage(),
             ]);
-
             return [
                 'success' => false,
                 'message' => 'Failed to build purchase transaction: ' . $e->getMessage()
             ];
         }
+
+        $responseJSON = json_decode($response, true);
+
+        if (!is_array($responseJSON) || ($responseJSON['status'] ?? null) !== 200) {
+            $errorMsg = $responseJSON['error'] ?? 'Failed to build transaction';
+            $status = $responseJSON['status'] ?? 500;
+            return [
+                'success' => false,
+                'message' => $errorMsg,
+                'insufficientFunds' => $status === 501
+            ];
+        }
+
+        return [
+            'success' => true,
+            'message' => 'Transaction built successfully',
+            'data' => [
+                'cborTx'        => $responseJSON['cborTx'],
+                'adaAmount'     => $adaTotalAmount,
+                'teacherAmount' => $responseJSON['teacherAmount'] ?? null,
+                'adminAmount'   => $responseJSON['adminAmount'] ?? null,
+            ]
+        ];
     }
 
     /**
@@ -107,40 +107,60 @@ class CoursePurchaseService
      */
     public function submitPurchaseTransaction(CourseSchedule $schedule, User $user, string $cborSig, string $cborTx): array
     {
+        $professor = $schedule->course->professor;
+        $teacherWallet = $professor ? $professor->userWallet()->first() : null;
+        $admin = $this->userRepository->getAdmin();
+        $adminWallet = $admin ? $admin->userWallet()->first() : null;
+
+        if (!$teacherWallet || !$adminWallet) {
+            return [
+                'success' => false,
+                'message' => 'System wallets not configured. Please contact support.'
+            ];
+        }
+
+        $cmd = $this->buildWeb3Command('run/submit-purchase-tx.mjs', [
+            $cborSig,
+            $cborTx,
+            $teacherWallet->address,
+            $adminWallet->address
+        ]);
+
         try {
-            $teacherWallet = $schedule->course->professor->userWallet()->first();
-            $admin = $this->userRepository->getAdmin();
-            $adminWallet = $admin->userWallet()->first();
-
-            $cmd = $this->buildWeb3Command('run/submit-purchase-tx.mjs', [
-                $cborSig,
-                $cborTx,
-                $teacherWallet->address,
-                $adminWallet->address
-            ]);
-
             $response = $this->runCommand($cmd);
-            $responseJSON = json_decode($response, true);
+        } catch (Exception $e) {
+            Log::error('Submit purchase transaction: web3 command failed', [
+                'schedule_id' => $schedule->id,
+                'user_id'     => $user->id,
+                'error'       => $e->getMessage(),
+            ]);
+            return [
+                'success' => false,
+                'message' => 'Failed to submit purchase transaction: ' . $e->getMessage()
+            ];
+        }
 
-            if (!is_array($responseJSON) || ($responseJSON['status'] ?? null) !== 200) {
-                return [
-                    'success' => false,
-                    'message' => $responseJSON['error'] ?? 'Failed to submit transaction'
-                ];
-            }
+        $responseJSON = json_decode($response, true);
 
-            $txId = $responseJSON['txId'];
-            $adaAmount = $responseJSON['teacherAmount'] ?? 0;
+        if (!is_array($responseJSON) || ($responseJSON['status'] ?? null) !== 200) {
+            return [
+                'success' => false,
+                'message' => $responseJSON['error'] ?? 'Failed to submit transaction'
+            ];
+        }
 
-            // Create pending enrollment in a transaction
+        $txId = $responseJSON['txId'];
+        $adaAmount = $responseJSON['teacherAmount'] ?? 0;
+
+        try {
             $courseHistory = DB::transaction(function () use ($schedule, $user, $txId, $adaAmount) {
                 $courseHistory = CourseHistory::create([
-                    'course_schedule_id' => $schedule->id,
-                    'course_id' => $schedule->course->id,
-                    'user_id' => $user->id,
-                    'payment_status' => 'pending',
-                    'payment_tx_hash' => $txId,
-                    'payment_ada_amount' => $adaAmount,
+                    'course_schedule_id'   => $schedule->id,
+                    'course_id'            => $schedule->course->id,
+                    'user_id'              => $user->id,
+                    'payment_status'       => 'pending',
+                    'payment_tx_hash'      => $txId,
+                    'payment_ada_amount'   => $adaAmount,
                     'payment_submitted_at' => now()
                 ]);
 
@@ -159,29 +179,28 @@ class CoursePurchaseService
 
                 return $courseHistory;
             });
-
-            return [
-                'success' => true,
-                'message' => 'Transaction submitted successfully. Waiting for blockchain confirmation.',
-                'data' => [
-                    'txId' => $txId,
-                    'adaAmount' => $adaAmount,
-                    'courseHistoryId' => $courseHistory->id
-                ]
-            ];
-
         } catch (Exception $e) {
-            Log::error('Submit purchase transaction failed', [
+            Log::error('Submit purchase transaction: failed to record in DB', [
                 'schedule_id' => $schedule->id,
-                'user_id' => $user->id,
-                'error' => $e->getMessage()
+                'user_id'     => $user->id,
+                'tx_id'       => $txId,
+                'error'       => $e->getMessage(),
             ]);
-
             return [
                 'success' => false,
-                'message' => 'Failed to submit purchase transaction: ' . $e->getMessage()
+                'message' => 'Transaction submitted to blockchain but failed to record locally. Contact support with tx: ' . $txId
             ];
         }
+
+        return [
+            'success' => true,
+            'message' => 'Transaction submitted successfully. Waiting for blockchain confirmation.',
+            'data' => [
+                'txId'            => $txId,
+                'adaAmount'       => $adaAmount,
+                'courseHistoryId' => $courseHistory->id
+            ]
+        ];
     }
 
     /**

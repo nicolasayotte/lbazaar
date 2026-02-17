@@ -36,36 +36,29 @@ class ExchangeRateService
             if (!$response->successful()) {
                 Log::error('CoinGecko API request failed', [
                     'status' => $response->status(),
-                    'body' => $response->body()
+                    'body'   => $response->body(),
                 ]);
-                return $this->getCachedFallbackRate();
+            } else {
+                $data = $response->json();
+                $rate = $data['cardano']['jpy'] ?? null;
+
+                if (!$rate || $rate <= 0) {
+                    Log::error('Invalid exchange rate received from CoinGecko', ['data' => $data]);
+                } else {
+                    $floatRate = floatval($rate);
+                    Cache::put($cacheKey, $floatRate, $successCacheTtl);
+                    Cache::forget('ada_jpy_rate_fallback');
+                    Log::info('Exchange rate fetched from CoinGecko', ['rate' => $floatRate]);
+                    return $floatRate;
+                }
             }
-
-            $data = $response->json();
-            $rate = $data['cardano']['jpy'] ?? null;
-
-            if (!$rate || $rate <= 0) {
-                Log::error('Invalid exchange rate received from CoinGecko', ['data' => $data]);
-                return $this->getCachedFallbackRate();
-            }
-
-            Log::info('Exchange rate fetched from CoinGecko', ['rate' => $rate]);
-            $floatRate = floatval($rate);
-
-            // Cache successful API response for full TTL
-            Cache::put($cacheKey, $floatRate, $successCacheTtl);
-
-            // Clear fallback cache on successful API response
-            Cache::forget('ada_jpy_rate_fallback');
-
-            return $floatRate;
-
         } catch (Exception $e) {
             Log::error('Exchange rate fetch failed', [
                 'error' => $e->getMessage(),
             ]);
-            return $this->getCachedFallbackRate();
         }
+
+        return $this->getCachedFallbackRate();
     }
 
     /**
