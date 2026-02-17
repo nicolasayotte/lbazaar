@@ -31,10 +31,10 @@ const main = async () => {
       }
     }
     if (teacherAmount == BigInt(0)) {
-      throw console.error('submit-purchase-tx: teacher payment not found in transaction outputs');
+      throw new Error('teacher payment not found in transaction outputs');
     }
     if (adminAmount == BigInt(0)) {
-      throw console.error('submit-purchase-tx: admin payment not found in transaction outputs');
+      throw new Error('admin payment not found in transaction outputs');
     }
 
     // Add signature from the users wallet
@@ -46,8 +46,8 @@ const main = async () => {
     const returnObj = {
       status: 200,
       txId: txId,
-      teacherAmount: (teacherAmount / BigInt(1_000_000)).toString(),
-      adminAmount: (adminAmount / BigInt(1_000_000)).toString(),
+      teacherAmount: (Number(teacherAmount) / 1_000_000).toString(),
+      adminAmount: (Number(adminAmount) / 1_000_000).toString(),
       date: timestamp,
     };
     // Log tx submission success
@@ -58,7 +58,7 @@ const main = async () => {
     const returnObj = {
       status: 500,
       date: timestamp,
-      error: err,
+      error: err instanceof Error ? err.message : String(err),
     };
     // Log tx submission failure
     console.error(returnObj);
