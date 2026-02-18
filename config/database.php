@@ -63,6 +63,7 @@ return [
             ]) : [],
             'variables' => [
                 'innodb_lock_wait_timeout' => env('DB_LOCK_WAIT_TIMEOUT', 50),
+                'wait_timeout' => (int) env('DB_WAIT_TIMEOUT', 28800),
             ],
         ],
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="./vendor/phpunit/phpunit/phpunit.xsd"
-         bootstrap="vendor/autoload.php"
+         bootstrap="tests/bootstrap.php"
          colors="true"
          timeout="30"
 >
@@ -33,6 +33,7 @@
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="DB_LOCK_WAIT_TIMEOUT" value="3"/>
+        <env name="DB_WAIT_TIMEOUT" value="10"/>
     </php>
     <logging>
         <!-- Overwrite test results log each run -->

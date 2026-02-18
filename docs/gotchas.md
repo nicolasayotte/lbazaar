@@ -556,7 +556,7 @@ If a test assertion (not the method under test) throws an unexpected exception,
 suspect an accessor firing during the assertion read. Add a breakpoint or
 `dd()` inside the accessor to confirm.
 
-## 17. `updateOrCreate` in Tests Causes Lock Contention
+## 17. Zombie MySQL Connections Block Test Runs
 
 ### Symptom
 
@@ -565,18 +565,53 @@ Tests hang for 50+ seconds per test, then fail with:
 SQLSTATE[HY000]: General error: 1205 Lock wait timeout exceeded
 ```
 
+This happens most often after killing a test run mid-flight (Ctrl+C, timeout, crash).
+
 ### Cause
 
-`Setting::updateOrCreate(['slug' => 'ada-to-jpy'], [...])` in test `setUp()` takes an
-exclusive lock on the existing seeded row (id=27). If a previous test process was killed
-mid-transaction, the lock persists and blocks every subsequent test that touches that row.
+When a PHP process is killed mid-transaction, the MySQL connection stays alive with an
+uncommitted transaction holding row locks. MySQL's default `wait_timeout=28800` (8 hours)
+keeps these zombie connections alive indefinitely, blocking all subsequent test runs that
+touch locked rows.
 
-With the default `innodb_lock_wait_timeout=50`, each blocked test waits 50 seconds before
-failing — causing cascading 8+ minute hangs across the suite.
+A common trigger: `Setting::updateOrCreate(...)` in test `setUp()` takes an exclusive lock
+on the existing seeded row. If the previous test process was killed before the transaction
+committed, that lock persists and blocks every subsequent test.
 
-### Solution
+### Solution — Multi-Layer Defense
 
-Replace `updateOrCreate` with delete-then-create in test setUp:
+**Layer 1 — MySQL server-level timeout** (`docker-compose.yml`):
+```yaml
+mysql:
+    image: 'mysql/mysql-server:8.0'
+    command: --wait-timeout=300 --interactive-timeout=300
+```
+Any connection idle for 5 minutes gets killed by MySQL itself — regardless of whether
+Laravel set a session variable. This is the **primary defense**.
+
+**Layer 2 — Pre-test bootstrap cleanup** (`tests/bootstrap.php`):
+```php
+// Kills any sleeping connections to the testing DB before the suite runs.
+// See tests/bootstrap.php for full implementation.
+```
+PHPUnit runs this before every suite, actively killing stale connections so tests don't
+have to wait for the server-level timeout.
+
+**Layer 3 — Per-connection session timeout** (`phpunit.xml` + `config/database.php`):
+```xml
+<env name="DB_WAIT_TIMEOUT" value="10"/>
+```
+Each new test connection sets its own `wait_timeout=10` via a session variable. If a test
+connection becomes a zombie, it dies after 10 seconds of inactivity.
+
+**Layer 4 — Fast lock-wait failure** (`phpunit.xml`):
+```xml
+<env name="DB_LOCK_WAIT_TIMEOUT" value="3"/>
+```
+If a lock conflict does occur, tests fail in 3 seconds instead of 50, preventing
+cascading hangs across the suite.
+
+**Layer 5 — Avoid lock-prone patterns in tests**:
 
 ❌ **BAD** — locks the existing committed row:
 ```php
@@ -597,8 +632,14 @@ Setting::create([
 ]);
 ```
 
-**Safety net**: `phpunit.xml` sets `DB_LOCK_WAIT_TIMEOUT=3` so any remaining lock
-contention fails in 3 seconds instead of 50, preventing cascading hangs.
+### Recovery
+
+If tests are currently hung, kill the zombie connections manually:
+```bash
+sail exec -T mysql mysql -usail -ppassword testing -e "SHOW PROCESSLIST;"
+# Then restart MySQL with the new timeout config:
+sail down && sail up -d
+```
 
 ## 18. Running 50+ Migrations on a Fresh Install Is Slow
 
