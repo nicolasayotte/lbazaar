@@ -37,11 +37,9 @@ const main = async () => {
     const metadataJson = args[7];
 
     const ownerPkh = process.env.OWNER_PKH;
-    const nmkrPkh = process.env.NMKR_PKH || ownerPkh; // Fallback to owner PKH if NMKR_PKH not set
     const minAda = BigInt(process.env.MIN_ADA);
     const maxTxFee = BigInt(process.env.MAX_TX_FEE);
     const minChangeAmt = BigInt(process.env.MIN_CHANGE_AMT);
-    const useMultiSig = process.env.NMKR_PKH ? true : false; // Use multi-sig policy if NMKR_PKH is set
 
     if (!recipientAddress || !nftName || !serialNum || !mph || !imageUrl) {
       throw new Error('Missing required parameters');
@@ -64,15 +62,12 @@ const main = async () => {
     const recipientAddr = Address.fromBech32(recipientAddress);
 
     // Load and compile the NFT minting policy
-    const policyFileName = useMultiSig ? 'nft-minting-policy-multi-sig.hl' : 'nft-minting-policy.hl';
+    const policyFileName = 'nft-minting-policy.hl';
     const nftMintingPolicyFile = await fs.readFile(`./contracts/${policyFileName}`, 'utf8');
     const nftMintingPolicyScript = nftMintingPolicyFile.toString();
     const nftMintingProgram = Program.new(nftMintingPolicyScript);
 
     nftMintingProgram.parameters = { ['OWNER_PKH']: ownerPkh };
-    if (useMultiSig) {
-      nftMintingProgram.parameters = { ['NMKR_PKH']: nmkrPkh };
-    }
     nftMintingProgram.parameters = { ['VERSION']: '1.0' };
 
     const compiledNftMintingProgram = nftMintingProgram.compile(optimize);

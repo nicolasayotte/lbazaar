@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { getMintingPolicyHash, shouldUseMultiSigPolicy } from '../common/minting-policy.mjs';
+import { getMintingPolicyHash } from '../common/minting-policy.mjs';
 
 /**
  * Utility to get the minting policy hash for certificate NFTs
@@ -9,19 +9,15 @@ import { getMintingPolicyHash, shouldUseMultiSigPolicy } from '../common/minting
  */
 const main = async () => {
   try {
-    const useMultiSig = shouldUseMultiSigPolicy();
     const policyHash = await getMintingPolicyHash();
 
     const result = {
       status: 200,
       mintingPolicyHash: policyHash,
-      policyType: useMultiSig ? 'multi-signature' : 'single-signature',
-      description: useMultiSig
-        ? 'Multi-signature policy allowing minting by either owner or NMKR'
-        : 'Single-signature policy requiring owner signature',
+      policyType: 'single-signature',
+      description: 'Single-signature policy requiring owner signature',
       configuration: {
         ownerPkh: process.env.OWNER_PKH || null,
-        nmkrPkh: process.env.NMKR_PKH || null,
         network: process.env.NETWORK || 'preprod'
       }
     };
