@@ -495,6 +495,7 @@ sail down && sail up -d
 | Laravel errors | `tail -f storage/logs/laravel.log` |
 | Missing web3 dependencies | `cd web3 && npm install` |
 | Database issues | `sail artisan migrate:fresh --seed` (dev only!) |
+| Migrations slow on fresh install | `sail artisan schema:dump` (then commit the file) |
 
 ## Debugging Checklist
 
@@ -554,6 +555,85 @@ public function getPriceInAdaAttribute()
 If a test assertion (not the method under test) throws an unexpected exception,
 suspect an accessor firing during the assertion read. Add a breakpoint or
 `dd()` inside the accessor to confirm.
+
+## 17. `updateOrCreate` in Tests Causes Lock Contention
+
+### Symptom
+
+Tests hang for 50+ seconds per test, then fail with:
+```
+SQLSTATE[HY000]: General error: 1205 Lock wait timeout exceeded
+```
+
+### Cause
+
+`Setting::updateOrCreate(['slug' => 'ada-to-jpy'], [...])` in test `setUp()` takes an
+exclusive lock on the existing seeded row (id=27). If a previous test process was killed
+mid-transaction, the lock persists and blocks every subsequent test that touches that row.
+
+With the default `innodb_lock_wait_timeout=50`, each blocked test waits 50 seconds before
+failing — causing cascading 8+ minute hangs across the suite.
+
+### Solution
+
+Replace `updateOrCreate` with delete-then-create in test setUp:
+
+❌ **BAD** — locks the existing committed row:
+```php
+Setting::updateOrCreate(
+    ['slug' => 'ada-to-jpy'],
+    ['name' => 'ADA to JPY', 'value' => '50', ...]
+);
+```
+
+✅ **GOOD** — no contention on existing rows:
+```php
+Setting::where('slug', 'ada-to-jpy')->delete();
+Setting::create([
+    'slug' => 'ada-to-jpy',
+    'name' => 'ADA to JPY',
+    'value' => '50',
+    ...
+]);
+```
+
+**Safety net**: `phpunit.xml` sets `DB_LOCK_WAIT_TIMEOUT=3` so any remaining lock
+contention fails in 3 seconds instead of 50, preventing cascading hangs.
+
+## 18. Running 50+ Migrations on a Fresh Install Is Slow
+
+### Symptom
+
+`sail artisan migrate` (or `migrate:fresh`) replays every migration file in
+`database/migrations/` sequentially — which gets noticeable once the project
+has 50+ files.
+
+### Solution
+
+Dump the current schema to a single SQL file and commit it:
+
+```bash
+sail artisan schema:dump
+```
+
+This writes `database/schema/mysql-schema.sql`.  On the next fresh install
+Laravel loads that one file first, then runs only the **newer** migrations on
+top of it — turning a 50-step replay into a single SQL import.
+
+**When to re-dump**: after any batch of new migrations lands on `dev`/`main`.
+There is no harm in dumping more often; the file is overwritten in place.
+
+**Check in the dump**:
+
+```bash
+git add database/schema/mysql-schema.sql
+git commit -m "chore(db): refresh schema dump"
+```
+
+> **Note**: `database/schema/` is already present in this repo — the dump has
+> been taken.  If you ever need to reset (e.g. after a destructive
+> `migrate:fresh --seed` that changed the baseline), just re-run
+> `sail artisan schema:dump` and commit.
 
 ## Cross-References
 

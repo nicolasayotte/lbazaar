@@ -92,13 +92,16 @@ web3/
 ### Backend Tests
 
 ```bash
-# All tests
-sail test
+# All tests (parallel, 8 workers)
+sail composer test
 
-# Specific test class
-sail test --filter CertificateServiceTest
+# Recreate parallel databases (after Ctrl+C or stuck locks)
+sail composer test:recreate
 
-# Specific test method
+# Specific test class (parallel)
+sail artisan test --parallel --filter CertificateServiceTest
+
+# Specific test method (serial, faster for single test)
 sail test --filter test_mint_and_airdrop_certificate_success
 
 # With coverage report
@@ -107,6 +110,10 @@ sail test --coverage
 # Stop on first failure
 sail test --stop-on-failure
 ```
+
+**Parallel Testing**: Tests run via [ParaTest](https://github.com/paratestphp/paratest) with 8 worker processes. Each worker gets its own database (`testing_test_1` through `testing_test_8`). A schema dump (`database/schema/mysql-schema.sql`) is loaded instead of running migrations, keeping startup fast.
+
+**If tests hang or lock**: Run `sail composer test:recreate` to drop and rebuild all worker databases. See [gotchas.md #17](./gotchas.md) for the `updateOrCreate` lock contention pattern.
 
 ### Frontend Tests
 
@@ -587,21 +594,25 @@ sail artisan db:seed --class=UserSeeder
 
 ### Test Database
 
-**Configuration**: `.env.testing`
+**Configuration**: `phpunit.xml` sets `DB_DATABASE=testing` and `DB_LOCK_WAIT_TIMEOUT=3`.
 
-```env
-DB_CONNECTION=mysql
-DB_DATABASE=lbazaar_test
-APP_ENV=testing
+**Setup** (one-time):
+```bash
+# Create the base testing database
+sail mysql -e "CREATE DATABASE IF NOT EXISTS testing;"
+
+# Run migrations on it
+sail bash -c "DB_DATABASE=testing php artisan migrate"
+
+# Generate schema dump (speeds up parallel database creation)
+sail bash -c "DB_DATABASE=testing php artisan schema:dump"
 ```
 
-**Setup**:
-```bash
-# Create test database
-sail mysql -e "CREATE DATABASE lbazaar_test;"
+**Parallel databases**: When running `sail composer test`, Laravel automatically creates `testing_test_1` through `testing_test_8` by loading `database/schema/mysql-schema.sql`. This is instant compared to running 50+ migrations per worker.
 
-# Run migrations for test DB
-sail artisan migrate --env=testing
+**After adding new migrations**: Re-run `schema:dump` to keep the dump in sync:
+```bash
+sail bash -c "DB_DATABASE=testing php artisan migrate && php artisan schema:dump"
 ```
 
 ## Mocking External Services
@@ -768,6 +779,42 @@ rm -rf node_modules/.vite
 **Issue**: Tests pass locally but fail in CI
 
 **Solution**: Check environment variables in CI config, ensure test database is created
+
+---
+
+**Issue**: Tests hang for 30+ seconds per test, or new test runs block on `INSERT INTO roles`
+
+**Root cause**: Mockery partial mocks of services with **protected** methods (like `runCommand()`)
+require `->shouldAllowMockingProtectedMethods()`. Without it, `shouldReceive('runCommand')` is
+silently ignored — the real method executes `exec('timeout 30 ...')`, which blocks while
+`DatabaseTransactions` holds row locks. A second test run then deadlocks waiting for those locks.
+
+**Solution**:
+1. Always chain `->shouldAllowMockingProtectedMethods()` after `->makePartial()` when mocking
+   protected methods:
+   ```php
+   $service = Mockery::mock(MyService::class, [$dep1, $dep2])
+       ->makePartial()
+       ->shouldAllowMockingProtectedMethods(); // REQUIRED for protected methods
+   ```
+2. Services that call `exec()` should have a testing guard that throws immediately instead of
+   hanging (see `CoursePurchaseService::runCommand()` for the pattern).
+3. If tests are already stuck, kill zombie processes and their DB connections:
+   ```bash
+   sail exec -T app bash -c "kill -9 \$(pgrep -f 'phpunit|artisan test')"
+   sail exec -T mysql mysqladmin processlist -uroot -ppassword  # find stuck IDs
+   sail exec -T mysql mysql -uroot -ppassword -e "KILL <id>;"
+   ```
+
+---
+
+**Issue**: `number_format()` in Eloquent accessor breaks `(float)` cast
+
+**Root cause**: `Course::getPriceAttribute()` returns `number_format(1000, 2)` → `"1,000.00"`.
+PHP's `(float)` stops at the comma: `(float) "1,000.00"` = `1.0`, not `1000.0`.
+
+**Solution**: Use `$model->getRawOriginal('price')` to bypass the accessor when you need the
+raw numeric value for calculations.
 
 ## Best Practices
 
