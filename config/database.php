@@ -61,6 +61,9 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
+            'variables' => [
+                'innodb_lock_wait_timeout' => env('DB_LOCK_WAIT_TIMEOUT', 50),
+            ],
         ],
 
         'pgsql' => [

@@ -59,6 +59,12 @@ class UserFactory extends Factory
                 return;
             }
 
+            // Skip web3 call in test environment — use a deterministic placeholder
+            if (app()->environment('testing')) {
+                $user->updateQuietly(['custodial_address' => 'addr_test_factory_' . $user->id]);
+                return;
+            }
+
             // call Node script to get custodial address JSON
             $script = base_path('web3/common/get-custodial-address.mjs');
             $process = new Process(['node', $script, (string) $user->id]);
