@@ -31,6 +31,11 @@ class PlaywrightTestSeeder extends Seeder
                 ['display_name' => 'Teacher', 'description' => 'Teacher role for Playwright fixtures']
             );
 
+            Role::firstOrCreate(
+                ['name' => 'admin'],
+                ['display_name' => 'Admin', 'description' => 'Admin role for Playwright fixtures']
+            );
+
             $student = $this->upsertUser(
                 ['email' => 'pw-student@example.com'],
                 [
@@ -55,6 +60,19 @@ class PlaywrightTestSeeder extends Seeder
 
             if (! $teacher->hasRole('teacher')) {
                 $teacher->attachRole('teacher');
+            }
+
+            $admin = $this->upsertUser(
+                ['email' => 'pw-admin@example.com'],
+                [
+                    'first_name' => 'Playwright',
+                    'last_name' => 'Admin',
+                    'country_id' => $country->id,
+                ]
+            );
+
+            if (! $admin->hasRole('admin')) {
+                $admin->attachRole('admin');
             }
         });
     }

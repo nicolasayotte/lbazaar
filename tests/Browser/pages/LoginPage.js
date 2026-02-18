@@ -7,17 +7,19 @@ import { waitForApp, waitForInertiaNavigation } from '../helpers/wait-for-app.js
 export class LoginPage {
     /**
      * @param {import('@playwright/test').Page} page
+     * @param {string} [loginUrl='/portal/login']
      */
-    constructor(page) {
+    constructor(page, loginUrl = '/portal/login') {
         this.page = page;
+        this.loginUrl = loginUrl;
         this.emailInput = page.locator('input[name="email"]');
         this.passwordInput = page.locator('input[name="password"]');
         this.submitButton = page.locator('button[type="submit"]');
     }
 
-    /** Navigate to /portal/login and wait for the React app to mount. */
+    /** Navigate to the login page and wait for the app to mount. */
     async goto() {
-        await this.page.goto('/portal/login');
+        await this.page.goto(this.loginUrl);
         await waitForApp(this.page);
     }
 
@@ -39,7 +41,7 @@ export class LoginPage {
      */
     async loginAndWaitForRedirect(email, password) {
         await Promise.all([
-            this.page.waitForURL(url => !url.href.includes('/portal/login'), { timeout: 15000 }),
+            this.page.waitForURL(url => !url.href.includes(this.loginUrl), { timeout: 15000 }),
             this.login(email, password),
         ]);
         // Do NOT call waitForApp — redirect target (/) crashes React (null course_type)

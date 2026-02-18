@@ -22,6 +22,10 @@ export default defineConfig({
             name: 'teacher-setup',
             testMatch: '**/auth/teacher.setup.js',
         },
+        {
+            name: 'admin-setup',
+            testMatch: '**/auth/admin.setup.js',
+        },
         // Unauthenticated tests — no storageState needed
         {
             name: 'unauthenticated',
@@ -46,6 +50,15 @@ export default defineConfig({
                 storageState: 'tests/Browser/fixtures/teacher.json',
             },
             dependencies: ['teacher-setup'],
+        },
+        {
+            name: 'admin',
+            testMatch: '**/admin/**/*.spec.js',
+            use: {
+                browserName: 'chromium',
+                storageState: 'tests/Browser/fixtures/admin.json',
+            },
+            dependencies: ['admin-setup'],
         },
     ],
 });
