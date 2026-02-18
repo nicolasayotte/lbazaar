@@ -98,7 +98,6 @@ Focus on:
 ```bash
 sail test                    # Backend tests
 cd web3 && npm test         # Web3 tests
-npm run postman:test        # API E2E tests
 ./test-prod.sh full-test    # Production build test
 ```
 

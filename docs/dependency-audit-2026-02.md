@@ -86,7 +86,6 @@ These are all within their semver ranges. A simple `composer update` / `npm upda
 | @testing-library/* | various | various | All current |
 | happy-dom | ^20.6.1 | 20.6.1 | Current |
 | jsdom | ^28.1.0 | 28.1.0 | Current |
-| newman | ^6.2.1 | 6.2.2 | |
 
 ### web3/package.json
 

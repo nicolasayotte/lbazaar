@@ -19,7 +19,6 @@ Work methodically: read relevant docs before tasks, validate assumptions, test t
 - `database/` - Migrations, seeders
 - `docs/` - Comprehensive documentation (architecture, testing, deployment, patterns, integrations, gotchas)
 - `docker-build/` - Production Docker builds
-- `postman/` - API test collection
 
 ## Commands
 
@@ -28,7 +27,6 @@ sail up -d              # Start Docker environment
 sail artisan migrate    # Run migrations
 sail test               # PHP tests
 cd web3 && npm test     # Web3 tests
-npm run postman:test    # API E2E tests
 ./test-prod.sh full-test  # Local production testing (REQUIRED before deploy)
 sail bash               # Enter container shell
 ```
@@ -43,6 +41,16 @@ sail bash               # Enter container shell
 - **Cardano MIN_ADA**: All UTXOs require minimum 2M lovelace (set in .env: `MIN_ADA=2000000`)
 - **Tests first**: Write tests before code, run full suite before commits
 - **Git workflow**: Feature branches from `dev`, PRs to `dev`, releases to `main`
+
+## Playwright Browser Tests
+
+Multi-project setup in `playwright.config.js`:
+- **Setup projects** (`auth/student.setup.js`, `auth/teacher.setup.js`, `auth/admin.setup.js`) — log in and save `storageState` to `tests/Browser/fixtures/{role}.json`
+- **Test projects** — load saved session, start pre-authenticated
+- **Seeder required**: `sail artisan db:seed --class=PlaywrightTestSeeder` (creates `pw-{role}@example.com` / `Test1234!`)
+- **Helpers**: `tests/Browser/helpers/wait-for-app.js` (`waitForApp`, `waitForInertiaNavigation`), `tests/Browser/helpers/test-users.js` (`TEST_USERS`, `STORAGE_STATE`)
+- **Page Objects**: `tests/Browser/pages/LoginPage.js`
+- Unauthenticated tests live in `tests/Browser/*.spec.js`; authenticated tests in `tests/Browser/auth/` (student) or `tests/Browser/admin/` (admin)
 
 ## Notes
 
@@ -61,7 +69,7 @@ sail bash               # Enter container shell
 - **Setup**: [getting-started.md](docs/getting-started.md) - Environment setup, installation
 - **Architecture**: [architecture.md](docs/architecture.md) - System structure, three-tier design
 - **Patterns**: [patterns.md](docs/patterns.md) - Thin controller pattern, service responses, anti-patterns
-- **Testing**: [testing.md](docs/testing.md) - Test strategy, PHPUnit, Vitest, Postman
+- **Testing**: [testing.md](docs/testing.md) - Test strategy, PHPUnit, Vitest, Playwright
 - **Deployment**: [deployment.md](docs/deployment.md) - Production deployment procedure, rollback
 - **Integrations**: [integrations.md](docs/integrations.md) - Blockfrost, NMKR, AWS S3, Sanctum
 - **Data Flows**: [data-flows.md](docs/data-flows.md) - Request-response flows, user journeys
