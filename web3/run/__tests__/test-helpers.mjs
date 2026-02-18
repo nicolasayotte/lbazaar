@@ -41,11 +41,7 @@ export const createMockArgv = (scriptName, {
     serialNum
   ];
 
-  if (scriptName.includes('nmkr')) {
-    args.push(projectUid, imageUrl);
-  } else {
-    args.push(mph, imageUrl);
-  }
+  args.push(mph, imageUrl);
 
   args.push(JSON.stringify(metadata || createMockCertificateMetadata()));
   
@@ -60,11 +56,10 @@ export const createMockEnv = (overrides = {}) => ({
   OWNER_PKH: 'owner-pubkey-hash-test',
   OWNER_WALLET_ADDR: 'addr_test1owner_wallet_address',
   MIN_ADA: '2000000',
-  MAX_TX_FEE: '500000', 
+  MAX_TX_FEE: '500000',
   MIN_CHANGE_AMT: '1000000',
   TTL_MINUTES: '30',
   BLOCKFROST_API_KEY: 'preprod-test-api-key',
-  NMKR_API_KEY: 'nmkr-test-api-key',
   ...overrides
 });
 
@@ -84,55 +79,6 @@ export const createMockUtxos = (count = 1) => {
     });
   }
   return utxos;
-};
-
-/**
- * Creates mock NMKR API responses
- */
-export const createMockNmkrResponses = ({
-  uploadSuccess = true,
-  mintSuccess = true,
-  nftUid = 'nft_test_123',
-  transactionHash = 'tx_abc123def456'
-} = {}) => {
-  const responses = [];
-
-  // Upload response
-  if (uploadSuccess) {
-    responses.push({
-      ok: true,
-      json: () => Promise.resolve({ nftUid })
-    });
-  } else {
-    responses.push({
-      ok: false,
-      status: 400,
-      text: () => Promise.resolve('Upload failed')
-    });
-  }
-
-  // Mint response (only if upload succeeded)
-  if (uploadSuccess) {
-    if (mintSuccess) {
-      responses.push({
-        ok: true,
-        json: () => Promise.resolve({
-          sendedNft: [{
-            initialMintTxHash: transactionHash,
-            recipientAddress: 'addr_test1recipient'
-          }]
-        })
-      });
-    } else {
-      responses.push({
-        ok: false,
-        status: 500,
-        text: () => Promise.resolve('Minting failed')
-      });
-    }
-  }
-
-  return responses;
 };
 
 /**
@@ -280,11 +226,9 @@ export const createCertificateTestSuite = (scriptName, specificTests) => {
  */
 export const networkConfigs = {
   mainnet: {
-    nmkrBaseUrl: 'https://studio-api.nmkr.io/v2',
     explorerBaseUrl: 'https://cardanoscan.io/transaction'
   },
   preprod: {
-    nmkrBaseUrl: 'https://studio-api.preprod.nmkr.io/v2',
     explorerBaseUrl: 'https://preprod.cardanoscan.io/transaction'
   }
 };

@@ -33,22 +33,6 @@ describe('Certificate Transaction Utilities', () => {
       expect(metadata).toHaveProperty('teacher_name'); // Still has defaults
     });
 
-    it('createMockArgv generates correct arguments for NMKR script', () => {
-      const argv = createMockArgv('build-certificate-tx-nmkr.mjs', {
-        recipientAddress: 'addr_test1xyz',
-        nftName: 'Test',
-        serialNum: '123',
-        projectUid: 'proj_456'
-      });
-      
-      expect(argv[0]).toBe('node');
-      expect(argv[1]).toBe('build-certificate-tx-nmkr.mjs');
-      expect(argv[2]).toBe('addr_test1xyz');
-      expect(argv[3]).toBe('Test');
-      expect(argv[4]).toBe('123');
-      expect(argv[5]).toBe('proj_456');
-    });
-
     it('createMockArgv generates correct arguments for direct minting script', () => {
       const argv = createMockArgv('build-certificate-tx.mjs', {
         recipientAddress: 'addr_test1xyz',
@@ -67,7 +51,6 @@ describe('Certificate Transaction Utilities', () => {
       expect(env).toHaveProperty('OWNER_WALLET_ADDR');
       expect(env).toHaveProperty('MIN_ADA');
       expect(env).toHaveProperty('MAX_TX_FEE');
-      expect(env).toHaveProperty('NMKR_API_KEY');
     });
 
     it('createMockEnv accepts overrides', () => {
@@ -147,18 +130,14 @@ describe('Certificate Transaction Utilities', () => {
 
   describe('Network Configuration', () => {
     it('provides mainnet configuration', () => {
-      expect(networkConfigs.mainnet).toHaveProperty('nmkrBaseUrl');
       expect(networkConfigs.mainnet).toHaveProperty('explorerBaseUrl');
-      expect(networkConfigs.mainnet.nmkrBaseUrl).toContain('nmkr.io');
     });
 
     it('provides preprod configuration', () => {
-      expect(networkConfigs.preprod).toHaveProperty('nmkrBaseUrl');
-      expect(networkConfigs.preprod.nmkrBaseUrl).toContain('preprod');
+      expect(networkConfigs.preprod).toHaveProperty('explorerBaseUrl');
     });
 
     it('mainnet and preprod have different URLs', () => {
-      expect(networkConfigs.mainnet.nmkrBaseUrl).not.toBe(networkConfigs.preprod.nmkrBaseUrl);
       expect(networkConfigs.mainnet.explorerBaseUrl).not.toBe(networkConfigs.preprod.explorerBaseUrl);
     });
   });
