@@ -1,5 +1,6 @@
 import { Box, Button, Pagination, Grid, Typography, Container, Card, CardContent, Autocomplete, Chip, TextField } from "@mui/material";
-import { useForm, usePage, router } from '@inertiajs/inertia-react'
+import { useForm, usePage } from '@inertiajs/inertia-react'
+import { Inertia } from '@inertiajs/inertia'
 import Course from "../../../components/cards/Course";
 import Input from "../../../components/forms/Input";
 import { displaySelectOptions, handleOnChange, handleOnSelectChange } from "../../../helpers/form.helper";
@@ -44,13 +45,8 @@ const SearchCourse = () => {
         get(routes['course.index']);
     }
 
-    const handleOnPaginate = (e, page) => {
-        transform(filters => ({
-            ...filters,
-            page
-        }))
-
-        handleFilterSubmit(e)
+    const handleOnPaginate = (_, page) => {
+        Inertia.get(routes['course.index'], { ...filters, page })
     }
 
     const displayCourses = (courses, showDescription = true) => {
@@ -134,8 +130,8 @@ const SearchCourse = () => {
                                                     // Update form state for UI consistency
                                                     setFilters(newFilters);
 
-                                                    // Use router.get directly with explicit data
-                                                    router.get(routes['course.index'], newFilters);
+                                                    // Use Inertia.get directly with explicit data
+                                                    Inertia.get(routes['course.index'], newFilters);
                                                 }}
                                                 renderTags={(value, getTagProps) =>
                                                     value.map((option, index) => (
