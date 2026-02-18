@@ -96,7 +96,7 @@ const Course = ({ course, schedule = null, showDescription = true, viewDetailId 
                                 </Stack>
                                 <Stack direction="row" spacing={1}>
                                     <Package />
-                                    <Chip color={courseTypeColors[course.course_type.name]} label={course.course_type.name} size="small" variant="outlined" />
+                                    {course.course_type && <Chip color={courseTypeColors[course.course_type.name]} label={course.course_type.name} size="small" variant="outlined" />}
                                 </Stack>
                             </Box>
                             <Typography variant="h6" children={course.title} />
