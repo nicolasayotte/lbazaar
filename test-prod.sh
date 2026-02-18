@@ -27,6 +27,7 @@ COMMANDS:
     test            Run all tests (PHP + Web3)
     test-php        Run PHP tests only
     test-web3       Run Web3 tests only
+    test-integration  Run integration tests (requires real API keys)
     migrate         Run database migrations
     migrate-fresh   Fresh migration with seed data
     shell           Enter app container shell
@@ -39,6 +40,8 @@ EXAMPLES:
     ./test-prod.sh start                    # Build and start
     ./test-prod.sh test                     # Run all tests
     ./test-prod.sh full-test                # Complete pre-deployment test
+    ./test-prod.sh full-test --integration  # Full test + integration tests
+    ./test-prod.sh test-integration         # Integration tests only
     ./test-prod.sh shell                    # Enter container
     ./test-prod.sh logs                     # Watch logs
     ./test-prod.sh clean                    # Clean up everything
@@ -122,43 +125,63 @@ case "$1" in
         $COMPOSE ps
         ;;
     
+    test-integration)
+        echo -e "${GREEN}Running PHP integration tests...${NC}"
+        $COMPOSE exec app php vendor/bin/phpunit --testsuite=Integration --no-coverage
+        echo ""
+        echo -e "${GREEN}Running Web3 integration tests...${NC}"
+        $COMPOSE exec app sh -c "cd web3 && npm run test:integration"
+        echo ""
+        echo -e "${GREEN}✓ Integration tests completed${NC}"
+        ;;
+
     rebuild)
         echo -e "${YELLOW}Rebuilding from scratch (no cache)...${NC}"
         $COMPOSE build --no-cache
         echo -e "${GREEN}✓ Rebuild completed${NC}"
         ;;
-    
+
     full-test)
+        STEP_TOTAL=7
+        if [ "$2" = "--integration" ]; then STEP_TOTAL=8; fi
+
         echo -e "${GREEN}========================================${NC}"
         echo -e "${GREEN}Le Bazaar - Full Pre-Deployment Test${NC}"
         echo -e "${GREEN}========================================${NC}"
         echo ""
-        
-        echo -e "${YELLOW}[1/7] Building production image...${NC}"
+
+        echo -e "${YELLOW}[1/$STEP_TOTAL] Building production image...${NC}"
         $COMPOSE build
-        
+
         echo ""
-        echo -e "${YELLOW}[2/7] Starting services...${NC}"
+        echo -e "${YELLOW}[2/$STEP_TOTAL] Starting services...${NC}"
         $COMPOSE up -d
-        
+
         echo ""
-        echo -e "${YELLOW}[3/7] Waiting for health checks...${NC}"
+        echo -e "${YELLOW}[3/$STEP_TOTAL] Waiting for health checks...${NC}"
         sleep 45
-        
+
         echo ""
-        echo -e "${YELLOW}[4/7] Running migrations...${NC}"
+        echo -e "${YELLOW}[4/$STEP_TOTAL] Running migrations...${NC}"
         $COMPOSE exec app php artisan migrate --seed
-        
+
         echo ""
-        echo -e "${YELLOW}[5/7] Running PHP tests...${NC}"
+        echo -e "${YELLOW}[5/$STEP_TOTAL] Running PHP tests...${NC}"
         $COMPOSE exec app php artisan test
-        
+
         echo ""
-        echo -e "${YELLOW}[6/7] Running Web3 tests...${NC}"
+        echo -e "${YELLOW}[6/$STEP_TOTAL] Running Web3 tests...${NC}"
         $COMPOSE exec app sh -c "cd web3 && npm run test"
-        
+
+        if [ "$2" = "--integration" ]; then
+            echo ""
+            echo -e "${YELLOW}[7/8] Running integration tests (real APIs)...${NC}"
+            $COMPOSE exec app php vendor/bin/phpunit --testsuite=Integration --no-coverage || true
+            $COMPOSE exec app sh -c "cd web3 && npm run test:integration" || true
+        fi
+
         echo ""
-        echo -e "${YELLOW}[7/7] Checking health status...${NC}"
+        echo -e "${YELLOW}[$STEP_TOTAL/$STEP_TOTAL] Checking health status...${NC}"
         $COMPOSE ps
         
         echo ""
