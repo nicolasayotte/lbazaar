@@ -48,7 +48,7 @@ class CoursePurchaseService
             ];
         }
 
-        $adaTotalAmount = $this->convertJpyToAda($schedule->course->price);
+        $adaTotalAmount = $this->convertJpyToAda((float) $schedule->course->getRawOriginal('price'));
         $adminCommissionSetting = Setting::where('slug', 'admin-commission')->first();
         $adminCommissionPercent = $adminCommissionSetting ? floatval($adminCommissionSetting->value) : 20;
 
@@ -301,6 +301,13 @@ class CoursePurchaseService
      */
     protected function runCommand(string $command, int $timeout = 30): string
     {
+        if (app()->environment('testing')) {
+            throw new \RuntimeException(
+                'runCommand() must be mocked in tests. Use shouldAllowMockingProtectedMethods() and shouldReceive(\'runCommand\'). Command: '
+                . substr($command, 0, 100)
+            );
+        }
+
         $output = [];
         $returnVar = null;
 

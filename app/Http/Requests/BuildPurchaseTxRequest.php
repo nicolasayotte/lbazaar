@@ -45,7 +45,7 @@ class BuildPurchaseTxRequest extends FormRequest
             $scheduleId
         );
 
-        if (!empty($existingBooking)) {
+        if (is_countable($existingBooking) ? count($existingBooking) > 0 : !empty($existingBooking)) {
             return false;
         }
 
