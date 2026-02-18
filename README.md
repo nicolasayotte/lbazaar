@@ -1,391 +1,121 @@
-# Laravel Development Environment using Docker and Sail
+# Le Bazaar
+
+Cardano-integrated e-learning platform where students earn NFT certificates upon course completion. Built with a three-tier architecture separating the web client, application server, and blockchain layer.
+
+| Layer | Technologies |
+|-------|-------------|
+| **Frontend** | React 18, Inertia.js, Material-UI 5, Redux Toolkit, Vite |
+| **Backend** | Laravel 9, PHP 8.2, MySQL 8 |
+| **Blockchain** | Node.js 22, Helios, Blockfrost API, Cardano |
+| **Auth** | Laravel Sanctum, Laratrust RBAC |
+| **Payments** | Stripe |
+| **DevOps** | Docker (Laravel Sail), Nix, GitHub Actions |
+
+## Quick Start
+
+**Requirements**: Docker, Docker Compose, Node.js 22+, and optionally [Nix](https://nixos.org/). See [docs/getting-started.md](docs/getting-started.md) for detailed prerequisites and troubleshooting.
+
+### 1. Clone and configure
 
 ```bash
-git clone https://github.com/lebazaarweb2/groundfloor.git
-cd ~/src/groundfloor
-git checkout dev
+git clone <repository-url>
+cd lbazaar
 cp .env.example .env
 ```
 
-## Set the following env variables in the .env file.
+Edit `.env` — at minimum set `BLOCKFROST_API_KEY`, `ROOT_KEY`, and `OWNER_PKH`. See [docs/getting-started.md](docs/getting-started.md) for all required variables and how to obtain them.
 
-```ini
-FEED_WEBHOOK_AUTH_TOKEN="get-from-blockfrost"
-EXCHANGE_WEBHOOK_AUTH_TOKEN="get-from-blockfrost"
-BLOCKFROST_API_KEY="get-from-blockfrost"
-OWNER_WALLET_ADDR=""
-OWNER_PKH=""
-ROOT_KEY=""
-OPTIMIZE=true
-NETWORK=preprod
-MIN_ADA=2000000
-MAX_TX_FEE=500000
-MIN_CHANGE_AMT=1000000
+### 2. Enter development environment
+
+**Option A — Nix (recommended):**
+```bash
+nix develop
 ```
 
-Note: If you require a root key and corresponding owner pkh, please see
-additional notes below on how to create it.
+**Option B — Manual:** ensure PHP 8.2 and Composer are installed on your system.
 
-Update with correct .env variable values
-
-## Install PHP
+### 3. Install dependencies and start containers
 
 ```bash
-sudo apt-add-repository ppa:ondrej/php
-sudo apt update
-sudo apt install -y php8.2 php8.2-cli php8.2-common php8.2-xml
-curl -sS https://getcomposer.org/installer -o composer-setup.php
-sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
-
-composer -V
-#Composer version 2.5.7 2023-05-24 15:00:39
-
-php -v
-#PHP 8.2.7 (cli) (built: Jun  8 2023 15:27:12) (NTS)
-#Copyright (c) The PHP Group
-#Zend Engine v4.2.7, Copyright (c) Zend Technologies
-#with Zend OPcache v8.2.7, Copyright (c), by Zend Technologies
+composer install
+sail up -d
+sail bash -c "npm install"
 ```
 
-## Setup PHP environment
+### 4. Set up database and app key
 
 ```bash
-composer install --ignore-platform-reqs
+sail artisan migrate --seed
+sail artisan key:generate
 ```
 
-## Install Docker
+### 5. Install Web3 dependencies
 
 ```bash
-sudo apt-get update
-sudo apt-get install ca-certificates curl gnupg
-sudo install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-sudo chmod a+r /etc/apt/keyrings/docker.gpg
-echo   "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-  "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" |   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt-get update
-sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-sudo docker run hello-world
+cd web3 && npm install && cd ..
 ```
 
-### Docker Desktop (optional)
+### 6. Start Vite dev server
 
-Go to https://docs.docker.com/desktop/install/ubuntu/ and download DEB package
+In a separate terminal:
 
 ```bash
-sudo dpkg -i ~/Downloads/docker-desktop-4.20.1-amd64.deb
-```
-
-If you have missing qemu-system-x86 dependency, do the following steps:
-
-```bash
-sudo apt install qemu-system-x86
-sudo apt --fix-broken install
-sudo dpkg -i ~/Downloads/docker-desktop-4.20.1-amd64.deb
-```
-
-Now start the docker desktop and keep it running in the background
-
-## Install DB & App
-
-> ! Note that if your Docker needs `sudo` so will `sail`
-
-```bash
-sudo ./vendor/bin/sail up
-```
-
-The console will show Docker initialization outputs:
-
-```
-groundfloor-mysql-1  |
-groundfloor-mysql-1  | [Entrypoint] Starting MySQL 8.0.32-1.2.11-server
-groundfloor-mysql-1  | 2023-06-09T11:57:32.069298Z 0 [Warning] [MY-011068] [Server] The syntax '--skip-host-cache' is deprecated and will be removed in a future release. Please use SET GLOBAL host_cache_size=0 instead.
-groundfloor-mysql-1  | 2023-06-09T11:57:32.072076Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.0.32) starting as process 1
-groundfloor-mysql-1  | 2023-06-09T11:57:32.107414Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
-groundfloor-mysql-1  | 2023-06-09T11:57:32.911162Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
-groundfloor-mysql-1  | 2023-06-09T11:57:33.785559Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
-groundfloor-mysql-1  | 2023-06-09T11:57:33.785896Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
-groundfloor-mysql-1  | 2023-06-09T11:57:33.845849Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Bind-address: '::' port: 33060, socket: /var/run/mysqld/mysqlx.sock
-groundfloor-mysql-1  | 2023-06-09T11:57:33.847133Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '8.0.32'  socket: '/var/lib/mysql/mysql.sock'  port: 3306  MySQL Community Server - GPL.
-```
-
-From host
-
-```bash
-sudo ./vendor/bin/sail root-shell
-```
-
-Execute these commands
-
-```bash
-cd  ..
-chown -R sail *
-chgrp -R sail *
-exit
-```
-
-From host
-
-```bash
-sudo ./vendor/bin/sail bash
-```
-
-Execute these commands
-
-```bash
-npm install
+sail bash
 npm run dev
 ```
 
-From host
+### 7. Open the app
 
-## Run DB Migration
+http://localhost:8080
+
+**Admin login**: http://localhost:8080/admin/login — `admin@lebazaar.com` / `test1234`
+
+**Tip** — create a shell alias for convenience:
+```bash
+alias sail='./vendor/bin/sail'
+```
+
+## Running Tests
+
+| Command | What it runs |
+|---------|-------------|
+| `sail test` | PHP unit + feature tests |
+| `npm test` | Frontend Vitest |
+| `cd web3 && npm test` | Web3 unit tests |
+| `npm run test:browser` | Playwright browser tests |
+| `npm run test:all` | All three above in sequence |
+| `./test-prod.sh full-test` | Full local production build test |
+
+See [docs/testing.md](docs/testing.md) for the full test strategy, Playwright setup, integration tests, and coverage targets.
+
+## Deployment
+
+Test against the **production Docker image** before deploying:
 
 ```bash
-sudo ./vendor/bin/sail artisan migrate --seed
-```
-
-Expected console output (example)
-
-```
-   INFO  Preparing database.
-
-  Creating migration table ................................................................. 213ms DONE
-
-   INFO  Running migrations.
-
-  2014_10_10_000000_create_countries_table ................................................. 194ms DONE
-[...]
-  2023_07_05_181919_create_nft_transactions ................................................ 262ms DONE
-
-   INFO  Seeding database.
-
-  Database\Seeders\CountrySeeder .............................................................. RUNNING
-  Database\Seeders\CountrySeeder ........................................................ 83.94 ms DONE
-
-[...]
-
-  Database\Seeders\CourseFeedbackSeeder ....................................................... RUNNING
-  Database\Seeders\CourseFeedbackSeeder .................................................. 1.24 ms DONE
-```
-
-### Set Environment Variables.
-
-When you make a change, you will need to run auto-load to have them read and available.
-
-```bash
-sudo ./vendor/bin/sail composer dump-autoload
-```
-
-## Installing web3 npm modules
-
-```bash
-cd ./web3
-npm install
-```
-
-## Creating Root Key & Owner PKH
-
-```bash
-cd ./web3/init
-export ENTROPY="use a 24 word seed phrase"
-node ./generate-private-key.mjs
-```
-
-This will output the following which can be used for the env variables above.
-
-```ini
-ROOT_KEY=hexadecimal-root-key
-OWNER_PKH=hexadecimal-56-length-public-key-hash
-```
-
-_For `sail` command convenience, add this to your `~/.zshrc` or `~/.bashrc`_
-
-```bash
-alias sail='[ -f sail ] && sh sail || sh vendor/bin/sail'
-```
-
-## Local Dev Website Access
-
-Access local URL: http://localhost:8080
-Admin:
-
-- http://localhost:8080/admin/login
-- email: `admin@lebazaar.com`
-- password: `test1234`
-
-### Accesing Database
-
-```bash
-(host) $ sail mysql
-```
-
-### To explore more Sail commands:
-
-```bash
-(host) $ sail --help
-```
-
-or check official [docs](https://laravel.com/docs/9.x/sail)
-
-### Dev Env
-
-You may need to remove the following line from vite.config.js for your local
-dev env since this is only used for production.
-
-```js
-server: {
-  host: 'www.e-learning.com',
-}
-```
-
-## Running the tests
-
-### PHP Unit Tests
-
-```bash
-sail up -d
-sail test
-```
-
-### Web3 Unit Tests
-
-```bash
-sail up -d
-sail bash
-# in the sail bash shell
-cd web3/
-npm run test
-```
-
-
-### Test reports
-
-All test reports get saved in ./docs/test-reports/
-
-### Local Production Testing (Recommended Before Deployment)
-
-Test your code with the **production Docker image** on your local machine to catch environment-specific bugs:
-
-```bash
-# Quick start (recommended before deploying)
 ./test-prod.sh full-test
-
-# Or step-by-step:
-./test-prod.sh start         # Build and start production-like environment
-./test-prod.sh migrate       # Run migrations
-./test-prod.sh test          # Run all tests
-# Visit http://localhost:8080 for manual testing
-./test-prod.sh clean         # Cleanup when done
 ```
 
-**Why use this?**
-- Catches Nginx vs Apache differences
-- Catches Alpine vs Ubuntu differences
-- Catches missing PHP extensions
-- Tests with production Dockerfile
+See [docs/deployment.md](docs/deployment.md) for the full procedure, and [docs/LOCAL_PROD_TESTING.md](docs/LOCAL_PROD_TESTING.md) for the step-by-step production test guide.
 
-**See full documentation:** [docs/LOCAL_PROD_TESTING.md](docs/LOCAL_PROD_TESTING.md)
+## Documentation
 
-# Logs
+| Document | Description |
+|----------|-------------|
+| [Getting Started](docs/getting-started.md) | Installation, configuration, first run |
+| [Architecture](docs/architecture.md) | Three-tier system structure |
+| [Data Flows](docs/data-flows.md) | Request-response flows, user journeys |
+| [Patterns](docs/patterns.md) | Thin controller pattern, service responses, anti-patterns |
+| [Testing](docs/testing.md) | Dual-pipeline test strategy, Playwright setup |
+| [Deployment](docs/deployment.md) | Production deployment, rollback, monitoring |
+| [Integrations](docs/integrations.md) | Blockfrost, AWS S3, Stripe, Sanctum |
+| [Gotchas](docs/gotchas.md) | Common issues and solutions |
+| [Certificate Minting API](docs/certificate-minting-api.md) | NFT certificate minting via Helios |
+| [Local Production Testing](docs/LOCAL_PROD_TESTING.md) | `./test-prod.sh` usage guide |
 
-## Getting to the logs
+See [docs/index.md](docs/index.md) for the full index organized by developer role.
 
-```bash
-# in the server
-cd /var/www/groundfloor
-sudo su
-sudo docker container ls
-sudo docker exec -it $container_id /bin/bash
-```
+## Logs
 
-```bash
-# in the container
-su application
-tail -n40 storage/logs/web3.log
-```
-
-# Deployment
-
-## Staging Deployment
-
-```bash
-
-#   SSH into the server (Ask Admin for pem file and config file)
-#   Your IP address must be whitelisted explicitely
-ssh -i test-lebazaar-key.pem <user>@<staging_ip>
-
-# go to project docker-build directory:
-cd /var/www/groundfloor/docker-build
-
-# run as root
-sudo su
-
-# allow docker not load cache
-export DOCKER_BUILDKIT=0
-
-# first, create a Github token [here](https://github.com/settings/tokens). (One time only)
-#    -   Tokens(Classic)
-#    -   Make sure expiration is long enough or no expiration at all
-# get the latest branch
-git checkout staging; git pull
-
-# execute build script. It will ask for Github username and token (generated from step 1)
-./staging.sh
-
-# Note: web3 npm packages are now automatically installed during Docker build
-# No manual npm install step required
-
-#  Check https://stage.l-e-bazaar.com/ to make sure changes have been published
-```
-
-## Production Deployment
-
-```bash
-#   First, create a Github token [here](https://github.com/settings/tokens). (One time only)
-#   - Tokens(Classic)
-#   - Make sure expiration is long enough or no expiration at all
-
-#   SSH into the server (Ask Admin for pem file and config file)
-#   Your IP address must be whitelisted explicitely
-ssh -i prod-lebazaar.pem <user>@<prod_ip>
-
-#   Go to project docker-build directory:
-cd /var/www/groundfloor/docker-build
-
-#   run as root
-sudo su
-
-#   allow docker not load cache
-export DOCKER_BUILDKIT=0
-
-#   Execute build script. It will ask for Github username and token (generated from step 1)
-./production.sh -v patch
-./production.sh -v minor
-./production.sh -v major
-
-#   Note: web3 npm packages are now automatically installed during Docker build
-
-#   Check https://l-e-bazaar.com/ to make sure changes have been published
-```
-
-# Payment Methods
-
-## NMKR
-
-### Setup Gateway
-
-https://studio.preprod.nmkr.io/projects
-
-### Setup Info
-
-https://docs.nmkr.io/nmkr-studio/set-up-sales/nmkr-pay/set-up-nmkr-pay
-
-### Button
-
-https://docs.nmkr.io/nmkr-studio/set-up-sales/nmkr-pay/website-integration
-
-This is the test button for Testnet test NFT
-
-https://pay.preprod.nmkr.io/?p=0da0ef090d5e46d9b9588fc45524e808&n=a80b1df9ef934e1e889ab110e3e363b6
-https://studio.nmkr.io/images/buttons/paybutton_1_1.svg
+- **Laravel**: `storage/logs/laravel.log`
+- **Web3**: `storage/logs/web3.log`
