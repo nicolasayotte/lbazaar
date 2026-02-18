@@ -38,8 +38,22 @@ class CourseApplicationController extends Controller
     {
         $courseApplications = $this->courseApplicationRepository->get($request->all());
 
-        // Add price_in_ada to course applications
-        $this->exchangeRateService->addPriceInAdaToCourses($courseApplications);
+        // Add price_in_ada to course applications (items are DTO arrays, not models)
+        try {
+            $rate = $this->exchangeRateService->getAdaJpyRate();
+        } catch (\Throwable $e) {
+            $rate = 0;
+        }
+        $courseApplications->through(function ($item) use ($rate) {
+            $priceStr = $item['price'] ?? '';
+            if ($priceStr === 'Free' || $priceStr === '' || $rate <= 0) {
+                $item['price_in_ada'] = null;
+            } else {
+                $numeric = floatval(str_replace(',', '', $priceStr));
+                $item['price_in_ada'] = $numeric > 0 ? round($numeric / $rate, 2) : null;
+            }
+            return $item;
+        });
 
         return Inertia::render('Admin/ClassApplications/Index', [
             'courseApplications' => $courseApplications,
