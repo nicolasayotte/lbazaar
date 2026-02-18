@@ -390,3 +390,14 @@ User Wallet Address (Tests\Feature\UserWalletAddress)
  [x] User endpoint returns linked wallet address
  [x] User endpoint always returns custodial wallet address
 
+Blockfrost Read (Tests\Integration\BlockfrostRead)
+ [ ] Blockfrost preprod api is reachable
+ [ ] Blockfrost api returns valid epoch data
+
+Coin Gecko Rate (Tests\Integration\CoinGeckoRate)
+ [ ] Coingecko returns valid ada jpy rate
+ [x] Coingecko rate matches service parsing logic
+
+Stripe Connectivity (Tests\Integration\StripeConnectivity)
+ [ ] Stripe api accepts payment intent creation
+

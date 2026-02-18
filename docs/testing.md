@@ -1,21 +1,35 @@
 # Testing Strategy
 
-> **AI Context Summary**: Test pyramid: Unit (PHPUnit for services, Vitest for React/web3) → Integration (PHPUnit Feature for controllers) → E2E (Postman) → Browser (Playwright). Run `sail test` for PHP, `npm test` for React, `cd web3 && npm test` for blockchain (writes to log, use `npm run test:show` for terminal output), `npm run test:browser` for Playwright browser tests. Tests use DatabaseTransactions trait. Mock web3 exec() calls in service tests. Web3 tests use `.spec.mjs` extension. Browser tests use `.spec.js` in `tests/Browser/`. Coverage target: 80% services, 70% controllers/components.
+> **AI Context Summary**: Dual pipeline — Fast (mocked, every commit): `sail test`, `npm test`, `cd web3 && npm test`, `npm run test:browser`. Live Integration (real APIs, on-demand): `sail composer test:integration` (PHP), `cd web3 && npm run test:integration` (Node.js), `npm run test:postman:staging` (Postman against staging). Integration tests skip automatically when API keys are missing/placeholder. The `InteractsWithRealServices` trait (tests/Traits/) handles safety/skip logic. Web3 tests use `.spec.mjs`; browser tests `.spec.js` in `tests/Browser/`. Coverage target: 80% services, 70% controllers/components.
 
 ## Overview
 
-Le Bazaar follows a **test pyramid strategy** with three layers:
+Le Bazaar follows a **dual-pipeline test strategy**:
+
+```
+FAST PIPELINE (every commit)          LIVE PIPELINE (staging / on-demand)
+─────────────────────────             ─────────────────────────────────────
+PHPUnit Unit + Feature (mocked)       PHPUnit Integration (real APIs)
+Vitest frontend (jsdom, mocked)       Web3 Vitest integration (real Blockfrost)
+Web3 Vitest (mocked fetch)            Postman staging collection (real endpoints)
+Postman local (seeded data)           Playwright E2E (real Stripe test card)
+Playwright smoke (page loads)
+```
+
+The fast pipeline runs in parallel (8 workers), takes ~2 minutes, and mocks every external service. The live pipeline hits real testnet/test-mode APIs and self-skips when credentials are missing — safe to include in `phpunit.xml` without breaking CI.
 
 ```
       /\
      /BRW\           Playwright browser tests (smoke, user flows)
     /------\
-   / E2E    \        Postman API tests (limited)
+   / E2E    \        Postman API tests (local seeded + staging real)
   /----------\
- /   INT      \      PHPUnit Feature tests + Vitest integration
+ / LIVE INT   \      PHPUnit Integration + Web3 integration (real APIs)
 /--------------\
-/    UNIT       \    PHPUnit Unit tests + Vitest unit tests
-/----------------\
+ /   FEAT INT  \     PHPUnit Feature tests + Vitest integration
+/---------------\
+/    UNIT        \   PHPUnit Unit tests + Vitest unit tests
+/-----------------\
 ```
 
 ## Test Organization
@@ -39,6 +53,12 @@ tests/
 │   │       └── Portal/
 │   ├── CourseApplicationCategoryRelationTest.php
 │   └── UserWalletAddressTest.php
+├── Integration/                        ← real API calls (skip if no keys)
+│   ├── StripeConnectivityTest.php      real PaymentIntent creation (test mode)
+│   ├── BlockfrostReadTest.php          real preprod health + epoch
+│   └── CoinGeckoRateTest.php           real ADA/JPY rate + service parsing
+├── Traits/
+│   └── InteractsWithRealServices.php   safety trait (see below)
 └── TestCase.php (base class)
 ```
 
@@ -81,18 +101,21 @@ web3/
 │       └── network.spec.mjs
 └── run/
     └── __tests__/
-        ├── build-certificate-tx-nmkr.integration.spec.mjs
+        ├── build-certificate-tx-nmkr.integration.spec.mjs   (mocked — runs in fast pipeline)
+        ├── blockfrost-connectivity.integration.spec.mjs      (real Blockfrost — live pipeline)
         ├── build-purchase-tx.spec.mjs
         ├── certificate-tx-utils.spec.mjs
         └── submit-purchase-tx.spec.mjs
 ```
+
+The `blockfrost-connectivity.integration.spec.mjs` file uses `describe.skipIf()` to skip the entire suite when `BLOCKFROST_API_KEY` is a placeholder (< 10 chars or matches known dummy patterns from `vitest.setup.mjs`).
 
 ## Running Tests
 
 ### Backend Tests
 
 ```bash
-# All tests (parallel, 8 workers)
+# All tests (parallel, 8 workers) — fast pipeline only
 sail composer test
 
 # Recreate parallel databases (after Ctrl+C or stuck locks)
@@ -109,6 +132,9 @@ sail test --coverage
 
 # Stop on first failure
 sail test --stop-on-failure
+
+# Integration tests (real APIs — requires valid keys in .env)
+sail composer test:integration
 ```
 
 **Parallel Testing**: Tests run via [ParaTest](https://github.com/paratestphp/paratest) with 8 worker processes. Each worker gets its own database (`testing_test_1` through `testing_test_8`). A schema dump (`database/schema/mysql-schema.sql`) is loaded instead of running migrations, keeping startup fast.
@@ -136,7 +162,7 @@ npm test StripeCheckout.test.jsx
 **Note**: Web3 tests have their own package.json and dependencies in the `web3/` directory.
 
 ```bash
-# All web3 tests (run from web3 directory)
+# All web3 tests (run from web3 directory) — fast pipeline
 cd web3 && npm test
 
 # Show output in terminal (default writes to log file)
@@ -147,6 +173,9 @@ cd web3 && npm run test:watch
 
 # Specific test file
 cd web3 && npm run test:show utils.spec.mjs
+
+# Integration tests only (real Blockfrost — requires valid BLOCKFROST_API_KEY in .env)
+cd web3 && npm run test:integration
 ```
 
 ### Browser Tests (Playwright)
@@ -189,13 +218,99 @@ test('example test', async ({ page }) => {
 ### E2E Tests (Postman)
 
 ```bash
-# Run Postman collection
-npm run postman:test
+# Run against local seeded environment (fast pipeline)
+npm run test:postman
+
+# Run against staging environment (live pipeline — requires staging app running)
+npm run test:postman:staging
 
 # Or manually with Newman
 npx newman run postman/lbazaar.postman_collection.json \
   -e postman/local.postman_environment.json
+
+# All live integration tests in one command
+npm run test:integration
 ```
+
+**Environments**:
+- `postman/local.postman_environment.json` — `localhost:8080`, seeded test users
+- `postman/staging.postman_environment.json` — `https://staging.lebazaar.io`, requires `PostmanTestSeeder` run on staging DB
+
+## Live Integration Tests
+
+Integration tests hit real external APIs (Stripe test mode, Blockfrost preprod, CoinGecko free tier). They are included in the `Integration` PHPUnit testsuite and the `test:integration` npm scripts, but **not** in the default parallel `sail composer test` run.
+
+### Safety: `InteractsWithRealServices` Trait
+
+All PHP integration test classes use this trait:
+
+```php
+use Tests\Traits\InteractsWithRealServices;
+
+class StripeConnectivityTest extends TestCase
+{
+    use InteractsWithRealServices;
+
+    protected function requiredServiceKeys(): array
+    {
+        return ['STRIPE_SECRET' => 'services.stripe.secret'];
+    }
+}
+```
+
+PHPUnit 9 auto-calls `setUpInteractsWithRealServices()` before each test. It:
+1. Hard-blocks on `APP_ENV=production`
+2. Calls `markTestSkipped()` for any key that is missing, empty, or matches placeholder patterns (`xxx`, `goes here`, `your_`, `sk_test_xxx`, `blockfrost.io key`, etc.)
+
+### Adding a New PHP Integration Test
+
+```php
+namespace Tests\Integration;
+
+use Tests\TestCase;
+use Tests\Traits\InteractsWithRealServices;
+
+class MyServiceConnectivityTest extends TestCase
+{
+    use InteractsWithRealServices;
+
+    protected function requiredServiceKeys(): array
+    {
+        // Map display name → config path
+        return ['MY_API_KEY' => 'services.myservice.key'];
+    }
+
+    /** @test */
+    public function my_service_api_is_reachable()
+    {
+        // No mocks — real HTTP call
+    }
+}
+```
+
+### Running with Real Keys
+
+```bash
+# Set real keys in .env (test-mode only):
+# STRIPE_SECRET=sk_test_...        (from Stripe dashboard → test mode)
+# BLOCKFROST_API_KEY=preprodX...   (from blockfrost.io → preprod project)
+
+# PHP integration tests
+sail composer test:integration
+
+# Web3 integration tests
+cd web3 && npm run test:integration
+
+# Production test helper
+./test-prod.sh test-integration
+./test-prod.sh full-test --integration
+```
+
+### CoinGecko Note
+
+CoinGecko free tier requires no API key but enforces rate limits. The test sends `User-Agent: LeBazaar/1.0` and skips (rather than fails) on 403/429 responses. `ExchangeRateService` does not currently send a User-Agent — if CoinGecko tightens enforcement, add `->withHeaders(['User-Agent' => 'LeBazaar/1.0'])` to the `Http::get()` call in `ExchangeRateService.php`.
+
+---
 
 ## Writing Backend Tests
 
@@ -833,7 +948,7 @@ raw numeric value for calculations.
 ### DON'T
 
 ❌ **Don't test framework code** (e.g., Eloquent relationships, React internals)
-❌ **Don't use real API calls** in tests (mock Stripe, Blockfrost, etc.)
+❌ **Don't use real API calls** in Unit/Feature tests (mock Stripe, Blockfrost, etc.) — use `tests/Integration/` for real-API tests with the `InteractsWithRealServices` trait
 ❌ **Don't share state between tests** (use setUp/tearDown, beforeEach)
 ❌ **Don't test implementation details** (test behavior, not internal state)
 ❌ **Don't skip cleanup** (always use DatabaseTransactions or manual cleanup)
