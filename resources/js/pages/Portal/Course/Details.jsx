@@ -593,7 +593,7 @@ const Details = () => {
                             </CardContent>
                         </Card>
                         <User user={course.professor} condensed={false} />
-                        {(nft || isGeneralCourse) && <Box mb={2}>
+                        {(nft || isGeneralCourse) && auth && auth.user && <Box mb={2}>
                             <WalletConnector onStakeKeyHash={setwalletStakeKeyDisplay}
                                 walletAPI={walletAPI}
                                 onWalletAPI={setWalletAPI} />
