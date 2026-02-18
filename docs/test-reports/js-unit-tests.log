@@ -399,6 +399,6 @@ Make sure you have customized the input component correctly.
 
  Test Files  5 passed (5)
       Tests  64 passed (64)
-   Start at  20:26:29
-   Duration  7.79s (transform 477ms, setup 312ms, collect 8.35s, tests 2.28s, environment 3.00s, prepare 2.24s)
+   Start at  21:01:11
+   Duration  7.57s (transform 355ms, setup 321ms, collect 8.20s, tests 2.23s, environment 2.85s, prepare 1.65s)
 
