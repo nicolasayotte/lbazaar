@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Models\Course;
 use App\Models\CourseHistory;
 use App\Models\CourseSchedule;
-use App\Models\Role;
 use App\Models\User;
 use App\Models\UserWallet;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -70,8 +69,7 @@ class StudentCertificateTest extends TestCase
         ]);
 
         // Create roles
-        Role::firstOrCreate(['name' => 'student'], ['display_name' => 'Student']);
-        Role::firstOrCreate(['name' => 'teacher'], ['display_name' => 'Teacher']);
+        $this->createRoles(['student', 'teacher']);
 
         // Create test users
         $this->student = $this->createTestUser([

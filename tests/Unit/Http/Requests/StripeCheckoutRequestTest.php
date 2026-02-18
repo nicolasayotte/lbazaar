@@ -9,7 +9,6 @@ use App\Models\User;
 use App\Models\Course;
 use App\Models\CourseSchedule;
 use App\Models\CourseHistory;
-use App\Models\Role;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Validator;
 
@@ -27,8 +26,7 @@ class StripeCheckoutRequestTest extends TestCase
         parent::setUp();
 
         // Create roles
-        Role::firstOrCreate(['name' => 'teacher'], ['display_name' => 'Teacher']);
-        Role::firstOrCreate(['name' => 'student'], ['display_name' => 'Student']);
+        $this->createRoles(['student', 'teacher']);
 
         // Create professor with unique email
         $this->professor = User::factory()->create([

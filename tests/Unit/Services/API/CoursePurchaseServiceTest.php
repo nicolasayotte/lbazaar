@@ -57,10 +57,8 @@ class CoursePurchaseServiceTest extends TestCase
 
     private function setupTestData()
     {
-        // Create roles
-        Role::firstOrCreate(['name' => 'administrator'], ['display_name' => 'Administrator']);
-        Role::firstOrCreate(['name' => 'teacher'], ['display_name' => 'Teacher']);
-        Role::firstOrCreate(['name' => 'student'], ['display_name' => 'Student']);
+        // Ensure roles exist
+        $this->createRoles(['administrator', 'teacher', 'student']);
 
         // Create admin without triggering custodial address event
         $this->admin = User::withoutEvents(function () {
@@ -126,15 +124,24 @@ class CoursePurchaseServiceTest extends TestCase
             'course_id' => $this->course->id
         ]);
 
-        // Create settings
-        Setting::updateOrCreate(
-            ['slug' => 'ada-to-jpy'],
-            ['name' => 'ADA to JPY Exchange Rate', 'value' => '50', 'type' => 'number', 'category' => 'general']
-        );
-        Setting::updateOrCreate(
-            ['slug' => 'admin-commission'],
-            ['name' => 'Admin Commission', 'value' => '20', 'type' => 'number', 'category' => 'general']
-        );
+        // Create settings — delete first so parallel test processes
+        // don't contend on the same committed row via updateOrCreate
+        Setting::where('slug', 'ada-to-jpy')->delete();
+        Setting::create([
+            'slug' => 'ada-to-jpy',
+            'name' => 'ADA to JPY Exchange Rate',
+            'value' => '50',
+            'type' => 'number',
+            'category' => 'general',
+        ]);
+        Setting::where('slug', 'admin-commission')->delete();
+        Setting::create([
+            'slug' => 'admin-commission',
+            'name' => 'Admin Commission',
+            'value' => '20',
+            'type' => 'number',
+            'category' => 'general',
+        ]);
     }
 
     // --- convertJpyToAda tests ---
@@ -409,7 +416,7 @@ class CoursePurchaseServiceTest extends TestCase
         $result = $service->submitPurchaseTransaction($this->schedule, $this->student, 'cbor_sig', 'cbor_tx');
 
         $this->assertFalse($result['success']);
-        $this->assertStringContainsString('Failed to submit transaction', $result['message']);
+        $this->assertStringContainsString('Transaction submission failed', $result['message']);
     }
 
     public function test_submit_creates_wallet_transaction_with_course_history_reference()

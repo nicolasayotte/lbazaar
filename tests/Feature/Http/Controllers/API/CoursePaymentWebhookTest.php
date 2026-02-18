@@ -11,7 +11,6 @@ use App\Models\CourseHistory;
 use App\Models\CourseSchedule;
 use App\Models\UserWallet;
 use App\Models\WalletTransactionHistory;
-use App\Models\Role;
 use Mockery;
 
 class CoursePaymentWebhookTest extends TestCase
@@ -50,8 +49,7 @@ class CoursePaymentWebhookTest extends TestCase
         User::boot();
 
         // Create roles
-        Role::firstOrCreate(['name' => 'teacher'], ['display_name' => 'Teacher']);
-        Role::firstOrCreate(['name' => 'student'], ['display_name' => 'Student']);
+        $this->createRoles(['teacher', 'student']);
 
         // Create teacher with pre-set custodial address to avoid web3 calls
         $this->teacher = User::factory()->create([

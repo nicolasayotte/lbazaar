@@ -10,7 +10,6 @@ use App\Models\Course;
 use App\Models\CourseHistory;
 use App\Models\CourseSchedule;
 use App\Models\StripePayment;
-use App\Models\Role;
 use Illuminate\Support\Facades\DB;
 use Mockery;
 use stdClass;
@@ -41,8 +40,7 @@ class StripeServiceTest extends TestCase
     private function setupTestData()
     {
         // Create roles
-        Role::firstOrCreate(['name' => 'student'], ['display_name' => 'Student']);
-        Role::firstOrCreate(['name' => 'teacher'], ['display_name' => 'Teacher']);
+        $this->createRoles(['student', 'teacher']);
 
         // Create teacher
         $teacher = User::withoutEvents(function () {

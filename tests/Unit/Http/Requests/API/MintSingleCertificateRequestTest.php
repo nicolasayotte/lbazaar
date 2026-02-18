@@ -7,7 +7,6 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Http\Requests\API\MintSingleCertificateRequest;
 use App\Models\User;
 use App\Models\Course;
-use App\Models\Role;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Validator;
 
@@ -24,8 +23,7 @@ class MintSingleCertificateRequestTest extends TestCase
         parent::setUp();
 
         // Create roles
-        Role::firstOrCreate(['name' => 'teacher'], ['display_name' => 'Teacher']);
-        Role::firstOrCreate(['name' => 'student'], ['display_name' => 'Student']);
+        $this->createRoles(['teacher', 'student']);
 
         // Create teacher with unique email
         $this->teacher = User::factory()->create([

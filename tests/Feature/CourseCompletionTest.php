@@ -8,7 +8,6 @@ use App\Models\User;
 use App\Models\Course;
 use App\Models\CourseSchedule;
 use App\Models\CourseHistory;
-use App\Models\Role;
 use App\Services\API\CertificateService;
 use Mockery;
 
@@ -36,8 +35,7 @@ class CourseCompletionTest extends TestCase
     private function setupTestData()
     {
         // Create roles
-        Role::firstOrCreate(['name' => 'teacher'], ['display_name' => 'Teacher']);
-        Role::firstOrCreate(['name' => 'student'], ['display_name' => 'Student']);
+        $this->createRoles(['teacher', 'student']);
 
         // Create teacher
         $this->teacher = User::withoutEvents(function () {

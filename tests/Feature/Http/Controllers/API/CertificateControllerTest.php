@@ -10,7 +10,6 @@ use App\Models\Course;
 use App\Models\CourseHistory;
 use App\Models\CourseSchedule;
 use App\Models\UserWallet;
-use App\Models\Role;
 use Mockery;
 
 class CertificateControllerTest extends TestCase
@@ -48,8 +47,7 @@ class CertificateControllerTest extends TestCase
         User::boot();
 
         // Create roles
-        Role::firstOrCreate(['name' => 'teacher'], ['display_name' => 'Teacher']);
-        Role::firstOrCreate(['name' => 'student'], ['display_name' => 'Student']);
+        $this->createRoles(['teacher', 'student']);
 
         // Create teacher with pre-set custodial address to avoid web3 calls
         $this->teacher = User::factory()->create([
@@ -250,8 +248,8 @@ class CertificateControllerTest extends TestCase
         $response = $this->actingAs($this->student)
             ->getJson("/api/certificates/courses/{$this->course->id}/eligible-students");
 
-        // Controller middleware redirects non-teachers
-        $response->assertStatus(302);
+        // Teacher middleware returns 403 JSON for API requests
+        $response->assertStatus(403);
     }
 
     public function test_get_eligible_students_rejects_unauthorized_teacher()
@@ -331,8 +329,8 @@ class CertificateControllerTest extends TestCase
         $response = $this->actingAs($this->student)
             ->postJson("/api/certificates/courses/{$this->course->id}/students/{$this->student->id}/mint");
 
-        // Controller middleware redirects non-teachers
-        $response->assertStatus(302);
+        // Teacher middleware returns 403 JSON for API requests
+        $response->assertStatus(403);
     }
 
     public function test_mint_single_certificate_rejects_unauthorized_teacher()
@@ -413,8 +411,8 @@ class CertificateControllerTest extends TestCase
                 'student_ids' => [$this->student->id]
             ]);
 
-        // Controller middleware redirects non-teachers
-        $response->assertStatus(302);
+        // Teacher middleware returns 403 JSON for API requests
+        $response->assertStatus(403);
     }
 
     public function test_batch_mint_certificates_validates_student_ids()
@@ -568,8 +566,8 @@ class CertificateControllerTest extends TestCase
         $response = $this->actingAs($this->student)
             ->getJson("/api/certificates/courses/{$this->course->id}/students/{$this->student->id}/status");
 
-        // Controller middleware redirects non-teachers
-        $response->assertStatus(302);
+        // Teacher middleware returns 403 JSON for API requests
+        $response->assertStatus(403);
     }
 
     public function test_get_certificate_status_rejects_unauthorized_teacher()

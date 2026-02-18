@@ -9,7 +9,6 @@ use App\Models\Course;
 use App\Models\CourseSchedule;
 use App\Models\CourseHistory;
 use App\Models\StripePayment;
-use App\Models\Role;
 use App\Services\API\StripeService;
 use Illuminate\Support\Facades\DB;
 use Mockery;
@@ -27,8 +26,12 @@ class StripeCheckoutTest extends TestCase
      */
     protected function createTestUser(array $attributes = []): User
     {
-        // Get first country
+        // Get first country or create one
         $country = DB::table('countries')->first();
+        if (!$country) {
+            $countryId = DB::table('countries')->insertGetId(['name' => 'Japan', 'code' => 'JP']);
+            $country = DB::table('countries')->find($countryId);
+        }
 
         $defaults = [
             'first_name' => fake()->firstName(),
@@ -36,7 +39,7 @@ class StripeCheckoutTest extends TestCase
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => bcrypt('password'),
-            'country_id' => $country ? $country->id : null,
+            'country_id' => $country->id,
             'is_temp_password' => false,
             'is_enabled' => true,
             'custodial_address' => 'addr_test_dummy_' . uniqid(),
@@ -55,8 +58,7 @@ class StripeCheckoutTest extends TestCase
         parent::setUp();
 
         // Create roles
-        Role::firstOrCreate(['name' => 'student'], ['display_name' => 'Student']);
-        Role::firstOrCreate(['name' => 'teacher'], ['display_name' => 'Teacher']);
+        $this->createRoles(['student', 'teacher']);
 
         // Create test users
         $this->student = $this->createTestUser([

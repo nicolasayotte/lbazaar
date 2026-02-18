@@ -24,19 +24,25 @@ class CoursePricingTest extends TestCase
     {
         parent::setUp();
 
+        $this->createRoles(['teacher']);
+
         $this->teacher = User::factory()->create();
         $this->teacher->attachRole('teacher');
 
-        $this->courseType = CourseType::firstOrCreate(['name' => 'general', 'type' => 'general']);
+        $this->courseType = $this->createCourseType('general', 'general');
     }
 
     public function test_course_api_returns_both_jpy_and_ada_prices()
     {
         // Arrange: Create setting for fallback
-        Setting::updateOrCreate(
-            ['slug' => 'ada-to-jpy'],
-            ['name' => 'ADA to JPY Fallback', 'value' => '50', 'type' => 'number', 'category' => 'general']
-        );
+        Setting::where('slug', 'ada-to-jpy')->delete();
+        Setting::create([
+            'slug' => 'ada-to-jpy',
+            'name' => 'ADA to JPY Fallback',
+            'value' => '50',
+            'type' => 'number',
+            'category' => 'general',
+        ]);
 
         // Mock CoinGecko API response with rate 50.0
         Http::fake([
@@ -74,10 +80,14 @@ class CoursePricingTest extends TestCase
     public function test_course_creation_accepts_jpy_price()
     {
         // Arrange: Create setting for fallback
-        Setting::updateOrCreate(
-            ['slug' => 'ada-to-jpy'],
-            ['name' => 'ADA to JPY Fallback', 'value' => '50', 'type' => 'number', 'category' => 'general']
-        );
+        Setting::where('slug', 'ada-to-jpy')->delete();
+        Setting::create([
+            'slug' => 'ada-to-jpy',
+            'name' => 'ADA to JPY Fallback',
+            'value' => '50',
+            'type' => 'number',
+            'category' => 'general',
+        ]);
 
         // Mock CoinGecko API response
         Http::fake([

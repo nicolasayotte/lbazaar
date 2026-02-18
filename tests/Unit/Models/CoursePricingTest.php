@@ -18,10 +18,14 @@ class CoursePricingTest extends TestCase
     {
         parent::setUp();
 
-        Setting::updateOrCreate(
-            ['slug' => 'ada-to-jpy'],
-            ['name' => 'ADA to JPY', 'value' => '50', 'type' => 'number', 'category' => 'general']
-        );
+        Setting::where('slug', 'ada-to-jpy')->delete();
+        Setting::create([
+            'slug'     => 'ada-to-jpy',
+            'name'     => 'ADA to JPY',
+            'value'    => '50',
+            'type'     => 'number',
+            'category' => 'general',
+        ]);
 
         Http::fake([
             'api.coingecko.com/*' => Http::response([

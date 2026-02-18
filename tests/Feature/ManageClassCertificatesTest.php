@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Models\Course;
 use App\Models\CourseHistory;
 use App\Models\CourseSchedule;
-use App\Models\Role;
 use App\Models\User;
 use App\Models\UserWallet;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -26,8 +25,12 @@ class ManageClassCertificatesTest extends TestCase
      */
     protected function createTestUser(array $attributes = []): User
     {
-        // Get first country
+        // Get first country or create one
         $country = DB::table('countries')->first();
+        if (!$country) {
+            $countryId = DB::table('countries')->insertGetId(['name' => 'Japan', 'code' => 'JP']);
+            $country = DB::table('countries')->find($countryId);
+        }
 
         $defaults = [
             'first_name' => fake()->firstName(),
@@ -35,7 +38,7 @@ class ManageClassCertificatesTest extends TestCase
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => bcrypt('password'),
-            'country_id' => $country ? $country->id : null,
+            'country_id' => $country->id,
             'is_temp_password' => false,
             'is_enabled' => true,
             'custodial_address' => 'addr_test_dummy_' . uniqid(),
@@ -61,8 +64,7 @@ class ManageClassCertificatesTest extends TestCase
         ]);
 
         // Create roles
-        Role::firstOrCreate(['name' => 'teacher'], ['display_name' => 'Teacher']);
-        Role::firstOrCreate(['name' => 'student'], ['display_name' => 'Student']);
+        $this->createRoles(['teacher', 'student']);
 
         // Create teachers
         $this->teacher = $this->createTestUser();

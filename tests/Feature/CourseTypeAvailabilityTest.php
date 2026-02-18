@@ -7,7 +7,6 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Models\Course;
 use App\Models\CourseType;
 use App\Models\User;
-use App\Models\Role;
 use Database\Seeders\CourseTypeSeeder;
 
 class CourseTypeAvailabilityTest extends TestCase
@@ -25,7 +24,7 @@ class CourseTypeAvailabilityTest extends TestCase
         $seeder->run();
 
         // Create roles
-        Role::firstOrCreate(['name' => 'teacher'], ['display_name' => 'Teacher']);
+        $this->createRoles(['teacher']);
 
         // Create a teacher user
         $this->teacher = User::factory()->create();

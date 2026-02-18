@@ -13,7 +13,6 @@ use App\Models\CourseSchedule;
 use App\Models\UserWallet;
 use App\Models\Nft;
 use App\Models\NftTransactions;
-use App\Models\Role;
 use Illuminate\Support\Facades\Log;
 use Mockery;
 
@@ -44,8 +43,7 @@ class CertificateServiceTest extends TestCase
     private function setupTestData()
     {
         // Create roles
-        Role::firstOrCreate(['name' => 'teacher'], ['display_name' => 'Teacher']);
-        Role::firstOrCreate(['name' => 'student'], ['display_name' => 'Student']);
+        $this->createRoles(['teacher', 'student']);
 
         // Create teacher without triggering custodial address event
         $this->teacher = User::withoutEvents(function () {
@@ -1258,8 +1256,18 @@ class CertificateServiceTest extends TestCase
             'certificate_status' => 'minted',
             'certificate_tx_hash' => 'tx456def',
             'certificate_minted_at' => $mintedAt,
-            'certificate_image_url' => 'https://example.com/cert.jpg',
-            'certificate_explorer_url' => 'https://cardanoscan.io/transaction/tx456def'
+        ]);
+
+        // Create NftTransactions record so the certificate_image_url accessor works
+        NftTransactions::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'schedule_id' => $schedule->id,
+            'nft_id' => 1,
+            'nft_name' => 'TestCert',
+            'serial_num' => 1,
+            'used' => false,
+            'metadata' => json_encode(['image' => 'https://example.com/cert.jpg']),
         ]);
 
         $result = $this->service->getStudentCertificates($this->student->id);
@@ -1285,7 +1293,10 @@ class CertificateServiceTest extends TestCase
         $this->assertEquals('minted', $certificate['certificate_status']);
         $this->assertEquals('tx456def', $certificate['certificate_tx_hash']);
         $this->assertEquals('https://example.com/cert.jpg', $certificate['certificate_image_url']);
-        $this->assertEquals('https://cardanoscan.io/transaction/tx456def', $certificate['certificate_explorer_url']);
+
+        // Explorer URL comes from config + tx_hash
+        $expectedExplorerUrl = config('services.cardano.explorer_url') . '/tx/tx456def';
+        $this->assertEquals($expectedExplorerUrl, $certificate['certificate_explorer_url']);
     }
 
     public function test_get_student_certificates_defaults_certificate_status_to_not_eligible()

@@ -7,8 +7,6 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Models\User;
 use App\Models\CourseApplication;
 use App\Models\Course;
-use App\Models\CourseType;
-use App\Models\Role;
 
 class CourseApplicationControllerTest extends TestCase
 {
@@ -21,6 +19,8 @@ class CourseApplicationControllerTest extends TestCase
     {
         parent::setUp();
 
+        $this->createRoles(['teacher', 'student']);
+
         $this->teacher = User::factory()->create();
         $this->teacher->attachRole('teacher');
 
@@ -32,7 +32,7 @@ class CourseApplicationControllerTest extends TestCase
     {
         $this->actingAs($this->teacher);
 
-        $courseType = CourseType::firstOrCreate(['name' => 'general', 'type' => 'general']);
+        $courseType = $this->createCourseType('general', 'general');
 
         $response = $this->post(route('mypage.course.applications.store'), [
             'title' => 'Test Course',
@@ -62,7 +62,7 @@ class CourseApplicationControllerTest extends TestCase
     {
         $this->actingAs($this->teacher);
 
-        $courseType = CourseType::firstOrCreate(['name' => 'general', 'type' => 'general']);
+        $courseType = $this->createCourseType('general', 'general');
 
         $response = $this->post(route('mypage.course.applications.store'), [
             'title' => 'Test Course Without Certificate',
@@ -110,7 +110,7 @@ class CourseApplicationControllerTest extends TestCase
 
     public function test_certificate_enabled_true_is_copied_from_application_to_course()
     {
-        $courseType = CourseType::firstOrCreate(['name' => 'general', 'type' => 'general']);
+        $courseType = $this->createCourseType('general', 'general');
 
         // Create a course application with certificate_enabled = true
         $courseApplication = CourseApplication::factory()->create([
@@ -135,7 +135,7 @@ class CourseApplicationControllerTest extends TestCase
 
     public function test_certificate_enabled_false_is_copied_from_application_to_course()
     {
-        $courseType = CourseType::firstOrCreate(['name' => 'general', 'type' => 'general']);
+        $courseType = $this->createCourseType('general', 'general');
 
         // Create a course application with certificate_enabled = false
         $courseApplication = CourseApplication::factory()->create([

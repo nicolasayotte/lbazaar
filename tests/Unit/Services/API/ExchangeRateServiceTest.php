@@ -21,11 +21,16 @@ class ExchangeRateServiceTest extends TestCase
         $this->service = new ExchangeRateService();
         Cache::flush();
 
-        // Create fallback setting
-        Setting::updateOrCreate(
-            ['slug' => 'ada-to-jpy'],
-            ['name' => 'ADA to JPY Fallback', 'value' => '50', 'type' => 'number', 'category' => 'general']
-        );
+        // Create fallback setting — delete first so parallel test processes
+        // don't contend on the same committed row via updateOrCreate
+        Setting::where('slug', 'ada-to-jpy')->delete();
+        Setting::create([
+            'slug'     => 'ada-to-jpy',
+            'name'     => 'ADA to JPY Fallback',
+            'value'    => '50',
+            'type'     => 'number',
+            'category' => 'general',
+        ]);
     }
 
     public function test_fetches_rate_from_coingecko_api()
@@ -270,10 +275,14 @@ class ExchangeRateServiceTest extends TestCase
     public function test_validates_fallback_rate_on_api_failure()
     {
         // Arrange: Set valid fallback rate
-        Setting::updateOrCreate(
-            ['slug' => 'ada-to-jpy'],
-            ['name' => 'ADA to JPY Fallback', 'value' => '65.5', 'type' => 'number', 'category' => 'general']
-        );
+        Setting::where('slug', 'ada-to-jpy')->delete();
+        Setting::create([
+            'slug' => 'ada-to-jpy',
+            'name' => 'ADA to JPY Fallback',
+            'value' => '65.5',
+            'type' => 'number',
+            'category' => 'general',
+        ]);
 
         // Mock API failure
         Http::fake([

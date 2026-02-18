@@ -7,7 +7,6 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Models\StripePayment;
 use App\Models\User;
 use App\Models\Course;
-use App\Models\Role;
 
 class StripePaymentTest extends TestCase
 {
@@ -25,8 +24,7 @@ class StripePaymentTest extends TestCase
     private function setupTestData()
     {
         // Create roles
-        Role::firstOrCreate(['name' => 'student'], ['display_name' => 'Student']);
-        Role::firstOrCreate(['name' => 'teacher'], ['display_name' => 'Teacher']);
+        $this->createRoles(['student', 'teacher']);
 
         // Create teacher
         $teacher = User::withoutEvents(function () {
