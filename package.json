@@ -11,7 +11,9 @@
         "test:browser": "npx playwright test --reporter=list > docs/test-reports/playwright-tests.log 2>&1",
         "test:browser:ui": "npx playwright test --ui",
         "test:browser:headed": "npx playwright test --headed",
-        "test:all": "npm run test && npm run test:web3 && npm run test:postman && npm run test:browser"
+        "test:all": "npm run test && npm run test:web3 && npm run test:postman && npm run test:browser",
+        "test:postman:staging": "newman run postman/lbazaar.postman_collection.json -e postman/staging.postman_environment.json",
+        "test:integration": "npm run test:postman:staging; cd web3 && npm run test:integration; echo 'Run sail composer test:integration for PHP'"
     },
     "devDependencies": {
         "@playwright/test": "^1.58.2",

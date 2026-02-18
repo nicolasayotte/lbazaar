@@ -42,6 +42,11 @@ return [
         'explorer_url' => env('CARDANO_EXPLORER_URL', 'https://preprod.cardanoscan.io'),
     ],
 
+    'blockfrost' => [
+        'api_key' => env('BLOCKFROST_API_KEY'),
+        'network' => env('NETWORK', 'preprod'),
+    ],
+
     'stripe' => [
         'key' => env('STRIPE_KEY'),
         'secret' => env('STRIPE_SECRET'),

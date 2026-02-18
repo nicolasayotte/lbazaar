@@ -66,6 +66,9 @@
         ],
         "test:log": [
             "@php vendor/bin/phpunit --testdox-text docs/test-reports/php-unit-tests.log"
+        ],
+        "test:integration": [
+            "@php vendor/bin/phpunit --testsuite=Integration --no-coverage"
         ]
     },
     "extra": {
