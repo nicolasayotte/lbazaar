@@ -34,7 +34,7 @@ class CourseApplicationRepository extends BaseRepository
                 ->when(@$filters['course_type'], function($q) use($filters) {
                     return $q->where('course_type_id', @$filters['course_type']);
                 })
-                ->when($filters['category'], function($q) use($filters) {
+                ->when(@$filters['category'], function($q) use($filters) {
                     return $q->whereHas('categories', function($q2) use ($filters) {
                         return $q2->whereIn('id', (array) $filters['category']);
                     });
