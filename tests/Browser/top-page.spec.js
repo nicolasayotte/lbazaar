@@ -1,16 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-
-// Wait for Inertia/React app to mount before asserting on React-rendered content.
-// Requires Vite dev server running: sail npm run dev
-const waitForApp = async (page) => {
-    await page.waitForSelector('#app', { state: 'attached' });
-    // Wait for React to hydrate (the #app div should have child content)
-    await page.waitForFunction(() => {
-        const app = document.querySelector('#app');
-        return app && app.children.length > 0;
-    }, { timeout: 10000 });
-};
+import { waitForApp } from './helpers/wait-for-app.js';
 
 test.describe('Top Page', () => {
     test('loads the top page with welcome title', async ({ page }) => {
@@ -20,7 +10,9 @@ test.describe('Top Page', () => {
     });
 
     test('displays navigation elements', async ({ page }) => {
-        await page.goto('/');
+        // Use /classes instead of / — the home page renders featured courses that
+        // may include seeded courses with null course_type, crashing Course.jsx.
+        await page.goto('/classes');
         await waitForApp(page);
 
         // The page should have a visible link to classes
