@@ -9,6 +9,8 @@ class CourseType extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['name', 'type'];
+
     public const GENERAL = 'General';
     public const FREE    = 'Free';
     public const EARN    = 'Earn';
