@@ -37,10 +37,18 @@ class CoursePaymentController extends Controller
 
             $body = $request->all();
             $webhook = 'purchase';
-            $cmd = '(cd ../web3/;node ./run/blockfrost-verify.mjs '
+            $web3Dir = base_path('web3');
+            $logPath = storage_path('logs/web3.log');
+            $cmd = '(cd '.escapeshellarg($web3Dir).';node ./run/blockfrost-verify.mjs '
             .escapeshellarg(json_encode($apiSignature)).' '
             .escapeshellarg(json_encode($body)).' '
-            .escapeshellarg($webhook).') 2>> ../storage/logs/web3.log';
+            .escapeshellarg($webhook).') 2>> '.escapeshellarg($logPath);
+
+            if (app()->environment('testing')) {
+                throw new \RuntimeException(
+                    'exec() in CoursePaymentController must be mocked in tests. Mock the route or service layer.'
+                );
+            }
 
             $response = exec($cmd);
             $responseJSON = json_decode($response, false);
