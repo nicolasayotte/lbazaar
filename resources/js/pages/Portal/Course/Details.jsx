@@ -160,8 +160,6 @@ const Details = () => {
         setClientSecret(null)
     }
 
-    // TODO Make this use NMKR Pay when relevant
-    // TODO Have the NMKR Pay link come from the database
     const handleBook = async (schedule_id) => {
         setDialog(dialog => ({
             ...dialog,
@@ -365,21 +363,6 @@ const Details = () => {
 
     const handleOnDialogSubmit = e => {
         e.preventDefault()
-
-        const popupWidth = 500;
-        const popupHeight = 700;
-
-        // Calculate the center of the screen
-        const left = window.top.outerWidth / 2 + window.top.screenX - (popupWidth / 2);
-        const top = window.top.outerHeight / 2 + window.top.screenY - (popupHeight / 2);
-
-        const popup = window.open(
-            "https://pay.nmkr.io/?p=31970d0c2a694954a416d36847e50375&n=aa680d6c884b4b10ba7e76ff3fd9ebcc",
-            "NFT-MAKER PRO Payment Gateway",
-            `popup=1, location=1, width=${popupWidth}, height=${popupHeight}, left=${left}, top=${top}`
-        );
-
-        console.log(popup)
 
         Inertia.visit(dialog.submitUrl, {
             method: dialog.method,
