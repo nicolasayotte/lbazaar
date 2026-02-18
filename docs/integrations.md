@@ -1,6 +1,6 @@
 # External Integrations
 
-> **AI Context Summary**: Key integrations: (1) Blockfrost API for Cardano blockchain (preprod/mainnet), (2) NMKR Studio API for alternative NFT minting, (3) AWS S3 for file storage, (4) Laravel Sanctum for API auth, (5) Laratrust for RBAC. All require .env configuration. Blockfrost rate limit: 50 req/sec free tier.
+> **AI Context Summary**: Key integrations: (1) Blockfrost API for Cardano blockchain (preprod/mainnet), (2) AWS S3 for file storage, (3) Laravel Sanctum for API auth, (4) Laratrust for RBAC. All require .env configuration. Blockfrost rate limit: 50 req/sec free tier.
 
 ## Overview
 
@@ -185,86 +185,7 @@ node run/blockfrost-verify.mjs
 }
 ```
 
-## 2. NMKR Studio API (Alternative NFT Minting)
-
-### Purpose
-
-Alternative NFT minting service for specific use cases (badges, special certificates).
-
-### Configuration
-
-```env
-# .env
-NMKR_API_KEY=nmkr_abc123...
-NMKR_PROJECT_ID=12345
-NMKR_PKH=abc123...
-```
-
-### Base URL
-
-```
-https://studio-api.nmkr.io/v2
-```
-
-### Authentication
-
-All requests require `api-key` header:
-
-```php
-$response = Http::withHeaders([
-    'api-key' => config('services.nmkr.api_key')
-])->post('https://studio-api.nmkr.io/v2/CreateNft', $payload);
-```
-
-### Key Endpoints Used
-
-| Endpoint | Purpose |
-|----------|---------|
-| `POST /CreateNft` | Mint NFT with metadata |
-| `GET /GetProjectInfo/{projectId}` | Fetch project details |
-| `GET /GetNft/{nftId}` | Query NFT status |
-
-### Example: Mint NFT
-
-```php
-// app/Services/API/CertificateService.php (NMKR variant)
-protected function mintCertificateWithNMKR($metadata, $recipientAddress)
-{
-    $payload = [
-        'assetName' => $metadata['name'],
-        'displayName' => $metadata['display_name'],
-        'previewImageNft' => [
-            'mimetype' => 'image/png',
-            'fileFromUrl' => $metadata['image_url']
-        ],
-        'metadata' => $metadata,
-        'receiverAddress' => $recipientAddress
-    ];
-
-    $response = Http::withHeaders([
-        'api-key' => config('services.nmkr.api_key')
-    ])->post('https://studio-api.nmkr.io/v2/CreateNft', $payload);
-
-    if (!$response->successful()) {
-        throw new Exception('NMKR API error: ' . $response->body());
-    }
-
-    return $response->json();
-}
-```
-
-### When to Use NMKR vs Helios
-
-| Use Case | Method |
-|----------|--------|
-| Course certificates (primary) | Helios (in-house) |
-| Achievement badges | NMKR Studio |
-| Promotional NFTs | NMKR Studio |
-| Test minting | Helios (preprod) |
-
-**Reason**: NMKR simplifies some NFT operations but has transaction fees. Helios gives full control.
-
-## 3. AWS S3 (File Storage)
+## 2. AWS S3 (File Storage)
 
 ### Purpose
 

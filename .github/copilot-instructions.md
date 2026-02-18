@@ -3,7 +3,7 @@
 ## Repository Overview
 - Laravel 9 backend with Sanctum auth, queues, and scheduled jobs. Frontend uses React (Vite + Inertia) run via `npm run dev` inside Sail.
 - MySQL runs through Laravel Sail. Redis is supported but not currently configured in the Sail environment. Storage for uploads lives in `public/uploads`; respect existing disk configuration when adding files.
-- Keep the `/docs` knowledge base current with any new external integration (Cardano, NMKR, payments, etc.).
+- Keep the `/docs` knowledge base current with any new external integration (Cardano, payments, etc.).
 
 ## Backend (Laravel) Guidelines
 - Follow PSR-12 and Laravel conventions for controllers, services, repositories, and jobs. Prefer dependency injection over facades except where idiomatic (e.g., `Log`, `Storage`).
@@ -12,7 +12,7 @@
 - Update factories in `database/factories` when models change. Use factories (and states) in tests and seeders instead of hard-coded values.
 - Queueable work should implement `ShouldQueue` and specify retry/timeout behavior. Use `dispatchSync` only when absolutely necessary.
 - Validate all incoming data with Form Requests; ensure authorization policies live under `app/Policies` and link via `AuthServiceProvider`.
-- When touching Cardano/NMKR logic in PHP, document the flow in `docs/` and ensure secrets are read from config (`config/services.php`) env keys.
+- When touching Cardano logic in PHP, document the flow in `docs/` and ensure secrets are read from config (`config/services.php`) env keys.
 
 ## Frontend (React + Vite) Guidelines
 - Components live under `resources/js`. Keep pages in `Pages/` and shared UI in `Components/`. Re-use hooks where possible; create them under `resources/js/hooks`.

@@ -171,7 +171,6 @@ public function mintAndAirdropCertificates(MintCertificatesRequest $request)
 | Contract | Purpose | Location |
 |----------|---------|----------|
 | `nft-minting-policy.hl` | Single-signature NFT minting | `web3/contracts/nft-minting-policy.hl` |
-| `nft-minting-policy-multi-sig.hl` | Multi-signature variant (NMKR) | `web3/contracts/nft-minting-policy-multi-sig.hl` |
 
 ## Data Flow Between Layers
 
@@ -315,6 +314,6 @@ if (!Auth::user()->hasRole('teacher')) {
 
 - **Data Flows**: See [docs/data-flows.md](./data-flows.md) for complete request-response flows
 - **Patterns**: See [docs/patterns.md](./patterns.md) for code conventions and anti-patterns
-- **Integrations**: See [docs/integrations.md](./integrations.md) for Blockfrost, NMKR, AWS S3
+- **Integrations**: See [docs/integrations.md](./integrations.md) for Blockfrost, AWS S3
 - **Testing**: See [docs/testing.md](./testing.md) for test structure
 - **Deployment**: See [docs/deployment.md](./deployment.md) for production deployment

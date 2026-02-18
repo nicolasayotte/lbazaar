@@ -71,7 +71,7 @@ Multi-project setup in `playwright.config.js`:
 - **Patterns**: [patterns.md](docs/patterns.md) - Thin controller pattern, service responses, anti-patterns
 - **Testing**: [testing.md](docs/testing.md) - Test strategy, PHPUnit, Vitest, Playwright
 - **Deployment**: [deployment.md](docs/deployment.md) - Production deployment procedure, rollback
-- **Integrations**: [integrations.md](docs/integrations.md) - Blockfrost, NMKR, AWS S3, Sanctum
+- **Integrations**: [integrations.md](docs/integrations.md) - Blockfrost, AWS S3, Stripe, Sanctum
 - **Data Flows**: [data-flows.md](docs/data-flows.md) - Request-response flows, user journeys
 - **Gotchas**: [gotchas.md](docs/gotchas.md) - Common issues and solutions (READ THIS OFTEN)
 

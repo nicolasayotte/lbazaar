@@ -117,7 +117,6 @@ web3/
 │       └── network.spec.mjs
 └── run/
     └── __tests__/
-        ├── build-certificate-tx-nmkr.integration.spec.mjs   (mocked — runs in fast pipeline)
         ├── blockfrost-connectivity.integration.spec.mjs      (real Blockfrost — live pipeline)
         ├── build-purchase-tx.spec.mjs
         ├── certificate-tx-utils.spec.mjs
@@ -344,6 +343,16 @@ test('admin page renders', async ({ page }) => {
     await waitForApp(page);
 });
 ```
+
+### All Fast-Pipeline Tests
+
+Run the backend, frontend, and browser tests in one command:
+
+```bash
+npm run test:all
+```
+
+This executes `npm test` (Vitest), `npm run test:web3`, and `npm run test:browser` in sequence. It does **not** include integration tests or `sail test` (PHP) — run those separately.
 
 ## Live Integration Tests
 

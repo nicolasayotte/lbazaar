@@ -141,7 +141,6 @@ All standard Laravel + Cardano variables from `.env.example`:
 - `DB_*` - Database connection
 - `AWS_*` - S3 storage
 - `BLOCKFROST_API_KEY` - Cardano API
-- `NMKR_API_KEY` - Certificate minting
 - `ROOT_KEY`, `OWNER_PKH` - Wallet credentials
 - `NETWORK` - Cardano network (preprod/mainnet)
 
@@ -161,7 +160,7 @@ All standard Laravel + Cardano variables from `.env.example`:
 
 ### Pre-Deployment
 - [ ] Environment file prepared at `/var/.secrets/.env.{environment}`
-- [ ] Required secrets configured (AWS keys, Blockfrost, NMKR, ROOT_KEY)
+- [ ] Required secrets configured (AWS keys, Blockfrost, ROOT_KEY)
 - [ ] Log directories created with proper permissions
 - [ ] Nginx vhost.conf reviewed and customized
 - [ ] Database accessible from container
@@ -250,7 +249,7 @@ node run/check-balance.mjs
 ### ⚠️ Recommended
 1. **Enable HTTPS**: Use reverse proxy (nginx, Traefik, ALB) with TLS
 2. **Scan regularly**: Run `./build.sh {env} --scan` before deployment
-3. **Rotate secrets**: Update Blockfrost, NMKR, AWS keys quarterly
+3. **Rotate secrets**: Update Blockfrost, AWS keys quarterly
 4. **Network isolation**: Use Docker networks to isolate database
 5. **Monitoring**: Set up Prometheus + Grafana for metrics
 6. **Backups**: Automate database backups with retention policy

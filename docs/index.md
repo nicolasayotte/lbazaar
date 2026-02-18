@@ -20,7 +20,7 @@ New to Le Bazaar? Start here:
 | **[Patterns](./patterns.md)** | Code conventions, anti-patterns | Writing new code or reviewing PRs |
 | **[Testing](./testing.md)** | Test strategy, writing tests, running tests | Adding tests or debugging test failures |
 | **[Deployment](./deployment.md)** | Production deployment, rollback, monitoring | Deploying to staging or production |
-| **[Integrations](./integrations.md)** | Blockfrost, NMKR, AWS S3, Sanctum | Working with external services |
+| **[Integrations](./integrations.md)** | Blockfrost, AWS S3, Stripe, Sanctum | Working with external services |
 | **[Gotchas](./gotchas.md)** | Common issues and solutions | Debugging or avoiding common mistakes |
 | **[Certificate Minting API](./certificate-minting-api.md)** | NFT certificate minting via Helios | Implementing certificate features |
 | **[Local Production Testing](./LOCAL_PROD_TESTING.md)** | Test prod build locally with `./test-prod.sh` | Before deploying to production |

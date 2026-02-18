@@ -9,7 +9,7 @@ applyTo: "web3/**/*"
 - Manage code inside `/web3` that builds CLI runners for Cardano operations invoked via `exec` from the Laravel backend.
 - Respect the separation between PHP orchestrators and Node-based scripts; keep shell-facing logic in `/web3/run` and reusable helpers in `/web3/common`.
 - Document every new executable entry point in `/docs` with usage, required environment variables, and expected JSON contract inputs/outputs.
-- Use `/docs/nkmr-api-docs.md` and `/docs/blockfrost-api-docs.md` as the source of truth for NMKR and Blockfrost API references when implementing or updating integrations.
+- Use `/docs/blockfrost-api-docs.md` as the source of truth for Blockfrost API references when implementing or updating integrations.
 
 ## Command Execution Safety
 
@@ -21,7 +21,7 @@ applyTo: "web3/**/*"
 ## Configuration & Secrets
 
 - All environment-dependent values must be read from `/web3/config/*.json` or `.env` files consumed through `node --env-file`. Never hardcode network IDs, payment keys, or API tokens.
-- Update `.env.example` and `docs/` when adding new variables (e.g., `CARDANO_NODE_SOCKET_PATH`, `NMKR_API_KEY`).
+- Update `.env.example` and `docs/` when adding new variables (e.g., `CARDANO_NODE_SOCKET_PATH`).
 - For certificate or token minting flows, reference the authoritative schemas in `/templates/*.json` and ensure new fields stay backward compatible.
 
 ## Development Workflow
