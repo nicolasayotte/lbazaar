@@ -10,7 +10,11 @@ class WalletTransactionHistoryController extends Controller
 {
     public function index(Request $request)
     {
-        $walletTransactionHistory = auth()->user()->userWallet()->first()->userWalletTransactions()->orderBy('id', 'DESC')->paginate(10);
+        $wallet = auth()->user()->userWallet()->first();
+        $walletTransactionHistory = $wallet
+            ? $wallet->userWalletTransactions()->orderBy('id', 'DESC')->paginate(10)
+            : new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10);
+
         return Inertia::render('Admin/WalletHistory/Index', [
             'page'           => @$request['page'] ?? 1,
             'wallet_history' => $walletTransactionHistory,
