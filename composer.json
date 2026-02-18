@@ -63,6 +63,9 @@
         ],
         "test:recreate": [
             "@php artisan test --parallel --processes=8 --recreate-databases"
+        ],
+        "test:log": [
+            "@php vendor/bin/phpunit --testdox-text docs/test-reports/php-unit-tests.log"
         ]
     },
     "extra": {

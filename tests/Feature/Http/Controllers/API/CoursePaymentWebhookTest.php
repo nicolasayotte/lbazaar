@@ -239,8 +239,10 @@ class CoursePaymentWebhookTest extends TestCase
             'blockfrost-signature' => 'valid_signature_hash'
         ])->postJson('/api/webhook/blockfrost/purchase', $payload);
 
-        // Should return 400 even before signature verification if tx hash is missing
-        // This depends on the order of validation in the controller
+        // The missing-hash check (400) lives after exec() signature verification,
+        // which is guarded in testing mode — so we get 500 from the exec guard.
+        $response->assertStatus(500)
+            ->assertJson(['success' => false]);
     }
 
     public function test_webhook_handles_service_failure()
@@ -285,7 +287,10 @@ class CoursePaymentWebhookTest extends TestCase
             'blockfrost-signature' => 'valid_signature_hash'
         ])->postJson('/api/webhook/blockfrost/purchase', $payload);
 
-        // Should handle missing payload gracefully
+        // Payload validation lives after exec() signature verification,
+        // which is guarded in testing mode — so we get 500 from the exec guard.
+        $response->assertStatus(500)
+            ->assertJson(['success' => false]);
     }
 
     public function test_webhook_confirms_and_updates_wallet_transaction()

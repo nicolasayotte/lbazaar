@@ -3,7 +3,6 @@
          xsi:noNamespaceSchemaLocation="./vendor/phpunit/phpunit/phpunit.xsd"
          bootstrap="tests/bootstrap.php"
          colors="true"
-         timeout="30"
 >
     <testsuites>
         <testsuite name="Unit">
@@ -37,6 +36,6 @@
     </php>
     <logging>
         <!-- Overwrite test results log each run -->
-        <log type="testdox-text" target="docs/test-reports/php-unit-tests.log"/>
+        <testdoxText outputFile="docs/test-reports/php-unit-tests.log"/>
     </logging>
 </phpunit>
