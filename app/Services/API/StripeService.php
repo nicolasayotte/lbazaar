@@ -22,6 +22,11 @@ class StripeService
         Stripe::setApiKey(config('services.stripe.secret'));
     }
 
+    public function isAvailable(): bool
+    {
+        return !empty(config('services.stripe.secret'));
+    }
+
     /**
      * Generate idempotency key for Stripe API calls
      * Uses a hash of user_id + course_id + 5-minute time window
@@ -58,6 +63,19 @@ class StripeService
                 return [
                     'success' => false,
                     'message' => 'Invalid payment amount. Amount must be greater than zero.'
+                ];
+            }
+
+            // Block Stripe payment if a pending ADA payment exists for this course
+            $pendingAda = \App\Models\CourseHistory::where('user_id', $userId)
+                ->where('course_id', $course->id)
+                ->where('payment_status', 'pending')
+                ->exists();
+
+            if ($pendingAda) {
+                return [
+                    'success' => false,
+                    'message' => 'A pending ADA payment exists for this course. Please wait for it to confirm or fail before using a different payment method.'
                 ];
             }
 

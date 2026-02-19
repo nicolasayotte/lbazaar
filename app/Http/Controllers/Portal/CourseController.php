@@ -10,6 +10,7 @@ use App\Http\Requests\SubmitPurchaseTxRequest;
 use App\Services\API\CertificateService;
 use App\Services\API\CoursePurchaseService;
 use App\Services\API\ExchangeRateService;
+use App\Services\API\StripeService;
 use App\Mail\CourseBooking;
 use App\Models\CourseHistory;
 use App\Models\CourseSchedule;
@@ -132,7 +133,18 @@ class CourseController extends Controller
             'nft'              => $nft,
             'schedules'        => $schedules,
             'feedbacks'        => $feedbacks,
-            'isBooked'         => auth()->user() && auth()->user()->isCourseBooked($id),
+            'isBooked'         => auth()->user() && \App\Models\CourseHistory::where('user_id', auth()->user()->id)
+                ->where('course_id', $id)
+                ->where(fn($q) => $q->whereNull('payment_status')->orWhere('payment_status', 'confirmed'))
+                ->exists(),
+            'pendingPayment'   => auth()->user()
+                ? \App\Models\CourseHistory::where('user_id', auth()->user()->id)
+                    ->where('course_id', $id)
+                    ->where('payment_status', 'pending')
+                    ->select(['id', 'payment_tx_hash', 'payment_submitted_at'])
+                    ->first()
+                : null,
+            'stripe_available' => app(StripeService::class)->isAvailable(),
             'hasFeedback'      => auth()->user() && auth()->user()->hasFeedback($id),
             'feedbackCount'    => $feedbackCount,
             'feedbacksPerPage' => CourseFeedbackRepository::PER_PAGE,
@@ -447,6 +459,18 @@ class CourseController extends Controller
 
         if ($isBooked && $isBooked->completed_at != null) {
             return abort(401);
+        }
+
+        // Block access if the user has a payment that is pending or failed (General courses only)
+        if ($course->courseType->name === CourseType::GENERAL) {
+            $paymentConfirmed = \App\Models\CourseHistory::where('user_id', auth()->user()->id)
+                ->where('course_schedule_id', $schedule_id)
+                ->where(fn($q) => $q->whereNull('payment_status')->orWhere('payment_status', 'confirmed'))
+                ->exists();
+
+            if (!$paymentConfirmed) {
+                return abort(401);
+            }
         }
 
         $activeStep = 0;
