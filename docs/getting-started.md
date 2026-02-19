@@ -107,12 +107,14 @@ sail artisan key:generate
 ### 8. Start Development Servers
 
 ```bash
-# Terminal 1: Docker containers (if not already running)
-sail up -d
+# Terminal 1: Docker containers
+sail up
 
-# Terminal 2: Vite dev server (from within sail bash)
-sail bash
-npm run dev
+# Terminal 2: Vite dev server (React hot reload)
+sail npm run dev
+
+# Terminal 3: Stripe webhook forwarder (only needed for payment flows)
+./scripts/stripe-listen.sh
 ```
 
 ## Configuration

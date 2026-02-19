@@ -603,12 +603,11 @@ $stripeAmount = $course->price_usd * 100;  // $10.00 = 1000 cents
 
 **Local Development**:
 ```bash
-# Terminal 1: Start Sail
-sail up -d
-
-# Terminal 2: Forward webhooks
-stripe listen --forward-to localhost:8000/api/stripe/webhook
+# Forward webhooks and auto-update STRIPE_WEBHOOK_SECRET in .env
+./scripts/stripe-listen.sh
 ```
+
+> Run `sail artisan config:clear` after it first connects so Laravel picks up the new secret.
 
 **Production**:
 1. Configure in Stripe Dashboard → Webhooks
