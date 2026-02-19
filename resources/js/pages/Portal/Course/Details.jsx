@@ -4,12 +4,12 @@ import CreditCardIcon from "@mui/icons-material/CreditCard";
 import Feedback from "../../../components/cards/Feedback";
 import { usePage } from "@inertiajs/inertia-react"
 import ConfirmationDialog from "../../../components/common/ConfirmationDialog"
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { useDispatch } from "react-redux"
 import { getRoute } from "../../../helpers/routes.helper"
 import { Inertia } from "@inertiajs/inertia"
 import { actions } from "../../../store/slices/ToasterSlice"
-import { formatDualPrice, parseJpy } from "../../../helpers/currency.helper"
+import { formatDualPrice, formatJpy, parseJpy } from "../../../helpers/currency.helper"
 import CourseScheduleList from "./components/CourseScheduleList";
 import { grey } from "@mui/material/colors";
 import Course from "../../../components/cards/Course";
@@ -23,7 +23,7 @@ const Details = () => {
 
     const dispatch = useDispatch()
 
-    const { auth, course, nft, schedules, feedbacks, translatables, feedbackCount, feedbacksPerPage } = usePage().props
+    const { auth, course, nft, schedules, feedbacks, translatables, feedbackCount, feedbacksPerPage, pendingPayment, explorerUrl, stripe_available: stripeAvailable } = usePage().props
 
     const [walletStakeKeyDisplay, setwalletStakeKeyDisplay] = useState(undefined)
     const [walletAPI, setWalletAPI] = useState(undefined)
@@ -43,11 +43,13 @@ const Details = () => {
     const [purchaseLoading, setPurchaseLoading] = useState(false)
     const [purchaseStep, setPurchaseStep] = useState('idle')
 
+    const creditCardButtonRef = useRef(null)
+
     const [showStripeCheckout, setShowStripeCheckout] = useState(false)
     const [clientSecret, setClientSecret] = useState(null)
     const [stripeLoading, setStripeLoading] = useState(false)
 
-    const isGeneralCourse = course.course_type && course.course_type.type === 'General'
+    const isGeneralCourse = course.course_type && course.course_type.name === 'General'
 
     const handleBuyWithAda = async (schedule_id) => {
         if (!walletAPI) {
@@ -76,7 +78,13 @@ const Details = () => {
                 : buildResponse.data
 
             if (!buildData.success) {
-                throw new Error(buildData.message || 'Failed to build transaction')
+                if (buildData.insufficientFunds) {
+                    dispatch(actions.error({ message: translatables.wallet_error.insufficient_funds }))
+                    creditCardButtonRef.current?.scrollIntoView({ behavior: 'smooth' })
+                } else {
+                    throw new Error(buildData.message || 'Failed to build transaction')
+                }
+                return
             }
 
             // Sign transaction with wallet
@@ -491,11 +499,16 @@ const Details = () => {
         ]
 
         const dynamicInfos = {
-            'General': { type: translatables.texts.price, value: formatDualPrice(parseJpy(course.price), course.price_in_ada) },
+            'General': {
+                type: translatables.texts.price,
+                value: course.price_in_ada
+                    ? formatDualPrice(parseJpy(course.price), course.price_in_ada)
+                    : `${formatJpy(parseJpy(course.price))} (${translatables.texts.ada_unavailable})`
+            },
             'Free': { type: translatables.texts.price, value: translatables.texts.free }
         }
 
-        classInfos.push(dynamicInfos[course.course_type.type])
+        classInfos.push(dynamicInfos[course.course_type.name])
 
         return (
             <Grid container spacing={2} sx={{ mb: 2 }}>
@@ -583,48 +596,79 @@ const Details = () => {
                         </Box>}
                         {isGeneralCourse && auth && auth.user && (
                             <Box sx={{ mb: 2 }}>
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    fullWidth
-                                    disabled={!walletAPI || purchaseLoading}
-                                    onClick={() => {
-                                        if (schedules && schedules.length > 0) {
-                                            handleBuyWithAda(schedules[0].id)
-                                        }
-                                    }}
-                                    startIcon={purchaseLoading ? <CircularProgress size={20} color="inherit" /> : <AccountBalanceWalletIcon />}
-                                    sx={{ py: 1.5 }}
-                                >
-                                    {purchaseLoading
-                                        ? translatables.texts.processing
-                                        : `${translatables.texts.buy_with_ada} - ${formatDualPrice(parseJpy(course.price), course.price_in_ada)}`
-                                    }
-                                </Button>
-                                {purchaseLoading && (
-                                    <Box sx={{ mt: 1 }}>
-                                        <LinearProgress />
-                                        <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
-                                            {purchaseStep === 'building' && translatables.texts.building_transaction}
-                                            {purchaseStep === 'signing' && translatables.texts.sign_in_wallet}
-                                            {purchaseStep === 'submitting' && translatables.texts.submitting_transaction}
+                                {pendingPayment ? (
+                                    <Box sx={{ p: 2, border: '1px solid', borderColor: 'primary.main', borderRadius: 1 }}>
+                                        <LinearProgress sx={{ mb: 1 }} />
+                                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                                            {translatables.texts.payment_pending}
+                                        </Typography>
+                                        <Typography variant="body2">
+                                            <a
+                                                href={`${explorerUrl}/tx/${pendingPayment.payment_tx_hash}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                {translatables.texts.view_on_explorer}
+                                            </a>
                                         </Typography>
                                     </Box>
+                                ) : (
+                                    <>
+                                        <Button
+                                            variant="outlined"
+                                            color="primary"
+                                            fullWidth
+                                            disabled={!walletAPI || purchaseLoading || !course.price_in_ada}
+                                            onClick={() => {
+                                                if (schedules && schedules.length > 0) {
+                                                    handleBuyWithAda(schedules[0].id)
+                                                }
+                                            }}
+                                            startIcon={purchaseLoading ? <CircularProgress size={20} color="inherit" /> : <AccountBalanceWalletIcon />}
+                                            sx={{ py: 1.5 }}
+                                        >
+                                            {purchaseLoading
+                                                ? translatables.texts.processing
+                                                : `${translatables.texts.buy_with_ada} - ${formatDualPrice(parseJpy(course.price), course.price_in_ada)}`
+                                            }
+                                        </Button>
+                                        {purchaseLoading && (
+                                            <Box sx={{ mt: 1 }}>
+                                                <LinearProgress />
+                                                <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+                                                    {purchaseStep === 'building' && translatables.texts.building_transaction}
+                                                    {purchaseStep === 'signing' && translatables.texts.sign_in_wallet}
+                                                    {purchaseStep === 'submitting' && translatables.texts.submitting_transaction}
+                                                </Typography>
+                                            </Box>
+                                        )}
+                                        {!course.price_in_ada && (
+                                            <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+                                                {translatables?.texts?.ada_unavailable || 'ADA price unavailable'}
+                                            </Typography>
+                                        )}
+                                        <Button
+                                            ref={creditCardButtonRef}
+                                            variant="outlined"
+                                            color="primary"
+                                            fullWidth
+                                            disabled={stripeLoading || stripeAvailable === false}
+                                            onClick={handlePayWithCard}
+                                            startIcon={stripeLoading ? <CircularProgress size={20} color="inherit" /> : <CreditCardIcon />}
+                                            sx={{ py: 1.5, mt: 1 }}
+                                        >
+                                            {stripeLoading
+                                                ? (translatables?.texts?.loading || 'Loading...')
+                                                : `${translatables?.texts?.pay_with_card || 'Pay with Credit Card'} - ¥${course.price?.toLocaleString()}`
+                                            }
+                                        </Button>
+                                        {stripeAvailable === false && (
+                                            <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+                                                {translatables?.texts?.stripe_unavailable || 'Credit card payment temporarily unavailable'}
+                                            </Typography>
+                                        )}
+                                    </>
                                 )}
-                                <Button
-                                    variant="outlined"
-                                    color="primary"
-                                    fullWidth
-                                    disabled={stripeLoading}
-                                    onClick={handlePayWithCard}
-                                    startIcon={stripeLoading ? <CircularProgress size={20} color="inherit" /> : <CreditCardIcon />}
-                                    sx={{ py: 1.5, mt: 1 }}
-                                >
-                                    {stripeLoading
-                                        ? (translatables?.texts?.loading || 'Loading...')
-                                        : `${translatables?.texts?.pay_with_card || 'Pay with Credit Card'} - ¥${course.price?.toLocaleString()}`
-                                    }
-                                </Button>
                             </Box>
                         )}
                         {nft && walletAPI && <CourseScheduleList data={schedules} handleOnBook={handleBookNFT} handleOnCancelBook={handleCancelBooking} />}

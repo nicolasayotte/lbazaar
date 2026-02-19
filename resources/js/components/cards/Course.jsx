@@ -1,10 +1,10 @@
 import { Link } from "@inertiajs/inertia-react";
 import { Grid, Card, CardContent, Button, Typography, CardMedia, Box, Chip, Stack} from "@mui/material"
 import { getRoute } from "../../helpers/routes.helper"
-import placeholderImg from "../../../img/placeholder.png"
+import placeholderImg from "../../../img/placeholder.jpg"
 import { CalendarMonth } from "@mui/icons-material";
 import { usePage } from "@inertiajs/inertia-react"
-import { formatDualPrice, parseJpy } from "../../helpers/currency.helper"
+import { formatDualPrice, formatJpy, parseJpy } from "../../helpers/currency.helper"
 
 const Course = ({ course, schedule = null, showDescription = true, viewDetailId = "id", imagePosition = "left" }) => {
 
@@ -33,7 +33,13 @@ const Course = ({ course, schedule = null, showDescription = true, viewDetailId 
 
     const Price = () => (
         course.course_type && course.course_type.name == 'General' && course.price
-        ? <Typography children={formatDualPrice(parseJpy(course.price), course.price_in_ada)} variant="h6" />
+        ? <Typography
+              children={course.price_in_ada
+                  ? formatDualPrice(parseJpy(course.price), course.price_in_ada)
+                  : `${formatJpy(parseJpy(course.price))} (${translatables.texts.ada_unavailable})`
+              }
+              variant="h6"
+          />
         : <span />
     )
 
