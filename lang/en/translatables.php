@@ -17,7 +17,7 @@ return [
         'verify' => 'The NFT could not be verified'
     ],
     'wallet_error'   => [
-        'insufficient_funds' => 'Insufficient funds in wallet',
+        'insufficient_funds' => 'Insufficient wallet funds. Consider paying by credit card.',
         'not_connected' => 'Wallet is not connected',
         'not_found' => 'Wallet is not found',
         'no_signin' => 'User must sign in to access wallet',
@@ -285,6 +285,8 @@ return [
     'texts' => [
         'actions' => 'Actions',
         'ada' => 'Ada',
+        'ada_unavailable' => 'ADA price unavailable',
+        'stripe_unavailable' => 'Credit card payment temporarily unavailable',
         'add_choice' => 'Add Choice',
         'add_item' => 'Add Item',
         'add_points' => 'Add Points',
@@ -323,7 +325,7 @@ return [
         'failed' => 'Failed',
         'no_certificates' => 'No certificates yet',
         'complete_courses_hint' => 'Complete courses with certificates enabled to earn NFT certificates',
-        'view_on_explorer' => 'View on Cardano Explorer',
+        'view_on_explorer' => 'View transaction on explorer',
         'minting_in_progress' => 'Minting in progress...',
         'awaiting_mint' => 'Awaiting instructor to mint certificate',
         'minting_failed' => 'Minting failed - contact instructor',
@@ -474,7 +476,7 @@ return [
         'password' => 'Password',
         'pay' => 'Pay',
         'payment_confirmed' => 'Payment confirmed',
-        'payment_pending' => 'Payment pending confirmation',
+        'payment_pending' => 'Your ADA payment is being confirmed on the blockchain.',
         'points_earned' => 'Ada Earned',
         'points' => 'Points',
         'points_to_convert_to_nft' => 'Points to convert to NFT',

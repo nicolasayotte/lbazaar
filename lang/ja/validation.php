@@ -11,6 +11,7 @@ return [
     'alpha'                => ':Attributeには、アルファベッドのみ使用できます。',
     'alpha_dash'           => ':Attributeには、英数字(\'A-Z\',\'a-z\',\'0-9\')とハイフンと下線(\'-\',\'_\')が使用できます。',
     'alpha_num'            => ':Attributeには、英数字(\'A-Z\',\'a-z\',\'0-9\')が使用できます。',
+    'alpha_spaces'         => ':Attributeには、アルファベットとスペースのみ使用できます。',
     'array'                => ':Attributeには、配列を指定してください。',
     'ascii'                => ':Attributeには、英数字と記号のみ使用可能です。',
     'before'               => ':Attributeには、:dateより前の日付を指定してください。',
@@ -140,6 +141,7 @@ return [
     'uppercase'            => ':Attributeは、大文字で入力してください。',
     'url'                  => ':Attributeは、有効なURL形式で指定してください。',
     'uuid'                 => ':Attributeは、有効なUUIDでなければいけません。',
+    'valid_schedule'       => ':Attributeは、正しい日付ではありません。',
     'attributes'           => [
         'address'                  => '住所',
         'age'                      => '年',

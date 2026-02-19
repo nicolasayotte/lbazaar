@@ -12,16 +12,16 @@ return [
     */
     'error'=> 'エラーが発生しました',
     'nft_error'   => [
-        'used' =>'NFT has already been used (JA)',
-        'not_found' => 'NFT not found in wallet(JA)',
-        'verify' => 'The NFT could not be verified(JA)'
+        'used' =>'このNFTはすでに使用済みです',
+        'not_found' => 'ウォレットにNFTが見つかりません',
+        'verify' => 'NFTを検証できませんでした'
     ],
     'wallet_error'   => [
-        'insufficient_funds' => 'Insufficient funds in wallet',
-        'not_connected' => 'Wallet is not connected',
-        'not_found' => 'Wallet is not found',
-        'no_signin' => 'User must sign in to access wallet',
-        'verify' => 'The Wallet could not be verified'
+        'insufficient_funds' => 'ウォレット残高が不足しています。クレジットカードでのお支払いをご検討ください。',
+        'not_connected' => 'ウォレットが接続されていません',
+        'not_found' => 'ウォレットが見つかりません',
+        'no_signin' => 'ウォレットにアクセスするにはサインインが必要です',
+        'verify' => 'ウォレットを確認できませんでした'
     ],
     'success'=> [
         'category'=> [
@@ -32,7 +32,7 @@ return [
         'class'=> [
             'applications'=> [
                 'status'=> [
-                    'update'=> 'Class application status successfully updated (JA)'
+                    'update'=> 'クラス申請のステータスが正常に更新されました'
                 ],
                 'create'=> 'クラス申請は作成されました'
             ],
@@ -40,11 +40,11 @@ return [
                 'cancelled'=> 'クラス予約はキャンセルされました',
                 'booked'=> 'クラスは正常に予約されました'
             ],
-            'donated' => 'Succesfully donated to teacher',
+            'donated' => '講師への寄付が完了しました',
             'completed'=> 'クラス受講完了しました',
             'create'=> 'クラスは正常に作成されました',
             'delete'=> 'クラスは正常に削除されました',
-            'update'=> 'クラスは正常に更新されました (JA)',
+            'update'=> 'クラスは正常に更新されました',
             'types'=> [
                 'update'=> 'クラスタイプが正常に更新されました'
             ]
@@ -54,20 +54,20 @@ return [
             'delete'=> '区分は正常に消去されました',
             'update'=> '区分は正常に更新されました'
         ],
-        'class_generated'=> 'Command Generated. (JA)',
-        'copy'=> 'Copied! (JA)',
+        'class_generated'=> 'コマンドが生成されました',
+        'copy'=> 'コピーしました！',
         'exams'=> [
             'update_status'=> 'Examは正常に更新されました',
             'create'=> 'Examは正常に作成されました',
             'delete'=> 'Examは正常に消去されました',
             'submit'=> 'Exam提出完了',
             'update'=> 'Exam更新完了',
-            'cleared' => 'Exam successfully cleared (JA)',
+            'cleared' => '試験が正常にクリアされました',
             'request_retake' => '試験再受験リクエストが正常に送信されました'
         ],
         'feedback'=> 'フィードバックは正常に保存されました',
         'inquiry'=> 'お問い合わせは正常に送信されました',
-        'nft' => 'NFT successfully verified (JA)',
+        'nft' => 'NFTの検証に成功しました',
         'packages'=> [
             'create'=> 'パッケージは正常に作成されました'
         ],
@@ -76,7 +76,7 @@ return [
             'feed'=> 'ポイントは正常に追加されました',
             'exchange'=> 'ポイントは正常にNFTに変換されました',
             'request_exchange'=> 'ポイント変換は正常に提出されました',
-            'verify' => 'The Wallet was successfully verified (JA)'
+            'verify' => 'ウォレットの認証に成功しました'
         ],
         'profile'=> 'プロファイルは更新されました',
         'forgotPassword'=> 'リセットパスワードは送信されました',
@@ -86,9 +86,9 @@ return [
             'update'=> 'スケジュールが正常に更新されました'
         ],
         'api'=> [
-            'get'=> 'Successfully retrieved data'
+            'get'=> 'データの取得に成功しました'
         ],
-        'update'=> 'Successfully updated',
+        'update'=> '正常に更新されました',
         'teacher_applications'=> [
             'submitted'=> '講師申請は正常に提出されました'
         ],
@@ -144,7 +144,7 @@ return [
         'exams'=> [
             'delete'=> 'このテストを消去しますか？',
             'answers' => [
-                'delete' => 'Are you sure you want to clear the exam for this student? (JA)'
+                'delete' => 'この生徒の試験をクリアしてもよろしいですか？'
             ]
         ],
         'schedules'=> [
@@ -159,7 +159,7 @@ return [
             'delete'=> 'このNFTを削除してもよろしいですか？'
         ],
         'mobile' => [
-            'view' => 'Are you sure you want to go to the mobile wallet browser?'
+            'view' => 'モバイルウォレットブラウザに移動してもよろしいですか？'
         ],
         'translations'=> [
             'update'=> '翻訳を更新して良いですか？'
@@ -169,7 +169,7 @@ return [
         ]
     ],
     'title'=> [
-        'categories'=> '分類(JA)',
+        'categories'=> 'カテゴリー',
         'class'=> [
             'applications'=> [
                 'view'=> 'クラス申請',
@@ -184,7 +184,7 @@ return [
             ]
         ],
         'classifications'=> '区分',
-        'clear_exam' => 'Clear Exam (JA)',
+        'clear_exam' => '試験クリア',
         'schedules'=> [
             'create'=> 'スケジュール作成',
             'index'=> 'スケジュール',
@@ -220,8 +220,8 @@ return [
             'pending'=> '保留'
         ],
         'bookings'=> [
-            'desc'=> 'Bookings - High to Low (JA)',
-            'asc'=> 'Bookings - Low to High (JA)'
+            'desc'=> '予約数（多い順）',
+            'asc'=> '予約数（少ない順）'
         ],
         'schedule'=> [
             'asc'=> '日付（昇順）',
@@ -270,21 +270,23 @@ return [
         'specialty'=> '専門'
     ],
     'class_schedule'=> [
-        'end_date'=> 'End Date',
+        'end_date'=> '終了日',
         'class_style'=> 'オンデマンド／ライブ',
-        'start_date'=> 'Start Date',
+        'start_date'=> '開始日',
         'number_users_booked'=> 'ユーザーは予約されました'
     ],
     'top_page'=> [
-        'description'=> 'To provide educational opportunities for all (JA)'
+        'description'=> 'すべての人に学びの機会を'
     ],
     'wallet_history'=> [
-        'id'=> 'Transaction ID',
+        'id'=> 'トランザクションID',
         'type'=> '取引タイプ'
     ],
     'texts'=> [
         'actions'=> '実行',
         'ada' =>'エイダ',
+        'ada_unavailable' => 'ADA価格は利用できません',
+        'stripe_unavailable' => 'クレジットカード決済は一時的にご利用いただけません',
         'add_choice'=> '選択追加',
         'add_item'=> '項目を追加',
         'add_points'=> 'ポイント追加',
@@ -311,7 +313,7 @@ return [
         'cancel'=> 'キャンセル',
         'cancel_class_booking'=> '予約キャンセル',
         'cancellable'=> 'キャンセル可能',
-        'category'=> '分類(JA)',
+        'category'=> 'カテゴリー',
         'categories' => 'カテゴリー',
         'certification'=> '授賞',
         'certificates' => '証明書',
@@ -322,7 +324,7 @@ return [
         'failed' => '失敗',
         'no_certificates' => 'まだ証明書がありません',
         'complete_courses_hint' => '証明書が有効なコースを完了してNFT証明書を取得しましょう',
-        'view_on_explorer' => 'Cardanoエクスプローラーで見る',
+        'view_on_explorer' => 'エクスプローラーで取引を確認する',
         'minting_in_progress' => '発行中...',
         'awaiting_mint' => '講師による証明書の発行を待っています',
         'minting_failed' => '発行に失敗しました。講師にお問い合わせください',
@@ -348,9 +350,9 @@ return [
         'check_schedules'=> 'スケジュール確認',
         'choice'=> '選択',
         'choose_role'=> '選択してください。生徒／講師',
-        'claim_all'=> 'Claim all (JA)',
+        'claim_all'=> 'すべて受け取る',
         'class'=> 'クラス',
-        'class_history'=> 'クラス参加履歴(JA)',
+        'class_history'=> 'クラス参加履歴',
         'class_image'=> 'クラスイメージ',
         'class_information'=> 'クラス情報',
         'class_name'=> 'クラス名',
@@ -358,10 +360,10 @@ return [
         'classes'=> 'クラス',
         'classes_booked'=> 'クラス予約済',
         'classification'=> '区分',
-        'clear' => 'Clear (JA)',
+        'clear' => 'クリア',
         'coming_soon'=> '近日公開予定',
-        'commission_rate'=> 'Commission Rate',
-        'complete'=> '終了 (JA)',
+        'commission_rate'=> '手数料率',
+        'complete'=> '終了',
         'complete_class'=> 'クラス受講終了',
         'complete_classes_earn_badge'=> 'これらのクラスをクリアするとバッジを獲得できます',
         'complete_class_earn_badge'=> 'このクラスをクリアしてバッジを獲得',
@@ -394,15 +396,15 @@ return [
         'delete_classification'=> '分類消去',
         'delete_nft'=> 'NFTの削除',
         'delete_schedule'=> 'スケジュール消去',
-        'deny'=> 'Deny (JA)',
+        'deny'=> '拒否',
         'description'=> '概要',
         'disable'=> '無効',
         'done_watching'=> '視聴完了',
-        'wallet_earn_details'=> 'Earned class',
+        'wallet_earn_details'=> 'クラスで獲得',
         'edit'=> '修正',
         'edit_category'=> '区分修正',
         'edit_class'=> 'クラス修正',
-        'edit_classification'=> 'Edit Classification (JA)',
+        'edit_classification'=> '区分の編集',
         'edit_exam'=> 'Exam修正',
         'edit_nft'=> 'NFTの編集',
         'edit_profile'=> 'Profile修正',
@@ -411,13 +413,13 @@ return [
         'enable'=> '有効化',
         'update_password_help'=> '確認のため現在のパスワードを入力してください',
         'exam_name'=> '試験名',
-        'exchange_badges'=> 'Exchange Badges (JA)',
+        'exchange_badges'=> 'バッジ交換',
         'exchange_points'=> 'ポイント交換',
         'export_csv'=> 'CSVエクスポート',
         'export_items'=> 'エクスポート項目',
         'featured_classes'=> '新しいクラス',
         'featured_teachers'=> '新しい先生',
-        'feed_points' => 'Feed Points (JA)',
+        'feed_points' => 'ポイント追加',
         'filter'=> 'フィルター',
         'first_name'=> '名',
         'for_sale' => '販売中',
@@ -425,7 +427,7 @@ return [
         'format'=> '受講タイプ',
         'free'=> 'フリークラス',
         'frequency'=> '開催頻度',
-        'from'=> 'From',
+        'from'=> '差出人',
         'fully_booked'=> '満員御礼',
         'general_information'=> '基本情報',
         'give_feedback'=> 'フィードバック',
@@ -441,7 +443,7 @@ return [
         'load_more'=> '続き',
         'mark_done'=> '終了印',
         'message'=> 'メッセージ',
-        'mobile' => 'Mobile Wallet Browser',
+        'mobile' => 'モバイルウォレットブラウザ',
         'inquiry_help'=> '200字以内',
         'password_help'=> '8文字以上にする必要があります',
         'mypage'=> 'My Page',
@@ -451,7 +453,7 @@ return [
         'next_question'=> '次の質問',
         'nft_select' => 'NFTを選択する',
         'nft' => 'エヌエフティー',
-        'nft_verify' => 'Please sign your wallet to verify ownership of the NFT',
+        'nft_verify' => 'NFTの所有権を確認するためウォレットで署名してください',
         'no_file_selected'=> 'ファイルが選択されていません',
         'no_records_found'=> 'レコードがありません',
         'certificates_not_enabled' => 'このコースでは証明書が有効になっていません。コース設定で有効にして、受講完了証明書を発行してください。',
@@ -468,21 +470,21 @@ return [
         'wallet_commission_details'=> 'コミッション',
         'points_earned'=> 'エイダ追加',
         'wallet_connect'=> 'ウォレットを接続する',
-        'wallet_connected' => 'Connected',
-        'wallet_not_connected' => 'Please make sure your wallet dapp connector is turned on',
+        'wallet_connected' => '接続済み',
+        'wallet_not_connected' => 'ウォレットのDAppコネクタが有効になっていることを確認してください',
         'wallet_exchange_details'=> 'NFT変更ポイント',
         'wallet_feed_details'=> 'Walletに追加されたポイント',
         'wallet_id' => 'Wallet ID',
-        'wallet_message' => 'Please sign to verify your wallet',
-        'wallet_switch' => 'Switch Connected Wallets',
-        'wallet_verify' => 'Verify Wallet Ownership',
-        'wallet_verify_error' => 'Wallet can not be verified',
+        'wallet_message' => 'ウォレットを確認するために署名してください',
+        'wallet_switch' => '接続ウォレットの切替',
+        'wallet_verify' => 'ウォレット所有権の確認',
+        'wallet_verify_error' => 'ウォレットを確認できません',
         'wallet_purchase_details' => 'コース購入',
         'buy_with_ada' => 'ADAで購入',
         'building_transaction' => 'トランザクション構築中...',
         'sign_in_wallet' => 'ウォレットで署名してください',
         'submitting_transaction' => 'ブロックチェーンに送信中...',
-        'payment_pending' => '支払い確認待ち',
+        'payment_pending' => 'ADAのお支払いはブロックチェーン上で確認中です。',
         'payment_confirmed' => '支払い確認済み',
         'points_to_convert_to_nft'=> 'ポイントNFT変換',
         'price'=> 'ポイント',
@@ -542,7 +544,7 @@ return [
         'view_more'=> 'もっと見る',
         'view_profile'=> 'プロファイルを見る',
         'wallet_balance'=> 'ウォレット残高',
-        'wallet_hardware' => 'Wallet History(JA)',
+        'wallet_hardware' => 'ハードウェアウォレット',
         'wallet_history'=> 'ウォレット履歴',
         'watch_video_description'=> 'このクラスで得られる内容',
         'watch_video'=> 'ビデオを見る',
@@ -551,14 +553,14 @@ return [
         'update_password_notice'=> 'パスワードを更新するとサインアウトされます',
         'temporary_password_notice'=> 'パスワードは一時的なものです。安全のためパスワードを更新してください。',
         'class_url'=> 'クラスリンク',
-        'wallet_schedule_fee' => 'Payed points to schedule class (JA)',
-        'schedule_fee_note' => 'Free class needs points as payment per schedule, Points needed: (JA)',
-        'class_feedback' => 'Class Feedback (JA)',
-        'comments' => 'Comments (JA)',
-        'complete_class_confirmation_message' => 'If you have enjoyed our classes and would like to support our continued efforts to provide you with the best online learning experience, we would greatly appreciate any donations you would like to make. (JA)',
-        'donate_points' => 'Donate Points (JA)',
-        'wallet_donate_points_from' => 'You reacieved donation points from (JA)',
-        'wallet_donate_points_to' => 'You send donation points to (JA)',
+        'wallet_schedule_fee' => 'クラスのスケジュール予約にポイントを使用',
+        'schedule_fee_note' => 'フリークラスはスケジュールごとにポイントが必要です。必要ポイント数：',
+        'class_feedback' => 'クラスフィードバック',
+        'comments' => 'コメント',
+        'complete_class_confirmation_message' => '私たちのクラスをお楽しみいただけましたら、より良いオンライン学習体験を提供するための活動を支援していただけると大変嬉しく思います。ご支援をお待ちしております。',
+        'donate_points' => 'ポイントを寄付する',
+        'wallet_donate_points_from' => '寄付ポイントの受取元：',
+        'wallet_donate_points_to' => '寄付ポイントの送信先：',
         'exam_passed' => '試験に合格おめでとうございます！',
         'exam_failed' => '残念ながら、試験に合格できませんでした。「再受験をリクエスト」をクリックして再受験をリクエストできます。',
         'request_retake' => '再受験をリクエスト',
@@ -583,11 +585,11 @@ return [
     ],
     'tx' => [
         'success' => [
-            'status' => 'Transaction Success!!!',
-            'message' => 'Please wait for 5 confirmations on the blockchain'
+            'status' => 'トランザクション成功！',
+            'message' => 'ブロックチェーン上で5回の承認をお待ちください'
         ],
         'error' => [
-            'message' => 'Transaction could not be submitted'
+            'message' => 'トランザクションを送信できませんでした'
         ]
     ],
     'wallets' => [
