@@ -3,7 +3,6 @@
 namespace Tests\Unit\Services\API;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use App\Services\API\ExchangeRateService;
@@ -11,8 +10,6 @@ use App\Models\Setting;
 
 class ExchangeRateServiceTest extends TestCase
 {
-    use DatabaseTransactions;
-
     protected ExchangeRateService $service;
 
     protected function setUp(): void

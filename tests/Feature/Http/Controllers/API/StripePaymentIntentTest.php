@@ -3,7 +3,6 @@
 namespace Tests\Feature\Http\Controllers\API;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Services\API\StripeService;
 use App\Models\User;
 use App\Models\Course;
@@ -40,8 +39,6 @@ use Mockery;
  */
 class StripePaymentIntentTest extends TestCase
 {
-    use DatabaseTransactions;
-
     protected $stripeService;
     protected User $teacher;
     protected User $student;
@@ -60,16 +57,6 @@ class StripePaymentIntentTest extends TestCase
         $this->setupTestData();
     }
 
-    protected function tearDown(): void
-    {
-        // IMPORTANT: call parent::tearDown() first to roll back the DB transaction
-        // before Mockery::close() validates expectations.  If Mockery throws on an
-        // unmet expectation the transaction would otherwise be left open and lock
-        // subsequent test runs.
-        parent::tearDown();
-        Mockery::close();
-    }
-
     // -------------------------------------------------------------------------
     // Test data helpers
     // -------------------------------------------------------------------------
@@ -77,8 +64,7 @@ class StripePaymentIntentTest extends TestCase
     private function setupTestData(): void
     {
         // Disable User model events to prevent web3 calls during testing
-        User::flushEventListeners();
-        User::boot();
+        $this->disableUserModelEvents();
 
         $this->createRoles(['teacher', 'student']);
 

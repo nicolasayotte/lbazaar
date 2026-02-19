@@ -3,7 +3,6 @@
 namespace Tests\Unit\Services\API;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\WithFaker;
 use App\Services\API\CertificateService;
 use App\Models\User;
@@ -18,7 +17,7 @@ use Mockery;
 
 class CertificateServiceTest extends TestCase
 {
-    use DatabaseTransactions, WithFaker;
+    use WithFaker;
 
     protected $service;
     protected $teacher;
@@ -32,12 +31,6 @@ class CertificateServiceTest extends TestCase
         
         $this->service = new CertificateService();
         $this->setupTestData();
-    }
-
-    protected function tearDown(): void
-    {
-        Mockery::close();
-        parent::tearDown();
     }
 
     private function setupTestData()

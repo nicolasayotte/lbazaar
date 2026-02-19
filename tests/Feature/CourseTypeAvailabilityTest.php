@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Models\Course;
 use App\Models\CourseType;
 use App\Models\User;
@@ -11,8 +10,6 @@ use Database\Seeders\CourseTypeSeeder;
 
 class CourseTypeAvailabilityTest extends TestCase
 {
-    use DatabaseTransactions;
-
     protected User $teacher;
 
     protected function setUp(): void

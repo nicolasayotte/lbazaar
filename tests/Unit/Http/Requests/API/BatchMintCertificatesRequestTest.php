@@ -3,7 +3,6 @@
 namespace Tests\Unit\Http\Requests\API;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Http\Requests\API\BatchMintCertificatesRequest;
 use App\Models\User;
 use App\Models\Course;
@@ -12,8 +11,6 @@ use Illuminate\Support\Facades\Validator;
 
 class BatchMintCertificatesRequestTest extends TestCase
 {
-    use DatabaseTransactions;
-
     protected $teacher;
     protected $students;
     protected $course;

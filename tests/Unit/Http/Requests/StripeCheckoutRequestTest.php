@@ -3,7 +3,6 @@
 namespace Tests\Unit\Http\Requests;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Http\Requests\StripeCheckoutRequest;
 use App\Models\User;
 use App\Models\Course;
@@ -14,8 +13,6 @@ use Illuminate\Support\Facades\Validator;
 
 class StripeCheckoutRequestTest extends TestCase
 {
-    use DatabaseTransactions;
-
     protected $student;
     protected $professor;
     protected $course;

@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Models\User;
 use App\Models\Course;
 use App\Models\StripePayment;
@@ -13,8 +12,6 @@ use Mockery;
 
 class CheckoutAuthorizationTest extends TestCase
 {
-    use DatabaseTransactions;
-
     protected User $user;
     protected User $otherUser;
     protected Course $course;
@@ -53,12 +50,6 @@ class CheckoutAuthorizationTest extends TestCase
                 'student_email' => $this->user->email,
             ],
         ]);
-    }
-
-    protected function tearDown(): void
-    {
-        Mockery::close();
-        parent::tearDown();
     }
 
     public function test_user_can_view_own_payment_success_page(): void

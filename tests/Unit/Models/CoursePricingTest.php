@@ -3,7 +3,6 @@
 namespace Tests\Unit\Models;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Models\Course;
 use App\Models\CourseApplication;
 use App\Models\Setting;
@@ -12,8 +11,6 @@ use Illuminate\Support\Facades\Http;
 
 class CoursePricingTest extends TestCase
 {
-    use DatabaseTransactions;
-
     protected function setUp(): void
     {
         parent::setUp();

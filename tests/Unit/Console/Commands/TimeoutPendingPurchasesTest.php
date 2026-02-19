@@ -3,7 +3,6 @@
 namespace Tests\Unit\Console\Commands;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Models\User;
 use App\Models\Course;
 use App\Models\CourseHistory;
@@ -13,8 +12,6 @@ use Mockery;
 
 class TimeoutPendingPurchasesTest extends TestCase
 {
-    use DatabaseTransactions;
-
     protected User $teacher;
     protected User $student;
     protected Course $course;
@@ -47,12 +44,6 @@ class TimeoutPendingPurchasesTest extends TestCase
         $this->schedule = CourseSchedule::factory()->create([
             'course_id' => $this->course->id,
         ]);
-    }
-
-    protected function tearDown(): void
-    {
-        Mockery::close();
-        parent::tearDown();
     }
 
     public function test_command_marks_timed_out_payments_as_failed(): void

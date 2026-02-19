@@ -4,14 +4,11 @@ namespace Tests\Feature;
 
 use App\Models\Course;
 use App\Models\CourseCategory;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class CourseSearchMultiCategoryTest extends TestCase
 {
-    use DatabaseTransactions;
-
     /** @test */
     public function test_can_filter_courses_by_single_category()
     {

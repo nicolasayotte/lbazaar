@@ -7,14 +7,11 @@ use App\Models\CourseHistory;
 use App\Models\CourseSchedule;
 use App\Models\User;
 use App\Models\UserWallet;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class ManageClassCertificatesTest extends TestCase
 {
-    use DatabaseTransactions;
-
     protected User $teacher;
     protected User $otherTeacher;
     protected Course $course;

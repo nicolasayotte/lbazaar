@@ -3,13 +3,10 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class UserWalletAddressTest extends TestCase
 {
-    use DatabaseTransactions;
-
     /**
      * Test /user endpoint returns linked wallet address if present
      */

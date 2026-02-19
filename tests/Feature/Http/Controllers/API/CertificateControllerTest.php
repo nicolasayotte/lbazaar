@@ -3,7 +3,6 @@
 namespace Tests\Feature\Http\Controllers\API;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Services\API\CertificateService;
 use App\Models\User;
 use App\Models\Course;
@@ -14,8 +13,6 @@ use Mockery;
 
 class CertificateControllerTest extends TestCase
 {
-    use DatabaseTransactions;
-
     protected $certificateService;
     protected $teacher;
     protected $student;
@@ -34,17 +31,10 @@ class CertificateControllerTest extends TestCase
         $this->setupTestData();
     }
 
-    protected function tearDown(): void
-    {
-        Mockery::close();
-        parent::tearDown();
-    }
-
     private function setupTestData()
     {
         // Disable User model events to prevent web3 calls during testing
-        User::flushEventListeners();
-        User::boot();
+        $this->disableUserModelEvents();
 
         // Create roles
         $this->createRoles(['teacher', 'student']);

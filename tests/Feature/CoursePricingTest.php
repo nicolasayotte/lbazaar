@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -15,8 +14,6 @@ use App\Models\Setting;
 
 class CoursePricingTest extends TestCase
 {
-    use DatabaseTransactions;
-
     protected User $teacher;
     protected CourseType $courseType;
 

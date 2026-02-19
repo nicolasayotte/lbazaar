@@ -6,14 +6,11 @@ use App\Models\Course;
 use App\Models\CourseCategory;
 use App\Models\User;
 use App\Repositories\CourseRepository;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\Request;
 use Tests\TestCase;
 
 class CourseSearchFilterTest extends TestCase
 {
-    use DatabaseTransactions;
-
     protected CourseRepository $courseRepository;
 
     protected function setUp(): void

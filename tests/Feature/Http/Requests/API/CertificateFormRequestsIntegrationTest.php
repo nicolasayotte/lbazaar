@@ -3,7 +3,6 @@
 namespace Tests\Feature\Http\Requests\API;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Models\User;
 use App\Models\Course;
 
@@ -12,8 +11,6 @@ use App\Models\Course;
  */
 class CertificateFormRequestsIntegrationTest extends TestCase
 {
-    use DatabaseTransactions;
-
     protected $teacher;
     protected $student;
     protected $course;

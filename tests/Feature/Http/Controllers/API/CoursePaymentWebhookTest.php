@@ -3,7 +3,6 @@
 namespace Tests\Feature\Http\Controllers\API;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Services\API\CoursePurchaseService;
 use App\Models\User;
 use App\Models\Course;
@@ -16,8 +15,6 @@ use Mockery;
 
 class CoursePaymentWebhookTest extends TestCase
 {
-    use DatabaseTransactions;
-
     protected $purchaseService;
     protected $teacher;
     protected $student;
@@ -37,20 +34,10 @@ class CoursePaymentWebhookTest extends TestCase
         $this->setupTestData();
     }
 
-    protected function tearDown(): void
-    {
-        // IMPORTANT: parent::tearDown() MUST run first to rollback the DatabaseTransactions.
-        // If Mockery::close() throws (e.g. unmet expectation), it would prevent rollback,
-        // leaving an open transaction that blocks all subsequent tests with lock timeouts.
-        parent::tearDown();
-        Mockery::close();
-    }
-
     private function setupTestData()
     {
         // Disable User model events to prevent web3 calls during testing
-        User::flushEventListeners();
-        User::boot();
+        $this->disableUserModelEvents();
 
         // Create roles
         $this->createRoles(['teacher', 'student']);

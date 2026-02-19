@@ -3,7 +3,6 @@
 namespace Tests\Unit\Http\Requests\API;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Http\Requests\API\MintSingleCertificateRequest;
 use App\Models\User;
 use App\Models\Course;
@@ -12,8 +11,6 @@ use Illuminate\Support\Facades\Validator;
 
 class MintSingleCertificateRequestTest extends TestCase
 {
-    use DatabaseTransactions;
-
     protected $teacher;
     protected $student;
     protected $course;

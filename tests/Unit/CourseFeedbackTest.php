@@ -6,13 +6,10 @@ use App\Models\Course;
 use App\Models\CourseFeedback;
 use App\Models\CourseSchedule;
 use App\Models\User;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class CourseFeedbackTest extends TestCase
 {
-  use DatabaseTransactions;
-
   public function test_course_feedback_can_reference_course_and_schedule()
   {
     $user = User::factory()->create();

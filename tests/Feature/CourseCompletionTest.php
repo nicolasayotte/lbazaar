@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Models\User;
 use App\Models\Course;
 use App\Models\CourseSchedule;
@@ -13,8 +12,6 @@ use Mockery;
 
 class CourseCompletionTest extends TestCase
 {
-    use DatabaseTransactions;
-
     protected $teacher;
     protected $student;
     protected $course;
@@ -24,12 +21,6 @@ class CourseCompletionTest extends TestCase
     {
         parent::setUp();
         $this->setupTestData();
-    }
-
-    protected function tearDown(): void
-    {
-        Mockery::close();
-        parent::tearDown();
     }
 
     private function setupTestData()

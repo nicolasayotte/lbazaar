@@ -3,7 +3,6 @@
 namespace Tests\Unit\Services\API;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Services\API\StripeService;
 use App\Models\User;
 use App\Models\Course;
@@ -16,8 +15,6 @@ use stdClass;
 
 class StripeServiceTest extends TestCase
 {
-    use DatabaseTransactions;
-
     protected StripeService $service;
     protected User $student;
     protected Course $course;
@@ -29,12 +26,6 @@ class StripeServiceTest extends TestCase
 
         $this->setupTestData();
         $this->service = new StripeService();
-    }
-
-    protected function tearDown(): void
-    {
-        Mockery::close();
-        parent::tearDown();
     }
 
     private function setupTestData()

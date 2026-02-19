@@ -7,14 +7,11 @@ use App\Models\CourseApplication;
 use App\Models\CourseHistory;
 use App\Models\CourseSchedule;
 use App\Models\User;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 class CertificateEnabledFieldsTest extends TestCase
 {
-    use DatabaseTransactions;
-
     /**
      * Test certificate_enabled column exists on course_applications table
      */

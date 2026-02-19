@@ -3,15 +3,12 @@
 namespace Tests\Feature\Http\Controllers\Portal;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Models\User;
 use App\Models\CourseApplication;
 use App\Models\Course;
 
 class CourseApplicationControllerTest extends TestCase
 {
-    use DatabaseTransactions;
-
     protected User $teacher;
     protected User $student;
 

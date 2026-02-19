@@ -3,7 +3,6 @@
 namespace Tests\Unit\Services\API;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\WithFaker;
 use App\Services\API\CoursePurchaseService;
 use App\Services\API\WalletService;
@@ -21,7 +20,7 @@ use Mockery;
 
 class CoursePurchaseServiceTest extends TestCase
 {
-    use DatabaseTransactions, WithFaker;
+    use WithFaker;
 
     protected $service;
     protected $walletService;
@@ -47,12 +46,6 @@ class CoursePurchaseServiceTest extends TestCase
         $this->userRepository->shouldReceive('getAdmin')->andReturn($this->admin)->byDefault();
 
         $this->service = new CoursePurchaseService($this->walletService, $this->userRepository);
-    }
-
-    protected function tearDown(): void
-    {
-        Mockery::close();
-        parent::tearDown();
     }
 
     private function setupTestData()

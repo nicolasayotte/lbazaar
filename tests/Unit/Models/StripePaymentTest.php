@@ -3,15 +3,12 @@
 namespace Tests\Unit\Models;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Models\StripePayment;
 use App\Models\User;
 use App\Models\Course;
 
 class StripePaymentTest extends TestCase
 {
-    use DatabaseTransactions;
-
     protected User $student;
     protected Course $course;
 

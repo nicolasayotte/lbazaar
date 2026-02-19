@@ -3,15 +3,12 @@
 namespace Tests\Unit\Repositories;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Repositories\CourseTypeRepository;
 use App\Models\CourseType;
 use Database\Seeders\CourseTypeSeeder;
 
 class CourseTypeRepositoryTest extends TestCase
 {
-    use DatabaseTransactions;
-
     protected CourseTypeRepository $repository;
 
     protected function setUp(): void

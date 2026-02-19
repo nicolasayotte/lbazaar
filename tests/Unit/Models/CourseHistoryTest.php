@@ -7,55 +7,14 @@ use App\Models\CourseHistory;
 use App\Models\CourseSchedule;
 use App\Models\NftTransactions;
 use App\Models\User;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class CourseHistoryTest extends TestCase
 {
-    use DatabaseTransactions;
-
     protected User $student1;
     protected User $student2;
     protected Course $course;
     protected CourseSchedule $schedule;
-
-    /**
-     * Helper method to create users without custodial address generation
-     */
-    protected function createTestUser(array $attributes = []): User
-    {
-        // Ensure at least one country exists
-        $country = DB::table('countries')->first();
-        if (!$country) {
-            $countryId = DB::table('countries')->insertGetId([
-                'name' => 'Japan',
-                'code' => 'JP',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        } else {
-            $countryId = $country->id;
-        }
-
-        $defaults = [
-            'first_name' => fake()->firstName(),
-            'last_name' => fake()->lastName(),
-            'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
-            'password' => bcrypt('password'),
-            'country_id' => $countryId,
-            'is_temp_password' => false,
-            'is_enabled' => true,
-            'custodial_address' => 'addr_test_dummy_' . uniqid(),
-            'commission_rate' => 10,
-            'commission_earn_rate' => 10,
-        ];
-
-        $userData = array_merge($defaults, $attributes);
-        $userId = DB::table('users')->insertGetId($userData);
-        return User::find($userId);
-    }
 
     protected function setUp(): void
     {

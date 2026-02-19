@@ -3,55 +3,19 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Models\User;
 use App\Models\Course;
 use App\Models\CourseSchedule;
 use App\Models\CourseHistory;
 use App\Models\StripePayment;
 use App\Services\API\StripeService;
-use Illuminate\Support\Facades\DB;
 use Mockery;
 
 class StripeCheckoutTest extends TestCase
 {
-    use DatabaseTransactions;
-
     protected User $student;
     protected User $professor;
     protected Course $course;
-
-    /**
-     * Helper method to create users without custodial address generation
-     */
-    protected function createTestUser(array $attributes = []): User
-    {
-        // Get first country or create one
-        $country = DB::table('countries')->first();
-        if (!$country) {
-            $countryId = DB::table('countries')->insertGetId(['name' => 'Japan', 'code' => 'JP']);
-            $country = DB::table('countries')->find($countryId);
-        }
-
-        $defaults = [
-            'first_name' => fake()->firstName(),
-            'last_name' => fake()->lastName(),
-            'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
-            'password' => bcrypt('password'),
-            'country_id' => $country->id,
-            'is_temp_password' => false,
-            'is_enabled' => true,
-            'custodial_address' => 'addr_test_dummy_' . uniqid(),
-            'commission_rate' => 10,
-            'commission_earn_rate' => 10,
-        ];
-
-        $userData = array_merge($defaults, $attributes);
-
-        $userId = DB::table('users')->insertGetId($userData);
-        return User::find($userId);
-    }
 
     protected function setUp(): void
     {
@@ -81,12 +45,6 @@ class StripeCheckoutTest extends TestCase
             'professor_id' => $this->professor->id,
             'price' => 5000
         ]);
-    }
-
-    protected function tearDown(): void
-    {
-        Mockery::close();
-        parent::tearDown();
     }
 
     /**
