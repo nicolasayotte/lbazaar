@@ -1,0 +1,270 @@
+# Test Scenarios: F-01 — ADA Price Display
+
+**Source spec:** milestone-4-spec.md
+**Scope:** F-01 (ADA Price Display, Freshness, Conversion Unavailable)
+**Generated:** 2026-02-19
+**Status:** DRAFT — TS-01.06 and TS-01.07 blocked pending OQ-02 resolution
+
+---
+
+## Prerequisites
+
+- The platform is deployed and accessible
+- A paid class `[Class_General]` exists with a JPY price set (e.g., `¥1,000`)
+- The exchange rate service (CoinGecko) is reachable and returns a valid ADA/JPY rate (e.g., 100 JPY/ADA)
+- A student account `[Student_A]` exists
+- The class listing page (`/classes`) and detail page (`/classes/{id}`) are publicly accessible (unauthenticated browsing supported)
+- Free courses exist in the system for negative-case assertions
+
+---
+
+## F-01.1: ADA Price Display
+
+---
+
+### TS-01.01: ADA price shown on class listing card
+
+**Traces to:** F-01.1
+**Category:** HAPPY PATH
+**Criticality:** BLOCKING
+
+**GIVEN:**
+- `[Class_General]` has a JPY price of `¥1,000`
+- The exchange rate service returns a valid rate (e.g., 100 JPY/ADA → `~₳10.00`)
+
+**WHEN:**
+- A visitor navigates to the class listing page (`/classes`)
+
+**THEN:**
+- The listing card for `[Class_General]` displays the JPY price `¥1,000`
+- The listing card also displays the ADA equivalent (e.g., `~₳10.00`)
+
+---
+
+### TS-01.02: ADA price shown on class detail page
+
+**Traces to:** F-01.1
+**Category:** HAPPY PATH
+**Criticality:** BLOCKING
+
+**GIVEN:**
+- `[Class_General]` has a JPY price of `¥2,000`
+- The exchange rate service returns a valid rate
+
+**WHEN:**
+- A visitor navigates to the detail page for `[Class_General]`
+
+**THEN:**
+- The detail page displays the JPY price `¥2,000`
+- The detail page also displays the ADA equivalent (e.g., `~₳40.00`)
+
+---
+
+### TS-01.03: Live-conversion tilde label on listing card
+
+**Traces to:** F-01.1
+**Category:** HAPPY PATH
+**Criticality:** HIGH
+
+**GIVEN:**
+- `[Class_General]` has a valid ADA price derived from the live exchange rate
+
+**WHEN:**
+- A visitor views the listing card for `[Class_General]`
+
+**THEN:**
+- The ADA price is prefixed with a tilde (`~`) indicating it is a live conversion estimate, not a fixed price
+- The format includes `~₳` (e.g., `~₳10.00`)
+
+---
+
+### TS-01.04: Live-conversion tilde label on detail page
+
+**Traces to:** F-01.1
+**Category:** HAPPY PATH
+**Criticality:** HIGH
+
+**GIVEN:**
+- `[Class_General]` has a valid ADA price derived from the live exchange rate
+
+**WHEN:**
+- A visitor views the detail page for `[Class_General]`
+
+**THEN:**
+- The ADA price is prefixed with a tilde (`~`) indicating it is a live conversion estimate
+- The format includes `~₳`
+
+---
+
+### TS-01.05: ADA price is derived from JPY price, not set independently
+
+**Traces to:** SC-01
+**Category:** CONSTRAINT VALIDATION
+**Criticality:** BLOCKING
+
+**GIVEN:**
+- `[Class_General]` has a JPY price of `¥5,000`
+- The exchange rate service returns a rate of 100 JPY/ADA
+
+**WHEN:**
+- The system computes `price_in_ada` for `[Class_General]`
+
+**THEN:**
+- `price_in_ada` equals `50.0` (derived as `5000 / 100`)
+- `price_in_ada` is not a stored database column — it is computed at request time from the JPY price and the current exchange rate
+
+**NOTES:** SC-01 requires that the ADA price is always derived from the JPY price. There is no independent ADA price field. This ensures the teacher sets one price (JPY) and the ADA equivalent is always current.
+
+---
+
+## F-01.2: ADA Price Freshness
+
+> **Status:** BLOCKED — both scenarios depend on OQ-02 / A-02 (operator must define price refresh interval and drift threshold). No polling implementation exists yet.
+
+---
+
+### TS-01.06: ADA price updates without full page reload
+
+**Traces to:** F-01.2
+**Category:** HAPPY PATH
+**Criticality:** MEDIUM
+
+**GIVEN:**
+- `[Student_A]` is viewing the detail page for `[Class_General]`
+- The ADA price is displayed based on the current exchange rate
+
+**WHEN:**
+- The market exchange rate changes while `[Student_A]` remains on the page
+- The operator-defined refresh interval elapses
+
+**THEN:**
+- The displayed ADA price updates to reflect the new rate without requiring a full page reload
+
+**NOTES:** BLOCKED pending OQ-02. Requires operator-defined `PRICE_REFRESH_INTERVAL_MS` and a polling hook in the detail page component.
+
+---
+
+### TS-01.07: Warning shown when rate changes significantly before checkout
+
+**Traces to:** F-01.2
+**Category:** EDGE CASE
+**Criticality:** MEDIUM
+
+**GIVEN:**
+- `[Student_A]` is viewing the detail page for `[Class_General]`
+- The ADA price was displayed at page load
+
+**WHEN:**
+- The exchange rate changes by more than the operator-defined drift threshold between page load and checkout initiation
+- `[Student_A]` initiates a purchase
+
+**THEN:**
+- `[Student_A]` sees a warning indicating that the ADA rate has changed significantly since page load
+- `[Student_A]` can acknowledge the warning and proceed or cancel
+
+**NOTES:** BLOCKED pending OQ-02. Requires operator-defined `PRICE_DRIFT_THRESHOLD_PCT` and a warning dialog.
+
+---
+
+## F-01.3: ADA Conversion Unavailable
+
+> The signal for "conversion unavailable" throughout the stack is `price_in_ada === null`.
+
+---
+
+### TS-01.08: JPY price remains visible when ADA conversion fails
+
+**Traces to:** F-01.3
+**Category:** HAPPY PATH
+**Criticality:** HIGH
+
+**GIVEN:**
+- The exchange rate service is unavailable (both API and fallback fail)
+- `[Class_General]` has a JPY price of `¥1,000`
+
+**WHEN:**
+- A visitor views the listing or detail page for `[Class_General]`
+
+**THEN:**
+- The JPY price `¥1,000` is displayed normally
+- No crash, error page, or blank price occurs
+
+---
+
+### TS-01.09: ADA unavailability notice shown when conversion fails
+
+**Traces to:** F-01.3
+**Category:** FAILURE
+**Criticality:** HIGH
+
+**GIVEN:**
+- The exchange rate service is unavailable (`price_in_ada === null`)
+
+**WHEN:**
+- A visitor views the listing or detail page for `[Class_General]`
+
+**THEN:**
+- No ADA price is displayed (no `~₳` with a numeric value)
+- An indication that ADA pricing is temporarily unavailable is shown, or the ADA price section is simply absent
+
+**NOTES:** The system must not display `₳--`, `₳0`, or any misleading placeholder. Absence or a clear unavailability notice are both acceptable.
+
+---
+
+### TS-01.10: ADA payment path disabled when conversion unavailable
+
+**Traces to:** F-01.3
+**Category:** FAILURE
+**Criticality:** HIGH
+
+**GIVEN:**
+- `[Student_A]` is logged in and viewing the detail page for `[Class_General]`
+- The exchange rate service is unavailable (`price_in_ada === null`)
+
+**WHEN:**
+- `[Student_A]` views the payment options for `[Class_General]`
+
+**THEN:**
+- The "Buy with ADA" button is disabled
+- `[Student_A]` cannot initiate an ADA payment
+
+---
+
+### TS-01.11: Credit card payment path unaffected by ADA conversion failure
+
+**Traces to:** F-01.3
+**Category:** HAPPY PATH
+**Criticality:** HIGH
+
+**GIVEN:**
+- `[Student_A]` is logged in and viewing the detail page for `[Class_General]`
+- The exchange rate service is unavailable (`price_in_ada === null`)
+
+**WHEN:**
+- `[Student_A]` views the payment options for `[Class_General]`
+
+**THEN:**
+- The "Pay with Credit Card" button is not disabled
+- `[Student_A]` can still initiate a credit card payment
+
+**NOTES:** ADA conversion failure must not degrade the credit card payment path. The two payment methods are independent.
+
+---
+
+## Coverage Summary
+
+| Spec Scenario | Test Scenarios | Categories Covered |
+|---------------|----------------|--------------------|
+| F-01.1 | TS-01.01, TS-01.02, TS-01.03, TS-01.04, TS-01.05 | Happy Path, Constraint Validation |
+| F-01.2 | TS-01.06, TS-01.07 | Happy Path, Edge Case |
+| F-01.3 | TS-01.08, TS-01.09, TS-01.10, TS-01.11 | Happy Path, Failure |
+
+**Total spec scenarios in scope:** 3
+**Total test scenarios generated:** 11
+**Expansion ratio:** 11/3 (3.7x)
+
+### Gaps
+
+- **Price refresh interval (OQ-02):** TS-01.06 and TS-01.07 are blocked until the operator defines `PRICE_REFRESH_INTERVAL_MS` and `PRICE_DRIFT_THRESHOLD_PCT`. No implementation exists for these features yet.
+- **Free course ADA display:** The spec does not explicitly state whether free courses should show `~₳0` or no ADA price at all. Existing implementation hides the price for free courses. No scenario generated — behavior is implicit.
+- **Rounding and precision:** The spec does not define how many decimal places the ADA price should display. The downstream agent should follow existing `formatDualPrice` behavior.
