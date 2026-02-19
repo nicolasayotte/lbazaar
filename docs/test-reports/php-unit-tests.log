@@ -1,19 +1,20 @@
 Timeout Pending Purchases (Tests\Unit\Console\Commands\TimeoutPendingPurchases)
- [x] C [ ] Courses index includes price in ada when exchange rate available
- [ ] Course details includes price in ada when exchange rate available
- [ ] Courses index handles null price in ada without crash
- [ ] Course details handles null price in ada without crash
- [ ] Is booked true when payment status is null
- [ ] Is booked true when payment status is confirmed
- [ ] Is booked false when payment status is pending
- [ ] Is booked false when payment status is failed
- [ ] Pending payment is null when unauthenticated
- [ ] Pending payment is null when no pending history exists
- [ ] Pending payment returned when pending history exists
- [ ] Course details stripe available true
- [ ] Course details stripe available false
+ [x] Command marks timed out payments as failed
+ [x] Command skips confirmed and non pending payments
+ [x] Dry run does not call service
+ [x] Command exits without timeout configured
 
-s false when course id is missing
+Course Feedback (Tests\Unit\CourseFeedback)
+ [x] Course feedback can reference course and schedule
+ [x] It can associate feedback with a specific schedule
+ [x] It can give feedback without a schedule
+
+Batch Mint Certificates Request (Tests\Unit\Http\Requests\API\BatchMintCertificatesRequest)
+ [x] Authorize returns false when user not authenticated
+ [x] Authorize returns false when user is not teacher
+ [x] Authorize returns false when teacher does not own course
+ [x] Authorize returns true when teacher owns course
+ [x] Authorize returns false when course id is missing
  [x] Rules require course id
  [x] Rules require student ids array
  [x] Rules validate each student id
@@ -357,3 +358,92 @@ Course Controller Attend (Tests\Feature\Http\Controllers\Portal\CourseController
  [x] Attend allowed for free course with null payment status
 
 Course Controller Price (Tests\Feature\Http\Controllers\Portal\CourseControllerPrice)
+ [x] Courses index includes price in ada when exchange rate available
+ [x] Course details includes price in ada when exchange rate available
+ [x] Courses index handles null price in ada without crash
+ [x] Course details handles null price in ada without crash
+ [x] Is booked true when payment status is null
+ [x] Is booked true when payment status is confirmed
+ [x] Is booked false when payment status is pending
+ [x] Is booked false when payment status is failed
+ [x] Pending payment is null when unauthenticated
+ [x] Pending payment is null when no pending history exists
+ [x] Pending payment returned when pending history exists
+ [x] Course details stripe available true
+ [x] Course details stripe available false
+
+Course Purchase Controller (Tests\Feature\Http\Controllers\Portal\CoursePurchaseController)
+ [x] Build purchase tx requires authentication
+ [x] Build purchase tx returns unsigned transaction
+ [x] User cannot purchase own course
+ [x] Submit purchase tx requires authentication
+ [x] Submit purchase tx validates required fields
+ [x] Submit purchase tx creates pending enrollment
+ [x] User cannot purchase already booked course
+ [x] Build purchase tx handles service failure
+ [x] Submit purchase tx handles service failure
+ [x] Failed payment does not block repurchase
+ [x] Pending payment blocks repurchase
+
+Certificate Form Requests Integration (Tests\Feature\Http\Requests\API\CertificateFormRequestsIntegration)
+ [x] Mint single certificate request validates in http context
+ [x] Mint single certificate request authorizes teacher ownership
+ [x] Batch mint certificates request validates in http context
+ [x] Batch mint certificates request validates student ids array
+ [x] Batch mint certificates request shows custom error messages
+ [x] Batch mint certificates request authorizes teacher ownership
+ [x] Form requests reject non teacher users
+ [x] Form requests require authentication
+
+Manage Class Certificates (Tests\Feature\ManageClassCertificates)
+ [x] Teacher can access own course certificates page
+ [x] Teacher cannot access other teachers certificates page
+ [x] Certificates page shows correct student data
+ [x] Certificates page only shows completed students
+ [x] Guest cannot access certificates page
+ [x] Non teacher cannot access certificates page
+
+Stripe Checkout (Tests\Feature\StripeCheckout)
+ [ ] Authenticated user can create payment intent
+ [x] Unauthenticated user cannot create payment intent
+ [x] Professor cannot buy own course
+ [x] Already enrolled user cannot buy
+ [x] Webhook updates payment status
+ [x] Webhook rejects invalid signature
+ [x] Webhook without signature header returns 400
+ [ ] Authenticated user can create payment intent with schedule
+ [x] Zero price course is rejected
+ [x] Invalid course schedule id returns 422
+ [ ] Duplicate payment request within time window
+ [x] Rate limit enforced on payment intent creation
+ [x] Rate limit per user isolation
+
+Student Certificate (Tests\Feature\StudentCertificate)
+ [x] Student can view their certificates
+ [x] Student only sees own certificates
+ [x] Certificates include correct status
+ [x] Minted certificates include explorer url
+ [x] Only completed courses show certificates
+ [x] Courses without certificate enabled excluded
+ [x] Guest cannot access certificates page
+ [x] Student can get certificate status via ajax
+ [x] Student cannot access other students certificate status
+ [x] Eager loading shows correct certificate transactions
+ [x] Certificate image url from nft transaction
+ [x] Multiple students see own certificates with eager loading
+
+User Wallet Address (Tests\Feature\UserWalletAddress)
+ [x] User endpoint returns linked wallet address
+ [x] User endpoint always returns custodial wallet address
+
+Blockfrost Read (Tests\Integration\BlockfrostRead)
+ [ ] Blockfrost preprod api is reachable
+ [ ] Blockfrost api returns valid epoch data
+
+Coin Gecko Rate (Tests\Integration\CoinGeckoRate)
+ [ ] Coingecko returns valid ada jpy rate
+ [x] Exchange rate service returns positive rate with or without coingecko
+
+Stripe Connectivity (Tests\Integration\StripeConnectivity)
+ [ ] Stripe api accepts payment intent creation
+
