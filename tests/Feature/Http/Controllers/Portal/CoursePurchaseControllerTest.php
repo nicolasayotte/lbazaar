@@ -304,4 +304,54 @@ class CoursePurchaseControllerTest extends TestCase
                 'message' => 'Failed to submit purchase transaction: Invalid signature'
             ]);
     }
+
+    public function test_failed_payment_does_not_block_repurchase()
+    {
+        // Create a course history with payment_status = 'failed'
+        CourseHistory::factory()->create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $this->schedule->id,
+            'payment_status' => 'failed',
+            'is_cancelled' => false,
+        ]);
+
+        // Mock the service to return a result (authorization passes so service is called)
+        $this->purchaseService
+            ->shouldReceive('buildPurchaseTransaction')
+            ->once()
+            ->andReturn([
+                'success' => false,
+                'message' => 'User wallet not connected. Please connect your wallet first.'
+            ]);
+
+        // A failed payment should NOT block the student from retrying
+        $response = $this->actingAs($this->student)
+            ->postJson("/classes/{$this->schedule->id}/build-purchase-tx");
+
+        // Assert NOT 403 — authorization passes for failed payments
+        $response->assertStatus(400);
+    }
+
+    public function test_pending_payment_blocks_repurchase()
+    {
+        // Create a course history with payment_status = 'pending'
+        CourseHistory::factory()->create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $this->schedule->id,
+            'payment_status' => 'pending',
+            'is_cancelled' => false,
+        ]);
+
+        // A pending payment should block the student from purchasing again
+        $response = $this->actingAs($this->student)
+            ->postJson("/classes/{$this->schedule->id}/build-purchase-tx");
+
+        $response->assertStatus(403)
+            ->assertJson([
+                'success' => false,
+                'message' => 'You are not authorized to purchase this course.'
+            ]);
+    }
 }

@@ -10,13 +10,21 @@ try {
     $pdo = new PDO("mysql:host={$host};port=3306", $user, $pass);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Find sleeping connections to testing databases (skip our own)
+    // Kill stale connections to testing databases (skip our own).
+    // - Sleep connections: idle zombies from killed processes
+    // - Execute connections running >10s: stuck queries holding locks
+    //   (normal test queries complete in milliseconds)
     $ownId = $pdo->query("SELECT CONNECTION_ID()")->fetchColumn();
     $stmt = $pdo->query("SHOW PROCESSLIST");
 
     foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $proc) {
         if ($proc['Id'] == $ownId) continue;
-        if ($proc['Command'] === 'Sleep' && str_starts_with($proc['db'] ?? '', 'testing')) {
+        if (!str_starts_with($proc['db'] ?? '', 'testing')) continue;
+
+        $isSleeping = $proc['Command'] === 'Sleep';
+        $isStuckQuery = $proc['Command'] !== 'Sleep' && (int) $proc['Time'] > 10;
+
+        if ($isSleeping || $isStuckQuery) {
             $pdo->exec("KILL {$proc['Id']}");
         }
     }

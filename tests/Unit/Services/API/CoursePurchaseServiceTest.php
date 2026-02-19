@@ -608,4 +608,104 @@ class CoursePurchaseServiceTest extends TestCase
         $this->assertFalse($result['success']);
         $this->assertStringContainsString('Connection refused', $result['message']);
     }
+
+    // --- getTxConfirmations tests ---
+
+    public function test_get_tx_confirmations_returns_count()
+    {
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
+            ->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        $service->shouldReceive('runCommand')
+            ->once()
+            ->andReturn(json_encode([
+                'status' => 200,
+                'confirmations' => 15,
+                'txBlockHeight' => 100,
+                'tipHeight' => 115
+            ]));
+
+        $result = $service->getTxConfirmations('some_tx_id');
+
+        $this->assertEquals(15, $result);
+    }
+
+    public function test_get_tx_confirmations_throws_on_not_found()
+    {
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
+            ->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        $service->shouldReceive('runCommand')
+            ->once()
+            ->andReturn(json_encode([
+                'status' => 404,
+                'error' => 'Transaction not found'
+            ]));
+
+        $this->expectException(\Exception::class);
+
+        $service->getTxConfirmations('some_tx_id');
+    }
+
+    public function test_get_tx_confirmations_throws_on_script_error()
+    {
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
+            ->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        $service->shouldReceive('runCommand')
+            ->once()
+            ->andReturn(json_encode([
+                'status' => 500,
+                'error' => 'Script failed'
+            ]));
+
+        $this->expectException(\Exception::class);
+
+        $service->getTxConfirmations('some_tx_id');
+    }
+
+    // --- failPurchaseTransaction tests ---
+
+    public function test_fail_purchase_transitions_to_failed_status()
+    {
+        $courseHistory = CourseHistory::create([
+            'course_schedule_id' => $this->schedule->id,
+            'course_id' => $this->course->id,
+            'user_id' => $this->student->id,
+            'payment_status' => 'pending',
+            'payment_tx_hash' => 'test_tx',
+            'payment_ada_amount' => 16.0,
+            'payment_submitted_at' => now()
+        ]);
+
+        WalletTransactionHistory::create([
+            'user_wallet_id' => $this->userWallet->id,
+            'course_history_id' => $courseHistory->id,
+            'type' => WalletTransactionHistory::PURCHASE,
+            'points_before' => 100,
+            'points_after' => 100,
+            'tx_id' => 'test_tx',
+            'status' => 'pending'
+        ]);
+
+        $result = $this->service->failPurchaseTransaction('test_tx');
+
+        $this->assertTrue($result['success']);
+
+        $courseHistory->refresh();
+        $this->assertEquals('failed', $courseHistory->payment_status);
+
+        $walletTrans = WalletTransactionHistory::where('tx_id', 'test_tx')->first();
+        $this->assertEquals('failed', $walletTrans->status);
+    }
+
+    public function test_fail_purchase_is_idempotent()
+    {
+        $result = $this->service->failPurchaseTransaction('nonexistent_tx');
+
+        $this->assertFalse($result['success']);
+    }
 }

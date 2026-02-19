@@ -392,6 +392,54 @@ class ExchangeRateServiceTest extends TestCase
         $this->assertNull($app2->price_in_ada);
     }
 
+    public function test_price_in_ada_is_derived_from_jpy_price_not_set_independently()
+    {
+        // Arrange: Mock CoinGecko returning 100 JPY per ADA
+        Http::fake([
+            'api.coingecko.com/api/v3/simple/price*' => Http::response([
+                'cardano' => [
+                    'jpy' => 100.0
+                ]
+            ], 200)
+        ]);
+
+        Cache::flush();
+
+        $course = \App\Models\Course::factory()->make(['price' => 5000]);
+        $courses = collect([$course]);
+
+        // Act
+        $this->service->addPriceInAdaToCourses($courses);
+
+        // Assert: 5000 JPY / 100 JPY per ADA = 50.0 ADA
+        $this->assertEquals(50.0, $course->price_in_ada);
+    }
+
+    public function test_courses_receive_null_price_in_ada_when_both_api_and_fallback_fail()
+    {
+        // Arrange: Delete the ada-to-jpy fallback setting
+        Setting::where('slug', 'ada-to-jpy')->delete();
+
+        // Mock API failure with 500 response
+        Http::fake([
+            'api.coingecko.com/api/v3/simple/price*' => Http::response([], 500)
+        ]);
+
+        Cache::flush();
+
+        $course1 = \App\Models\Course::factory()->make(['price' => 5000]);
+        $course2 = \App\Models\Course::factory()->make(['price' => 2500]);
+        $courses = collect([$course1, $course2]);
+
+        // Act: Should NOT throw; graceful degradation
+        $result = $this->service->addPriceInAdaToCourses($courses);
+
+        // Assert: All courses get null price_in_ada when exchange rate is unavailable
+        $this->assertNull($course1->price_in_ada);
+        $this->assertNull($course2->price_in_ada);
+        $this->assertCount(2, $result);
+    }
+
     public function test_batch_computation_fetches_rate_only_once()
     {
         // Arrange: Mock API to track calls

@@ -97,6 +97,51 @@ class StripeServiceTest extends TestCase
     }
 
     /**
+     * Test that createPaymentIntent is blocked when a pending ADA payment exists
+     */
+    public function test_blocks_stripe_payment_when_pending_ada_payment_exists(): void
+    {
+        // Arrange: Create a pending ADA CourseHistory record for the student and course
+        CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $this->schedule->id,
+            'is_cancelled' => false,
+            'payment_status' => 'pending',
+        ]);
+
+        // Act: Attempt to create a Stripe PaymentIntent
+        $result = $this->service->createPaymentIntent($this->course, $this->student->id);
+
+        // Assert: Should fail with the ADA pending message
+        $this->assertFalse($result['success']);
+        $this->assertStringContainsString('pending ADA payment', $result['message']);
+    }
+
+    /**
+     * Test that createPaymentIntent proceeds when no pending ADA payment exists
+     */
+    public function test_does_not_block_stripe_payment_when_no_pending_ada_payment(): void
+    {
+        // Arrange: Create a confirmed (non-pending) ADA CourseHistory record
+        CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $this->schedule->id,
+            'is_cancelled' => false,
+            'payment_status' => 'confirmed',
+        ]);
+
+        // Act: Attempt to create a Stripe PaymentIntent
+        // This will fail at the Stripe API call (no real API key), but it must NOT
+        // return the ADA-pending error — it must reach the Stripe SDK call.
+        $result = $this->service->createPaymentIntent($this->course, $this->student->id);
+
+        // Assert: Must not be the ADA pending block message
+        $this->assertStringNotContainsString('pending ADA payment', $result['message']);
+    }
+
+    /**
      * Test successful payment handling creates enrollment
      */
     public function test_handles_payment_success_creates_enrollment(): void
@@ -742,5 +787,17 @@ class StripeServiceTest extends TestCase
         // Assert: Should report not found
         $this->assertFalse($result['success']);
         $this->assertStringContainsString('Payment record not found', $result['message']);
+    }
+
+    public function test_is_available_returns_true_when_secret_configured(): void
+    {
+        config(['services.stripe.secret' => 'sk_test_fake']);
+        $this->assertTrue($this->service->isAvailable());
+    }
+
+    public function test_is_available_returns_false_when_secret_empty(): void
+    {
+        config(['services.stripe.secret' => '']);
+        $this->assertFalse($this->service->isAvailable());
     }
 }

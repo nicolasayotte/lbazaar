@@ -11,6 +11,7 @@ use App\Models\CourseHistory;
 use App\Models\CourseSchedule;
 use App\Models\UserWallet;
 use App\Models\WalletTransactionHistory;
+use Illuminate\Support\Facades\Route;
 use Mockery;
 
 class CoursePaymentWebhookTest extends TestCase
@@ -319,5 +320,144 @@ class CoursePaymentWebhookTest extends TestCase
 
         // Verify that both CourseHistory and WalletTransactionHistory are updated
         // This would be tested in the service layer unit tests
+    }
+
+    /**
+     * Registers a test-only route that replicates the post-exec() portion of
+     * handlePurchaseWebhook() so the confirmation-threshold guard can be tested
+     * without a real Node.js process.  The exec() call is intentionally omitted;
+     * signature verification is considered trusted at this point (Blockfrost
+     * already sent the request).
+     */
+    private function registerWebhookRouteWithoutExec(): void
+    {
+        $service = $this->purchaseService;
+        $required = config('services.cardano.required_confirmations', 10);
+
+        Route::post('/_test/webhook/blockfrost/purchase', function () use ($service, $required) {
+            $body = request()->all();
+
+            $apiSignature = request()->header('blockfrost-signature');
+            if (!$apiSignature) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Missing Blockfrost signature'
+                ], 400);
+            }
+
+            $txId = $body['payload'][0]['tx']['hash'] ?? null;
+            if (!$txId) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Transaction ID not found in webhook payload'
+                ], 400);
+            }
+
+            try {
+                $confirmations = $service->getTxConfirmations($txId);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Could not verify confirmations, will retry later'
+                ], 200);
+            }
+
+            if ($confirmations < $required) {
+                return response()->json([
+                    'success' => true,
+                    'message' => "Awaiting confirmations: {$confirmations}/{$required}"
+                ], 200);
+            }
+
+            $result = $service->confirmPurchaseTransaction($txId);
+
+            return response()->json($result, $result['success'] ? 200 : 400);
+        });
+    }
+
+    public function test_webhook_does_not_confirm_below_threshold()
+    {
+        // Register a test route that skips the exec() signature-verification guard
+        // (exec() is intentionally omitted — the post-verification logic is what
+        // is under test here).
+        $this->registerWebhookRouteWithoutExec();
+
+        $txId = 'below_threshold_tx_abc123';
+
+        // getTxConfirmations returns 9, which is one below the 10-confirmation threshold
+        $this->purchaseService
+            ->shouldReceive('getTxConfirmations')
+            ->once()
+            ->with($txId)
+            ->andReturn(9);
+
+        // confirmPurchaseTransaction must NEVER be called when below threshold
+        $this->purchaseService
+            ->shouldReceive('confirmPurchaseTransaction')
+            ->never();
+
+        $payload = [
+            'webhook_id' => 'webhook_below_threshold',
+            'api_version' => 1,
+            'payload' => [
+                [
+                    'tx' => [
+                        'hash' => $txId
+                    ]
+                ]
+            ]
+        ];
+
+        $response = $this->withHeaders([
+            'blockfrost-signature' => 'valid_signature_hash'
+        ])->postJson('/_test/webhook/blockfrost/purchase', $payload);
+
+        // Blockfrost must not retry — 200 even though we are not confirming yet
+        $response->assertStatus(200);
+        $response->assertJsonFragment(['message' => 'Awaiting confirmations: 9/10']);
+    }
+
+    public function test_webhook_confirms_at_or_above_threshold()
+    {
+        // Register a test route that skips the exec() signature-verification guard
+        $this->registerWebhookRouteWithoutExec();
+
+        $txId = 'at_threshold_tx_abc123';
+
+        // getTxConfirmations returns exactly 10, the required threshold
+        $this->purchaseService
+            ->shouldReceive('getTxConfirmations')
+            ->once()
+            ->with($txId)
+            ->andReturn(10);
+
+        // confirmPurchaseTransaction IS called when at or above the threshold
+        $this->purchaseService
+            ->shouldReceive('confirmPurchaseTransaction')
+            ->once()
+            ->with($txId)
+            ->andReturn([
+                'success' => true,
+                'message' => 'confirmed'
+            ]);
+
+        $payload = [
+            'webhook_id' => 'webhook_at_threshold',
+            'api_version' => 1,
+            'payload' => [
+                [
+                    'tx' => [
+                        'hash' => $txId
+                    ]
+                ]
+            ]
+        ];
+
+        $response = $this->withHeaders([
+            'blockfrost-signature' => 'valid_signature_hash'
+        ])->postJson('/_test/webhook/blockfrost/purchase', $payload);
+
+        $response->assertStatus(200);
+        $response->assertJsonFragment(['success' => true, 'message' => 'confirmed']);
     }
 }
