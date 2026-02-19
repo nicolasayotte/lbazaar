@@ -591,8 +591,8 @@ Laravel set a session variable. This is the **primary defense**.
 
 **Layer 2 — Pre-test bootstrap cleanup** (`tests/bootstrap.php`):
 ```php
-// Kills any sleeping connections to the testing DB before the suite runs.
-// See tests/bootstrap.php for full implementation.
+// Kills sleeping connections and stuck queries (>10s) on the testing DB
+// before the suite runs. See tests/bootstrap.php for full implementation.
 ```
 PHPUnit runs this before every suite, actively killing stale connections so tests don't
 have to wait for the server-level timeout.
@@ -632,6 +632,15 @@ Setting::create([
 ]);
 ```
 
+**Layer 6 — PHP-side socket timeout** (`phpunit.xml`):
+```xml
+<ini name="mysqlnd.net_read_timeout" value="15"/>
+```
+MySQL's `wait_timeout` only kills *idle* connections. A connection stuck mid-query
+(`Execute` state) never becomes idle and bypasses all MySQL-side timeouts. This INI
+setting makes PHP itself give up after 15 seconds, preventing the test runner from
+hanging on a zombie that MySQL won't kill.
+
 ### Recovery
 
 If tests are currently hung, kill the zombie connections manually:
@@ -641,7 +650,51 @@ sail exec -T mysql mysql -usail -ppassword testing -e "SHOW PROCESSLIST;"
 sail down && sail up -d
 ```
 
-## 18. Running 50+ Migrations on a Fresh Install Is Slow
+## 18. Mockery::close() Before parent::tearDown() Causes Zombie Locks
+
+### Symptom
+
+Tests hang with lock timeouts even though no test process was killed. The very
+first test in a class passes, but subsequent tests in the same class block on
+inserts to the same table.
+
+### Cause
+
+When `Mockery::close()` runs **before** `parent::tearDown()` in a test that uses
+`DatabaseTransactions`, an unmet mock expectation throws an exception that
+prevents the transaction rollback. The connection stays alive with an open
+transaction holding exclusive locks on any rows inserted during `setUp()`.
+
+❌ **BAD** — exception skips rollback:
+```php
+protected function tearDown(): void
+{
+    Mockery::close();     // throws → parent never runs → transaction never rolled back
+    parent::tearDown();
+}
+```
+
+### Solution
+
+`Mockery::close()` is called centrally in `tests/TestCase::tearDown()` **after**
+`parent::tearDown()`. Individual test classes should **not** override `tearDown()`
+just for Mockery cleanup.
+
+✅ **GOOD** — already handled by base TestCase:
+```php
+// tests/TestCase.php
+protected function tearDown(): void
+{
+    while (DB::transactionLevel() > 0) { DB::rollBack(); }
+    DB::disconnect();
+    parent::tearDown();
+    Mockery::close();   // safe: DB already cleaned up
+}
+```
+
+**Rule**: Never add `Mockery::close()` to individual test `tearDown()` methods.
+
+## 19. Running 50+ Migrations on a Fresh Install Is Slow
 
 ### Symptom
 

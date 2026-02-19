@@ -1,6 +1,6 @@
 # Testing Strategy
 
-> **AI Context Summary**: Dual pipeline — Fast (mocked, every commit): `sail test`, `npm test`, `cd web3 && npm test`, `npm run test:browser`. Live Integration (real APIs, on-demand): `sail composer test:integration` (PHP), `cd web3 && npm run test:integration` (Node.js). Integration tests skip automatically when API keys are missing/placeholder. The `InteractsWithRealServices` trait (tests/Traits/) handles safety/skip logic. Web3 tests use `.spec.mjs`; browser tests `.spec.js` in `tests/Browser/`. Playwright uses multi-project setup: three `*.setup.js` files log in and save `storageState` to `tests/Browser/fixtures/{role}.json`; test projects depend on these and start pre-authenticated. Requires `PlaywrightTestSeeder` for `pw-{role}@example.com` test users. Coverage target: 80% services, 70% controllers/components.
+> **AI Context Summary**: Dual pipeline — Fast (mocked, every commit): `sail composer test` (parallel, 8 workers), `npm test`, `cd web3 && npm test`, `npm run test:browser`. Use `sail test --filter=X` for single test/class (serial). Live Integration (real APIs, on-demand): `sail composer test:integration` (PHP), `cd web3 && npm run test:integration` (Node.js). Integration tests skip automatically when API keys are missing/placeholder. The `InteractsWithRealServices` trait (tests/Traits/) handles safety/skip logic. Base `TestCase` applies `DatabaseTransactions` and `Mockery::close()` globally — do NOT add these to individual test classes. Use `$this->createTestUser()` to suppress model events. Web3 tests use `.spec.mjs`; browser tests `.spec.js` in `tests/Browser/`. Playwright uses multi-project setup: three `*.setup.js` files log in and save `storageState` to `tests/Browser/fixtures/{role}.json`; test projects depend on these and start pre-authenticated. Requires `PlaywrightTestSeeder` for `pw-{role}@example.com` test users. Coverage target: 80% services, 70% controllers/components.
 
 ## Overview
 
@@ -130,16 +130,14 @@ The `blockfrost-connectivity.integration.spec.mjs` file uses `describe.skipIf()`
 ### Backend Tests
 
 ```bash
-# All tests (parallel, 8 workers) — fast pipeline only
+# All tests (parallel, 8 workers) — the standard full-suite command
 sail composer test
 
 # Recreate parallel databases (after Ctrl+C or stuck locks)
 sail composer test:recreate
 
-# Specific test class (parallel)
-sail artisan test --parallel --filter CertificateServiceTest
-
-# Specific test method (serial, faster for single test)
+# Specific test class or method (serial — faster for single test)
+sail test --filter CertificateServiceTest
 sail test --filter test_mint_and_airdrop_certificate_success
 
 # With coverage report
@@ -152,9 +150,11 @@ sail test --stop-on-failure
 sail composer test:integration
 ```
 
+**`sail test` vs `sail composer test`**: `sail test` runs serial `php artisan test` — use it for `--filter` on a single test/class. `sail composer test` runs parallel via ParaTest with 8 workers — use it for the full suite.
+
 **Parallel Testing**: Tests run via [ParaTest](https://github.com/paratestphp/paratest) with 8 worker processes. Each worker gets its own database (`testing_test_1` through `testing_test_8`). A schema dump (`database/schema/mysql-schema.sql`) is loaded instead of running migrations, keeping startup fast.
 
-**If tests hang or lock**: Run `sail composer test:recreate` to drop and rebuild all worker databases. See [gotchas.md #17](./gotchas.md) for the `updateOrCreate` lock contention pattern.
+**If tests hang or lock**: Run `sail composer test:recreate` to drop and rebuild all worker databases. See [gotchas.md #17](./gotchas.md) for the multi-layer zombie defense (idle timeouts, bootstrap cleanup, PHP-side socket timeout).
 
 ### Frontend Tests
 
@@ -445,7 +445,6 @@ CoinGecko free tier requires no API key but enforces rate limits. The test sends
 namespace Tests\Unit\Services\API;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Services\API\CertificateService;
 use App\Models\User;
 use App\Models\Course;
@@ -453,7 +452,9 @@ use Mockery;
 
 class CertificateServiceTest extends TestCase
 {
-    use DatabaseTransactions;
+    // DatabaseTransactions is already applied by the base TestCase.
+    // Mockery::close() is already called by the base TestCase::tearDown().
+    // Do NOT override tearDown() just for Mockery cleanup.
 
     protected CertificateService $service;
     protected User $student;
@@ -463,8 +464,8 @@ class CertificateServiceTest extends TestCase
     {
         parent::setUp();
 
-        // Create test data
-        $this->student = User::factory()->create(['role' => 'student']);
+        // Create test data (suppresses model events like web3 calls)
+        $this->student = $this->createTestUser(['role' => 'student']);
         $this->course = Course::factory()->create();
 
         // Partially mock service to test specific methods
@@ -517,17 +518,13 @@ class CertificateServiceTest extends TestCase
         $this->assertFalse($result['success']);
         $this->assertStringContainsString('wallet', strtolower($result['message']));
     }
-
-    protected function tearDown(): void
-    {
-        Mockery::close();
-        parent::tearDown();
-    }
 }
 ```
 
 **Key Points**:
-- Use `DatabaseTransactions` trait to rollback after each test
+- **Do NOT add `use DatabaseTransactions`** — the base `TestCase` already applies it
+- **Do NOT override `tearDown()` for Mockery** — the base `TestCase` calls `Mockery::close()` after rolling back the DB transaction (see [gotchas.md #18](./gotchas.md))
+- Use `$this->createTestUser()` to suppress model events (e.g. web3 custodial address generation)
 - Mock external dependencies (web3 exec calls, email service)
 - Test both success and failure paths
 - Verify service response contract: `['success', 'message', 'data']`
@@ -545,14 +542,13 @@ class CertificateServiceTest extends TestCase
 namespace Tests\Feature\Http\Controllers\API;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Models\User;
 use App\Models\Course;
 use Laravel\Sanctum\Sanctum;
 
 class CertificateControllerTest extends TestCase
 {
-    use DatabaseTransactions;
+    // DatabaseTransactions is already applied by the base TestCase.
 
     protected User $teacher;
     protected User $student;
@@ -562,10 +558,10 @@ class CertificateControllerTest extends TestCase
     {
         parent::setUp();
 
-        $this->teacher = User::factory()->create();
+        $this->teacher = $this->createTestUser();
         $this->teacher->attachRole('teacher');
 
-        $this->student = User::factory()->create();
+        $this->student = $this->createTestUser();
         $this->student->attachRole('student');
 
         $this->course = Course::factory()->create([
@@ -827,7 +823,7 @@ sail artisan db:seed --class=UserSeeder
 
 ### Test Database
 
-**Configuration**: `phpunit.xml` sets `DB_DATABASE=testing` and `DB_LOCK_WAIT_TIMEOUT=3`.
+**Configuration**: `phpunit.xml` sets `DB_DATABASE=testing`, `DB_LOCK_WAIT_TIMEOUT=3`, `DB_WAIT_TIMEOUT=10`, and `mysqlnd.net_read_timeout=15`.
 
 **Setup** (one-time):
 ```bash
@@ -975,7 +971,7 @@ cd web3 && npm run test:show utils.spec.mjs
 
 **Issue**: Database transactions not rolling back
 
-**Solution**: Ensure `use DatabaseTransactions;` in test class
+**Solution**: The base `TestCase` already applies `DatabaseTransactions`. Do not add it again in individual test classes. If transactions are still leaking, check that you are not overriding `tearDown()` incorrectly (see next issue).
 
 ---
 
@@ -1012,6 +1008,14 @@ rm -rf node_modules/.vite
 **Issue**: Tests pass locally but fail in CI
 
 **Solution**: Check environment variables in CI config, ensure test database is created
+
+---
+
+**Issue**: Tests hang with lock timeouts after overriding `tearDown()`
+
+**Root cause**: Calling `Mockery::close()` before `parent::tearDown()` leaves the DB transaction open when a mock expectation fails. The base `TestCase::tearDown()` already calls `Mockery::close()` after rolling back the transaction. See [gotchas.md #18](./gotchas.md).
+
+**Solution**: Do not override `tearDown()` for Mockery cleanup. If you must override `tearDown()`, always call `parent::tearDown()` **before** `Mockery::close()`.
 
 ---
 
@@ -1053,7 +1057,8 @@ raw numeric value for calculations.
 
 ### DO
 
-✅ **Use DatabaseTransactions** for tests that touch the database
+✅ **Rely on base TestCase** — it applies `DatabaseTransactions` and `Mockery::close()` for all tests
+✅ **Use `$this->createTestUser()`** to create users without triggering model events (web3 calls)
 ✅ **Mock external dependencies** (APIs, exec calls, email, Stripe)
 ✅ **Test both success and failure paths**
 ✅ **Use factories** for test data creation
@@ -1065,11 +1070,12 @@ raw numeric value for calculations.
 
 ### DON'T
 
+❌ **Don't add `use DatabaseTransactions`** to test classes — base TestCase already applies it
+❌ **Don't override `tearDown()` for Mockery** — base TestCase handles it; wrong ordering causes zombie locks ([gotchas.md #18](./gotchas.md))
 ❌ **Don't test framework code** (e.g., Eloquent relationships, React internals)
 ❌ **Don't use real API calls** in Unit/Feature tests (mock Stripe, Blockfrost, etc.) — use `tests/Integration/` for real-API tests with the `InteractsWithRealServices` trait
 ❌ **Don't share state between tests** (use setUp/tearDown, beforeEach)
 ❌ **Don't test implementation details** (test behavior, not internal state)
-❌ **Don't skip cleanup** (always use DatabaseTransactions or manual cleanup)
 ❌ **Don't mix test file extensions** (use `.spec.mjs` for web3, `.test.jsx` for React)
 
 ## Cross-References
