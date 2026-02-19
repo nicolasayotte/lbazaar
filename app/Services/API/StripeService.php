@@ -55,8 +55,9 @@ class StripeService
     public function createPaymentIntent(Course $course, int $userId, ?int $courseScheduleId = null): array
     {
         try {
-            // Cast price to int (JPY is zero-decimal: ¥1000 = 1000)
-            $amount = (int) $course->price;
+            // Read raw DB value — $course->price goes through a number_format accessor
+            // that returns "1,000.00", making (int) truncate to 1.
+            $amount = (int) $course->getRawOriginal('price');
 
             // Reject if amount is invalid
             if ($amount <= 0) {
