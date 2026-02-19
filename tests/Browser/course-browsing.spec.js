@@ -248,6 +248,48 @@ test.describe('Course Browsing - Course Detail Page', () => {
     });
 });
 
+// ---------------------------------------------------------------------------
+// F-01.1 TS-01.01 / TS-01.03: ADA price visible on listing and detail pages
+// ---------------------------------------------------------------------------
+test.describe('Course Browsing - ADA Price on Listing Page (TS-01.01, TS-01.03)', () => {
+    test('listing page shows dual JPY+ADA price on paid General course card', async ({ page }) => {
+        await page.goto('/classes');
+        await waitForApp(page);
+
+        // Look for a card that has both JPY and ADA price (paid General course)
+        const dualPriceText = page.locator('.MuiCard-root').getByText(/¥[0-9].*~₳/);
+        const hasDualPrice = await dualPriceText.count() > 0;
+        if (!hasDualPrice) {
+            test.skip(true, 'No paid General course with price_in_ada seeded — skip TS-01.01/TS-01.03');
+            return;
+        }
+
+        await expect(dualPriceText.first()).toBeVisible();
+    });
+});
+
+test.describe('Course Browsing - ADA Price on Detail Page (TS-01.02, TS-01.04)', () => {
+    test('detail page for General course shows JPY and ADA (~₳) price', async ({ page }) => {
+        await page.goto('/classes');
+        await waitForApp(page);
+
+        // Find a General course card with dual pricing
+        const dualPriceCard = page.locator('.MuiCard-root').filter({ hasText: /~₳/ });
+        const dualCount = await dualPriceCard.count();
+        if (dualCount === 0) {
+            test.skip(true, 'No General course with price_in_ada seeded — skip TS-01.02/TS-01.04');
+            return;
+        }
+
+        const viewMoreLink = dualPriceCard.first().locator('a[href*="/classes/"]');
+        await viewMoreLink.click();
+        await waitForInertiaNavigation(page);
+
+        await expect(page.getByText(/¥[0-9]/)).toBeVisible();
+        await expect(page.getByText(/~₳/)).toBeVisible();
+    });
+});
+
 test.describe('Course Browsing - Pagination', () => {
     test('pagination component is visible when more than 5 courses exist', async ({ page }) => {
         await page.goto('/classes');
