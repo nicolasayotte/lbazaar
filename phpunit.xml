@@ -36,6 +36,9 @@
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="DB_LOCK_WAIT_TIMEOUT" value="3"/>
         <env name="DB_WAIT_TIMEOUT" value="10"/>
+        <!-- PHP-side timeout: if any MySQL query takes >15s, PHP kills the wait.
+             Catches "executing" zombies that wait_timeout (idle-only) cannot. -->
+        <ini name="mysqlnd.net_read_timeout" value="15"/>
     </php>
     <logging>
         <!-- Overwrite test results log each run -->
