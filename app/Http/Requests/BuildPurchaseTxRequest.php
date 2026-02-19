@@ -40,7 +40,7 @@ class BuildPurchaseTxRequest extends FormRequest
 
         // User must NOT already be booked for this schedule
         $courseHistoryRepo = new CourseHistoryRepository();
-        $existingBooking = $courseHistoryRepo->findByUserAndCourseScheduleID(
+        $existingBooking = $courseHistoryRepo->findNonFailedByUserAndCourseScheduleID(
             $this->user()->id,
             $scheduleId
         );

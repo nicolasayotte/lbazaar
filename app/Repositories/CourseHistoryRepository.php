@@ -107,6 +107,16 @@ class CourseHistoryRepository extends BaseRepository
         return $courseHistory != null ?  $courseHistory : [];
     }
 
+    public function findNonFailedByUserAndCourseScheduleID($user_id, $course_schedule_id)
+    {
+        return $this->model
+            ->where('user_id', $user_id)
+            ->where('course_schedule_id', $course_schedule_id)
+            ->where('is_cancelled', false)
+            ->where(fn($q) => $q->whereNull('payment_status')->orWhereNotIn('payment_status', ['failed']))
+            ->get();
+    }
+
     public function findByCourseScheduleID($course_schedule_id)
     {
         $courseHistory = $this->model->where('course_schedule_id', $course_schedule_id)->where('is_cancelled', false)->get();
