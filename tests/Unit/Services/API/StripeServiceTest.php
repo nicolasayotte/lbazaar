@@ -499,30 +499,77 @@ class StripeServiceTest extends TestCase
     }
 
     /**
-     * Test createPaymentIntent API call (should be skipped without Stripe keys)
+     * Test createPaymentIntent makes a real Stripe API call and returns client_secret
      */
     public function test_create_payment_intent_requires_stripe_keys(): void
     {
-        $this->markTestSkipped('Requires Stripe test keys configured in environment');
+        $this->skipUnlessStripeConfigured();
 
-        // This test would call the actual Stripe API
-        // $result = $this->service->createPaymentIntent($this->course, $this->student->id);
-        // $this->assertTrue($result['success']);
-        // $this->assertArrayHasKey('client_secret', $result['data']);
+        $result = $this->service->createPaymentIntent($this->course, $this->student->id);
+
+        $this->assertTrue($result['success']);
+        $this->assertArrayHasKey('client_secret', $result['data']);
+        $this->assertStringStartsWith('pi_', $result['data']['payment_intent_id']);
+        $this->assertEquals(1000, $result['data']['amount']);
+        $this->assertEquals('jpy', $result['data']['currency']);
+
+        // Verify DB record was created
+        $this->assertDatabaseHas('stripe_payments', [
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'status' => 'pending',
+            'amount' => 1000,
+        ]);
     }
 
     /**
-     * Test refund API call (should be skipped without Stripe keys)
+     * Test refund makes a real Stripe API call against a confirmed test payment intent
      */
     public function test_refund_requires_stripe_keys(): void
     {
-        $this->markTestSkipped('Requires Stripe test keys configured in environment');
+        $this->skipUnlessStripeConfigured();
 
-        // This test would call the actual Stripe API
-        // Create succeeded payment first
-        // $payment = StripePayment::create([...]);
-        // $result = $this->service->refund($payment);
-        // $this->assertTrue($result['success']);
+        // Create and confirm a real payment intent using test payment method
+        $stripe = new \Stripe\StripeClient(config('services.stripe.secret'));
+        $pi = $stripe->paymentIntents->create([
+            'amount'   => 1000,
+            'currency' => 'jpy',
+            'confirm'  => true,
+            'payment_method' => 'pm_card_visa',
+            'automatic_payment_methods' => ['enabled' => true, 'allow_redirects' => 'never'],
+        ]);
+
+        // Create enrollment and payment record in succeeded state
+        $courseHistory = CourseHistory::create([
+            'user_id'            => $this->student->id,
+            'course_id'          => $this->course->id,
+            'course_schedule_id' => $this->schedule->id,
+            'is_cancelled'       => false,
+        ]);
+
+        $payment = StripePayment::create([
+            'user_id'                   => $this->student->id,
+            'course_id'                 => $this->course->id,
+            'stripe_payment_intent_id'  => $pi->id,
+            'stripe_customer_id'        => null,
+            'amount'                    => 1000,
+            'currency'                  => 'jpy',
+            'status'                    => 'succeeded',
+            'course_history_id'         => $courseHistory->id,
+            'metadata'                  => ['course_title' => $this->course->title],
+        ]);
+
+        $result = $this->service->refund($payment);
+
+        $this->assertTrue($result['success'], $result['message'] ?? '');
+        $this->assertEquals('Payment refunded successfully', $result['message']);
+        $this->assertStringStartsWith('re_', $result['data']['refund_id']);
+
+        $payment->refresh();
+        $this->assertEquals('refunded', $payment->status);
+
+        $courseHistory->refresh();
+        $this->assertTrue((bool) $courseHistory->is_cancelled);
     }
 
     /**

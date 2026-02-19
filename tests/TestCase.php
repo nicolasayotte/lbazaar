@@ -62,6 +62,19 @@ abstract class TestCase extends BaseTestCase
         User::boot();
     }
 
+    /**
+     * Skip the test unless real Stripe test keys are configured.
+     * Mirrors the logic in InteractsWithRealServices without requiring the trait.
+     */
+    protected function skipUnlessStripeConfigured(): void
+    {
+        $secret = config('services.stripe.secret');
+
+        if (empty($secret) || str_contains(strtolower($secret), 'sk_test_xxx')) {
+            $this->markTestSkipped('STRIPE_SECRET not configured — skipping integration test.');
+        }
+    }
+
     protected function tearDown(): void
     {
         // Force rollback any open transactions to prevent DB locks
