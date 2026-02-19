@@ -3,23 +3,22 @@
 namespace Tests\Feature\Http\Controllers\Portal;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Inertia\Testing\AssertableInertia as Assert;
 use App\Services\API\ExchangeRateService;
 use App\Services\API\StripeService;
 use App\Models\User;
 use App\Models\Course;
 use App\Models\CourseHistory;
+use App\Models\CourseSchedule;
 use Mockery;
 
 class CourseControllerPriceTest extends TestCase
 {
-    use DatabaseTransactions;
-
     protected $exchangeRateService;
     protected $stripeService;
     protected User $teacher;
     protected Course $course;
+    protected CourseSchedule $schedule;
 
     protected function setUp(): void
     {
@@ -35,25 +34,27 @@ class CourseControllerPriceTest extends TestCase
         $this->app->instance(StripeService::class, $this->stripeService);
 
         // Create roles and test teacher
+        $this->disableUserModelEvents();
         $this->createRoles(['teacher', 'student']);
         $courseType = $this->createCourseType('general', 'general');
 
         $this->teacher = User::factory()->create([
             'email' => 'price-test-teacher@example.com',
+            'custodial_address' => 'addr_test_price_teacher',
         ]);
         $this->teacher->attachRole('teacher');
 
         $this->course = Course::factory()->create([
+            'title' => 'PRICE_TEST_COURSE_' . uniqid(),
             'professor_id' => $this->teacher->id,
             'course_type_id' => $courseType->id,
             'price' => 2500,
         ]);
-    }
 
-    protected function tearDown(): void
-    {
-        Mockery::close();
-        parent::tearDown();
+        $this->schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id,
+            'user_id' => $this->teacher->id,
+        ]);
     }
 
     // -------------------------------------------------------------------------
@@ -62,7 +63,9 @@ class CourseControllerPriceTest extends TestCase
 
     public function test_courses_index_includes_price_in_ada_when_exchange_rate_available()
     {
-        // Mock addPriceInAdaToCourses to set price_in_ada = 25.0 on each course
+        // addPriceInAdaToCourses sets price_in_ada in $attributes so toArray() includes the key.
+        // The getPriceInAdaAttribute accessor then calls jpyToAda() during serialization,
+        // so we must mock both: the callback to seed the attribute, and jpyToAda for the value.
         $this->exchangeRateService
             ->shouldReceive('addPriceInAdaToCourses')
             ->once()
@@ -72,29 +75,32 @@ class CourseControllerPriceTest extends TestCase
                 }
                 return $courses;
             });
+        $this->exchangeRateService->shouldReceive('jpyToAda')->andReturn(25.0);
 
-        $response = $this->get('/classes');
+        // Search by unique title so only our course appears (seeded courses have price=0).
+        // json_encode(25.0) → "25" → decoded as int, so assert 25 not 25.0.
+        $response = $this->get('/classes?search_text=' . urlencode($this->course->title));
 
         $response->assertStatus(200);
         $response->assertInertia(fn (Assert $page) => $page
             ->component('Portal/Course/Search', false)
             ->has('courses.data.0')
-            ->where('courses.data.0.price_in_ada', 25.0)
+            ->where('courses.data.0.price_in_ada', 25)
         );
     }
 
     public function test_course_details_includes_price_in_ada_when_exchange_rate_available()
     {
-        // Mock addPriceInAdaToCourses to set price_in_ada = 25.0 on course
+        // The accessor calls jpyToAda() during serialization; mock it to return a known value.
+        // addPriceInAdaToCourses seeds the attribute key so the accessor fires in toArray().
         $this->exchangeRateService
             ->shouldReceive('addPriceInAdaToCourses')
             ->once()
             ->andReturnUsing(function ($courses) {
-                foreach ($courses as $c) {
-                    $c->price_in_ada = 25.0;
-                }
+                foreach ($courses as $c) { $c->price_in_ada = 0; }
                 return $courses;
             });
+        $this->exchangeRateService->shouldReceive('jpyToAda')->with(2500.0)->andReturn(25.0);
 
         $response = $this->get("/classes/{$this->course->id}");
 
@@ -102,7 +108,7 @@ class CourseControllerPriceTest extends TestCase
         $response->assertInertia(fn (Assert $page) => $page
             ->component('Portal/Course/Details', false)
             ->has('course')
-            ->where('course.price_in_ada', 25.0)
+            ->where('course.price_in_ada', 25)  // json_encode(25.0) → "25" → decoded as int
         );
     }
 
@@ -181,9 +187,10 @@ class CourseControllerPriceTest extends TestCase
         $student->attachRole('student');
 
         CourseHistory::factory()->create([
-            'user_id'        => $student->id,
-            'course_id'      => $this->course->id,
-            'payment_status' => null,
+            'user_id'             => $student->id,
+            'course_id'           => $this->course->id,
+            'course_schedule_id'  => $this->schedule->id,
+            'payment_status'      => null,
         ]);
 
         $response = $this->actingAs($student)->get("/classes/{$this->course->id}");
@@ -203,9 +210,10 @@ class CourseControllerPriceTest extends TestCase
         $student->attachRole('student');
 
         CourseHistory::factory()->create([
-            'user_id'        => $student->id,
-            'course_id'      => $this->course->id,
-            'payment_status' => 'confirmed',
+            'user_id'             => $student->id,
+            'course_id'           => $this->course->id,
+            'course_schedule_id'  => $this->schedule->id,
+            'payment_status'      => 'confirmed',
         ]);
 
         $response = $this->actingAs($student)->get("/classes/{$this->course->id}");
@@ -225,9 +233,10 @@ class CourseControllerPriceTest extends TestCase
         $student->attachRole('student');
 
         CourseHistory::factory()->create([
-            'user_id'        => $student->id,
-            'course_id'      => $this->course->id,
-            'payment_status' => 'pending',
+            'user_id'             => $student->id,
+            'course_id'           => $this->course->id,
+            'course_schedule_id'  => $this->schedule->id,
+            'payment_status'      => 'pending',
         ]);
 
         $response = $this->actingAs($student)->get("/classes/{$this->course->id}");
@@ -247,9 +256,10 @@ class CourseControllerPriceTest extends TestCase
         $student->attachRole('student');
 
         CourseHistory::factory()->create([
-            'user_id'        => $student->id,
-            'course_id'      => $this->course->id,
-            'payment_status' => 'failed',
+            'user_id'             => $student->id,
+            'course_id'           => $this->course->id,
+            'course_schedule_id'  => $this->schedule->id,
+            'payment_status'      => 'failed',
         ]);
 
         $response = $this->actingAs($student)->get("/classes/{$this->course->id}");
@@ -300,6 +310,7 @@ class CourseControllerPriceTest extends TestCase
         $history = CourseHistory::factory()->create([
             'user_id'              => $student->id,
             'course_id'            => $this->course->id,
+            'course_schedule_id'   => $this->schedule->id,
             'payment_status'       => 'pending',
             'payment_tx_hash'      => 'abc123txhash',
             'payment_submitted_at' => now()->subMinutes(5),
