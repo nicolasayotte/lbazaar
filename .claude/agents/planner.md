@@ -63,6 +63,13 @@ In: [what to implement]  Out: [what NOT to touch]
 [what to test, expected behaviors, edge cases]
 ```
 
+## PHPUnit Conventions (for test requirements)
+When specifying test requirements, note these conventions so builder doesn't reinvent them:
+- Base `TestCase` already applies `DatabaseTransactions` and `Mockery::close()` — tests should NOT add these
+- `$this->createTestUser()` creates users without triggering model events (web3 calls)
+- `$this->createRoles([...])` / `$this->createCourseType()` for setup data
+- Full suite: `sail composer test` (parallel, 8 workers). Single test: `sail test --filter=X` (serial)
+
 ## Quality Check
 ❌ "Add course purchase retry logic" → Too vague, no design decisions
 ❌ "Add retry at `app/Services/API/StripeService.php:45` — store attempt count in session" → Specific but poor design (shared mutable state across requests)

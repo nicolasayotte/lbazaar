@@ -29,7 +29,7 @@ Receive task description via prompt. Implement exactly as specified. Return comp
 2. **Verify Environment**: Run `sail up -d` if Docker services are needed
 3. **Implement**: Follow task spec exactly — file paths, line numbers, code snippets
 4. **Write Tests**: PHPUnit for PHP services, Vitest for JS/web3 (see `docs/testing.md`)
-5. **Run Tests**: Run only tests relevant to your changes — never the full suite alone; use `sail test --filter=TestClass` or `npx vitest run path/to/file.test.jsx`
+5. **Run Tests**: Run only tests relevant to your changes — never the full suite alone; use `sail test --filter=TestClass` (serial, single test) or `npx vitest run path/to/file.test.jsx`
 6. **Review**: Invoke `/reviewing-code-quality` on modified files — resolve all Defect findings before proceeding; surface Advisory/Warning findings to caller if fixing them would exceed task scope
 7. **Return Status**: Report completion using Output Format below
 
@@ -54,6 +54,13 @@ When generating code: keep functions pure and isolate side effects at system bou
 ## Issues: [any blockers or concerns]
 ```
 
+## PHPUnit Test Rules
+- Base `TestCase` already applies `DatabaseTransactions` and `Mockery::close()` — do NOT add these to individual test classes
+- Do NOT override `tearDown()` for Mockery cleanup — wrong ordering causes zombie DB locks (see gotchas.md #18)
+- Use `$this->createTestUser()` to create users without triggering model events (web3 calls)
+- Use `$this->createRoles([...])` and `$this->createCourseType()` for test setup data
+- Full suite: `sail composer test` (parallel). Single test: `sail test --filter=TestClass`
+
 ## Anti-Patterns
 | Don't | Do Instead |
 |-------|------------|
@@ -62,6 +69,8 @@ When generating code: keep functions pure and isolate side effects at system bou
 | Refactor unrelated code | Stay in task scope |
 | Run the full test suite | Run only tests relevant to your changes |
 | Put logic in controllers | Delegate to services (see patterns.md) |
+| Add `use DatabaseTransactions` | Base TestCase already applies it |
+| Override `tearDown()` for Mockery | Base TestCase handles it correctly |
 
 ## References
 - Project context: `CLAUDE.md`

@@ -23,12 +23,13 @@ Work methodically: read relevant docs before tasks, validate assumptions, test t
 ## Commands
 
 ```bash
-sail up -d              # Start Docker environment
-sail artisan migrate    # Run migrations
-sail test               # PHP tests
-cd web3 && npm test     # Web3 tests
-./test-prod.sh full-test  # Local production testing (REQUIRED before deploy)
-sail bash               # Enter container shell
+sail up -d                    # Start Docker environment
+sail artisan migrate          # Run migrations
+sail composer test            # PHP tests (parallel, 8 workers — full suite)
+sail test --filter=TestClass  # PHP tests (serial — single test/class)
+cd web3 && npm test           # Web3 tests
+./test-prod.sh full-test      # Local production testing (REQUIRED before deploy)
+sail bash                     # Enter container shell
 ```
 
 **Always run `sail up -d` before other commands.**
@@ -58,7 +59,7 @@ Multi-project setup in `playwright.config.js`:
 - **Vite dev server**: Run `npm run dev` in Sail for React hot reload
 - **Web3 setup**: Run `cd web3 && npm install` after composer install
 - **Production testing**: ALWAYS run `./test-prod.sh full-test` before deploying (catches Alpine/Nginx issues)
-- **Logs**: Laravel: `storage/logs/laravel.log`, Web3: `storage/logs/web3.log`
+- **Debugging logs**: When diagnosing failures, read `storage/logs/laravel.log` and `storage/logs/web3.log` — Sail bind-mounts these to the host so they're directly accessible without `sail bash`
 - **DB transactions**: Use `lockForUpdate()` for race conditions (see patterns.md)
 - **.env required**: Copy `.env.example` to `.env` and configure BLOCKFROST_API_KEY, ROOT_KEY, OWNER_PKH
 
