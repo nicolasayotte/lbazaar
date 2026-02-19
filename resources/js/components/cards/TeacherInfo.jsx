@@ -2,7 +2,7 @@
 import {Card, CardContent, Button, Typography, Box , Avatar, Grid, Tooltip } from "@mui/material"
 import { Link, usePage } from "@inertiajs/inertia-react"
 import { getRoute } from "../../helpers/routes.helper"
-import placeholderImg from "../../../img/placeholder.png"
+import placeholderImg from "../../../img/placeholder.jpg"
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
 import { Email } from "@mui/icons-material"
 

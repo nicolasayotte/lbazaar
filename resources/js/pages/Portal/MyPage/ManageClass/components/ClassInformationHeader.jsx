@@ -2,7 +2,7 @@ import { Link, usePage } from "@inertiajs/inertia-react"
 import { Box, Button, Chip, Container, Grid, Stack, Typography } from "@mui/material"
 import Header from "../../../../../components/common/Header"
 import routes, { getRoute } from "../../../../../helpers/routes.helper"
-import placeholderImg from "../../../../../../img/placeholder.png"
+import placeholderImg from "../../../../../../img/placeholder.jpg"
 
 const ClassInformationHeader = () => {
 

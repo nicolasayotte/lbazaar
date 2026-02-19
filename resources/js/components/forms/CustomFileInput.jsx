@@ -2,7 +2,7 @@ import { Upload } from "@mui/icons-material"
 import { Box, Button, CardMedia, FormHelperText, Grid, Avatar } from "@mui/material"
 import ErrorText from "../common/ErrorText"
 import Input from "./Input"
-import placeholderImg from "../../../img/placeholder.png"
+import placeholderImg from "../../../img/placeholder.jpg"
 import { usePage } from "@inertiajs/inertia-react"
 
 const CustomFileInput = ({ name, src = '', value, onChange = () => {}, errors, helperText = '', buttonPosition = 'start', accepts = "image", placeholderImageHeight = '200px', isAvatar = false }) => {

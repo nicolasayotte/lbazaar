@@ -2,7 +2,7 @@
 import { Button, Typography, Box , Avatar, Grid, Paper, Stack } from "@mui/material"
 import { Link, usePage } from "@inertiajs/inertia-react"
 import { getRoute } from "../../helpers/routes.helper"
-import placeholderImg from "../../../img/placeholder.png"
+import placeholderImg from "../../../img/placeholder.jpg"
 
 const User = ({ user, condensed = true }) => {
     const { translatables } = usePage().props
