@@ -53,7 +53,10 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['single'],
+            'channels' => array_filter([
+                'single',
+                env('APP_ENV') === 'local' ? 'stderr' : null,
+            ]),
             'ignore_exceptions' => false,
         ],
 
