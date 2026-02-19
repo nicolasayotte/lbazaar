@@ -1,5 +1,5 @@
 
- RUN  v0.34.6 /var/www/html
+ RUN  v0.34.6 /home/fence/src/cardano/lbazaar
 
  ✓ resources/js/helpers/__tests__/currency.helper.test.js > currency.helper > formatJpy > formats JPY with yen symbol and thousands separator
  ✓ resources/js/helpers/__tests__/currency.helper.test.js > currency.helper > formatJpy > handles zero and small amounts
@@ -11,7 +11,9 @@
  ✓ resources/js/helpers/__tests__/currency.helper.test.js > currency.helper > formatAda > rounds to 2 decimal places
  ✓ resources/js/helpers/__tests__/currency.helper.test.js > currency.helper > formatDualPrice > formats both currencies together
  ✓ resources/js/helpers/__tests__/currency.helper.test.js > currency.helper > formatDualPrice > returns JPY only when ADA is missing
+ ✓ resources/js/helpers/__tests__/currency.helper.test.js > currency.helper > formatDualPrice > does not include ADA placeholder when ADA is null (TS-01.03)
  ✓ resources/js/helpers/__tests__/currency.helper.test.js > currency.helper > formatDualPrice > returns zero when JPY is missing
+ ✓ resources/js/helpers/__tests__/currency.helper.test.js > currency.helper > formatDualPrice > includes live-conversion indicator (~₳) when ADA is provided (TS-01.01, TS-01.02)
  ✓ resources/js/helpers/__tests__/currency.helper.test.js > currency.helper > parseJpy > parses formatted JPY string to number
  ✓ resources/js/helpers/__tests__/currency.helper.test.js > currency.helper > parseJpy > handles numeric strings
  ✓ resources/js/helpers/__tests__/currency.helper.test.js > currency.helper > parseJpy > handles null and empty strings
@@ -20,22 +22,22 @@
 stdout | resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Single Certificate Minting > should show success message after successful mint
 Certificate minted successfully for student: [33m1[39m
 
- ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Single Certificate Minting > should call API when minting single certificate
 stderr | resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Single Certificate Minting > should show error message on mint failure
 Failed to mint certificate: { message: [32m'Mint failed'[39m }
 
 stderr | resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Batch Certificate Minting > should call API when batch minting certificates
 Batch minting failed: { message: [32m'Mint failed'[39m }
 
+ ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Single Certificate Minting > should call API when minting single certificate
  ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Single Certificate Minting > should show success message after successful mint
  ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Single Certificate Minting > should show error message on mint failure
- ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Batch Certificate Minting > should call API when batch minting certificates
 stdout | resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Batch Certificate Minting > should show success message after successful batch mint
 Batch minting completed
 
 stderr | resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Batch Certificate Minting > should show error message on batch mint failure
 Batch minting failed: { message: [32m'Batch mint failed'[39m }
 
+ ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Batch Certificate Minting > should call API when batch minting certificates
  ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Batch Certificate Minting > should disable batch mint button during minting
  ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Batch Certificate Minting > should show success message after successful batch mint
  ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Batch Certificate Minting > should show error message on batch mint failure
@@ -67,136 +69,136 @@ Warning: Received `true` for a non-boolean attribute `select`.
 If you want to write it to the DOM, pass a string instead: select="true" or select={value.toString()}.
     at select
     at div
-    at default (/var/www/html/resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx:77:15)
+    at default (/home/fence/src/cardano/lbazaar/resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx:77:15)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Paper (/var/www/html/node_modules/@mui/material/node/Paper/Paper.js:68:44)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Paper (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Paper/Paper.js:68:44)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at form
     at Create
 Warning: React does not recognize the `InputLabelProps` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `inputlabelprops` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
     at select
     at div
-    at default (/var/www/html/resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx:77:15)
+    at default (/home/fence/src/cardano/lbazaar/resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx:77:15)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Paper (/var/www/html/node_modules/@mui/material/node/Paper/Paper.js:68:44)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Paper (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Paper/Paper.js:68:44)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at form
     at Create
 Warning: React does not recognize the `inputProps` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `inputprops` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
     at input
     at div
-    at default (/var/www/html/resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx:77:15)
+    at default (/home/fence/src/cardano/lbazaar/resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx:77:15)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Paper (/var/www/html/node_modules/@mui/material/node/Paper/Paper.js:68:44)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Paper (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Paper/Paper.js:68:44)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at form
     at Create
 Warning: React does not recognize the `fullWidth` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `fullwidth` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
     at input
     at div
-    at default (/var/www/html/resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx:77:15)
+    at default (/home/fence/src/cardano/lbazaar/resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx:77:15)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Autocomplete (/var/www/html/node_modules/@mui/material/node/Autocomplete/Autocomplete.js:366:44)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Autocomplete (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Autocomplete/Autocomplete.js:366:44)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Paper (/var/www/html/node_modules/@mui/material/node/Paper/Paper.js:68:44)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Paper (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Paper/Paper.js:68:44)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at form
     at Create
 Warning: React does not recognize the `InputProps` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `inputprops` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
     at input
     at div
-    at default (/var/www/html/resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx:77:15)
+    at default (/home/fence/src/cardano/lbazaar/resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx:77:15)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Autocomplete (/var/www/html/node_modules/@mui/material/node/Autocomplete/Autocomplete.js:366:44)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Autocomplete (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Autocomplete/Autocomplete.js:366:44)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Paper (/var/www/html/node_modules/@mui/material/node/Paper/Paper.js:68:44)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Paper (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Paper/Paper.js:68:44)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at form
     at Create
 Warning: You provided a `value` prop to a form field without an `onChange` handler. This will render a read-only field. If the field should be mutable use `defaultValue`. Otherwise, set either `onChange` or `readOnly`.
     at input
     at div
-    at default (/var/www/html/resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx:77:15)
+    at default (/home/fence/src/cardano/lbazaar/resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx:77:15)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Autocomplete (/var/www/html/node_modules/@mui/material/node/Autocomplete/Autocomplete.js:366:44)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Autocomplete (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Autocomplete/Autocomplete.js:366:44)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Paper (/var/www/html/node_modules/@mui/material/node/Paper/Paper.js:68:44)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Paper (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Paper/Paper.js:68:44)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at form
     at Create
 Warning: Received `true` for a non-boolean attribute `multiline`.
@@ -204,22 +206,22 @@ Warning: Received `true` for a non-boolean attribute `multiline`.
 If you want to write it to the DOM, pass a string instead: multiline="true" or multiline={value.toString()}.
     at input
     at div
-    at default (/var/www/html/resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx:77:15)
+    at default (/home/fence/src/cardano/lbazaar/resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx:77:15)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Paper (/var/www/html/node_modules/@mui/material/node/Paper/Paper.js:68:44)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Paper (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Paper/Paper.js:68:44)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at form
     at Create
 MUI: Unable to find the input element. It was resolved to null while an HTMLInputElement was expected.
@@ -231,25 +233,25 @@ stderr | resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx > Cr
 Warning: You provided a `value` prop to a form field without an `onChange` handler. This will render a read-only field. If the field should be mutable use `defaultValue`. Otherwise, set either `onChange` or `readOnly`.
     at input
     at div
-    at default (/var/www/html/resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx:77:15)
+    at default (/home/fence/src/cardano/lbazaar/resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx:77:15)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Autocomplete (/var/www/html/node_modules/@mui/material/node/Autocomplete/Autocomplete.js:366:44)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Autocomplete (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Autocomplete/Autocomplete.js:366:44)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Paper (/var/www/html/node_modules/@mui/material/node/Paper/Paper.js:68:44)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Paper (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Paper/Paper.js:68:44)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at form
     at Create
 MUI: Unable to find the input element. It was resolved to null while an HTMLInputElement was expected.
@@ -261,25 +263,25 @@ stderr | resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx > Cr
 Warning: You provided a `value` prop to a form field without an `onChange` handler. This will render a read-only field. If the field should be mutable use `defaultValue`. Otherwise, set either `onChange` or `readOnly`.
     at input
     at div
-    at default (/var/www/html/resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx:77:15)
+    at default (/home/fence/src/cardano/lbazaar/resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx:77:15)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Autocomplete (/var/www/html/node_modules/@mui/material/node/Autocomplete/Autocomplete.js:366:44)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Autocomplete (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Autocomplete/Autocomplete.js:366:44)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Paper (/var/www/html/node_modules/@mui/material/node/Paper/Paper.js:68:44)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Paper (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Paper/Paper.js:68:44)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at form
     at Create
 MUI: Unable to find the input element. It was resolved to null while an HTMLInputElement was expected.
@@ -291,25 +293,25 @@ stderr | resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx > Cr
 Warning: You provided a `value` prop to a form field without an `onChange` handler. This will render a read-only field. If the field should be mutable use `defaultValue`. Otherwise, set either `onChange` or `readOnly`.
     at input
     at div
-    at default (/var/www/html/resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx:77:15)
+    at default (/home/fence/src/cardano/lbazaar/resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx:77:15)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Autocomplete (/var/www/html/node_modules/@mui/material/node/Autocomplete/Autocomplete.js:366:44)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Autocomplete (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Autocomplete/Autocomplete.js:366:44)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Paper (/var/www/html/node_modules/@mui/material/node/Paper/Paper.js:68:44)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Paper (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Paper/Paper.js:68:44)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at form
     at Create
 MUI: Unable to find the input element. It was resolved to null while an HTMLInputElement was expected.
@@ -321,25 +323,25 @@ stderr | resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx > Cr
 Warning: You provided a `value` prop to a form field without an `onChange` handler. This will render a read-only field. If the field should be mutable use `defaultValue`. Otherwise, set either `onChange` or `readOnly`.
     at input
     at div
-    at default (/var/www/html/resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx:77:15)
+    at default (/home/fence/src/cardano/lbazaar/resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx:77:15)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Autocomplete (/var/www/html/node_modules/@mui/material/node/Autocomplete/Autocomplete.js:366:44)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Autocomplete (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Autocomplete/Autocomplete.js:366:44)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Paper (/var/www/html/node_modules/@mui/material/node/Paper/Paper.js:68:44)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Paper (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Paper/Paper.js:68:44)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at form
     at Create
 MUI: Unable to find the input element. It was resolved to null while an HTMLInputElement was expected.
@@ -351,25 +353,25 @@ stderr | resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx > Cr
 Warning: You provided a `value` prop to a form field without an `onChange` handler. This will render a read-only field. If the field should be mutable use `defaultValue`. Otherwise, set either `onChange` or `readOnly`.
     at input
     at div
-    at default (/var/www/html/resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx:77:15)
+    at default (/home/fence/src/cardano/lbazaar/resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx:77:15)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Autocomplete (/var/www/html/node_modules/@mui/material/node/Autocomplete/Autocomplete.js:366:44)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Autocomplete (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Autocomplete/Autocomplete.js:366:44)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Paper (/var/www/html/node_modules/@mui/material/node/Paper/Paper.js:68:44)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Paper (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Paper/Paper.js:68:44)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at div
-    at /var/www/html/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
-    at Grid (/var/www/html/node_modules/@mui/material/node/Grid/Grid.js:369:49)
+    at /home/fence/src/cardano/lbazaar/node_modules/@emotion/react/dist/emotion-element-b63ca7c6.cjs.dev.js:43:23
+    at Grid (/home/fence/src/cardano/lbazaar/node_modules/@mui/material/node/Grid/Grid.js:369:49)
     at form
     at Create
 MUI: Unable to find the input element. It was resolved to null while an HTMLInputElement was expected.
@@ -377,6 +379,25 @@ Instead, Autocomplete expects an input element.
 
 Make sure you have customized the input component correctly.
 
+ ✓ resources/js/pages/Portal/Course/Details.test.jsx > Details — ADA price display when price_in_ada is set (Task 01) > renders JPY price when price_in_ada is present (TS-01.05)
+ ✓ resources/js/pages/Portal/Course/Details.test.jsx > Details — ADA price display when price_in_ada is set (Task 01) > renders ADA equivalent price when price_in_ada is present (TS-01.06)
+ ✓ resources/js/pages/Portal/Course/Details.test.jsx > Details — ADA conversion unavailable (Task 03, TS-01.08 through TS-01.11) > TS-01.08: JPY price is visible when ADA conversion is unavailable
+ ✓ resources/js/pages/Portal/Course/Details.test.jsx > Details — ADA conversion unavailable (Task 03, TS-01.08 through TS-01.11) > TS-01.09: ADA equivalent price is NOT shown when price_in_ada is null
+ ✓ resources/js/pages/Portal/Course/Details.test.jsx > Details — ADA conversion unavailable (Task 03, TS-01.08 through TS-01.11) > TS-01.10: Buy with ADA button is disabled when price_in_ada is null
+ ✓ resources/js/pages/Portal/Course/Details.test.jsx > Details — ADA conversion unavailable (Task 03, TS-01.08 through TS-01.11) > TS-01.11: Pay with Credit Card button is NOT disabled when price_in_ada is null
+ ✓ resources/js/pages/Portal/Course/Details.test.jsx > Details — ADA conversion unavailable (Task 03, TS-01.08 through TS-01.11) > ada-unavailable: no ADA placeholder text (₳-- or ₳0.00) in rendered output
+ ✓ resources/js/pages/Portal/Course/Details.test.jsx > Details — pending payment UI (Task 10) > TS-10.01: shows payment_pending text when pendingPayment prop is set
+ ✓ resources/js/pages/Portal/Course/Details.test.jsx > Details — pending payment UI (Task 10) > TS-10.02: shows view_on_explorer link with correct href when pendingPayment is set
+ ✓ resources/js/pages/Portal/Course/Details.test.jsx > Details — pending payment UI (Task 10) > TS-10.03: hides Buy with ADA button when pendingPayment is set
+ ✓ resources/js/pages/Portal/Course/Details.test.jsx > Details — pending payment UI (Task 10) > TS-10.04: hides Pay with Credit Card button when pendingPayment is set
+ ✓ resources/js/pages/Portal/Course/Details.test.jsx > Details — pending payment UI (Task 10) > TS-10.05: shows both buy buttons when pendingPayment is null
+ ✓ resources/js/pages/Portal/Course/Details.test.jsx > Details — pending payment UI (Task 10) > TS-10.06: does not show payment_pending text when pendingPayment is null
+ ✓ resources/js/pages/Portal/Course/Details.test.jsx > Details — pending payment UI (Task 10) > shows_insufficient_funds_message_on_build_failure: creditCardButtonRef target renders without breaking layout
+ ✓ resources/js/components/cards/Course.test.jsx > Course card — ADA price display (TS-01.01, TS-01.03) > TS-01.01: shows JPY price on General course card
+ ✓ resources/js/components/cards/Course.test.jsx > Course card — ADA price display (TS-01.01, TS-01.03) > TS-01.03: shows ADA equivalent with live-conversion indicator (~₳) when price_in_ada is set
+ ✓ resources/js/components/cards/Course.test.jsx > Course card — ADA price display (TS-01.01, TS-01.03) > hides ADA portion when price_in_ada is null (conversion unavailable)
+ ✓ resources/js/components/cards/Course.test.jsx > Course card — ADA price display (TS-01.01, TS-01.03) > hides price entirely for Free courses (course_type.name !== General)
+ ✓ resources/js/components/cards/Course.test.jsx > Course card — ADA price display (TS-01.01, TS-01.03) > hides price for General course with no price set
  ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Empty State > should render EmptyCard when no students
  ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Empty State > should render EmptyCard when students is null
  ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Student List Rendering > should render student list with correct names
@@ -397,8 +418,8 @@ Make sure you have customized the input component correctly.
  ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Transaction Hash Display > should render tx hash as plain text when explorerUrl is undefined
  ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Transaction Hash Display > should not crash when explorerUrl is null
 
- Test Files  5 passed (5)
-      Tests  64 passed (64)
-   Start at  21:01:11
-   Duration  7.57s (transform 355ms, setup 321ms, collect 8.20s, tests 2.23s, environment 2.85s, prepare 1.65s)
+ Test Files  7 passed (7)
+      Tests  85 passed (85)
+   Start at  14:37:38
+   Duration  7.25s (transform 654ms, setup 589ms, collect 14.30s, tests 3.21s, environment 3.53s, prepare 2.32s)
 

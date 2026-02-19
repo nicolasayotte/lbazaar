@@ -1,24 +1,20 @@
 
  RUN  v3.2.4 /home/fence/src/cardano/lbazaar/web3
 
+stderr | common/__tests__/network.spec.mjs > network utilities > throws when network is invalid
+getNetworkParams: network not set or invalid: invalidnet
+
+ ✓ common/__tests__/network.spec.mjs > network utilities > returns network parameters for allowed network 13ms
+ ✓ common/__tests__/network.spec.mjs > network utilities > throws when network is invalid 3ms
 stderr | common/__tests__/utils.spec.mjs > utils helpers > getTokenNamesAddrs collects token names and addresses for matching policy hash
 mph.hex:  hash-2
 tokenMph.hex:  hash-2
 
- ✓ common/__tests__/utils.spec.mjs > utils helpers > toSchema recursively converts objects and arrays to Helios schema 3ms
- ✓ common/__tests__/utils.spec.mjs > utils helpers > getTokenNamesAddrs collects token names and addresses for matching policy hash 3ms
- ✓ common/__tests__/minting-policy.spec.mjs > minting-policy helpers > calculateMintingPolicyHash uses single-signature policy 10ms
- ✓ common/__tests__/minting-policy.spec.mjs > minting-policy helpers > calculateMintingPolicyHash throws when OWNER_PKH is missing 4ms
+ ✓ common/__tests__/utils.spec.mjs > utils helpers > toSchema recursively converts objects and arrays to Helios schema 2ms
+ ✓ common/__tests__/utils.spec.mjs > utils helpers > getTokenNamesAddrs collects token names and addresses for matching policy hash 2ms
+ ✓ common/__tests__/minting-policy.spec.mjs > minting-policy helpers > calculateMintingPolicyHash uses single-signature policy 14ms
+ ✓ common/__tests__/minting-policy.spec.mjs > minting-policy helpers > calculateMintingPolicyHash throws when OWNER_PKH is missing 3ms
  ✓ common/__tests__/minting-policy.spec.mjs > minting-policy helpers > getMintingPolicyHash returns the single-signature hash 2ms
- ✓ common/__tests__/certificate-metadata.spec.mjs > certificate-metadata helpers > buildCertificateMetadata uses actual template and replaces placeholders correctly 4ms
- ✓ common/__tests__/certificate-metadata.spec.mjs > certificate-metadata helpers > buildCertificateMetadata falls back to defaults when fields missing 1ms
- ✓ common/__tests__/certificate-metadata.spec.mjs > certificate-metadata helpers > buildTicketMetadata uses actual template and replaces placeholders correctly 1ms
- ✓ common/__tests__/certificate-metadata.spec.mjs > certificate-metadata helpers > buildTicketMetadata falls back to defaults when fields missing 1ms
- ✓ common/__tests__/certificate-metadata.spec.mjs > certificate-metadata helpers > buildCIP25Metadata wraps certificate metadata with policy 1ms
- ✓ common/__tests__/certificate-metadata.spec.mjs > certificate-metadata helpers > buildCustomMetadata returns descriptive messages 0ms
-stderr | common/__tests__/network.spec.mjs > network utilities > throws when network is invalid
-getNetworkParams: network not set or invalid: invalidnet
-
  ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Mock Data Generators > createMockCertificateMetadata creates valid metadata 2ms
  ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Mock Data Generators > createMockCertificateMetadata accepts overrides 0ms
  ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Mock Data Generators > createMockArgv generates correct arguments for direct minting script 0ms
@@ -28,7 +24,7 @@ getNetworkParams: network not set or invalid: invalidnet
  ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Token Name Generation > getExpectedTokenNames generates correct certificate token 0ms
  ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Token Name Generation > handles different course names and serial numbers 0ms
  ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Response Validation > validateSuccessResponse checks required fields 1ms
- ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Response Validation > validateSuccessResponse validates specific fields 0ms
+ ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Response Validation > validateSuccessResponse validates specific fields 1ms
  ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Response Validation > validateErrorResponse checks error structure 0ms
  ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Response Validation > validateErrorResponse can check specific error messages 0ms
  ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Network Configuration > provides mainnet configuration 0ms
@@ -47,31 +43,35 @@ getNetworkParams: network not set or invalid: invalidnet
  ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Token Name Format Validation > certificate token uses (222) prefix 0ms
  ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Token Name Format Validation > tokens use pipe separator 0ms
  ✓ run/__tests__/certificate-tx-utils.spec.mjs > Certificate Transaction Utilities > Token Name Format Validation > tokens preserve name and serial number 0ms
- ✓ common/__tests__/network.spec.mjs > network utilities > returns network parameters for allowed network 10ms
- ✓ common/__tests__/network.spec.mjs > network utilities > throws when network is invalid 4ms
+ ✓ common/__tests__/certificate-metadata.spec.mjs > certificate-metadata helpers > buildCertificateMetadata uses actual template and replaces placeholders correctly 4ms
+ ✓ common/__tests__/certificate-metadata.spec.mjs > certificate-metadata helpers > buildCertificateMetadata falls back to defaults when fields missing 1ms
+ ✓ common/__tests__/certificate-metadata.spec.mjs > certificate-metadata helpers > buildTicketMetadata uses actual template and replaces placeholders correctly 1ms
+ ✓ common/__tests__/certificate-metadata.spec.mjs > certificate-metadata helpers > buildTicketMetadata falls back to defaults when fields missing 0ms
+ ✓ common/__tests__/certificate-metadata.spec.mjs > certificate-metadata helpers > buildCIP25Metadata wraps certificate metadata with policy 1ms
+ ✓ common/__tests__/certificate-metadata.spec.mjs > certificate-metadata helpers > buildCustomMetadata returns descriptive messages 0ms
  ✓ run/__tests__/build-purchase-tx.spec.mjs > build-purchase-tx.mjs > Commission Calculation > calculates admin commission correctly 14ms
- ✓ run/__tests__/build-purchase-tx.spec.mjs > build-purchase-tx.mjs > Commission Calculation > handles fractional commission percentages 4ms
- ✓ run/__tests__/build-purchase-tx.spec.mjs > build-purchase-tx.mjs > Transaction Outputs > creates two transaction outputs 5ms
- ✓ run/__tests__/build-purchase-tx.spec.mjs > build-purchase-tx.mjs > Transaction Outputs > creates outputs with correct addresses and amounts 2ms
- ✓ run/__tests__/build-purchase-tx.spec.mjs > build-purchase-tx.mjs > Error Handling - Insufficient Funds > returns 501 when insufficient funds 2ms
- ✓ run/__tests__/build-purchase-tx.spec.mjs > build-purchase-tx.mjs > Error Handling - General Errors > returns 500 on other errors 18ms
- ✓ run/__tests__/build-purchase-tx.spec.mjs > build-purchase-tx.mjs > Success Response > returns cborTx on success 2ms
+ ✓ run/__tests__/build-purchase-tx.spec.mjs > build-purchase-tx.mjs > Commission Calculation > handles fractional commission percentages 3ms
+ ✓ run/__tests__/build-purchase-tx.spec.mjs > build-purchase-tx.mjs > Transaction Outputs > creates two transaction outputs 4ms
+ ✓ run/__tests__/build-purchase-tx.spec.mjs > build-purchase-tx.mjs > Transaction Outputs > creates outputs with correct addresses and amounts 3ms
+ ✓ run/__tests__/build-purchase-tx.spec.mjs > build-purchase-tx.mjs > Error Handling - Insufficient Funds > returns 501 when insufficient funds 21ms
+ ✓ run/__tests__/build-purchase-tx.spec.mjs > build-purchase-tx.mjs > Error Handling - General Errors > returns 500 on other errors 3ms
+ ✓ run/__tests__/build-purchase-tx.spec.mjs > build-purchase-tx.mjs > Success Response > returns cborTx on success 3ms
  ✓ run/__tests__/build-purchase-tx.spec.mjs > build-purchase-tx.mjs > Metadata > adds transaction metadata with course purchase message 3ms
  ✓ run/__tests__/build-purchase-tx.spec.mjs > build-purchase-tx.mjs > Stake Key Validation > validates stake key hash matches change address 2ms
  ✓ run/__tests__/build-purchase-tx.spec.mjs > build-purchase-tx.mjs > Network Configuration > uses testnet configuration when NETWORK is not mainnet 2ms
  ✓ run/__tests__/build-purchase-tx.spec.mjs > build-purchase-tx.mjs > Signers > adds both owner and user wallet as signers 2ms
- ✓ run/__tests__/submit-purchase-tx.spec.mjs > submit-purchase-tx.mjs > Payment Verification > verifies teacher payment exists in outputs 12ms
+ ✓ run/__tests__/submit-purchase-tx.spec.mjs > submit-purchase-tx.mjs > Payment Verification > verifies teacher payment exists in outputs 13ms
  ✓ run/__tests__/submit-purchase-tx.spec.mjs > submit-purchase-tx.mjs > Payment Verification > verifies admin payment exists in outputs 3ms
  ✓ run/__tests__/submit-purchase-tx.spec.mjs > submit-purchase-tx.mjs > Payment Verification > returns error when teacher payment not found 4ms
  ✓ run/__tests__/submit-purchase-tx.spec.mjs > submit-purchase-tx.mjs > Payment Verification > returns error when admin payment not found 2ms
- ✓ run/__tests__/submit-purchase-tx.spec.mjs > submit-purchase-tx.mjs > Transaction Submission > returns txId on successful submission 4ms
- ✓ run/__tests__/submit-purchase-tx.spec.mjs > submit-purchase-tx.mjs > Transaction Submission > returns 500 on submission error 17ms
+ ✓ run/__tests__/submit-purchase-tx.spec.mjs > submit-purchase-tx.mjs > Transaction Submission > returns txId on successful submission 22ms
+ ✓ run/__tests__/submit-purchase-tx.spec.mjs > submit-purchase-tx.mjs > Transaction Submission > returns 500 on submission error 2ms
  ✓ run/__tests__/submit-purchase-tx.spec.mjs > submit-purchase-tx.mjs > Amount Conversion > converts lovelace to ADA in response 2ms
  ✓ run/__tests__/submit-purchase-tx.spec.mjs > submit-purchase-tx.mjs > Amount Conversion > converts whole ADA amounts correctly 2ms
- ✓ run/__tests__/submit-purchase-tx.spec.mjs > submit-purchase-tx.mjs > Signature Handling > adds user signature to transaction 2ms
- ✓ run/__tests__/submit-purchase-tx.spec.mjs > submit-purchase-tx.mjs > Response Format > includes timestamp in success response 2ms
+ ✓ run/__tests__/submit-purchase-tx.spec.mjs > submit-purchase-tx.mjs > Signature Handling > adds user signature to transaction 3ms
+ ✓ run/__tests__/submit-purchase-tx.spec.mjs > submit-purchase-tx.mjs > Response Format > includes timestamp in success response 3ms
  ✓ run/__tests__/submit-purchase-tx.spec.mjs > submit-purchase-tx.mjs > Response Format > includes timestamp in error response 2ms
- ✓ run/__tests__/submit-purchase-tx.spec.mjs > submit-purchase-tx.mjs > Transaction Reconstruction > reconstructs transaction from CBOR 2ms
+ ✓ run/__tests__/submit-purchase-tx.spec.mjs > submit-purchase-tx.mjs > Transaction Reconstruction > reconstructs transaction from CBOR 3ms
 stderr | run/__tests__/blockfrost-connectivity.integration.spec.mjs
 WARNING: Old token was used without network parameter. Switching to mainnet network
 
@@ -81,6 +81,6 @@ WARNING: Old token was used without network parameter. Switching to mainnet netw
 
  Test Files  7 passed | 1 skipped (8)
       Tests  64 passed | 3 skipped (67)
-   Start at  13:55:12
-   Duration  513ms (transform 425ms, setup 123ms, collect 749ms, tests 169ms, environment 2ms, prepare 953ms)
+   Start at  14:37:46
+   Duration  522ms (transform 475ms, setup 128ms, collect 716ms, tests 187ms, environment 2ms, prepare 995ms)
 

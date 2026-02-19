@@ -1,62 +1,65 @@
+npm warn Unknown env config "verify-deps-before-run". This will stop working in the next major version of npm.
+npm warn Unknown env config "npm-globalconfig". This will stop working in the next major version of npm.
+npm warn Unknown env config "_jsr-registry". This will stop working in the next major version of npm.
 
-Running 4 tests using 4 workers
+Running 56 tests using 2 workers
 
-  ✘  1 [chromium] › tests/Browser/top-page.spec.js:16:9 › Top Page › loads the top page with welcome title (3ms)
-  ✘  3 [chromium] › tests/Browser/top-page.spec.js:22:9 › Top Page › displays navigation elements (3ms)
-  ✘  4 [chromium] › tests/Browser/top-page.spec.js:42:9 › Login Page › has a submit button (2ms)
-  ✘  2 [chromium] › tests/Browser/top-page.spec.js:33:9 › Login Page › renders the portal login form (3ms)
+  ✓   1 [admin-setup] › tests/Browser/auth/admin.setup.js:6:6 › authenticate as admin (1.1s)
+  ✓   2 [student-setup] › tests/Browser/auth/student.setup.js:6:6 › authenticate as student (1.3s)
+  ✓   3 [teacher-setup] › tests/Browser/auth/teacher.setup.js:6:6 › authenticate as teacher (971ms)
+  ✓   4 [unauthenticated] › tests/Browser/course-browsing.spec.js:10:9 › Course Browsing - Filter Panel Structure › search text input is visible (886ms)
+  ✓   5 [unauthenticated] › tests/Browser/course-browsing.spec.js:28:9 › Course Browsing - Filter Panel Structure › language filter select is present (1.1s)
+  ✓   7 [unauthenticated] › tests/Browser/course-browsing.spec.js:36:9 › Course Browsing - Filter Panel Structure › professor/teacher filter select is present (785ms)
+  ✓   6 [unauthenticated] › tests/Browser/course-browsing.spec.js:18:9 › Course Browsing - Filter Panel Structure › type filter select is present (1.1s)
+  ✓   8 [unauthenticated] › tests/Browser/course-browsing.spec.js:44:9 › Course Browsing - Filter Panel Structure › submit/filter button is present (1.1s)
+  ✓   9 [unauthenticated] › tests/Browser/course-browsing.spec.js:55:9 › Course Browsing - Course Card Structure › course cards exist or empty state is shown (1.1s)
+  ✓  10 [unauthenticated] › tests/Browser/course-browsing.spec.js:65:9 › Course Browsing - Course Card Structure › each course card has a title element (h6) (1.1s)
+  ✓  11 [unauthenticated] › tests/Browser/course-browsing.spec.js:83:9 › Course Browsing - Course Card Structure › each course card shows professor attribution ("By ..." text) (1.1s)
+  ✓  12 [unauthenticated] › tests/Browser/course-browsing.spec.js:100:9 › Course Browsing - Course Card Structure › each course card has a MUI chip for course type (1.1s)
+  ✓  13 [unauthenticated] › tests/Browser/course-browsing.spec.js:117:9 › Course Browsing - Course Card Structure › each course card has a link to /classes/{id} (1.0s)
+  ✓  15 [unauthenticated] › tests/Browser/course-browsing.spec.js:151:9 › Course Browsing - Filtering › searching for nonexistent text shows empty state message (984ms)
+  ✓  14 [unauthenticated] › tests/Browser/course-browsing.spec.js:137:9 › Course Browsing - Filtering › typing search text and submitting adds search_text to URL (1.8s)
+  ✓  16 [unauthenticated] › tests/Browser/course-browsing.spec.js:161:9 › Course Browsing - Filtering › changing type filter adds type_id to URL (1.8s)
+  ✓  17 [unauthenticated] › tests/Browser/course-browsing.spec.js:190:9 › Course Browsing - Course Detail Page › clicking view-more on a course card navigates to /classes/{id} (2.0s)
+  ✓  19 [unauthenticated] › tests/Browser/course-browsing.spec.js:234:9 › Course Browsing - Course Detail Page › detail page can be accessed directly by URL /classes/1 (595ms)
+  ✓  18 [unauthenticated] › tests/Browser/course-browsing.spec.js:212:9 › Course Browsing - Course Detail Page › detail page shows course title in h4 (2.1s)
+  ✓  20 [unauthenticated] › tests/Browser/course-browsing.spec.js:255:9 › Course Browsing - ADA Price on Listing Page (TS-01.01, TS-01.03) › listing page shows dual JPY+ADA price on paid General course card (1.0s)
+  ✓  22 [unauthenticated] › tests/Browser/course-browsing.spec.js:294:9 › Course Browsing - Pagination › pagination component is visible when more than 5 courses exist (1.1s)
+  ✓  21 [unauthenticated] › tests/Browser/course-browsing.spec.js:272:9 › Course Browsing - ADA Price on Detail Page (TS-01.02, TS-01.04) › detail page for General course shows JPY and ADA (~₳) price (1.8s)
+  ✓  24 [unauthenticated] › tests/Browser/top-page.spec.js:6:9 › Top Page › loads the top page with welcome title (651ms)
+  ✓  23 [unauthenticated] › tests/Browser/course-browsing.spec.js:311:9 › Course Browsing - Pagination › clicking page 2 adds page=2 to URL (1.3s)
+  ✓  26 [unauthenticated] › tests/Browser/top-page.spec.js:25:9 › Login Page › renders the portal login form (556ms)
+  ✓  25 [unauthenticated] › tests/Browser/top-page.spec.js:12:9 › Top Page › displays navigation elements (1.1s)
+  ✓  27 [unauthenticated] › tests/Browser/top-page.spec.js:34:9 › Login Page › has a submit button (542ms)
+  -  28 [student] › tests/Browser/auth/ada-conversion-failure.spec.js:49:9 › ADA conversion unavailable (TS-01.08 through TS-01.11) › TS-01.09: ADA equivalent price is NOT shown on the course listing page
+  -  29 [student] › tests/Browser/auth/ada-conversion-failure.spec.js:37:9 › ADA conversion unavailable (TS-01.08 through TS-01.11) › TS-01.08: JPY price is visible on the course listing page
+  -  30 [student] › tests/Browser/auth/ada-conversion-failure.spec.js:62:9 › ADA conversion unavailable (TS-01.08 through TS-01.11) › TS-01.10 and TS-01.11: ADA button is disabled, CC button is enabled on General course detail
+  -  32 [student] › tests/Browser/auth/ada-price-freshness.spec.js:79:9 › TS-01.07: ADA price drift warning › warning dialog appears when ADA rate drifts beyond threshold before checkout
+  -  31 [student] › tests/Browser/auth/ada-price-freshness.spec.js:37:9 › TS-01.06: ADA price live refresh › ADA price updates in-place when market rate changes
+  ✓  33 [student] › tests/Browser/auth/login.spec.js:13:9 › Login page rendering › renders email input (564ms)
+  ✓  34 [student] › tests/Browser/auth/login.spec.js:20:9 › Login page rendering › renders password input (611ms)
+  ✓  35 [student] › tests/Browser/auth/login.spec.js:27:9 › Login page rendering › renders submit button (572ms)
+  ✓  36 [student] › tests/Browser/auth/login.spec.js:34:9 › Login page rendering › has forgot-password link (559ms)
+  ✓  37 [student] › tests/Browser/auth/login.spec.js:42:9 › Login page rendering › has register link (548ms)
+  ✓  38 [student] › tests/Browser/auth/login.spec.js:57:9 › Successful login › student login -> URL changes away from /portal/login (941ms)
+  ✓  39 [student] › tests/Browser/auth/login.spec.js:65:9 › Successful login › teacher login -> URL changes away from /portal/login (929ms)
+  ✓  40 [student] › tests/Browser/auth/login.spec.js:80:9 › Authenticated access › authenticated user can navigate to /mypage/profile without redirect (687ms)
+  ✓  41 [student] › tests/Browser/auth/login.spec.js:94:9 › Login failures › invalid credentials -> error message visible (1.0s)
+  ✓  42 [student] › tests/Browser/auth/login.spec.js:107:9 › Login failures › empty email -> validation error visible (973ms)
+  ✓  43 [student] › tests/Browser/auth/login.spec.js:133:9 › Route protection › unauthenticated GET /mypage -> redirected to /portal/login (569ms)
+  ✓  44 [student] › tests/Browser/auth/logout.spec.js:15:5 › logged-in user can logout (2.4s)
+  ✓  46 [student] › tests/Browser/auth/registration.spec.js:14:9 › Registration form rendering › renders first_name input (582ms)
+  ✓  45 [student] › tests/Browser/auth/logout.spec.js:32:5 › after logout, /mypage redirects to login (2.7s)
+  ✓  47 [student] › tests/Browser/auth/registration.spec.js:21:9 › Registration form rendering › renders last_name input (673ms)
+  ✓  48 [student] › tests/Browser/auth/registration.spec.js:28:9 › Registration form rendering › renders country_id as native <select> (selectOption compatible) (614ms)
+  ✓  49 [student] › tests/Browser/auth/registration.spec.js:37:9 › Registration form rendering › renders email input (585ms)
+  ✓  50 [student] › tests/Browser/auth/registration.spec.js:44:9 › Registration form rendering › renders password input (585ms)
+  ✓  51 [student] › tests/Browser/auth/registration.spec.js:51:9 › Registration form rendering › renders password_confirmation input (585ms)
+  ✓  52 [student] › tests/Browser/auth/registration.spec.js:65:9 › Successful registration › fills form with unique email, submits -> redirected to /email/verify (3.0s)
+  ✓  53 [student] › tests/Browser/auth/registration.spec.js:91:9 › Validation errors › password mismatch -> error message visible (2.6s)
+  ✓  54 [student] › tests/Browser/auth/registration.spec.js:112:9 › Validation errors › submitting empty form -> validation errors visible (745ms)
+  ✓  55 [admin] › tests/Browser/admin/admin-pages.spec.js:9:9 › Admin pages load without errors › /admin/class-applications renders successfully (747ms)
+  ✓  56 [admin] › tests/Browser/admin/admin-pages.spec.js:18:9 › Admin pages load without errors › /admin/wallet-history renders successfully (618ms)
 
-
-  1) [chromium] › tests/Browser/top-page.spec.js:16:9 › Top Page › loads the top page with welcome title 
-
-    Error: browserType.launch: Executable doesn't exist at /home/sail/.cache/ms-playwright/chromium_headless_shell-1208/chrome-headless-shell-linux64/chrome-headless-shell
-    ╔═════════════════════════════════════════════════════════════════════════╗
-    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
-    ║ Please run the following command to download new browsers:              ║
-    ║                                                                         ║
-    ║     npx playwright install                                              ║
-    ║                                                                         ║
-    ║ <3 Playwright Team                                                      ║
-    ╚═════════════════════════════════════════════════════════════════════════╝
-
-  2) [chromium] › tests/Browser/top-page.spec.js:22:9 › Top Page › displays navigation elements ────
-
-    Error: browserType.launch: Executable doesn't exist at /home/sail/.cache/ms-playwright/chromium_headless_shell-1208/chrome-headless-shell-linux64/chrome-headless-shell
-    ╔═════════════════════════════════════════════════════════════════════════╗
-    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
-    ║ Please run the following command to download new browsers:              ║
-    ║                                                                         ║
-    ║     npx playwright install                                              ║
-    ║                                                                         ║
-    ║ <3 Playwright Team                                                      ║
-    ╚═════════════════════════════════════════════════════════════════════════╝
-
-  3) [chromium] › tests/Browser/top-page.spec.js:33:9 › Login Page › renders the portal login form ─
-
-    Error: browserType.launch: Executable doesn't exist at /home/sail/.cache/ms-playwright/chromium_headless_shell-1208/chrome-headless-shell-linux64/chrome-headless-shell
-    ╔═════════════════════════════════════════════════════════════════════════╗
-    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
-    ║ Please run the following command to download new browsers:              ║
-    ║                                                                         ║
-    ║     npx playwright install                                              ║
-    ║                                                                         ║
-    ║ <3 Playwright Team                                                      ║
-    ╚═════════════════════════════════════════════════════════════════════════╝
-
-  4) [chromium] › tests/Browser/top-page.spec.js:42:9 › Login Page › has a submit button ───────────
-
-    Error: browserType.launch: Executable doesn't exist at /home/sail/.cache/ms-playwright/chromium_headless_shell-1208/chrome-headless-shell-linux64/chrome-headless-shell
-    ╔═════════════════════════════════════════════════════════════════════════╗
-    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
-    ║ Please run the following command to download new browsers:              ║
-    ║                                                                         ║
-    ║     npx playwright install                                              ║
-    ║                                                                         ║
-    ║ <3 Playwright Team                                                      ║
-    ╚═════════════════════════════════════════════════════════════════════════╝
-
-  4 failed
-    [chromium] › tests/Browser/top-page.spec.js:16:9 › Top Page › loads the top page with welcome title 
-    [chromium] › tests/Browser/top-page.spec.js:22:9 › Top Page › displays navigation elements ─────
-    [chromium] › tests/Browser/top-page.spec.js:33:9 › Login Page › renders the portal login form ──
-    [chromium] › tests/Browser/top-page.spec.js:42:9 › Login Page › has a submit button ────────────
+  5 skipped
+  51 passed (33.5s)
