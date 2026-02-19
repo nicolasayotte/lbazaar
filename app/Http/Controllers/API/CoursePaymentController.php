@@ -74,6 +74,25 @@ class CoursePaymentController extends Controller
                 ], 400);
             }
 
+            $required = config('services.cardano.required_confirmations', 10);
+            try {
+                $confirmations = $this->purchaseService->getTxConfirmations($txId);
+            } catch (\Exception $e) {
+                \Log::warning("Could not check confirmations for tx {$txId}: " . $e->getMessage());
+                // Return 200 so Blockfrost doesn't retry immediately — the timeout command is the fallback
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Could not verify confirmations, will retry later'
+                ], 200);
+            }
+
+            if ($confirmations < $required) {
+                return response()->json([
+                    'success' => true,
+                    'message' => "Awaiting confirmations: {$confirmations}/{$required}"
+                ], 200); // 200 so Blockfrost doesn't retry
+            }
+
             // Confirm purchase
             $result = $this->purchaseService->confirmPurchaseTransaction($txId);
 

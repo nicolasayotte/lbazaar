@@ -258,6 +258,57 @@ class CoursePurchaseService
     }
 
     /**
+     * Query the blockchain for the number of confirmations a transaction has.
+     *
+     * @throws \Exception if the script returns an error
+     */
+    public function getTxConfirmations(string $txId): int
+    {
+        $command = $this->buildWeb3Command('run/check-tx-confirmations.mjs', [$txId]);
+        $output = $this->runCommand($command);
+        $result = json_decode($output, true);
+
+        if (($result['status'] ?? 0) !== 200) {
+            throw new Exception($result['error'] ?? 'Failed to get tx confirmations');
+        }
+
+        return (int) $result['confirmations'];
+    }
+
+    /**
+     * Mark a pending purchase as failed and update the associated wallet transaction.
+     * Idempotent: returns success=false if already failed or not found.
+     */
+    public function failPurchaseTransaction(string $txId): array
+    {
+        return DB::transaction(function () use ($txId) {
+            $history = CourseHistory::where('payment_tx_hash', $txId)
+                ->where('payment_status', 'pending')
+                ->lockForUpdate()
+                ->first();
+
+            if (!$history) {
+                return [
+                    'success' => false,
+                    'message' => 'Course history not found or not in pending state'
+                ];
+            }
+
+            $history->update(['payment_status' => 'failed']);
+
+            // Update matching wallet transaction history
+            WalletTransactionHistory::where('tx_id', $txId)
+                ->where('status', 'pending')
+                ->update(['status' => 'failed']);
+
+            return [
+                'success' => true,
+                'message' => 'Purchase marked as failed'
+            ];
+        });
+    }
+
+    /**
      * Convert JPY to ADA using exchange rate from settings
      */
     public function convertJpyToAda(float $jpyAmount): float
