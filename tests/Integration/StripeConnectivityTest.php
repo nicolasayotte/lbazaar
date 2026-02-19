@@ -23,7 +23,7 @@ class StripeConnectivityTest extends TestCase
         $stripe = new StripeClient(config('services.stripe.secret'));
 
         $intent = $stripe->paymentIntents->create([
-            'amount'   => 50,
+            'amount'   => 500,
             'currency' => 'jpy',
         ]);
 
