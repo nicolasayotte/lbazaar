@@ -54,9 +54,20 @@ describe('currency.helper', () => {
             expect(formatDualPrice(1000, 0)).toBe('¥1,000');
         });
 
+        it('does not include ADA placeholder when ADA is null (TS-01.03)', () => {
+            const result = formatDualPrice(1000, null);
+            expect(result).toBe('¥1,000');
+            expect(result).not.toContain('₳--');
+            expect(result).not.toContain('₳0');
+        });
+
         it('returns zero when JPY is missing', () => {
             expect(formatDualPrice(0, 20)).toBe('¥0');
             expect(formatDualPrice(null, 20)).toBe('¥0');
+        });
+
+        it('includes live-conversion indicator (~₳) when ADA is provided (TS-01.01, TS-01.02)', () => {
+            expect(formatDualPrice(1000, 20)).toContain('(~₳');
         });
     });
 
