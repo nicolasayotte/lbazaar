@@ -53,7 +53,8 @@ stripe listen --forward-to "$WEBHOOK_URL" 2>&1 | while IFS= read -r line; do
             SECRET_UPDATED=1
             echo ""
             echo "→ .env updated: STRIPE_WEBHOOK_SECRET=$SECRET"
-            echo "→ Run 'sail artisan config:clear' to reload (or restart sail)"
+            echo "→ Running 'sail artisan config:clear'…"
+            ( cd "$PROJECT_ROOT" && ./vendor/bin/sail artisan config:clear )
         fi
     fi
 done
