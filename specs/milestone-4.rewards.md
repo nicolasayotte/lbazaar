@@ -1,0 +1,326 @@
+# Spec: Milestone 4 — Rewards
+
+**Source:** milestone-4.md
+**Epic:** E-02
+**Depends on:** E-01 (Payments & Wallet) for wallet infrastructure (custodial and external wallet concepts), refund/access revocation triggers (F-13)
+**Generated:** 2026-02-20
+**Status:** DRAFT — requires operator review
+
+---
+
+## Domain Glossary
+
+See `specs/milestone-4.shared.md` for full glossary. Epic-specific additions below:
+
+### Key Terms
+
+**Reward Configuration**
+The per-class settings a Teacher defines to control which rewards (NFT certificate, token, both, or neither) are available for distribution to students who complete the class.
+
+**Certificate Metadata**
+The set of information a Teacher provides when configuring an NFT certificate reward — e.g., image, name, description. `[ASSUMPTION: the specific required fields depend on the existing platform minting capabilities and are not enumerated here]`
+
+**Token Reward Amount**
+The quantity of fungible tokens a Teacher specifies for distribution to each student upon airdrop.
+
+**Reward Airdrop**
+An on-chain operation initiated by a Teacher or Admin that mints and distributes configured rewards to eligible (completed) students in a class who have not yet received the reward. Can target all eligible students (batch) or a Teacher-selected subset. The Teacher's connected wallet must hold sufficient ADA to cover minting and transaction fees.
+
+**Student Self-Mint**
+An on-chain operation initiated by an eligible Student to mint their own NFT certificate, paying the minting fee (~1 ADA) from their connected external wallet. Available as an alternative when the Teacher has not yet airdropped rewards.
+
+**Reward Invalidation**
+The process of revoking a previously delivered reward, triggered when a refund revokes class access (see E-01 F-13). Includes both platform-level status change and on-chain metadata update.
+
+**Class Roster**
+The Teacher's view of all students enrolled in a class, including their completion status and reward delivery status. Does not expose student wallet details.
+
+**Wallet Priority Rule**
+When delivering rewards via airdrop, the system sends to the Student's connected external wallet if one exists; otherwise, the Student's custodial wallet is used. For student self-mint, the Student's connected external wallet is required.
+
+**Airdrop Fee Estimate**
+A pre-confirmation display showing the Teacher the total ADA cost (minting fees + network fees) for the selected airdrop before they confirm.
+
+---
+
+## System Constraints
+
+See `specs/milestone-4.shared.md` for shared constraints. Epic-specific constraints below:
+
+- **SC-E02-01**: Reward delivery failure must not alter a student's completion status. If an airdrop partially fails (some students succeed, others fail), successful deliveries are kept and failed deliveries are queued for retry.
+- **SC-E02-02**: A student must not receive duplicate rewards for the same class. The system must prevent a second airdrop or self-mint from delivering to students who already received the reward (whether via airdrop or self-mint).
+- **SC-E02-03**: Reward configuration changes to a class must not retroactively affect rewards already delivered to students who received them under the previous configuration.
+- **SC-E02-04**: Only students who have met the platform's existing completion criteria are eligible for reward airdrop or self-mint. The reward system does not define its own completion criteria.
+- **SC-E02-05**: The NFT minting policy must support on-chain metadata updates to enable revocation flags (see F-16).
+- **SC-E02-06**: The reward configuration visible to a Student is locked at the time of enrollment. If a Teacher changes reward configuration after a Student enrolls, the Student sees (and is eligible for) the configuration that existed at their enrollment time. Delivery uses the enrollment-time configuration.
+
+---
+
+## Features
+
+### F-05: NFT Certificate Reward — Teacher Configuration | MUST
+
+**F-05.1: Teacher enables NFT certificate (happy path)**
+- **GIVEN** a Teacher creating or editing a class
+- **WHEN** the Teacher enables the NFT certificate reward and provides the required certificate metadata
+- **THEN** the system saves the NFT certificate as a configured reward for that class, and the class listing indicates to students that an NFT certificate is available upon completion
+
+**F-05.2: Teacher disables or does not set NFT certificate**
+- **GIVEN** a Teacher creating or editing a class
+- **WHEN** the Teacher does not enable an NFT certificate reward
+- **THEN** no NFT-related UI is shown to students for that class
+
+**F-05.3: Teacher edits NFT certificate configuration (variant)**
+- **GIVEN** a Teacher editing a class that already has an NFT certificate reward configured
+- **WHEN** the Teacher modifies the certificate metadata
+- **THEN** the updated configuration applies only to students who enroll after the change; students already enrolled see and receive the configuration that existed at their enrollment time (see SC-E02-03, SC-E02-06)
+
+**F-05.4: Teacher provides incomplete certificate metadata (failure)**
+- **GIVEN** a Teacher enabling the NFT certificate reward
+- **WHEN** the Teacher submits the configuration with missing required fields
+- **THEN** the system rejects the save with a clear indication of which fields are missing, and the reward is not enabled until all required fields are provided
+
+---
+
+### F-06: Token Reward — Teacher Configuration | MUST
+
+**F-06.1: Teacher enables token reward (happy path)**
+- **GIVEN** a Teacher creating or editing a class
+- **WHEN** the Teacher enables the token reward and specifies the reward amount
+- **THEN** the system saves the token reward configuration for that class, and the class listing indicates to students that a token reward is available upon completion
+
+**F-06.2: Teacher disables or does not set token reward**
+- **GIVEN** a Teacher creating or editing a class
+- **WHEN** the Teacher does not enable a token reward
+- **THEN** no token-reward-related UI is shown to students for that class
+
+**F-06.3: Teacher edits token reward amount (variant)**
+- **GIVEN** a Teacher editing a class that already has a token reward configured
+- **WHEN** the Teacher changes the reward amount
+- **THEN** the updated amount applies only to students who enroll after the change; students already enrolled are eligible for the amount that existed at their enrollment time (see SC-E02-03, SC-E02-06)
+
+**F-06.4: Teacher specifies invalid token amount (failure)**
+- **GIVEN** a Teacher enabling the token reward
+- **WHEN** the Teacher enters a non-positive, non-numeric, or out-of-range value for the reward amount
+- **THEN** the system rejects the save with a validation message, and the reward is not enabled until a valid amount is provided `[ASSUMPTION: minimum and maximum token reward amounts are defined by the platform — this spec does not set specific bounds]`
+
+---
+
+### F-07: Combined Reward Configuration | MUST
+
+**Requires:** F-05 (NFT Certificate Configuration), F-06 (Token Reward Configuration)
+
+**F-07.1: Teacher sets both NFT and token reward**
+- **GIVEN** a Teacher creating or editing a class
+- **WHEN** the Teacher enables both the NFT certificate and the token reward
+- **THEN** both rewards are saved independently, the class listing reflects both, and both are distributed together in a single airdrop operation
+
+**F-07.2: Teacher enables one reward, disables the other (variant)**
+- **GIVEN** a Teacher editing a class that has both rewards configured
+- **WHEN** the Teacher disables one reward type while keeping the other
+- **THEN** only the enabled reward is distributed in future airdrops; the disabled reward type is no longer shown to students for that class
+
+---
+
+### F-10: Reward Airdrop — Teacher/Admin Initiated | MUST
+
+**Requires:** F-05 (NFT Certificate Configuration), F-06 (Token Reward Configuration), E-01 F-12 (Wallet Flow Verification — Teacher must have wallet connected)
+
+**F-10.1: Teacher initiates batch airdrop to all eligible students (happy path)**
+- **GIVEN** a Teacher with a connected external wallet viewing a class roster, where one or more students have completed the class and have not yet received rewards
+- **WHEN** the Teacher initiates the airdrop action for all eligible students
+- **THEN** the system displays a fee estimate (total ADA for minting + network fees), the Teacher confirms, and the system mints and distributes the configured rewards to all eligible students. Each student receives rewards to their wallet per the wallet priority rule. The Teacher sees a progress indicator and a summary of successful deliveries. The fees are deducted from the Teacher's connected wallet.
+
+**F-10.2: Teacher initiates airdrop to selected students (variant)**
+- **GIVEN** a Teacher viewing a class roster with multiple eligible students
+- **WHEN** the Teacher selects specific students from the roster and initiates the airdrop
+- **THEN** the system displays a fee estimate for the selected subset only, the Teacher confirms, and rewards are distributed only to the selected students. Unselected eligible students remain eligible for a future airdrop.
+
+**F-10.3: Admin initiates airdrop (variant)**
+- **GIVEN** an Admin viewing a class roster for any class with rewards configured
+- **WHEN** the Admin initiates the airdrop action (batch or individual select)
+- **THEN** the behavior is identical to F-10.1/F-10.2, except that fees are paid from the platform wallet, not the Teacher's wallet. Admins can airdrop for any class.
+
+**F-10.4: Airdrop with no eligible students (edge case)**
+- **GIVEN** a Teacher viewing a class roster where no students have completed the class, or all completed students have already received rewards (via airdrop or self-mint)
+- **WHEN** the Teacher attempts to initiate an airdrop
+- **THEN** the action is disabled, and the Teacher sees a message explaining there are no eligible students
+
+**F-10.5: Teacher has insufficient ADA for airdrop fees (failure)**
+- **GIVEN** a Teacher with a connected wallet who initiates an airdrop
+- **WHEN** the fee estimate exceeds the ADA balance in the Teacher's wallet
+- **THEN** the airdrop is not submitted, and the Teacher sees the fee estimate alongside their current balance and the shortfall amount
+
+**F-10.6: Partial airdrop failure (failure)**
+- **GIVEN** a Teacher who has confirmed an airdrop for multiple students
+- **WHEN** the on-chain transaction succeeds for some students but fails for others
+- **THEN** successful deliveries are kept, failed deliveries are clearly listed with failure reasons, and the Teacher can retry the airdrop for failed students only. No student's completion status is affected (see SC-E02-01).
+
+**F-10.7: Complete airdrop failure (failure)**
+- **GIVEN** a Teacher who has confirmed an airdrop
+- **WHEN** the on-chain transaction fails entirely
+- **THEN** the Teacher is informed of the failure with a clear message, no rewards are delivered, no fees are charged, and the Teacher can retry
+
+**F-10.8: Teacher views class roster (prerequisite)**
+- **GIVEN** a Teacher who created a class
+- **WHEN** the Teacher navigates to the class roster
+- **THEN** the Teacher sees a list of enrolled students with: completion status, reward delivery status (not eligible / eligible / delivered / self-minted / failed), and the airdrop action (enabled when eligible students exist). Student wallet details are not shown.
+
+**F-10.9: Duplicate airdrop prevention (edge case)**
+- **GIVEN** a Teacher who has already airdropped rewards to some students
+- **WHEN** the Teacher initiates another airdrop
+- **THEN** only eligible students (completed, not yet rewarded by any mechanism including self-mint) are included. Students who already received rewards are skipped (see SC-E02-02).
+
+**F-10.10: Student completes class with no rewards configured (edge case)**
+- **GIVEN** a Student who completes a class that has no rewards configured
+- **WHEN** completion criteria are met
+- **THEN** no reward-related UI or airdrop action is shown. The class roster does not display reward columns.
+
+**F-10.11: Teacher wallet not connected (failure)**
+- **GIVEN** a Teacher without a connected external wallet
+- **WHEN** the Teacher attempts to initiate an airdrop
+- **THEN** the action is blocked, and the Teacher is prompted to connect a wallet before proceeding
+
+---
+
+### F-18: Student Self-Mint | SHOULD
+
+**Requires:** F-05 (NFT Certificate Configuration), E-01 F-12 (Wallet Flow Verification — Student must have external wallet connected)
+
+**F-18.1: Eligible student self-mints certificate (happy path)**
+- **GIVEN** a Student with a connected external wallet who has completed a class with an NFT certificate reward configured, and has not yet received the certificate (neither via airdrop nor previous self-mint)
+- **WHEN** the Student initiates the self-mint action from the class completion page or rewards view
+- **THEN** the system displays the minting fee (~1 ADA), the Student confirms in their wallet, the NFT certificate is minted and delivered to the Student's external wallet, and the Student sees confirmation of receipt
+
+**F-18.2: Student self-mints token reward (happy path)**
+- **GIVEN** a Student with a connected external wallet who has completed a class with a token reward configured, and has not yet received the token reward
+- **WHEN** the Student initiates the self-mint action
+- **THEN** the system displays the minting fee, the Student confirms, and the token reward is delivered to the Student's external wallet
+
+**F-18.3: Student without external wallet attempts self-mint (failure)**
+- **GIVEN** a Student without a connected external wallet who is eligible for self-mint
+- **WHEN** the Student attempts self-mint
+- **THEN** the action is blocked, and the Student is prompted to connect a supported wallet. The Student is informed they can alternatively wait for the Teacher to airdrop rewards to their custodial wallet.
+
+**F-18.4: Student has insufficient ADA for minting fee (failure)**
+- **GIVEN** a Student with a connected external wallet containing less ADA than the minting fee
+- **WHEN** the Student attempts self-mint
+- **THEN** the mint is not submitted, the Student sees the fee and their shortfall, and is informed they can wait for the Teacher airdrop instead
+
+**F-18.5: Student already received reward (edge case)**
+- **GIVEN** a Student who already received the reward (via airdrop or previous self-mint)
+- **WHEN** the Student views the class completion page
+- **THEN** the self-mint option is not shown; the Student sees their existing reward with delivery details (see SC-E02-02)
+
+**F-18.6: Self-mint fails on-chain (failure)**
+- **GIVEN** a Student who has confirmed a self-mint transaction
+- **WHEN** the on-chain transaction fails
+- **THEN** the Student is informed of the failure, no fee is charged, and the Student can retry
+
+---
+
+### F-19: Reward Eligibility Notification | SHOULD
+
+**Requires:** F-05 (NFT Certificate Configuration), F-06 (Token Reward Configuration)
+
+**F-19.1: Student notified of eligibility on completion (happy path)**
+- **GIVEN** a Student who completes a class with rewards configured
+- **WHEN** the platform's completion criteria are met
+- **THEN** the Student sees a notification informing them they are eligible for rewards, explaining that the Teacher will distribute them via airdrop, and — if the Student has a connected external wallet — offering the option to self-mint immediately by paying the minting fee
+
+**F-19.2: Eligibility shown on completed class page (variant)**
+- **GIVEN** a Student who has completed a class with rewards configured but has not yet received them
+- **WHEN** the Student views the completed class page
+- **THEN** the page displays an "Eligible for rewards" badge with a description of the configured rewards, and the self-mint option if applicable
+
+**F-19.3: Eligibility cleared after reward receipt (variant)**
+- **GIVEN** a Student who was eligible for rewards and has now received them (via airdrop or self-mint)
+- **WHEN** the Student views the completed class page
+- **THEN** the eligibility badge is replaced with the reward delivery confirmation and details
+
+---
+
+### F-16: Reward Invalidation on Refund | SHOULD
+
+**Requires:** E-01 F-13 (Refund & Access Revocation)
+
+**F-16.1: NFT certificate revoked on-chain and in platform (happy path)**
+- **GIVEN** a Student whose class access has been revoked via refund (E-01 F-13), and who received an NFT certificate for that class
+- **WHEN** the refund triggers reward invalidation
+- **THEN** the NFT certificate is marked as revoked in the platform's records, an on-chain metadata update is submitted to flag the NFT as revoked (see SC-E02-05), the Student is notified that the certificate is no longer valid, and the Admin sees the revocation status
+
+**F-16.2: On-chain revocation metadata update fails (failure)**
+- **GIVEN** the platform has attempted to update on-chain metadata to flag an NFT as revoked
+- **WHEN** the on-chain transaction fails
+- **THEN** the platform-level revocation stands, the on-chain update is queued for retry, and the Admin is alerted that the on-chain revocation is pending
+
+**F-16.3: Token reward flagged for clawback (happy path)**
+- **GIVEN** a Student whose class access has been revoked via refund, and who received a token reward for that class
+- **WHEN** the refund triggers reward invalidation
+- **THEN** the token reward is flagged for clawback in the platform's records, and the Admin is notified. `[ASSUMPTION: on-chain token clawback is not feasible without the student's cooperation — the platform records the debt but does not forcibly reclaim tokens]`
+
+**F-16.4: Refund for class with no rewards delivered (edge case)**
+- **GIVEN** a Student whose class access is revoked via refund, and no rewards were delivered (either not configured or not yet airdropped)
+- **WHEN** the refund is processed
+- **THEN** no reward invalidation action is taken
+
+**F-16.5: Refund after airdrop initiated but before delivery completes (edge case)**
+- **GIVEN** a Student whose class access is revoked via refund, and an airdrop is currently in progress that includes this student
+- **WHEN** the refund is processed
+- **THEN** the student is excluded from the in-progress airdrop if possible; if the reward has already been delivered on-chain, the invalidation flow (F-16.1/F-16.3) applies
+
+---
+
+### F-17: My Rewards View | SHOULD
+
+**Requires:** F-10 (Reward Airdrop)
+
+**F-17.1: Student views all earned rewards (happy path)**
+- **GIVEN** a Student who has received one or more rewards across multiple classes
+- **WHEN** the Student navigates to their rewards view
+- **THEN** the Student sees an aggregated list of all earned rewards including: class name, reward type (NFT certificate or token), amount (for tokens), delivery date, delivery status (delivered / pending / failed), and wallet destination (custodial or external address)
+
+**F-17.2: Student with no rewards (edge case)**
+- **GIVEN** a Student who has not received any rewards
+- **WHEN** the Student navigates to their rewards view
+- **THEN** the Student sees an empty state with guidance about how rewards are earned (complete classes that have rewards configured)
+
+**F-17.3: Revoked reward shown in history (variant)**
+- **GIVEN** a Student who had a reward revoked due to a refund
+- **WHEN** the Student views their rewards
+- **THEN** the revoked reward is shown with a "Revoked" status, visually distinguished from active rewards
+
+**F-17.4: NFT certificate detail view (variant)**
+- **GIVEN** a Student viewing their rewards list
+- **WHEN** the Student selects a specific NFT certificate
+- **THEN** the Student sees the certificate metadata (image, name, description), the on-chain transaction reference, and the wallet address it was delivered to
+
+---
+
+## Open Questions
+
+- **OQ-01**: What specific metadata fields are required from a Teacher to configure an NFT certificate reward? (See F-05.1, Certificate Metadata)
+- ~~**OQ-02**: Resolved — teacher/admin-initiated airdrop is the only delivery mechanism. No automatic delivery on completion.~~
+- ~~**OQ-03**: Resolved — external wallet takes auto-priority when connected.~~
+- **OQ-04**: What are the minimum and maximum bounds for token reward amounts? (See F-06.4)
+- ~~**OQ-05**: Resolved — on-chain metadata flag for NFT revocation, in addition to platform-level status.~~
+- **OQ-06**: Does the minting policy currently support on-chain metadata updates for revocation? If not, what changes are needed? (See SC-E02-05)
+- **OQ-07**: Can an airdrop include both NFT certificates and token rewards in a single on-chain transaction, or does each reward type require a separate transaction?
+- ~~**OQ-08**: Resolved — Admin-initiated airdrops funded by platform wallet.~~
+- ~~**OQ-09**: Resolved — students can self-mint both NFTs and tokens.~~
+- **OQ-10**: How does the system snapshot reward configuration at enrollment time? Is there a versioning mechanism, or is the config copied per-enrollment? (See SC-E02-06)
+
+## Assumptions
+
+- **A-01**: (F-05.1) Required certificate metadata fields depend on existing platform minting capabilities and are not enumerated in this spec.
+- **A-02**: (F-06.4) Minimum and maximum token reward amounts are defined by the platform.
+- **A-03**: Rewards are delivered to the Student's connected external wallet if one exists; otherwise, the custodial wallet is used (wallet priority rule).
+- **A-04**: ~~Resolved — teacher/admin-initiated airdrop is the only delivery mechanism.~~
+- **A-05**: (F-10) Retry policy for failed deliveries is an operational configuration, not defined in this spec.
+- **A-06**: (F-16.1, SC-E02-05) NFT revocation uses both platform-level status and on-chain metadata update. The minting policy must support this.
+- **A-07**: (F-16.3) On-chain token clawback is not feasible without student cooperation. The platform records the debt but does not forcibly reclaim tokens.
+- **A-08**: (F-10.1) Teacher bears all on-chain costs (minting + network fees) for airdrops. A fee estimate is shown before confirmation.
+- **A-09**: ~~Resolved — Admin-initiated airdrops funded by platform wallet. Confirmed.~~
+- **A-10**: (F-18) Student self-mint fee is ~1 ADA, paid from the Student's connected external wallet. Requires external wallet connection.
+- **A-11**: ~~Resolved — students can self-mint both NFTs and tokens. Confirmed.~~
+- **A-12**: (SC-E02-06) Reward configuration is locked at enrollment time. Students see and receive the config that existed when they enrolled. Implementation mechanism (snapshotting, versioning) is not specified.

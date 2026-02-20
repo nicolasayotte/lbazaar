@@ -1,0 +1,299 @@
+# Spec: Milestone 4 — Payments & Wallet
+
+**Source:** milestone-4.md
+**Epic:** E-01
+**Depends on:** None
+**Generated:** 2026-02-20
+**Status:** DRAFT — requires operator review
+
+---
+
+## Domain Glossary
+
+See `specs/milestone-4.shared.md` for full glossary. Epic-specific additions below:
+
+### Key Terms
+
+**ADA/JPY Exchange Rate**
+The market-rate conversion factor used to derive an ADA price from the canonical JPY price of a class. Sourced from an external rate provider.
+
+**Price Drift**
+The percentage change in the ADA/JPY exchange rate between the moment a Student first views a class price and the moment they initiate checkout.
+
+**Pending Payment**
+The state of an ADA transaction that has been submitted on-chain but has not yet reached the required confirmation threshold (SC-02). The system displays progressive confirmation count (X/10) to the Student.
+
+**Quote Window**
+The configurable duration for which a firm ADA price quote is held after a Student initiates checkout. If the window expires before transaction submission, the quote is invalidated and the Student must re-initiate. `[ASSUMPTION: default 5 minutes — operator-configurable]`
+
+**Supported Wallet Set**
+The enumerated list of external browser wallets the platform supports for ADA transactions. `[ASSUMPTION: the specific wallets are defined elsewhere in the platform — this spec does not enumerate them]`
+
+---
+
+## System Constraints
+
+See `specs/milestone-4.shared.md` for shared constraints. Epic-specific constraints below:
+
+- **SC-E01-01**: When a Student initiates ADA checkout, the system derives a firm ADA price quote from the current exchange rate. This quote is held for a configurable window (default: 5 minutes). The Student must confirm the quoted ADA amount before the transaction is submitted. If the quote window expires, the Student must re-initiate checkout to receive a fresh quote.
+- **SC-E01-02**: A Student must not be able to gain access to a class without a fully confirmed payment (either ADA with 10 confirmations, or Stripe with successful charge). No optimistic access grants.
+- **SC-E01-03**: A Student must not be able to submit a duplicate payment for a class they have already purchased or have a pending payment for.
+
+---
+
+## Features
+
+### F-01: Class Pricing in ADA | MUST
+
+**F-01.1: ADA price display (happy path)**
+- **GIVEN** a Teacher has created a class with a price set in JPY
+- **WHEN** a Student views the class listing or detail page
+- **THEN** the system displays both the JPY price and a current ADA equivalent, clearly labeling that the ADA amount is a live conversion
+
+**F-01.2: ADA price freshness**
+- **GIVEN** a Student is viewing a class with a displayed ADA price
+- **WHEN** the market rate changes while the student is on the page
+- **THEN** the displayed ADA price refreshes every 60 seconds, and the student is informed if the rate changes by more than 5% between page load and checkout initiation
+
+**F-01.3: ADA conversion unavailable (failure)**
+- **GIVEN** the system cannot retrieve a current ADA/JPY exchange rate
+- **WHEN** a Student views a class listing or detail page
+- **THEN** the JPY price is displayed normally, the ADA price area shows an unavailability notice, and the ADA payment path is temporarily disabled while the credit card path remains fully functional
+
+**F-01.4: ADA price display for zero-price class (edge case)**
+- **GIVEN** a Teacher has created a free class (0 JPY)
+- **WHEN** a Student views the class
+- **THEN** no ADA price conversion is shown, no payment flow is presented, and the Student can access the class directly `[ASSUMPTION: free classes exist in the platform — if not, this scenario is N/A]`
+
+---
+
+### F-02: Purchase Class with ADA | MUST
+
+**Requires:** F-01 (Class Pricing in ADA), F-12 (Wallet Flow Verification)
+
+**F-02.1: Successful ADA purchase (happy path)**
+- **GIVEN** a Student with a connected external wallet containing sufficient ADA, viewing a class detail page
+- **WHEN** the Student selects ADA payment, receives a firm ADA price quote, and confirms the transaction in their wallet within the quote window
+- **THEN** the system displays a pending state showing progressive confirmation count (X/10), the Student cannot submit a duplicate payment for the same class, and the class is not yet accessible
+
+**F-02.2: ADA transaction confirmed**
+- **GIVEN** a Student has a pending ADA payment for a class
+- **WHEN** the transaction reaches 10 on-chain confirmations
+- **THEN** the system grants the Student access to the class, updates the student's purchase history, and displays a confirmation with the transaction reference
+
+**F-02.3: ADA transaction rejected (failure)**
+- **GIVEN** a Student has a pending ADA payment for a class
+- **WHEN** the transaction fails on-chain (rejected by the network)
+- **THEN** the system detects the failure promptly, returns the student to a pre-purchase state for that class, displays a clear failure message with guidance to retry, and no access is granted. There is no timeout — the system monitors the on-chain transaction until it either confirms or fails.
+
+**F-02.4: Insufficient ADA (failure)**
+- **GIVEN** a Student with a connected external wallet containing less ADA than the current class price
+- **WHEN** the Student attempts to initiate an ADA payment
+- **THEN** the transaction is not submitted, the Student sees a message indicating the shortfall amount, and the system suggests the credit card alternative
+
+**F-02.5: No wallet connected (edge case)**
+- **GIVEN** a Student without a connected external wallet
+- **WHEN** the Student selects the ADA payment option
+- **THEN** the system prompts the Student to connect a supported wallet before proceeding, and does not display the pending/confirmation flow until a wallet is connected
+
+**F-02.6: Student already owns class (edge case)**
+- **GIVEN** a Student who has already purchased and been granted access to a class
+- **WHEN** the Student views the class detail page
+- **THEN** no purchase option (ADA or credit card) is presented; the Student sees their existing access status
+
+**F-02.7: Concurrent purchase attempt (edge case)**
+- **GIVEN** a Student with a pending ADA payment for a class
+- **WHEN** the Student opens a second browser tab and attempts to initiate another ADA payment for the same class
+- **THEN** the second attempt is blocked, and the Student is informed that a payment is already pending
+
+**F-02.8: Quote window expires before confirmation (edge case)**
+- **GIVEN** a Student who has initiated ADA checkout and received a firm quote
+- **WHEN** the Student does not confirm the transaction within the quote window
+- **THEN** the quote is invalidated, the Student is informed that the price has expired, and the Student must re-initiate checkout to receive a fresh quote at the current rate
+
+---
+
+### F-03: Purchase Class with Credit Card (Stripe) | MUST
+
+**F-03.1: Successful credit card purchase (happy path)**
+- **GIVEN** a Student viewing a class detail page
+- **WHEN** the Student selects credit card payment and completes the Stripe checkout flow
+- **THEN** the system grants immediate access to the class, updates the Student's purchase history, and displays a confirmation with a payment receipt
+
+**F-03.2: Credit card payment declined (failure)**
+- **GIVEN** a Student in the Stripe checkout flow
+- **WHEN** the payment is declined by the card issuer
+- **THEN** the Student sees a clear error message from the checkout flow, no access is granted, and the Student can retry or switch to ADA payment
+
+**F-03.3: Stripe checkout abandoned (edge case)**
+- **GIVEN** a Student who has initiated but not completed the Stripe checkout flow
+- **WHEN** the Student closes or navigates away from the checkout
+- **THEN** no payment is processed, no access is granted, and the Student can re-initiate purchase from the class page
+
+**F-03.4: Stripe service unavailable (failure)**
+- **GIVEN** a Student viewing a purchasable class
+- **WHEN** the Stripe checkout flow cannot be initiated due to a Stripe service outage or configuration error
+- **THEN** the credit card option is visually disabled with an explanation, and the ADA payment option remains functional (see F-04.2)
+
+**F-03.5: Student already owns class (edge case)**
+- **GIVEN** a Student who has already purchased a class
+- **WHEN** the Student attempts to navigate to the Stripe checkout for that class directly (e.g., via URL manipulation)
+- **THEN** no checkout session is created, and the Student is redirected to their existing class access
+
+---
+
+### F-04: Parallel Payment Path Presentation | MUST
+
+**Requires:** F-01 (Class Pricing in ADA), F-02 (Purchase Class with ADA), F-03 (Purchase Class with Credit Card)
+
+**F-04.1: Both payment options visible**
+- **GIVEN** a Student viewing any purchasable class
+- **WHEN** the class detail or purchase UI is rendered
+- **THEN** both the ADA payment option and the credit card payment option are clearly presented as parallel choices, with neither prioritized or hidden
+
+**F-04.2: One path unavailable, other remains functional (degradation)**
+- **GIVEN** a Student viewing a purchasable class and one payment method is temporarily unavailable (e.g., ADA conversion rate unavailable, or Stripe is down)
+- **WHEN** the Student views the payment options
+- **THEN** the unavailable method is visually disabled with an explanation, and the available method remains fully functional
+
+**F-04.3: Both paths unavailable (degradation)**
+- **GIVEN** both ADA price conversion and Stripe are simultaneously unavailable
+- **WHEN** a Student views a purchasable class
+- **THEN** the Student sees a clear message that purchases are temporarily unavailable, and no payment can be initiated
+
+**F-04.4: Teacher views own class pricing (actor boundary)**
+- **GIVEN** a Teacher viewing the detail page of a class they created
+- **WHEN** the page renders
+- **THEN** the Teacher sees a read-only preview of how the pricing and payment options appear to Students, but cannot initiate a purchase. The preview is clearly labeled as a Teacher view.
+
+---
+
+### F-13: Refund & Access Revocation | SHOULD
+
+**Requires:** F-02 (Purchase Class with ADA), F-03 (Purchase Class with Credit Card)
+**Cross-epic dependency:** E-02 (Rewards) must define certificate/token invalidation behavior when a refund revokes class access.
+
+**F-13.1: Stripe refund initiated by Admin (happy path)**
+- **GIVEN** a Student who purchased a class via credit card
+- **WHEN** an Admin initiates a refund for that purchase
+- **THEN** the Stripe refund is processed, the Student's access to the class is revoked, and both the Admin and Student are notified of the revocation
+
+**F-13.2: ADA refund initiated by Admin (happy path)**
+- **GIVEN** a Student who purchased a class via ADA
+- **WHEN** an Admin initiates a refund for that purchase
+- **THEN** an ADA return transaction is submitted to the Student's wallet, class access is revoked upon transaction confirmation, and both the Admin and Student are notified `[ASSUMPTION: ADA refunds go to the wallet address that originated the purchase — if the student has since disconnected that wallet, the refund still targets the original address]`
+
+**F-13.3: Refund with earned rewards (edge case)**
+- **GIVEN** a Student who purchased a class, completed it, and received NFT certificate and/or token rewards
+- **WHEN** an Admin initiates a refund for that purchase
+- **THEN** class access is revoked, and the system flags the associated rewards for invalidation/clawback (defined in E-02). The Admin is warned before confirming the refund that rewards have been issued.
+
+**F-13.4: Stripe chargeback received (failure)**
+- **GIVEN** a Student who purchased a class via credit card
+- **WHEN** the platform receives a chargeback notification from Stripe
+- **THEN** the Student's access to the class is immediately revoked, any associated rewards are flagged for invalidation (defined in E-02), and the Admin is notified for review
+
+**F-13.5: Refund for class not yet accessed (edge case)**
+- **GIVEN** a Student who purchased a class but has not started or completed it
+- **WHEN** an Admin initiates a refund
+- **THEN** the payment is refunded, access is revoked, and no reward invalidation is needed since none were earned
+
+---
+
+### F-14: Cardano Network Status Indicator | SHOULD
+
+**Requires:** F-02 (Purchase Class with ADA)
+
+**F-14.1: Network healthy (happy path)**
+- **GIVEN** the platform can communicate with the Cardano network and recent blocks are being produced normally
+- **WHEN** a Student views the ADA payment option
+- **THEN** no special indicator is shown; the ADA payment path functions normally
+
+**F-14.2: Network degraded (warning)**
+- **GIVEN** the platform detects that the Cardano network is congested or responding slowly (e.g., block production delays, API timeouts)
+- **WHEN** a Student views the ADA payment option
+- **THEN** a warning indicator is displayed advising the Student that ADA transactions may take longer than usual to confirm, and the credit card alternative is highlighted
+
+**F-14.3: Network unreachable (failure)**
+- **GIVEN** the platform cannot communicate with the Cardano network
+- **WHEN** a Student views the ADA payment option
+- **THEN** the ADA payment path is disabled with an explanation that the Cardano network is temporarily unreachable, and the credit card path remains functional (see F-04.2)
+
+---
+
+### F-15: Purchase History | SHOULD
+
+**Requires:** F-02 (Purchase Class with ADA), F-03 (Purchase Class with Credit Card)
+
+**F-15.1: Student views purchase history (happy path)**
+- **GIVEN** a Student who has purchased one or more classes
+- **WHEN** the Student navigates to their purchase history
+- **THEN** the Student sees a list of all past purchases including: class name, payment method (ADA or credit card), amount paid (in the original currency), date, and transaction reference (on-chain tx hash for ADA, Stripe receipt for credit card)
+
+**F-15.2: Student with no purchases (edge case)**
+- **GIVEN** a Student who has not purchased any classes
+- **WHEN** the Student navigates to their purchase history
+- **THEN** the Student sees an empty state with guidance to browse available classes
+
+**F-15.3: Purchase history includes pending transactions (variant)**
+- **GIVEN** a Student with a pending ADA payment
+- **WHEN** the Student views their purchase history
+- **THEN** the pending transaction is shown with its current confirmation status (X/10) and is visually distinguished from completed purchases
+
+**F-15.4: Purchase history includes refunded purchases (variant)**
+- **GIVEN** a Student who has had a purchase refunded
+- **WHEN** the Student views their purchase history
+- **THEN** the refunded purchase is shown with a "Refunded" status and the original payment details are preserved for reference
+
+---
+
+### F-12: Wallet Flow Verification | MUST
+
+**F-12.1: External wallet connects successfully**
+- **GIVEN** a user (Student or Teacher) with a supported external browser wallet installed
+- **WHEN** the user initiates wallet connection from the platform
+- **THEN** the wallet connects, the platform displays the connected wallet address, and the user can proceed to wallet-dependent actions
+
+**F-12.2: Unsupported wallet (failure)**
+- **GIVEN** a user attempting to connect a wallet that is not in the supported set
+- **WHEN** the connection is attempted
+- **THEN** the user sees a clear message listing the supported wallets
+
+**F-12.3: Wallet disconnects mid-session (edge case)**
+- **GIVEN** a user with a connected external wallet in an active session
+- **WHEN** the wallet is disconnected (browser extension disabled, user manually disconnects)
+- **THEN** the platform detects the disconnection, disables wallet-dependent actions, and prompts the user to reconnect
+
+**F-12.4: Wallet connected but wrong network (failure)**
+- **GIVEN** a user with a supported external wallet connected to a network other than the expected Cardano network (e.g., testnet vs. mainnet)
+- **WHEN** the user attempts a wallet-dependent action
+- **THEN** the action is blocked, and the user is informed which network is required `[ASSUMPTION: the platform operates on a single defined Cardano network — operator must confirm which one]`
+
+**F-12.5: Wallet disconnects during pending ADA transaction (edge case)**
+- **GIVEN** a Student with a pending ADA payment for a class
+- **WHEN** the wallet disconnects before the transaction reaches confirmation
+- **THEN** the pending transaction continues to be monitored on-chain regardless of wallet connection state, and the Student can reconnect to view the transaction status
+
+---
+
+## Open Questions
+
+- **OQ-01**: What are the currently supported external wallets? The spec references them as a set but does not enumerate them.
+- ~~**OQ-02**: Resolved — 60s refresh, 5% drift confirmed.~~
+- ~~**OQ-03**: Resolved — no timeout. System monitors until on-chain success or failure.~~
+- **OQ-04**: Which Cardano network does the platform operate on (mainnet, preprod, preview)? (See F-12.4)
+- **OQ-05**: Do free classes (0 JPY) exist in the current platform? (See F-01.4)
+- ~~**OQ-06**: Resolved — firm quote with configurable window, default 5 minutes.~~
+- ~~**OQ-07**: Resolved — Admin only.~~
+- **OQ-08**: For ADA refunds, what happens if the return transaction fails on-chain? (See F-13.2)
+
+## Assumptions
+
+- **A-01**: (SC-04) Japan-specific Stripe compliance is handled at the account configuration level and does not introduce additional in-app UI beyond standard Stripe checkout components.
+- **A-02**: ~~Resolved — confirmed. ADA price refresh interval is 60 seconds; drift threshold for alert is 5%.~~
+- ~~**A-03**: Removed — no timeout concept. Transactions are monitored indefinitely until on-chain resolution.~~
+- **A-04**: (F-01.4) Free classes may exist; if they do, no payment flow is shown.
+- **A-05**: (F-12.4) The platform operates on a single defined Cardano network.
+- **A-06**: (SC-E01-01) Firm ADA price quote held for a configurable window, default 5 minutes.
+- **A-07**: (F-13.2) ADA refunds target the originating wallet address regardless of current wallet connection state.
+- **A-08**: ~~Resolved — confirmed. Refunds are Admin-initiated only.~~
