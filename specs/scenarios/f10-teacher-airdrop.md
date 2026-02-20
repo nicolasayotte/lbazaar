@@ -473,15 +473,13 @@
 
 ## Coverage Summary
 
-| Spec Scenario | Test Scenarios | Categories Covered |
-|---------------|----------------|--------------------|
-| F-10.1 | TS-10.01, TS-10.02, TS-10.03, TS-10.04, TS-10.04a, TS-10.15, TS-10.16, TS-10.18 | Happy Path, Edge Case |
-| F-10.2 | TS-10.05, TS-10.06 | Failure, Boundary |
-| F-10.3 | TS-10.07, TS-10.08, TS-10.09, TS-10.19, TS-10.20, TS-10.21 | Failure, Edge Case |
-| (implicit) | TS-10.10 | Edge Case |
-| (implicit — F-05 interaction) | TS-10.11 | Constraint Validation |
-| (implicit — authorization) | TS-10.12, TS-10.13 | Constraint Validation |
-| SC-02 / SC-03 | TS-10.14, TS-10.17 | Constraint Validation |
+**F-10.1** — TS-10.01, TS-10.02, TS-10.03, TS-10.04, TS-10.04a, TS-10.15, TS-10.16, TS-10.18 (Happy Path, Edge Case)
+**F-10.2** — TS-10.05, TS-10.06 (Failure, Boundary)
+**F-10.3** — TS-10.07, TS-10.08, TS-10.09, TS-10.19, TS-10.20, TS-10.21 (Failure, Edge Case)
+**(implicit)** — TS-10.10 (Edge Case)
+**(implicit — F-05 interaction)** — TS-10.11 (Constraint Validation)
+**(implicit — authorization)** — TS-10.12, TS-10.13 (Constraint Validation)
+**SC-02 / SC-03** — TS-10.14, TS-10.17 (Constraint Validation)
 
 **Total spec scenarios in scope:** 3
 **Total test scenarios generated:** 21

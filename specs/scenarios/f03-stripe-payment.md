@@ -261,12 +261,10 @@
 
 ## Coverage Summary
 
-| Spec Scenario | Test Scenarios | Categories Covered |
-|---------------|----------------|--------------------|
-| F-03.1 | TS-03.01, TS-03.02, TS-03.03, TS-03.04 | Happy Path, Constraint Validation |
-| F-03.2 | TS-03.05, TS-03.06, TS-03.07, TS-03.08 | Failure, Edge Case |
-| F-03.3 | TS-03.09, TS-03.10, TS-03.11 | Edge Case |
-| (implicit) | TS-03.12 | Edge Case |
+**F-03.1** — TS-03.01, TS-03.02, TS-03.03, TS-03.04 (Happy Path, Constraint Validation)
+**F-03.2** — TS-03.05, TS-03.06, TS-03.07, TS-03.08 (Failure, Edge Case)
+**F-03.3** — TS-03.09, TS-03.10, TS-03.11 (Edge Case)
+**(implicit)** — TS-03.12 (Edge Case)
 
 **Total spec scenarios in scope:** 3
 **Total test scenarios generated:** 12

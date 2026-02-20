@@ -624,20 +624,18 @@ Conditions that must hold before any scenario in this set can run:
 
 ## Coverage Summary
 
-| Spec Scenario | Test Scenarios | Categories Covered |
-|---|---|---|
-| F-08.1 | TS-08.01 | Happy Path |
-| F-08.2 | TS-08.02, TS-08.05, TS-08.06 | Happy Path, Failure, Edge Case |
-| F-08.3 | TS-08.03, TS-08.04, TS-08.12, TS-08.13 | Failure, Happy Path |
-| F-09.1 | TS-09.01, TS-09.05, TS-09.07 | Happy Path, Edge Case |
-| F-09.2 | TS-09.02, TS-09.03, TS-09.08, TS-09.09 | Failure, Happy Path |
-| F-07.1 (cascade) | TS-CASCADE.01, TS-CASCADE.02 | Happy Path, Failure |
-| (implicit — guard) | TS-08.07, TS-09.04 | Edge Case |
-| (implicit — SC-03) | TS-08.08 | Constraint Validation |
-| (implicit — concurrency) | TS-08.09 | Edge Case |
-| (implicit — duplicate) | TS-08.10, TS-08.11 | Edge Case |
-| (implicit — eligibility) | TS-08.14, TS-09.10 | Constraint Validation |
-| (implicit — ext. wallet tokens) | TS-09.05, TS-09.06, TS-09.07 | Happy Path, Failure, Edge Case |
+**F-08.1** — TS-08.01 (Happy Path)
+**F-08.2** — TS-08.02, TS-08.05, TS-08.06 (Happy Path, Failure, Edge Case)
+**F-08.3** — TS-08.03, TS-08.04, TS-08.12, TS-08.13 (Failure, Happy Path)
+**F-09.1** — TS-09.01, TS-09.05, TS-09.07 (Happy Path, Edge Case)
+**F-09.2** — TS-09.02, TS-09.03, TS-09.08, TS-09.09 (Failure, Happy Path)
+**F-07.1 (cascade)** — TS-CASCADE.01, TS-CASCADE.02 (Happy Path, Failure)
+**(implicit — guard)** — TS-08.07, TS-09.04 (Edge Case)
+**(implicit — SC-03)** — TS-08.08 (Constraint Validation)
+**(implicit — concurrency)** — TS-08.09 (Edge Case)
+**(implicit — duplicate)** — TS-08.10, TS-08.11 (Edge Case)
+**(implicit — eligibility)** — TS-08.14, TS-09.10 (Constraint Validation)
+**(implicit — ext. wallet tokens)** — TS-09.05, TS-09.06, TS-09.07 (Happy Path, Failure, Edge Case)
 
 **Total spec scenarios in scope:** 5 (F-08.1, F-08.2, F-08.3, F-09.1, F-09.2) + 1 cascade (F-07.1)
 **Total test scenarios generated:** 25

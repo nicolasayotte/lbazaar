@@ -173,11 +173,9 @@
 
 ## Coverage Summary
 
-| Spec Scenario | Test Scenarios | Categories Covered |
-|---------------|----------------|--------------------|
-| F-04.1 | TS-04.01, TS-04.02 | Happy Path |
-| F-04.2 | TS-04.04, TS-04.05, TS-04.06, TS-04.07 | Happy Path, Failure |
-| (implicit) | TS-04.03 | Edge Case |
+**F-04.1** — TS-04.01, TS-04.02 (Happy Path)
+**F-04.2** — TS-04.04, TS-04.05, TS-04.06, TS-04.07 (Happy Path, Failure)
+**(implicit)** — TS-04.03 (Edge Case)
 
 **Total spec scenarios in scope:** 2
 **Total test scenarios generated:** 7

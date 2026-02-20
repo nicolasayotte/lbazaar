@@ -449,14 +449,12 @@
 
 ## Coverage Summary
 
-| Spec Scenario | Test Scenarios | Categories Covered |
-|---------------|----------------|--------------------|
-| F-02.1 | TS-02.01, TS-02.02, TS-02.03, TS-02.04 | Happy Path, Edge Case |
-| F-02.2 | TS-02.06, TS-02.07, TS-02.08, TS-02.09, TS-02.10 | Happy Path, Boundary |
-| F-02.3 | TS-02.11, TS-02.12, TS-02.13, TS-02.14 | Failure, Edge Case |
-| F-02.4 | TS-02.15, TS-02.16, TS-02.17, TS-02.18, TS-02.19 | Failure, Edge Case, Boundary |
-| F-02.5 | TS-02.20, TS-02.21 | Failure, Edge Case |
-| (implicit) | TS-02.05 | Edge Case |
+**F-02.1** — TS-02.01, TS-02.02, TS-02.03, TS-02.04 (Happy Path, Edge Case)
+**F-02.2** — TS-02.06, TS-02.07, TS-02.08, TS-02.09, TS-02.10 (Happy Path, Boundary)
+**F-02.3** — TS-02.11, TS-02.12, TS-02.13, TS-02.14 (Failure, Edge Case)
+**F-02.4** — TS-02.15, TS-02.16, TS-02.17, TS-02.18, TS-02.19 (Failure, Edge Case, Boundary)
+**F-02.5** — TS-02.20, TS-02.21 (Failure, Edge Case)
+**(implicit)** — TS-02.05 (Edge Case)
 
 **Total spec scenarios in scope:** 5
 **Total test scenarios generated:** 21

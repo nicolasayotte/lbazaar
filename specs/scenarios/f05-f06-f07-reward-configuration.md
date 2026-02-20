@@ -535,15 +535,13 @@ The following behaviors are stated in F-05.1, F-06.1, and F-07.1 but are deferre
 
 ## Coverage Summary
 
-| Spec Scenario | Test Scenarios | Categories Covered |
-|---------------|----------------|--------------------|
-| F-05.1 | TS-05.01, TS-05.02, TS-05.03, TS-05.04, TS-05.05, TS-05.07, TS-05.08, TS-05.09 | Happy Path, Edge Case, Failure |
-| F-05.2 | TS-05.06, TS-05.07 | Happy Path, Edge Case |
-| (implicit) | TS-05.10 | Constraint Validation |
-| F-06.1 | TS-06.02, TS-06.05, TS-06.06, TS-06.07 | Happy Path, Failure, Boundary |
-| F-06.2 | TS-06.01, TS-06.03, TS-06.04, TS-06.08 | Happy Path, Edge Case |
-| (implicit) | TS-06.09 | Constraint Validation |
-| F-07.1 | TS-07.01, TS-07.02, TS-07.03, TS-07.04, TS-07.05, TS-07.06, TS-07.07 | Happy Path, Edge Case, Failure |
+**F-05.1** — TS-05.01, TS-05.02, TS-05.03, TS-05.04, TS-05.05, TS-05.07, TS-05.08, TS-05.09 (Happy Path, Edge Case, Failure)
+**F-05.2** — TS-05.06, TS-05.07 (Happy Path, Edge Case)
+**(implicit)** — TS-05.10 (Constraint Validation)
+**F-06.1** — TS-06.02, TS-06.05, TS-06.06, TS-06.07 (Happy Path, Failure, Boundary)
+**F-06.2** — TS-06.01, TS-06.03, TS-06.04, TS-06.08 (Happy Path, Edge Case)
+**(implicit)** — TS-06.09 (Constraint Validation)
+**F-07.1** — TS-07.01, TS-07.02, TS-07.03, TS-07.04, TS-07.05, TS-07.06, TS-07.07 (Happy Path, Edge Case, Failure)
 
 **Total spec scenarios in scope:** 5
 **Total test scenarios generated:** 26
