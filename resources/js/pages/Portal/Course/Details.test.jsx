@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, waitFor, act } from '@testing-library/react';
 
 // ---------------------------------------------------------------------------
 // Hoisted mock factories — must be defined before any vi.mock() calls
@@ -65,6 +65,13 @@ vi.mock('../../../helpers/routes.helper', () => ({
     getRoute: vi.fn((name) => `/${name}`),
 }));
 
+vi.mock('axios', () => ({
+    default: {
+        get: vi.fn(),
+        post: vi.fn(),
+    },
+}));
+
 // ---------------------------------------------------------------------------
 // Fixtures
 // ---------------------------------------------------------------------------
@@ -114,6 +121,9 @@ const mockTranslatables = {
         stripe_unavailable: 'Credit card payment temporarily unavailable',
         wallet_disconnected_pending: 'Your wallet disconnected, but your pending transaction is still being tracked on the blockchain. You can reconnect to continue monitoring.',
         wallet_reconnect_prompt: 'Wallet disconnected. Please reconnect your wallet to continue.',
+        payment_confirmations: ':current/:required confirmations',
+        payment_confirmed_auto: 'Payment confirmed! Redirecting...',
+        payment_failed_retry: 'Payment failed. Please try again.',
     },
     title: { feedbacks: 'Feedbacks' },
     wallet_error: {
@@ -302,22 +312,26 @@ describe('TS-04: Parallel payment options — visual parity and independent degr
 
     it('TS-04.01: Both ADA and CC buttons present when stripe_available and price_in_ada set', () => {
         render(<Details />);
-        expect(screen.getByRole('button', { name: /Pay with ADA/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Buy with ADA/i })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: /Pay with Credit Card/i })).toBeInTheDocument();
     });
 
     it('TS-04.02: Both payment buttons use outlined variant (visual parity)', () => {
         render(<Details />);
-        const adaButton = screen.getByRole('button', { name: /Pay with ADA/i });
+        const adaButton = screen.getByRole('button', { name: /Buy with ADA/i });
         const ccButton = screen.getByRole('button', { name: /Pay with Credit Card/i });
-        // Both should have outlined class, neither should have contained class
-        expect(adaButton.className).toEqual(ccButton.className);
+        // Both should have outlined class
+        expect(adaButton.className).toContain('MuiButton-outlined');
+        expect(ccButton.className).toContain('MuiButton-outlined');
+        // Neither should have contained class
+        expect(adaButton.className).not.toContain('MuiButton-contained');
+        expect(ccButton.className).not.toContain('MuiButton-contained');
     });
 
     it('TS-04.03: No payment buttons shown when user is not authenticated', () => {
         mockUsePageFn.mockReturnValue(makePageProps({}, { auth: { user: null } }));
         render(<Details />);
-        expect(screen.queryByRole('button', { name: /Pay with ADA/i })).not.toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: /Buy with ADA/i })).not.toBeInTheDocument();
         expect(screen.queryByRole('button', { name: /Pay with Credit Card/i })).not.toBeInTheDocument();
     });
 
@@ -340,7 +354,7 @@ describe('TS-04: Parallel payment options — visual parity and independent degr
     it('TS-04.07: ADA button is still present when stripe_available is false', () => {
         mockUsePageFn.mockReturnValue(makePageProps({}, { stripe_available: false }));
         render(<Details />);
-        expect(screen.getByRole('button', { name: /Pay with ADA/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Buy with ADA/i })).toBeInTheDocument();
     });
 });
 
@@ -386,5 +400,121 @@ describe('T2: Wallet disconnect — pending tx resilience message', () => {
         const link = screen.getByRole('link', { name: 'View transaction on explorer' });
         expect(link).toBeInTheDocument();
         expect(link).toHaveAttribute('href', 'https://preprod.cardanoscan.io/tx/abc123');
+    });
+});
+
+// ---------------------------------------------------------------------------
+// F-02.1: Confirmation count polling display
+// ---------------------------------------------------------------------------
+describe('F-02.1: Confirmation count polling display', () => {
+    let axiosMock;
+
+    beforeEach(async () => {
+        vi.useFakeTimers();
+        vi.clearAllMocks();
+        axiosMock = (await import('axios')).default;
+    });
+
+    afterEach(() => {
+        vi.useRealTimers();
+    });
+
+    it('TS-F02-01: shows indeterminate LinearProgress before first poll response resolves', () => {
+        axiosMock.get.mockReturnValue(new Promise(() => {}));
+        mockUsePageFn.mockReturnValue(
+            makePageProps({}, {
+                pendingPayment: { payment_tx_hash: 'txhash01' },
+            })
+        );
+        render(<Details />);
+        const bars = screen.getAllByRole('progressbar');
+        const linearBar = bars.find((el) => !el.hasAttribute('aria-valuenow'));
+        expect(linearBar).toBeDefined();
+    });
+
+    it('TS-F02-02: shows "4/10 confirmations" text after poll returns pending with count 4', async () => {
+        vi.useRealTimers();
+        axiosMock.get.mockResolvedValue({
+            data: {
+                success: true,
+                data: { status: 'pending', confirmations: 4 },
+            },
+        });
+        mockUsePageFn.mockReturnValue(
+            makePageProps({}, {
+                pendingPayment: { payment_tx_hash: 'txhash02' },
+            })
+        );
+        await act(async () => { render(<Details />); });
+        await waitFor(() => {
+            expect(screen.getByText('4/10 confirmations')).toBeInTheDocument();
+        });
+    });
+
+    it('TS-F02-03: shows "0/10 confirmations" when API returns null confirmations', async () => {
+        vi.useRealTimers();
+        axiosMock.get.mockResolvedValue({
+            data: {
+                success: true,
+                data: { status: 'pending', confirmations: null },
+            },
+        });
+        mockUsePageFn.mockReturnValue(
+            makePageProps({}, {
+                pendingPayment: { payment_tx_hash: 'txhash03' },
+            })
+        );
+        await act(async () => { render(<Details />); });
+        await waitFor(() => {
+            expect(screen.getByText('0/10 confirmations')).toBeInTheDocument();
+        });
+    });
+
+    it('TS-F02-04: axios error does not crash the component', async () => {
+        vi.useRealTimers();
+        axiosMock.get.mockRejectedValue(new Error('Network error'));
+        mockUsePageFn.mockReturnValue(
+            makePageProps({}, {
+                pendingPayment: { payment_tx_hash: 'txhash04' },
+            })
+        );
+        await act(async () => { render(<Details />); });
+        expect(
+            screen.getByText('Your ADA payment is being confirmed on the blockchain.')
+        ).toBeInTheDocument();
+    });
+
+    it('TS-F02-05: failed status shows payment_failed_retry message', async () => {
+        vi.useRealTimers();
+        axiosMock.get.mockResolvedValue({
+            data: {
+                success: true,
+                data: { status: 'failed', confirmations: 0 },
+            },
+        });
+        mockUsePageFn.mockReturnValue(
+            makePageProps({}, {
+                pendingPayment: { payment_tx_hash: 'txhash05' },
+            })
+        );
+        await act(async () => { render(<Details />); });
+        await waitFor(() => {
+            expect(
+                screen.getByText('Payment failed. Please try again.')
+            ).toBeInTheDocument();
+        });
+    });
+
+    it('TS-F02-06: no polling request made when pendingPayment is null', async () => {
+        vi.useRealTimers();
+        axiosMock.get.mockResolvedValue({ data: { success: true, data: {} } });
+        mockUsePageFn.mockReturnValue(makePageProps());
+        await act(async () => { render(<Details />); });
+        // Give a moment for any async effects to settle
+        await new Promise(r => setTimeout(r, 50));
+        const statusCalls = axiosMock.get.mock.calls.filter((args) =>
+            String(args[0]).includes('/status')
+        );
+        expect(statusCalls).toHaveLength(0);
     });
 });

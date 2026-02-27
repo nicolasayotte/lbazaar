@@ -247,4 +247,16 @@ class PurchaseHistoryControllerTest extends TestCase
                 ->has('explorerUrl')
             );
     }
+
+    public function test_required_confirmations_prop_is_present(): void
+    {
+        $response = $this->actingAs($this->user)
+            ->get('/mypage/purchase-history');
+
+        $response->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->has('requiredConfirmations')
+                ->where('requiredConfirmations', (int) config('services.cardano.required_confirmations', 10))
+            );
+    }
 }

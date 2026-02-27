@@ -72,6 +72,9 @@ class TimeoutPendingPurchasesTest extends TestCase
 
         // Mock CoursePurchaseService
         $mockService = Mockery::mock(CoursePurchaseService::class);
+        $mockService->shouldReceive('getTxStatus')
+            ->twice()
+            ->andReturn(['status' => 'not_found']);
         $mockService->shouldReceive('failPurchaseTransaction')
             ->twice()
             ->andReturn(['success' => true, 'message' => 'Purchase marked as failed']);
@@ -129,8 +132,11 @@ class TimeoutPendingPurchasesTest extends TestCase
             'payment_submitted_at' => now()->subHours(2),
         ]);
 
-        // Mock service — must NOT be called when --dry-run is passed
+        // Mock service — getTxStatus called but failPurchaseTransaction must NOT be called when --dry-run is passed
         $mockService = Mockery::mock(CoursePurchaseService::class);
+        $mockService->shouldReceive('getTxStatus')
+            ->once()
+            ->andReturn(['status' => 'not_found']);
         $mockService->shouldNotReceive('failPurchaseTransaction');
 
         $this->app->instance(CoursePurchaseService::class, $mockService);
@@ -155,6 +161,9 @@ class TimeoutPendingPurchasesTest extends TestCase
 
         // Mock service — still expects a call because the default 30-minute cutoff applies
         $mockService = Mockery::mock(CoursePurchaseService::class);
+        $mockService->shouldReceive('getTxStatus')
+            ->once()
+            ->andReturn(['status' => 'not_found']);
         $mockService->shouldReceive('failPurchaseTransaction')
             ->once()
             ->andReturn(['success' => true, 'message' => 'Purchase marked as failed']);

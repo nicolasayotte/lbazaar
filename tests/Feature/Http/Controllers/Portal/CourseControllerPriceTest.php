@@ -5,6 +5,7 @@ namespace Tests\Feature\Http\Controllers\Portal;
 use Tests\TestCase;
 use Inertia\Testing\AssertableInertia as Assert;
 use App\Services\API\ExchangeRateService;
+use App\Services\API\CardanoNetworkService;
 use App\Services\API\StripeService;
 use App\Models\User;
 use App\Models\Course;
@@ -16,6 +17,7 @@ class CourseControllerPriceTest extends TestCase
 {
     protected $exchangeRateService;
     protected $stripeService;
+    protected $cardanoNetworkService;
     protected User $teacher;
     protected Course $course;
     protected CourseSchedule $schedule;
@@ -32,6 +34,13 @@ class CourseControllerPriceTest extends TestCase
         $this->stripeService = Mockery::mock(StripeService::class);
         $this->stripeService->shouldReceive('isAvailable')->andReturn(true)->byDefault();
         $this->app->instance(StripeService::class, $this->stripeService);
+
+        // Create and bind mock CardanoNetworkService to container
+        $this->cardanoNetworkService = Mockery::mock(CardanoNetworkService::class);
+        $this->cardanoNetworkService->shouldReceive('getNetworkStatus')
+            ->andReturn(['status' => 'healthy', 'lastBlockTime' => null])
+            ->byDefault();
+        $this->app->instance(CardanoNetworkService::class, $this->cardanoNetworkService);
 
         // Create roles and test teacher
         $this->disableUserModelEvents();
@@ -388,5 +397,52 @@ class CourseControllerPriceTest extends TestCase
             ->component('Portal/Course/Details', false)
             ->where('is_teacher', false)
         );
+    }
+
+    // -------------------------------------------------------------------------
+    // F-14: cardano_network_status prop
+    // -------------------------------------------------------------------------
+
+    protected function mockNetworkStatus(string $status): void
+    {
+        $this->cardanoNetworkService->shouldReceive('getNetworkStatus')
+            ->once()
+            ->andReturn(['status' => $status, 'lastBlockTime' => null]);
+    }
+
+    public function test_course_details_network_status_healthy(): void
+    {
+        $this->mockExchangeRateOnce();
+        $this->mockNetworkStatus('healthy');
+        $this->get("/classes/{$this->course->id}")
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Portal/Course/Details', false)
+                ->where('cardano_network_status', 'healthy')
+                ->where('ada_available', true)
+            );
+    }
+
+    public function test_course_details_network_status_degraded(): void
+    {
+        $this->mockExchangeRateOnce();
+        $this->mockNetworkStatus('degraded');
+        $this->get("/classes/{$this->course->id}")
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Portal/Course/Details', false)
+                ->where('cardano_network_status', 'degraded')
+                ->where('ada_available', true)
+            );
+    }
+
+    public function test_course_details_network_status_unreachable_disables_ada(): void
+    {
+        $this->mockExchangeRateOnce();
+        $this->mockNetworkStatus('unreachable');
+        $this->get("/classes/{$this->course->id}")
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Portal/Course/Details', false)
+                ->where('cardano_network_status', 'unreachable')
+                ->where('ada_available', false)
+            );
     }
 }
