@@ -18,7 +18,7 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
 
     const dispatch = useDispatch()
 
-    const { translatables } = usePage().props
+    const { translatables, cardano_network_id: expectedNetworkId = 0 } = usePage().props
 
     const [dialog, setDialog] = useState({
         open: false,
@@ -202,18 +202,35 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
 
     const enableWallet = async () => {
 
+        const checkNetwork = async (walletAPI) => {
+            const networkId = await walletAPI.getNetworkId()
+            if (networkId !== expectedNetworkId) {
+                const networkName = expectedNetworkId === 1 ? 'Mainnet' : 'Testnet/Preprod'
+                dispatch(actions.error({
+                    message: translatables?.wallet_error?.wrong_network
+                        ?? `Wrong network. Please switch your wallet to Cardano ${networkName}.`
+                }))
+                setWhichWalletSelected(undefined)
+                return false
+            }
+            return true
+        }
+
         try {
             const walletChoice = whichWalletSelected.name
             if (walletChoice === "eternl") {
                 const walletAPI = await window.cardano.eternl.enable()
+                if (!await checkNetwork(walletAPI)) return false
                 onWalletAPI(walletAPI)
                 return true
             } else if (walletChoice === "flint") {
                 const walletAPI = await window.cardano.flint.enable()
+                if (!await checkNetwork(walletAPI)) return false
                 onWalletAPI(walletAPI)
                 return true
             } else if (walletChoice === "nami") {
                 const walletAPI = await window.cardano.nami.enable()
+                if (!await checkNetwork(walletAPI)) return false
                 onWalletAPI(walletAPI)
                 return true
             } else {
@@ -222,9 +239,9 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                 }))
                 return false
             }
-            
+
         } catch (err) {
-            
+
             dispatch(actions.error({
                 message: translatables.wallet_error.not_connected
             }))

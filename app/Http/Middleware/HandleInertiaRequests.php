@@ -47,7 +47,8 @@ class HandleInertiaRequests extends Middleware
             'flash' => [
                 'success' => fn () => @$request->session()->get('success'),
                 'error'   => fn () => @$request->session()->get('error')
-            ]
+            ],
+            'cardano_network_id' => (int) config('services.cardano.network_id', 0),
         ]);
     }
 }
