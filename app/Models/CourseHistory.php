@@ -30,14 +30,20 @@ class CourseHistory extends Model
         'payment_tx_hash',
         'payment_ada_amount',
         'payment_submitted_at',
-        'payment_confirmed_at'
+        'payment_confirmed_at',
+        'rewards_invalidated_at',
+        'token_reward_status',
+        'token_reward_tx_hash',
+        'token_reward_minted_at',
     ];
 
     protected $casts = [
         'certificate_minted_at' => 'datetime',
         'payment_submitted_at' => 'datetime',
         'payment_confirmed_at' => 'datetime',
-        'payment_ada_amount' => 'decimal:6'
+        'rewards_invalidated_at' => 'datetime',
+        'payment_ada_amount' => 'decimal:6',
+        'token_reward_minted_at' => 'datetime',
     ];
 
     public function courseSchedule()

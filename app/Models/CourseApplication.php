@@ -45,11 +45,15 @@ class CourseApplication extends Model
         'length',
         'lecture_frequency',
         'data',
-        'certificate_enabled'
+        'certificate_enabled',
+        'token_reward_enabled',
+        'token_reward_amount',
     ];
 
     protected $casts = [
-        'certificate_enabled' => 'boolean'
+        'certificate_enabled' => 'boolean',
+        'token_reward_enabled' => 'boolean',
+        'token_reward_amount' => 'integer',
     ];
 
     public function professor()

@@ -64,6 +64,8 @@ CREATE TABLE `course_applications` (
   `length` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `data` longtext COLLATE utf8mb4_unicode_ci,
   `certificate_enabled` tinyint(1) NOT NULL DEFAULT '0',
+  `token_reward_enabled` tinyint(1) NOT NULL DEFAULT '0',
+  `token_reward_amount` int unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `course_applications_professor_id_index` (`professor_id`),
   KEY `course_applications_course_type_id_index` (`course_type_id`),
@@ -141,15 +143,19 @@ CREATE TABLE `course_histories` (
   `course_id` bigint unsigned NOT NULL,
   `course_schedule_id` bigint unsigned NOT NULL,
   `is_cancelled` tinyint(1) NOT NULL DEFAULT '0',
-  `payment_status` enum('pending','confirmed','failed') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `payment_status` enum('pending','confirmed','failed','refunded') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `payment_tx_hash` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `payment_ada_amount` decimal(20,6) DEFAULT NULL,
   `payment_submitted_at` timestamp NULL DEFAULT NULL,
   `payment_confirmed_at` timestamp NULL DEFAULT NULL,
+  `rewards_invalidated_at` timestamp NULL DEFAULT NULL,
   `is_watched` tinyint(1) NOT NULL DEFAULT '0',
   `certificate_status` enum('not_eligible','eligible','pending','minting','minted','failed') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `certificate_tx_hash` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `certificate_minted_at` timestamp NULL DEFAULT NULL,
+  `token_reward_status` enum('eligible','minting','minted','failed') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `token_reward_tx_hash` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `token_reward_minted_at` timestamp NULL DEFAULT NULL,
   `completed_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -242,6 +248,10 @@ CREATE TABLE `courses` (
   `is_cancellable` tinyint(1) NOT NULL DEFAULT '0',
   `days_before_cancellation` int DEFAULT NULL,
   `certificate_enabled` tinyint(1) NOT NULL DEFAULT '0',
+  `certificate_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `certificate_description` text COLLATE utf8mb4_unicode_ci,
+  `token_reward_enabled` tinyint(1) NOT NULL DEFAULT '0',
+  `token_reward_amount` int unsigned DEFAULT NULL,
   `max_participant` int NOT NULL,
   `nft_id` bigint unsigned DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -881,3 +891,6 @@ INSERT INTO `migrations` VALUES (72,'2026_02_17_000001_add_price_jpy_comment_to_
 INSERT INTO `migrations` VALUES (73,'2026_02_18_033218_add_composite_unique_to_nft_transactions_table',1);
 INSERT INTO `migrations` VALUES (74,'2026_02_18_035439_add_canceled_status_to_stripe_payments_table',1);
 INSERT INTO `migrations` VALUES (75,'2026_02_17_210708_update_certificate_status_enum_values',2);
+INSERT INTO `migrations` VALUES (76,'2026_02_28_000001_add_token_reward_fields',3);
+INSERT INTO `migrations` VALUES (77,'2026_02_27_000001_add_certificate_metadata_to_courses',3);
+INSERT INTO `migrations` VALUES (78,'2026_02_27_000002_add_refunded_status_and_rewards_flag_to_course_histories',4);

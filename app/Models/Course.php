@@ -38,7 +38,11 @@ class Course extends Model
         "max_participant",
         "is_cancellable",
         "days_before_cancellation",
-        "certificate_enabled"
+        "certificate_enabled",
+        "certificate_name",
+        "certificate_description",
+        "token_reward_enabled",
+        "token_reward_amount",
     ];
 
     protected $appends = [
@@ -51,7 +55,9 @@ class Course extends Model
     protected $casts = [
         'price' => 'float',
         'points_earned' => 'float',
-        'certificate_enabled' => 'boolean'
+        'certificate_enabled'     => 'boolean',
+        'token_reward_enabled'    => 'boolean',
+        'token_reward_amount'     => 'integer',
     ];
 
     protected $with = [
