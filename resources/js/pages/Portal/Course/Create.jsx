@@ -35,7 +35,12 @@ const Create = () => {
         is_cancellable: course && course.is_cancellable && course.is_cancellable > 0 ? true : false,
         days_before_cancellation: course && course.days_before_cancellation ? course.days_before_cancellation : 1,
         course_package_id: course && course.course_package ? course.course_package.id : '',
-        categories: initialData && initialData.categories ? initialData.categories.map(cat => cat.name) : []
+        categories: initialData && initialData.categories ? initialData.categories.map(cat => cat.name) : [],
+        certificate_enabled: initialData?.certificate_enabled ?? false,
+        certificate_name: initialData?.certificate_name ?? '',
+        certificate_description: initialData?.certificate_description ?? '',
+        token_reward_enabled: initialData?.token_reward_enabled ?? false,
+        token_reward_amount: initialData?.token_reward_amount ?? '',
     })
 
     const [imgPreview, setImgPreview] = useState(course && course.image_thumbnail ? course.image_thumbnail : null)
@@ -53,6 +58,20 @@ const Create = () => {
         setData(data => ({
             ...data,
             is_cancellable: !data.is_cancellable
+        }))
+    }
+
+    const handleOnCertificateEnabledChange = () => {
+        setData(data => ({
+            ...data,
+            certificate_enabled: !data.certificate_enabled
+        }))
+    }
+
+    const handleOnTokenRewardEnabledChange = () => {
+        setData(data => ({
+            ...data,
+            token_reward_enabled: !data.token_reward_enabled
         }))
     }
 
@@ -320,6 +339,83 @@ const Create = () => {
                                                 />
                                             </Grid>
                                         }
+                                    </Grid>
+                                </CardContent>
+                            </Card>
+                            <Card sx={{ mb: 2 }}>
+                                <CardContent>
+                                    <Grid container spacing={2}>
+                                        <Grid item xs={12}>
+                                            <Typography children={translatables.texts.reward_settings} gutterBottom />
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <FormControlLabel
+                                                control={
+                                                    <Switch
+                                                        name="certificate_enabled"
+                                                        checked={data.certificate_enabled}
+                                                        onChange={handleOnCertificateEnabledChange}
+                                                        sx={{ ml: 'auto' }}
+                                                    />
+                                                }
+                                                label={translatables.texts.certificate_reward_enabled}
+                                                labelPlacement="start"
+                                                sx={{ mx: 0, width: '100%' }}
+                                            />
+                                        </Grid>
+                                        {data.certificate_enabled && (
+                                            <>
+                                                <Grid item xs={12}>
+                                                    <Input
+                                                        label={translatables.texts.certificate_name}
+                                                        name="certificate_name"
+                                                        value={data.certificate_name}
+                                                        onChange={e => handleOnChange(e, setData)}
+                                                        errors={errors}
+                                                    />
+                                                </Grid>
+                                                <Grid item xs={12}>
+                                                    <Input
+                                                        label={translatables.texts.certificate_description}
+                                                        name="certificate_description"
+                                                        value={data.certificate_description}
+                                                        multiline
+                                                        rows={3}
+                                                        onChange={e => handleOnChange(e, setData)}
+                                                        errors={errors}
+                                                    />
+                                                </Grid>
+                                            </>
+                                        )}
+                                        <Grid item xs={12}>
+                                            <FormControlLabel
+                                                control={
+                                                    <Switch
+                                                        name="token_reward_enabled"
+                                                        checked={data.token_reward_enabled}
+                                                        onChange={handleOnTokenRewardEnabledChange}
+                                                        sx={{ ml: 'auto' }}
+                                                    />
+                                                }
+                                                label={translatables.texts.token_reward_enabled}
+                                                labelPlacement="start"
+                                                sx={{ mx: 0, width: '100%' }}
+                                            />
+                                        </Grid>
+                                        {data.token_reward_enabled && (
+                                            <Grid item xs={12}>
+                                                <Input
+                                                    type="number"
+                                                    label={translatables.texts.token_reward_amount}
+                                                    name="token_reward_amount"
+                                                    value={data.token_reward_amount}
+                                                    inputProps={{ min: 1, max: 1000000 }}
+                                                    onChange={e => handleOnChange(e, setData)}
+                                                    errors={errors}
+                                                    helperText={translatables.texts.token_reward_amount_hint}
+                                                />
+                                            </Grid>
+                                        )}
                                     </Grid>
                                 </CardContent>
                             </Card>

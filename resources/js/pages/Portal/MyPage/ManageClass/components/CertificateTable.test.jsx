@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 
 // Mock EmptyCard to avoid usePage dependency
 vi.mock('../../../../../components/common/EmptyCard', () => ({
-    default: () => <div data-testid="empty-card">No records found</div>
+    default: () => <div data-testid="empty-card">No records found</div>,
 }));
 
 import CertificateTable from './CertificateTable';
@@ -12,70 +12,93 @@ describe('CertificateTable', () => {
     const mockTranslatables = {
         texts: {
             student: 'Student',
-            completed_date: 'Completed Date',
-            status: 'Status',
+            completed_date: 'Completed',
+            completion_status: 'Progress',
+            delivery_status: 'Delivery',
             transaction: 'Transaction',
-            actions: 'Actions',
-            mint: 'Mint',
-            minting: 'Minting...',
-            retry: 'Retry',
-            view_transaction: 'View Transaction'
-        }
+            delivery_eligible: 'Eligible',
+            delivery_delivered: 'Delivered',
+            delivery_self_minted: 'Self-minted',
+            delivery_failed: 'Failed',
+            delivery_not_eligible: 'Not eligible',
+            completed: 'Completed',
+            in_progress: 'In progress',
+            view_transaction: 'View Transaction',
+        },
     };
 
-    const mockOnMint = vi.fn();
-    const mockOnRetry = vi.fn();
+    const mockOnToggleSelect = vi.fn();
     const mockExplorerUrl = 'https://preprod.cardanoscan.io';
 
     beforeEach(() => {
         vi.clearAllMocks();
     });
 
+    // -----------------------------------------------------------------------
+    // Empty state
+    // -----------------------------------------------------------------------
+
     describe('Empty State', () => {
-        it('should render EmptyCard when no students', () => {
+        it('renders EmptyCard when no students', () => {
             render(
                 <CertificateTable
                     students={[]}
-                    onMint={mockOnMint}
-                    onRetry={mockOnRetry}
+                    selectedStudentIds={[]}
+                    onToggleSelect={mockOnToggleSelect}
                     translatables={mockTranslatables}
                     explorerUrl={mockExplorerUrl}
+                    hasRewards={true}
                 />
             );
-
-            // EmptyCard should be rendered
             expect(screen.getByTestId('empty-card')).toBeInTheDocument();
         });
 
-        it('should render EmptyCard when students is null', () => {
+        it('renders EmptyCard when students is null', () => {
             render(
                 <CertificateTable
                     students={null}
-                    onMint={mockOnMint}
-                    onRetry={mockOnRetry}
+                    selectedStudentIds={[]}
+                    onToggleSelect={mockOnToggleSelect}
                     translatables={mockTranslatables}
                     explorerUrl={mockExplorerUrl}
+                    hasRewards={true}
                 />
             );
-
             expect(screen.getByTestId('empty-card')).toBeInTheDocument();
         });
     });
 
+    // -----------------------------------------------------------------------
+    // Student rendering
+    // -----------------------------------------------------------------------
+
     describe('Student List Rendering', () => {
-        it('should render student list with correct names', () => {
+        it('renders student names', () => {
             const students = [
-                { id: 1, name: 'Alice Smith', certificate_status: 'eligible', completed_at: '2023-01-15' },
-                { id: 2, name: 'Bob Johnson', certificate_status: 'minted', completed_at: '2023-01-20' }
+                {
+                    id: 1,
+                    name: 'Alice Smith',
+                    delivery_status: 'eligible',
+                    completion_status: 'completed',
+                    completed_at: '2023-01-15',
+                },
+                {
+                    id: 2,
+                    name: 'Bob Johnson',
+                    delivery_status: 'delivered',
+                    completion_status: 'completed',
+                    completed_at: '2023-01-20',
+                },
             ];
 
             render(
                 <CertificateTable
                     students={students}
-                    onMint={mockOnMint}
-                    onRetry={mockOnRetry}
+                    selectedStudentIds={[]}
+                    onToggleSelect={mockOnToggleSelect}
                     translatables={mockTranslatables}
                     explorerUrl={mockExplorerUrl}
+                    hasRewards={true}
                 />
             );
 
@@ -83,353 +106,274 @@ describe('CertificateTable', () => {
             expect(screen.getByText('Bob Johnson')).toBeInTheDocument();
         });
 
-        it('should render table headers correctly', () => {
+        it('renders table headers', () => {
             const students = [
-                { id: 1, name: 'Alice Smith', certificate_status: 'eligible', completed_at: '2023-01-15' }
+                {
+                    id: 1,
+                    name: 'Alice Smith',
+                    delivery_status: 'eligible',
+                    completion_status: 'completed',
+                    completed_at: '2023-01-15',
+                },
             ];
 
             render(
                 <CertificateTable
                     students={students}
-                    onMint={mockOnMint}
-                    onRetry={mockOnRetry}
+                    selectedStudentIds={[]}
+                    onToggleSelect={mockOnToggleSelect}
                     translatables={mockTranslatables}
                     explorerUrl={mockExplorerUrl}
+                    hasRewards={true}
                 />
             );
 
             expect(screen.getByText('Student')).toBeInTheDocument();
-            expect(screen.getByText('Completed Date')).toBeInTheDocument();
-            expect(screen.getByText('Status')).toBeInTheDocument();
-            expect(screen.getByText('Transaction')).toBeInTheDocument();
-            expect(screen.getByText('Actions')).toBeInTheDocument();
-        });
-    });
-
-    describe('Status Badges', () => {
-        it('should render eligible status badge with info color', () => {
-            const students = [
-                { id: 1, name: 'Alice Smith', certificate_status: 'eligible', completed_at: '2023-01-15' }
-            ];
-
-            render(
-                <CertificateTable
-                    students={students}
-                    onMint={mockOnMint}
-                    onRetry={mockOnRetry}
-                    translatables={mockTranslatables}
-                    explorerUrl={mockExplorerUrl}
-                />
-            );
-
-            const badge = screen.getByText('Eligible');
-            expect(badge).toBeInTheDocument();
+            // 'Completed' may appear in both header and badge — check header exists
+            const completedElements = screen.getAllByText('Completed');
+            expect(completedElements.length).toBeGreaterThanOrEqual(1);
+            expect(screen.getByText('Progress')).toBeInTheDocument();
+            expect(screen.getByText('Delivery')).toBeInTheDocument();
         });
 
-        it('should render minting status badge with warning color', () => {
-            const students = [
-                { id: 1, name: 'Alice Smith', certificate_status: 'minting', completed_at: '2023-01-15' }
-            ];
-
-            render(
-                <CertificateTable
-                    students={students}
-                    onMint={mockOnMint}
-                    onRetry={mockOnRetry}
-                    translatables={mockTranslatables}
-                    explorerUrl={mockExplorerUrl}
-                />
-            );
-
-            const badge = screen.getByText('Minting');
-            expect(badge).toBeInTheDocument();
-        });
-
-        it('should render minted status badge with success color', () => {
-            const students = [
-                { id: 1, name: 'Alice Smith', certificate_status: 'minted', completed_at: '2023-01-15' }
-            ];
-
-            render(
-                <CertificateTable
-                    students={students}
-                    onMint={mockOnMint}
-                    onRetry={mockOnRetry}
-                    translatables={mockTranslatables}
-                    explorerUrl={mockExplorerUrl}
-                />
-            );
-
-            const badge = screen.getByText('Minted');
-            expect(badge).toBeInTheDocument();
-        });
-
-        it('should render failed status badge with error color', () => {
-            const students = [
-                { id: 1, name: 'Alice Smith', certificate_status: 'failed', completed_at: '2023-01-15' }
-            ];
-
-            render(
-                <CertificateTable
-                    students={students}
-                    onMint={mockOnMint}
-                    onRetry={mockOnRetry}
-                    translatables={mockTranslatables}
-                    explorerUrl={mockExplorerUrl}
-                />
-            );
-
-            const badge = screen.getByText('Failed');
-            expect(badge).toBeInTheDocument();
-        });
-    });
-
-    describe('Action Buttons', () => {
-        it('should show mint button for eligible students', () => {
-            const students = [
-                { id: 1, name: 'Alice Smith', certificate_status: 'eligible', completed_at: '2023-01-15' }
-            ];
-
-            render(
-                <CertificateTable
-                    students={students}
-                    onMint={mockOnMint}
-                    onRetry={mockOnRetry}
-                    translatables={mockTranslatables}
-                    explorerUrl={mockExplorerUrl}
-                />
-            );
-
-            expect(screen.getByText('Mint')).toBeInTheDocument();
-        });
-
-        it('should show retry button for failed students', () => {
-            const students = [
-                { id: 1, name: 'Alice Smith', certificate_status: 'failed', completed_at: '2023-01-15' }
-            ];
-
-            render(
-                <CertificateTable
-                    students={students}
-                    onMint={mockOnMint}
-                    onRetry={mockOnRetry}
-                    translatables={mockTranslatables}
-                    explorerUrl={mockExplorerUrl}
-                />
-            );
-
-            // Retry button is an icon button with Replay icon
-            const retryButton = screen.getByRole('button');
-            expect(retryButton).toBeInTheDocument();
-        });
-
-        it('should call onMint when mint button is clicked', () => {
-            const students = [
-                { id: 1, name: 'Alice Smith', certificate_status: 'eligible', completed_at: '2023-01-15' }
-            ];
-
-            render(
-                <CertificateTable
-                    students={students}
-                    onMint={mockOnMint}
-                    onRetry={mockOnRetry}
-                    translatables={mockTranslatables}
-                    explorerUrl={mockExplorerUrl}
-                />
-            );
-
-            const mintButton = screen.getByText('Mint');
-            fireEvent.click(mintButton);
-
-            expect(mockOnMint).toHaveBeenCalledWith(1);
-            expect(mockOnMint).toHaveBeenCalledTimes(1);
-        });
-
-        it('should call onRetry when retry button is clicked', () => {
-            const students = [
-                { id: 1, name: 'Alice Smith', certificate_status: 'failed', completed_at: '2023-01-15' }
-            ];
-
-            render(
-                <CertificateTable
-                    students={students}
-                    onMint={mockOnMint}
-                    onRetry={mockOnRetry}
-                    translatables={mockTranslatables}
-                    explorerUrl={mockExplorerUrl}
-                />
-            );
-
-            const retryButton = screen.getByRole('button');
-            fireEvent.click(retryButton);
-
-            expect(mockOnRetry).toHaveBeenCalledWith(1);
-            expect(mockOnRetry).toHaveBeenCalledTimes(1);
-        });
-    });
-
-    describe('Loading State', () => {
-        it('should show loading spinner during minting', () => {
-            const students = [
-                { id: 1, name: 'Alice Smith', certificate_status: 'eligible', completed_at: '2023-01-15' }
-            ];
-
-            render(
-                <CertificateTable
-                    students={students}
-                    onMint={mockOnMint}
-                    onRetry={mockOnRetry}
-                    minting={{ 1: true }}
-                    translatables={mockTranslatables}
-                />
-            );
-
-            expect(screen.getByText('Minting...')).toBeInTheDocument();
-        });
-
-        it('should disable mint button during minting', () => {
-            const students = [
-                { id: 1, name: 'Alice Smith', certificate_status: 'eligible', completed_at: '2023-01-15' }
-            ];
-
-            render(
-                <CertificateTable
-                    students={students}
-                    onMint={mockOnMint}
-                    onRetry={mockOnRetry}
-                    minting={{ 1: true }}
-                    translatables={mockTranslatables}
-                />
-            );
-
-            const mintButton = screen.getByText('Minting...').closest('button');
-            expect(mintButton).toBeDisabled();
-        });
-
-        it('should disable retry button during minting', () => {
-            const students = [
-                { id: 1, name: 'Alice Smith', certificate_status: 'failed', completed_at: '2023-01-15' }
-            ];
-
-            render(
-                <CertificateTable
-                    students={students}
-                    onMint={mockOnMint}
-                    onRetry={mockOnRetry}
-                    minting={{ 1: true }}
-                    translatables={mockTranslatables}
-                />
-            );
-
-            const retryButton = screen.getByRole('button');
-            expect(retryButton).toBeDisabled();
-        });
-    });
-
-    describe('Transaction Hash Display', () => {
-        it('should display transaction hash for minted certificates', () => {
+        it('hides reward columns when hasRewards is false', () => {
             const students = [
                 {
                     id: 1,
                     name: 'Alice Smith',
-                    certificate_status: 'minted',
-                    certificate_tx_hash: 'abc123def456',
-                    completed_at: '2023-01-15'
-                }
+                    delivery_status: 'eligible',
+                    completion_status: 'completed',
+                    completed_at: '2023-01-15',
+                },
             ];
 
             render(
                 <CertificateTable
                     students={students}
-                    onMint={mockOnMint}
-                    onRetry={mockOnRetry}
+                    selectedStudentIds={[]}
+                    onToggleSelect={mockOnToggleSelect}
                     translatables={mockTranslatables}
                     explorerUrl={mockExplorerUrl}
+                    hasRewards={false}
                 />
             );
 
-            expect(screen.getByText('abc123de...')).toBeInTheDocument();
+            expect(screen.queryByText('Delivery')).not.toBeInTheDocument();
+            expect(screen.queryByText('Transaction')).not.toBeInTheDocument();
         });
+    });
 
-        it('should show explorer link for minted certificates', () => {
-            const students = [
-                {
-                    id: 1,
-                    name: 'Alice Smith',
-                    certificate_status: 'minted',
-                    certificate_tx_hash: 'abc123def456',
-                    completed_at: '2023-01-15'
-                }
-            ];
+    // -----------------------------------------------------------------------
+    // Delivery status badges
+    // -----------------------------------------------------------------------
 
+    describe('Delivery Status Badges', () => {
+        const renderWithStatus = (deliveryStatus) => {
             render(
                 <CertificateTable
-                    students={students}
-                    onMint={mockOnMint}
-                    onRetry={mockOnRetry}
+                    students={[
+                        {
+                            id: 1,
+                            name: 'Alice Smith',
+                            delivery_status: deliveryStatus,
+                            completion_status: 'completed',
+                            completed_at: '2023-01-15',
+                        },
+                    ]}
+                    selectedStudentIds={[]}
+                    onToggleSelect={mockOnToggleSelect}
                     translatables={mockTranslatables}
                     explorerUrl={mockExplorerUrl}
+                    hasRewards={true}
                 />
             );
+        };
 
-            const links = screen.getAllByRole('link');
-            const explorerLink = links.find(link =>
-                link.getAttribute('href')?.includes('transaction/abc123def456')
-            );
-
-            expect(explorerLink).toBeTruthy();
-            expect(explorerLink?.getAttribute('href')).toBe(`${mockExplorerUrl}/transaction/abc123def456`);
+        it('shows Eligible badge for eligible status', () => {
+            renderWithStatus('eligible');
+            expect(screen.getByText('Eligible')).toBeInTheDocument();
         });
 
-        it('should render tx hash as plain text when explorerUrl is undefined', () => {
-            const students = [
-                {
-                    id: 1,
-                    name: 'Alice Smith',
-                    certificate_status: 'minted',
-                    certificate_tx_hash: 'abc123def456',
-                    completed_at: '2023-01-15'
-                }
-            ];
+        it('shows Delivered badge for delivered status', () => {
+            renderWithStatus('delivered');
+            expect(screen.getByText('Delivered')).toBeInTheDocument();
+        });
 
+        it('shows Self-minted badge for self_minted status', () => {
+            renderWithStatus('self_minted');
+            expect(screen.getByText('Self-minted')).toBeInTheDocument();
+        });
+
+        it('shows Failed badge for failed status', () => {
+            renderWithStatus('failed');
+            expect(screen.getByText('Failed')).toBeInTheDocument();
+        });
+
+        it('shows Not eligible badge for not_eligible status', () => {
+            renderWithStatus('not_eligible');
+            expect(screen.getByText('Not eligible')).toBeInTheDocument();
+        });
+    });
+
+    // -----------------------------------------------------------------------
+    // Checkbox behavior
+    // -----------------------------------------------------------------------
+
+    describe('Checkbox', () => {
+        it('renders checkbox for eligible students', () => {
             render(
                 <CertificateTable
-                    students={students}
-                    onMint={mockOnMint}
-                    onRetry={mockOnRetry}
+                    students={[
+                        {
+                            id: 1,
+                            name: 'Alice Smith',
+                            delivery_status: 'eligible',
+                            completion_status: 'completed',
+                            completed_at: '2023-01-15',
+                        },
+                    ]}
+                    selectedStudentIds={[]}
+                    onToggleSelect={mockOnToggleSelect}
                     translatables={mockTranslatables}
-                    explorerUrl={undefined}
+                    explorerUrl={mockExplorerUrl}
+                    hasRewards={true}
                 />
             );
 
-            // Truncated hash appears as plain text, not a link
-            expect(screen.getByText('abc123de...')).toBeInTheDocument();
-            const links = screen.queryAllByRole('link');
-            expect(links.length).toBe(0);
+            const checkbox = screen.getByRole('checkbox');
+            expect(checkbox).toBeInTheDocument();
+            expect(checkbox).not.toBeChecked();
         });
 
-        it('should not crash when explorerUrl is null', () => {
-            const students = [
-                {
-                    id: 1,
-                    name: 'Alice Smith',
-                    certificate_status: 'minted',
-                    certificate_tx_hash: 'abc123def456',
-                    completed_at: '2023-01-15'
-                }
-            ];
-
-            expect(() => render(
+        it('does not render checkbox for non-eligible students', () => {
+            render(
                 <CertificateTable
-                    students={students}
-                    onMint={mockOnMint}
-                    onRetry={mockOnRetry}
+                    students={[
+                        {
+                            id: 1,
+                            name: 'Bob Johnson',
+                            delivery_status: 'delivered',
+                            completion_status: 'completed',
+                            completed_at: '2023-01-20',
+                        },
+                    ]}
+                    selectedStudentIds={[]}
+                    onToggleSelect={mockOnToggleSelect}
+                    translatables={mockTranslatables}
+                    explorerUrl={mockExplorerUrl}
+                    hasRewards={true}
+                />
+            );
+
+            expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
+        });
+
+        it('shows checkbox as checked when student is selected', () => {
+            render(
+                <CertificateTable
+                    students={[
+                        {
+                            id: 1,
+                            name: 'Alice Smith',
+                            delivery_status: 'eligible',
+                            completion_status: 'completed',
+                            completed_at: '2023-01-15',
+                        },
+                    ]}
+                    selectedStudentIds={[1]}
+                    onToggleSelect={mockOnToggleSelect}
+                    translatables={mockTranslatables}
+                    explorerUrl={mockExplorerUrl}
+                    hasRewards={true}
+                />
+            );
+
+            const checkbox = screen.getByRole('checkbox');
+            expect(checkbox).toBeChecked();
+        });
+
+        it('calls onToggleSelect when checkbox is clicked', () => {
+            render(
+                <CertificateTable
+                    students={[
+                        {
+                            id: 1,
+                            name: 'Alice Smith',
+                            delivery_status: 'eligible',
+                            completion_status: 'completed',
+                            completed_at: '2023-01-15',
+                        },
+                    ]}
+                    selectedStudentIds={[]}
+                    onToggleSelect={mockOnToggleSelect}
+                    translatables={mockTranslatables}
+                    explorerUrl={mockExplorerUrl}
+                    hasRewards={true}
+                />
+            );
+
+            fireEvent.click(screen.getByRole('checkbox'));
+            expect(mockOnToggleSelect).toHaveBeenCalledWith(1);
+            expect(mockOnToggleSelect).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    // -----------------------------------------------------------------------
+    // Transaction link
+    // -----------------------------------------------------------------------
+
+    describe('Transaction Link', () => {
+        it('shows explorer link for delivered students with tx hash', () => {
+            render(
+                <CertificateTable
+                    students={[
+                        {
+                            id: 1,
+                            name: 'Alice Smith',
+                            delivery_status: 'delivered',
+                            completion_status: 'completed',
+                            completed_at: '2023-01-15',
+                            certificate_tx_hash: 'abc123def456',
+                        },
+                    ]}
+                    selectedStudentIds={[]}
+                    onToggleSelect={mockOnToggleSelect}
+                    translatables={mockTranslatables}
+                    explorerUrl={mockExplorerUrl}
+                    hasRewards={true}
+                />
+            );
+
+            const link = screen.getByRole('link');
+            expect(link).toHaveAttribute(
+                'href',
+                `${mockExplorerUrl}/transaction/abc123def456`
+            );
+        });
+
+        it('shows truncated hash when no explorerUrl', () => {
+            render(
+                <CertificateTable
+                    students={[
+                        {
+                            id: 1,
+                            name: 'Alice Smith',
+                            delivery_status: 'delivered',
+                            completion_status: 'completed',
+                            completed_at: '2023-01-15',
+                            certificate_tx_hash: 'abc123def456',
+                        },
+                    ]}
+                    selectedStudentIds={[]}
+                    onToggleSelect={mockOnToggleSelect}
                     translatables={mockTranslatables}
                     explorerUrl={null}
+                    hasRewards={true}
                 />
-            )).not.toThrow();
+            );
 
             expect(screen.getByText('abc123de...')).toBeInTheDocument();
+            expect(screen.queryByRole('link')).not.toBeInTheDocument();
         });
     });
 });

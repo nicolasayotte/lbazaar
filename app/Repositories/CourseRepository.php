@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use DateTime;
 use DateTimeZone;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -209,7 +210,11 @@ class CourseRepository extends BaseRepository
         $inputs['course_application_id'] = $courseApplication->id;
         $inputs['professor_id'] = auth()->user()->id;
         $inputs['is_live'] = $isLive;
-        $inputs['certificate_enabled'] = $courseApplication->certificate_enabled ?? false;
+        $inputs['certificate_enabled']     = filter_var($request->input('certificate_enabled', $courseApplication->certificate_enabled ?? false), FILTER_VALIDATE_BOOLEAN);
+        $inputs['certificate_name']        = $request->input('certificate_name');
+        $inputs['certificate_description'] = $request->input('certificate_description');
+        $inputs['token_reward_enabled']    = filter_var($request->input('token_reward_enabled', false), FILTER_VALIDATE_BOOLEAN);
+        $inputs['token_reward_amount']     = $request->input('token_reward_amount') ? (int) $request->input('token_reward_amount') : null;
         if($request->hasFile('image_thumbnail')){
             $inputs['image_thumbnail'] = Asset::upload($request->files->get('image_thumbnail'));
         } else {
@@ -239,6 +244,23 @@ class CourseRepository extends BaseRepository
 
         $inputs = $request->all();
         $inputs['is_live'] = $inputs['format'] === Course::LIVE;
+
+        if (isset($inputs['certificate_enabled'])) {
+            $inputs['certificate_enabled'] = filter_var($inputs['certificate_enabled'], FILTER_VALIDATE_BOOLEAN);
+            if (!$inputs['certificate_enabled']) {
+                $inputs['certificate_name'] = null;
+                $inputs['certificate_description'] = null;
+            }
+        }
+        if (isset($inputs['token_reward_enabled'])) {
+            $inputs['token_reward_enabled'] = filter_var($inputs['token_reward_enabled'], FILTER_VALIDATE_BOOLEAN);
+            if (!$inputs['token_reward_enabled']) {
+                $inputs['token_reward_amount'] = null;
+            }
+        }
+        if (isset($inputs['token_reward_amount']) && $inputs['token_reward_amount'] !== null) {
+            $inputs['token_reward_amount'] = (int) $inputs['token_reward_amount'];
+        }
 
         // files…
         if ($request->hasFile('image_thumbnail')) {

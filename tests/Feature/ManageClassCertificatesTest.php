@@ -191,12 +191,12 @@ class ManageClassCertificatesTest extends TestCase
             ->has('students', 2)
             ->where('students.0.name', 'John Doe')
             ->where('students.0.email', 'john@example.com')
-            ->where('students.0.wallet_address', 'addr_test1111111111')
+            ->where('students.0.delivery_status', 'delivered')
             ->where('students.0.certificate_status', 'minted')
             ->where('students.0.certificate_tx_hash', 'tx_hash_123')
             ->where('students.1.name', 'Jane Smith')
             ->where('students.1.email', 'jane@example.com')
-            ->where('students.1.certificate_status', 'eligible')
+            ->where('students.1.delivery_status', 'eligible')
         );
     }
 

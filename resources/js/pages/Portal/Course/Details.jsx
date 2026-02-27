@@ -1,4 +1,4 @@
-import { Box, Grid, Typography, Card, CardContent, Container, Divider, Chip, Paper, CircularProgress, Stack, Button, LinearProgress, Dialog, DialogTitle, DialogContent } from "@mui/material";
+import { Box, Grid, Typography, Card, CardContent, Container, Divider, Chip, Paper, CircularProgress, Stack, Button, LinearProgress, Dialog, DialogTitle, DialogContent, Alert } from "@mui/material";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import Feedback from "../../../components/cards/Feedback";
@@ -16,6 +16,7 @@ import Course from "../../../components/cards/Course";
 import User from "../../../components/cards/User";
 import WalletConnector from "../../../components/cards/WalletConnector"
 import StripeCheckout from "../../../components/payments/StripeCheckout";
+import CardanoNetworkStatus from "../../../components/cards/CardanoNetworkStatus"
 import axios from "axios";
 
 
@@ -23,7 +24,7 @@ const Details = () => {
 
     const dispatch = useDispatch()
 
-    const { auth, course, nft, schedules, feedbacks, translatables, feedbackCount, feedbacksPerPage, pendingPayment, explorerUrl, stripe_available: stripeAvailable } = usePage().props
+    const { auth, course, nft, schedules, feedbacks, translatables, feedbackCount, feedbacksPerPage, pendingPayment, explorerUrl, stripe_available: stripeAvailable, is_teacher: isTeacher, cardano_network_status: cardanoNetworkStatus = 'healthy' } = usePage().props
 
     const [walletStakeKeyDisplay, setwalletStakeKeyDisplay] = useState(undefined)
     const [walletAPI, setWalletAPI] = useState(undefined)
@@ -44,6 +45,11 @@ const Details = () => {
     const [purchaseStep, setPurchaseStep] = useState('idle')
 
     const creditCardButtonRef = useRef(null)
+
+    // Confirmation polling state
+    const [confirmations, setConfirmations] = useState(null)
+    const [pollFailed, setPollFailed] = useState(false)
+    const confirmationPollRef = useRef(null)
 
     // Gap 1: quote countdown
     const [quoteExpiresAt, setQuoteExpiresAt] = useState(null)
@@ -103,6 +109,33 @@ const Details = () => {
         }, 1000)
         return () => clearInterval(quoteTimerRef.current)
     }, [quoteExpiresAt])
+
+    // Confirmation polling useEffect
+    useEffect(() => {
+        if (!pendingPayment?.payment_tx_hash) return
+        let active = true
+        const poll = async () => {
+            if (!active) return
+            try {
+                const res = await axios.get(`/api/purchases/${pendingPayment.payment_tx_hash}/status`)
+                if (!active || !res?.data?.success || !res?.data?.data) return
+                const { status, confirmations: count } = res.data.data
+                if (status === 'confirmed') {
+                    setConfirmations(10)
+                    clearInterval(confirmationPollRef.current)
+                    setTimeout(() => { if (active) Inertia.visit(window.location.pathname) }, 1500)
+                } else if (status === 'failed') {
+                    clearInterval(confirmationPollRef.current)
+                    setPollFailed(true)
+                } else if (status === 'pending') {
+                    setConfirmations(count ?? 0)
+                }
+            } catch (_) {}
+        }
+        poll()
+        confirmationPollRef.current = setInterval(poll, 15_000)
+        return () => { active = false; clearInterval(confirmationPollRef.current) }
+    }, [pendingPayment?.payment_tx_hash])
 
     const isGeneralCourse = course.course_type && course.course_type.name === 'General'
 
@@ -650,18 +683,27 @@ const Details = () => {
                             </CardContent>
                         </Card>
                         <User user={course.professor} condensed={false} />
-                        {(nft || isGeneralCourse) && auth && auth.user && <Box mb={2}>
+                        {(nft || isGeneralCourse) && auth && auth.user && !isTeacher && <Box mb={2}>
                             <WalletConnector onStakeKeyHash={setwalletStakeKeyDisplay}
                                 walletAPI={walletAPI}
                                 onWalletAPI={setWalletAPI} />
                         </Box>}
-                        {isGeneralCourse && auth && auth.user && (
+                        {isGeneralCourse && auth && auth.user && !isTeacher && (
                             <Box sx={{ mb: 2 }}>
-                                {pendingPayment ? (
+                                {(pendingPayment && !pollFailed) ? (
                                     <Box sx={{ p: 2, border: '1px solid', borderColor: 'primary.main', borderRadius: 1 }}>
-                                        <LinearProgress sx={{ mb: 1 }} />
+                                        <LinearProgress
+                                            variant={confirmations !== null ? 'determinate' : 'indeterminate'}
+                                            value={confirmations !== null ? (confirmations / 10) * 100 : undefined}
+                                            sx={{ mb: 1 }}
+                                        />
                                         <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                                            {translatables.texts.payment_pending}
+                                            {confirmations !== null
+                                                ? translatables.texts.payment_confirmations
+                                                    .replace(':current', confirmations)
+                                                    .replace(':required', 10)
+                                                : translatables.texts.payment_pending
+                                            }
                                         </Typography>
                                         <Typography variant="body2">
                                             <a
@@ -672,9 +714,28 @@ const Details = () => {
                                                 {translatables.texts.view_on_explorer}
                                             </a>
                                         </Typography>
+                                        {!walletAPI && (
+                                            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                                                {translatables?.texts?.wallet_disconnected_pending
+                                                    ?? 'Your wallet disconnected, but your pending transaction is still being tracked on the blockchain.'}
+                                            </Typography>
+                                        )}
                                     </Box>
                                 ) : (
                                     <>
+                                        {pollFailed && (
+                                            <Box sx={{ mb: 1, p: 1.5, border: '1px solid', borderColor: 'error.main', borderRadius: 1 }}>
+                                                <Typography variant="body2" color="error">
+                                                    {translatables.texts.payment_failed_retry}
+                                                </Typography>
+                                            </Box>
+                                        )}
+                                        <CardanoNetworkStatus status={cardanoNetworkStatus} translatables={translatables} />
+                                        {!adaAvailable && stripeAvailable === false && (
+                                            <Alert severity="warning" sx={{ mb: 2 }}>
+                                                {translatables?.texts?.purchases_unavailable ?? 'Purchases are temporarily unavailable. Please try again later.'}
+                                            </Alert>
+                                        )}
                                         <Button
                                             variant="outlined"
                                             color="primary"
@@ -740,6 +801,13 @@ const Details = () => {
                                         )}
                                     </>
                                 )}
+                            </Box>
+                        )}
+                        {isGeneralCourse && auth && auth.user && isTeacher && (
+                            <Box sx={{ mb: 2 }}>
+                                <Alert severity="info" sx={{ mb: 1 }}>
+                                    {translatables?.texts?.teacher_view_label ?? 'Teacher view — pricing preview only'}
+                                </Alert>
                             </Box>
                         )}
                         {nft && walletAPI && <CourseScheduleList data={schedules} handleOnBook={handleBookNFT} handleOnCancelBook={handleCancelBooking} />}

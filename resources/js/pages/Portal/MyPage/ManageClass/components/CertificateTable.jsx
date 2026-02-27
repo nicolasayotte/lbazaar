@@ -1,145 +1,184 @@
-import { OpenInNew, Replay } from "@mui/icons-material"
-import { Button, Chip, CircularProgress, IconButton, Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from "@mui/material"
-import { Stack } from "@mui/system"
-import EmptyCard from "../../../../../components/common/EmptyCard"
+import { OpenInNew } from '@mui/icons-material'
+import {
+    Checkbox,
+    Chip,
+    IconButton,
+    Link,
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Tooltip,
+} from '@mui/material'
+import EmptyCard from '../../../../../components/common/EmptyCard'
 
-const StatusBadge = ({ status }) => {
+const DeliveryStatusBadge = ({ status, texts }) => {
     const statusConfig = {
-        'eligible': { color: 'info', label: 'Eligible' },
-        'minting': { color: 'warning', label: 'Minting' },
-        'minted': { color: 'success', label: 'Minted' },
-        'failed': { color: 'error', label: 'Failed' }
+        eligible: {
+            color: 'info',
+            label: texts?.delivery_eligible ?? 'Eligible',
+        },
+        delivered: {
+            color: 'success',
+            label: texts?.delivery_delivered ?? 'Delivered',
+        },
+        self_minted: {
+            color: 'default',
+            label: texts?.delivery_self_minted ?? 'Self-minted',
+        },
+        failed: {
+            color: 'error',
+            label: texts?.delivery_failed ?? 'Failed',
+        },
+        not_eligible: {
+            color: 'warning',
+            label: texts?.delivery_not_eligible ?? 'Not eligible',
+        },
     }
 
-    const config = statusConfig[status] || { color: 'default', label: status }
+    const config = statusConfig[status] ?? { color: 'default', label: status ?? '-' }
 
     return <Chip color={config.color} label={config.label} size="small" />
 }
 
-const CertificateTable = ({ students, onMint, onRetry, minting = {}, translatables, explorerUrl }) => {
+const CompletionStatusBadge = ({ status, texts }) => {
+    const isCompleted = status === 'completed'
+    return (
+        <Chip
+            color={isCompleted ? 'success' : 'default'}
+            label={isCompleted ? (texts?.completed ?? 'Completed') : (texts?.in_progress ?? 'In progress')}
+            size="small"
+            variant="outlined"
+        />
+    )
+}
+
+const CertificateTable = ({
+    students,
+    selectedStudentIds,
+    onToggleSelect,
+    translatables,
+    explorerUrl,
+    hasRewards,
+}) => {
+    const texts = translatables?.texts ?? {}
 
     if (!students || students.length === 0) {
         return <EmptyCard />
     }
 
     const getExplorerUrl = (txHash) => {
-        if (!explorerUrl) return null
+        if (!explorerUrl || !txHash) return null
         return `${explorerUrl}/transaction/${txHash}`
     }
 
-    const displayTableData = students.map((student, index) => {
-        const isMinting = minting[student.id] || false
-        const showMintButton = student.certificate_status === 'eligible'
-        const showRetryButton = student.certificate_status === 'failed'
-        const hasTxHash = student.certificate_tx_hash && student.certificate_status === 'minted'
-
-        const actionButtons = (
-            <Stack direction="row" spacing={1} width="100%" justifyContent="center" alignItems="center">
-                {showMintButton && (
-                    <Button
-                        variant="contained"
-                        size="small"
-                        onClick={() => onMint(student.id)}
-                        disabled={isMinting}
-                        startIcon={isMinting ? <CircularProgress size={16} /> : null}
-                    >
-                        {isMinting ? translatables.texts.minting : translatables.texts.mint}
-                    </Button>
-                )}
-                {showRetryButton && (
-                    <Tooltip title={translatables.texts.retry}>
-                        <span>
-                            <IconButton
-                                size="small"
-                                color="primary"
-                                onClick={() => onRetry(student.id)}
-                                disabled={isMinting}
-                            >
-                                <Replay fontSize="small" />
-                            </IconButton>
-                        </span>
-                    </Tooltip>
-                )}
-                {hasTxHash && (() => {
-                    const url = getExplorerUrl(student.certificate_tx_hash)
-                    return url ? (
-                        <Link
-                            href={url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            underline="none"
-                        >
-                            <Tooltip title={translatables.texts.view_transaction}>
-                                <IconButton size="small" color="primary">
-                                    <OpenInNew fontSize="small" />
-                                </IconButton>
-                            </Tooltip>
-                        </Link>
-                    ) : (
-                        <Tooltip title={translatables.texts.view_transaction}>
-                            <span>
-                                <IconButton size="small" color="primary" disabled>
-                                    <OpenInNew fontSize="small" />
-                                </IconButton>
-                            </span>
-                        </Tooltip>
-                    )
-                })()}
-                {!showMintButton && !showRetryButton && !hasTxHash && '-'}
-            </Stack>
-        )
-
-        return (
-            <TableRow key={index}>
-                <TableCell>
-                    {student.name || student.user?.name || '-'}
-                </TableCell>
-                <TableCell align="center">
-                    {student.completed_at || student.certificate_minted_at || '-'}
-                </TableCell>
-                <TableCell align="center">
-                    <StatusBadge status={student.certificate_status} />
-                </TableCell>
-                <TableCell align="center">
-                    {hasTxHash ? (() => {
-                        const url = getExplorerUrl(student.certificate_tx_hash)
-                        return url ? (
-                            <Link
-                                href={url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                sx={{ fontSize: '0.875rem' }}
-                            >
-                                {student.certificate_tx_hash.substring(0, 8)}...
-                            </Link>
-                        ) : (
-                            <span style={{ fontSize: '0.875rem' }}>
-                                {student.certificate_tx_hash.substring(0, 8)}...
-                            </span>
-                        )
-                    })() : '-'}
-                </TableCell>
-                <TableCell align="center">
-                    {actionButtons}
-                </TableCell>
-            </TableRow>
-        )
-    })
+    const isSelected = (studentId) =>
+        (selectedStudentIds ?? []).includes(studentId)
 
     return (
         <TableContainer component={Paper}>
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell>{translatables.texts.student}</TableCell>
-                        <TableCell align="center">{translatables.texts.completed_date}</TableCell>
-                        <TableCell align="center">{translatables.texts.status}</TableCell>
-                        <TableCell align="center">{translatables.texts.transaction}</TableCell>
-                        <TableCell align="center">{translatables.texts.actions}</TableCell>
+                        {/* Checkbox column — only shown when rewards are configured */}
+                        {hasRewards && <TableCell padding="checkbox" />}
+
+                        <TableCell>{texts.student ?? 'Student'}</TableCell>
+                        <TableCell align="center">{texts.completed_date ?? 'Completed'}</TableCell>
+                        <TableCell align="center">{texts.completion_status ?? 'Progress'}</TableCell>
+
+                        {/* Reward columns — hidden when no rewards */}
+                        {hasRewards && (
+                            <>
+                                <TableCell align="center">{texts.delivery_status ?? 'Delivery'}</TableCell>
+                                <TableCell align="center">{texts.transaction ?? 'Transaction'}</TableCell>
+                            </>
+                        )}
                     </TableRow>
                 </TableHead>
+
                 <TableBody>
-                    {displayTableData}
+                    {students.map((student, index) => {
+                        const isEligible = student.delivery_status === 'eligible'
+                        const txHash = student.certificate_tx_hash
+                        const explorerLink = txHash ? getExplorerUrl(txHash) : null
+
+                        return (
+                            <TableRow
+                                key={student.id ?? index}
+                                selected={isSelected(student.id)}
+                            >
+                                {/* Checkbox — only for eligible students */}
+                                {hasRewards && (
+                                    <TableCell padding="checkbox">
+                                        {isEligible ? (
+                                            <Checkbox
+                                                checked={isSelected(student.id)}
+                                                onChange={() => onToggleSelect(student.id)}
+                                                size="small"
+                                            />
+                                        ) : null}
+                                    </TableCell>
+                                )}
+
+                                <TableCell>
+                                    {student.name ?? '-'}
+                                </TableCell>
+
+                                <TableCell align="center">
+                                    {student.completed_at ?? '-'}
+                                </TableCell>
+
+                                <TableCell align="center">
+                                    <CompletionStatusBadge
+                                        status={student.completion_status}
+                                        texts={texts}
+                                    />
+                                </TableCell>
+
+                                {hasRewards && (
+                                    <>
+                                        <TableCell align="center">
+                                            <DeliveryStatusBadge
+                                                status={student.delivery_status}
+                                                texts={texts}
+                                            />
+                                        </TableCell>
+
+                                        <TableCell align="center">
+                                            {txHash && student.delivery_status === 'delivered' ? (
+                                                explorerLink ? (
+                                                    <Link
+                                                        href={explorerLink}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        underline="none"
+                                                    >
+                                                        <Tooltip title={texts.view_transaction ?? 'View transaction'}>
+                                                            <IconButton size="small" color="primary">
+                                                                <OpenInNew fontSize="small" />
+                                                            </IconButton>
+                                                        </Tooltip>
+                                                    </Link>
+                                                ) : (
+                                                    <Tooltip title={txHash}>
+                                                        <span style={{ fontSize: '0.75rem', fontFamily: 'monospace' }}>
+                                                            {txHash.substring(0, 8)}...
+                                                        </span>
+                                                    </Tooltip>
+                                                )
+                                            ) : (
+                                                '-'
+                                            )}
+                                        </TableCell>
+                                    </>
+                                )}
+                            </TableRow>
+                        )
+                    })}
                 </TableBody>
             </Table>
         </TableContainer>

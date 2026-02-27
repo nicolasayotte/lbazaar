@@ -38,7 +38,12 @@ class CourseRequest extends FormRequest
             'is_cancellable'           => 'boolean',
             'days_before_cancellation' => 'required_if:is_cancellable,true',
             'image_thumbnail'          => 'required',
-            'video_path'               => 'required_if:format,' . Course::ON_DEMAND
+            'video_path'               => 'required_if:format,' . Course::ON_DEMAND,
+            'certificate_enabled'      => 'boolean',
+            'certificate_name'         => 'required_if:certificate_enabled,1,true|nullable|string|max:255',
+            'certificate_description'  => 'required_if:certificate_enabled,1,true|nullable|string|max:1000',
+            'token_reward_enabled'     => 'boolean',
+            'token_reward_amount'      => 'required_if:token_reward_enabled,1,true|nullable|integer|min:1|max:1000000',
         ];
 
         return $rules;
@@ -58,7 +63,10 @@ class CourseRequest extends FormRequest
             'zoom_link'                => getTranslation('texts.class_url'),
             'video_path'               => getTranslation('texts.video'),
             'is_cancellable'           => getTranslation('texts.cancellable'),
-            'days_before_cancellation' => getTranslation('texts.days')
+            'days_before_cancellation' => getTranslation('texts.days'),
+            'certificate_name'         => getTranslation('texts.certificate_name'),
+            'certificate_description'  => getTranslation('texts.certificate_description'),
+            'token_reward_amount'      => getTranslation('texts.token_reward_amount'),
         ];
 
         return array_map('strtolower', $attributes);

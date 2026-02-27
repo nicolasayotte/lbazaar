@@ -112,6 +112,8 @@ const mockTranslatables = {
         payment_pending: 'Your ADA payment is being confirmed on the blockchain.',
         view_on_explorer: 'View transaction on explorer',
         stripe_unavailable: 'Credit card payment temporarily unavailable',
+        wallet_disconnected_pending: 'Your wallet disconnected, but your pending transaction is still being tracked on the blockchain. You can reconnect to continue monitoring.',
+        wallet_reconnect_prompt: 'Wallet disconnected. Please reconnect your wallet to continue.',
     },
     title: { feedbacks: 'Feedbacks' },
     wallet_error: {
@@ -339,5 +341,50 @@ describe('TS-04: Parallel payment options — visual parity and independent degr
         mockUsePageFn.mockReturnValue(makePageProps({}, { stripe_available: false }));
         render(<Details />);
         expect(screen.getByRole('button', { name: /Pay with ADA/i })).toBeInTheDocument();
+    });
+});
+
+// ---------------------------------------------------------------------------
+// T2: Wallet disconnect detection + pending tx resilience
+// ---------------------------------------------------------------------------
+describe('T2: Wallet disconnect — pending tx resilience message', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    it('TS-T2.01: shows wallet_disconnected_pending when pendingPayment is set and walletAPI is undefined', () => {
+        mockUsePageFn.mockReturnValue(
+            makePageProps({}, {
+                pendingPayment: { payment_tx_hash: 'abc123' },
+                // walletAPI is internal state; the Details component initialises to undefined
+            })
+        );
+        render(<Details />);
+        expect(
+            screen.getByText('Your wallet disconnected, but your pending transaction is still being tracked on the blockchain. You can reconnect to continue monitoring.')
+        ).toBeInTheDocument();
+    });
+
+    it('TS-T2.02: does not show wallet_disconnected_pending when pendingPayment is null', () => {
+        mockUsePageFn.mockReturnValue(makePageProps());
+        render(<Details />);
+        expect(
+            screen.queryByText(/Your wallet disconnected, but your pending transaction/)
+        ).not.toBeInTheDocument();
+    });
+
+    it('TS-T2.03: LinearProgress and explorer link visible even when walletAPI is undefined and pendingPayment is set', () => {
+        mockUsePageFn.mockReturnValue(
+            makePageProps({}, {
+                pendingPayment: { payment_tx_hash: 'abc123' },
+                explorerUrl: 'https://preprod.cardanoscan.io',
+            })
+        );
+        render(<Details />);
+        // Multiple progressbars present (LinearProgress + rating CircularProgress)
+        expect(screen.getAllByRole('progressbar').length).toBeGreaterThanOrEqual(1);
+        const link = screen.getByRole('link', { name: 'View transaction on explorer' });
+        expect(link).toBeInTheDocument();
+        expect(link).toHaveAttribute('href', 'https://preprod.cardanoscan.io/tx/abc123');
     });
 });

@@ -87,20 +87,32 @@ class ManageCourseController extends Controller
 
         $students = $this->getCompletedStudents($id);
 
+        $hasRewards = !empty($course->certificate_enabled)
+            || !empty($course->token_reward_enabled);
+
         return Inertia::render('Portal/MyPage/ManageClass/Certificates', [
-            'course'    => $this->courseRepository->findByIdManageClass($id),
-            'students'  => $students,
-            'tabValue'  => 'certificates',
-            'courseId'  => (int) $id,
-            'explorerUrl' => config('services.cardano.explorer_url'),
-            'title'     => $this->baseTitle . getTranslation('title.certificates')
+            'course'               => $this->courseRepository->findByIdManageClass($id),
+            'students'             => $students,
+            'tabValue'             => 'certificates',
+            'courseId'             => (int) $id,
+            'explorerUrl'          => config('services.cardano.explorer_url'),
+            'has_rewards'          => $hasRewards,
+            'token_reward_enabled' => !empty($course->token_reward_enabled),
+            'title'                => $this->baseTitle . getTranslation('title.certificates'),
         ])->withViewData([
-            'title'     => $this->baseTitle . getTranslation('title.certificates'),
+            'title' => $this->baseTitle . getTranslation('title.certificates'),
         ]);
     }
 
     /**
-     * Get completed students with certificate status
+     * Get completed students with certificate status and delivery status.
+     *
+     * delivery_status values:
+     *   - eligible      : completed + passed all exams, certificate not yet minted
+     *   - delivered     : certificate_status = 'minted'
+     *   - self_minted   : certificate_status = 'self_minted'
+     *   - failed        : certificate_status = 'failed'
+     *   - not_eligible  : completed but did not pass all exams, or not completed
      *
      * @param int $courseId
      * @return array
@@ -109,28 +121,44 @@ class ManageCourseController extends Controller
     {
         $completedHistories = CourseHistory::where('course_id', $courseId)
             ->whereNotNull('completed_at')
-            ->with(['user', 'user.userWallet', 'courseSchedule'])
+            ->with(['user', 'courseSchedule'])
             ->get();
 
         return $completedHistories->map(function ($history) {
-            // Determine certificate status
             $certificateStatus = $history->certificate_status;
 
-            // If no status set, determine if eligible
-            if (!$certificateStatus) {
-                $certificateStatus = $this->hasPassedAllExams($history->user->id, $history->course_schedule_id)
-                    ? 'eligible'
-                    : 'failed';
+            // Derive delivery_status from certificate_status + exam pass check
+            if ($certificateStatus === 'minted') {
+                $deliveryStatus = 'delivered';
+            } elseif ($certificateStatus === 'self_minted') {
+                $deliveryStatus = 'self_minted';
+            } elseif ($certificateStatus === 'failed') {
+                $deliveryStatus = 'failed';
+            } else {
+                // null / other: eligible only when passed all exams
+                $passed = $this->hasPassedAllExams(
+                    $history->user->id,
+                    $history->course_schedule_id
+                );
+                $deliveryStatus = $passed ? 'eligible' : 'not_eligible';
+
+                // Sync certificate_status so legacy code still works
+                if (!$certificateStatus) {
+                    $certificateStatus = $passed ? 'eligible' : 'not_eligible';
+                }
             }
 
+            $completionStatus = $history->completed_at ? 'completed' : 'in_progress';
+
             return [
-                'id' => $history->user->id,
-                'name' => $history->user->fullname ?? $history->user->name,
-                'email' => $history->user->email,
-                'wallet_address' => $history->user->userWallet->address ?? null,
-                'completed_at' => $history->completed_at,
-                'certificate_status' => $certificateStatus,
-                'certificate_tx_hash' => $history->certificate_tx_hash,
+                'id'                    => $history->user->id,
+                'name'                  => $history->user->fullname ?? $history->user->name,
+                'email'                 => $history->user->email,
+                'completed_at'          => $history->completed_at,
+                'completion_status'     => $completionStatus,
+                'delivery_status'       => $deliveryStatus,
+                'certificate_status'    => $certificateStatus,
+                'certificate_tx_hash'   => $history->certificate_tx_hash,
                 'certificate_minted_at' => $history->certificate_minted_at,
             ];
         })->toArray();

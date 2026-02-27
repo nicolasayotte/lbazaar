@@ -10,6 +10,7 @@ use App\Http\Requests\SubmitPurchaseTxRequest;
 use App\Services\API\CertificateService;
 use App\Services\API\CoursePurchaseService;
 use App\Services\API\ExchangeRateService;
+use App\Services\API\CardanoNetworkService;
 use App\Services\API\StripeService;
 use App\Mail\CourseBooking;
 use App\Models\CourseHistory;
@@ -134,6 +135,19 @@ class CourseController extends Controller
             Log::warning('ADA rate unavailable', ['course' => $id, 'error' => $e->getMessage()]);
         }
 
+        $cardanoNetworkStatus = 'healthy';
+        try {
+            $networkResult = app(CardanoNetworkService::class)->getNetworkStatus();
+            $cardanoNetworkStatus = $networkResult['status'];
+            if ($cardanoNetworkStatus === 'unreachable') {
+                $adaAvailable = false;
+            }
+        } catch (\Throwable $e) {
+            $cardanoNetworkStatus = 'unreachable';
+            $adaAvailable = false;
+            Log::warning('Cardano network check failed', ['error' => $e->getMessage()]);
+        }
+
         return Inertia::render('Portal/Course/Details', [
             'course'           => $course,
             'nft'              => $nft,
@@ -150,8 +164,11 @@ class CourseController extends Controller
                     ->select(['id', 'payment_tx_hash', 'payment_submitted_at'])
                     ->first()
                 : null,
-            'ada_available'    => $adaAvailable,
-            'stripe_available' => app(StripeService::class)->isAvailable(),
+            'ada_available'          => $adaAvailable,
+            'cardano_network_status' => $cardanoNetworkStatus,
+            'stripe_available'       => app(StripeService::class)->isAvailable(),
+            'explorerUrl'            => config('services.cardano.explorer_url'),
+            'is_teacher'             => auth()->check() && (int) auth()->id() === (int) $course->professor_id,
             'hasFeedback'      => auth()->user() && auth()->user()->hasFeedback($id),
             'feedbackCount'    => $feedbackCount,
             'feedbacksPerPage' => CourseFeedbackRepository::PER_PAGE,

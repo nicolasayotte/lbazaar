@@ -1,8 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import Certificates from './Certificates';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
 
-// Mock @inertiajs/inertia to prevent real HTTP calls
+// ---------------------------------------------------------------------------
+// Mock dependencies before component import
+// ---------------------------------------------------------------------------
+
 vi.mock('@inertiajs/inertia', () => ({
     Inertia: {
         post: vi.fn(),
@@ -10,62 +14,141 @@ vi.mock('@inertiajs/inertia', () => ({
         put: vi.fn(),
         delete: vi.fn(),
         visit: vi.fn(),
-    }
+    },
 }));
 
-import { Inertia } from '@inertiajs/inertia';
-
-// Mock the usePage hook
 vi.mock('@inertiajs/inertia-react', () => ({
     usePage: () => ({
         props: {
-            course: { id: 1, certificate_enabled: true },
+            course: {
+                id: 1,
+                certificate_enabled: true,
+                token_reward_enabled: false,
+            },
             students: [
-                { id: 1, name: 'Alice Smith', certificate_status: 'eligible', completed_at: '2023-01-15' },
-                { id: 2, name: 'Bob Johnson', certificate_status: 'minted', completed_at: '2023-01-20' }
+                {
+                    id: 1,
+                    name: 'Alice Smith',
+                    delivery_status: 'eligible',
+                    completion_status: 'completed',
+                    completed_at: '2023-01-15',
+                },
+                {
+                    id: 2,
+                    name: 'Bob Johnson',
+                    delivery_status: 'delivered',
+                    completion_status: 'completed',
+                    completed_at: '2023-01-20',
+                },
             ],
+            has_rewards: true,
+            explorerUrl: 'https://preprod.cardanoscan.io',
             translatables: {
                 texts: {
                     certificates: 'Completion Certificates',
-                    mint_all_eligible: 'Mint All Eligible',
-                    minting_all: 'Minting All...',
-                    certificates_not_enabled: 'Certificates are not enabled for this course.',
-                    no_students: 'No students have enrolled in this course yet.',
-                    no_eligible_students: 'No students are currently eligible for certificates.',
-                    student: 'Student',
-                    completed_date: 'Completed Date',
-                    status: 'Status',
-                    transaction: 'Transaction',
-                    actions: 'Actions',
-                    mint: 'Mint',
-                    minting: 'Minting...',
-                    retry: 'Retry',
-                    view_transaction: 'View Transaction'
-                }
-            }
-        }
-    })
+                    airdrop_selected: 'Airdrop',
+                    airdropping: 'Airdropping...',
+                    select_all_eligible: 'Select All Eligible',
+                    clear_selection: 'Clear',
+                    connect_wallet_to_airdrop: 'Connect your wallet to airdrop certificates',
+                    no_rewards_configured: 'No rewards configured.',
+                    no_students: 'No students.',
+                    no_eligible_students: 'No eligible students.',
+                },
+            },
+        },
+    }),
 }));
 
-// Mock CertificateTable component
+vi.mock('axios', () => ({
+    default: {
+        get: vi.fn(),
+        post: vi.fn().mockResolvedValue({ data: { success: true, data: { fee_ada: 2.5 } } }),
+    },
+}));
+
+// Mock WalletConnector to avoid Cardano/redux complexity
+vi.mock('../../../../components/cards/WalletConnector', () => ({
+    default: ({ onWalletAPI }) => (
+        <div data-testid="wallet-connector">
+            <button
+                data-testid="mock-connect-wallet"
+                onClick={() =>
+                    onWalletAPI({
+                        getBalance: async () => '1a000f4240', // 1 ADA in CBOR
+                    })
+                }
+            >
+                Connect Wallet
+            </button>
+        </div>
+    ),
+}));
+
+// Mock CertificateTable
 vi.mock('./components/CertificateTable', () => ({
-    default: ({ students, onMint, onRetry, minting, translatables }) => (
+    default: ({ students, selectedStudentIds, onToggleSelect }) => (
         <div data-testid="certificate-table">
-            {students.map(student => (
+            {students.map((student) => (
                 <div key={student.id} data-testid={`student-${student.id}`}>
                     {student.name}
-                    {student.certificate_status === 'eligible' && (
-                        <button onClick={() => onMint(student.id)}>Mint</button>
+                    {student.delivery_status === 'eligible' && (
+                        <input
+                            type="checkbox"
+                            data-testid={`checkbox-${student.id}`}
+                            checked={(selectedStudentIds ?? []).includes(student.id)}
+                            onChange={() => onToggleSelect(student.id)}
+                        />
                     )}
-                    {student.certificate_status === 'failed' && (
-                        <button onClick={() => onRetry(student.id)}>Retry</button>
-                    )}
-                    {minting[student.id] && <span>Minting...</span>}
                 </div>
             ))}
         </div>
-    )
+    ),
 }));
+
+// Mock dialogs
+vi.mock('./components/AirdropFeeDialog', () => ({
+    default: ({ open, onConfirm, onClose }) =>
+        open ? (
+            <div data-testid="fee-dialog">
+                <button data-testid="confirm-airdrop" onClick={onConfirm}>
+                    Confirm
+                </button>
+                <button data-testid="close-fee-dialog" onClick={onClose}>
+                    Cancel
+                </button>
+            </div>
+        ) : null,
+}));
+
+vi.mock('./components/AirdropResultsDialog', () => ({
+    default: ({ open, onClose }) =>
+        open ? (
+            <div data-testid="results-dialog">
+                <button data-testid="close-results" onClick={onClose}>
+                    Close
+                </button>
+            </div>
+        ) : null,
+}));
+
+import Certificates from './Certificates';
+
+// ---------------------------------------------------------------------------
+// Minimal Redux store for tests (WalletConnector is mocked, but Provider is
+// needed in case any nested real component is accidentally imported)
+// ---------------------------------------------------------------------------
+const mockStore = configureStore({
+    reducer: {
+        toaster: (state = { messages: [] }) => state,
+    },
+});
+
+const renderWithStore = (ui) => render(<Provider store={mockStore}>{ui}</Provider>);
+
+// ---------------------------------------------------------------------------
+// Tests
+// ---------------------------------------------------------------------------
 
 describe('Certificates', () => {
     beforeEach(() => {
@@ -73,168 +156,76 @@ describe('Certificates', () => {
     });
 
     describe('UI Rendering', () => {
-        it('should render UI when certificates are enabled', () => {
-            render(<Certificates />);
-
+        it('renders the page heading', () => {
+            renderWithStore(<Certificates />);
             expect(screen.getByText('Completion Certificates')).toBeInTheDocument();
+        });
+
+        it('renders the certificate table', () => {
+            renderWithStore(<Certificates />);
             expect(screen.getByTestId('certificate-table')).toBeInTheDocument();
         });
 
-        it('should show batch mint button when eligible students exist', () => {
-            render(<Certificates />);
+        it('renders the wallet connector', () => {
+            renderWithStore(<Certificates />);
+            expect(screen.getByTestId('wallet-connector')).toBeInTheDocument();
+        });
 
-            expect(screen.getByText(/Mint All Eligible/i)).toBeInTheDocument();
+        it('shows select all eligible button when eligible students exist', () => {
+            renderWithStore(<Certificates />);
+            expect(screen.getByText(/Select All Eligible/i)).toBeInTheDocument();
+        });
+
+        it('shows airdrop button', () => {
+            renderWithStore(<Certificates />);
+            expect(screen.getByText(/Airdrop/i)).toBeInTheDocument();
         });
     });
 
-    describe('Single Certificate Minting', () => {
-        it('should call API when minting single certificate', async () => {
-            const mockPost = vi.spyOn(Inertia, 'post');
-
-            render(<Certificates />);
-
-            const mintButton = screen.getAllByText('Mint')[0];
-            fireEvent.click(mintButton);
-
-            await waitFor(() => {
-                expect(mockPost).toHaveBeenCalledWith(
-                    '/api/certificates/courses/1/students/1/mint',
-                    {},
-                    expect.objectContaining({
-                        preserveScroll: true,
-                        onSuccess: expect.any(Function),
-                        onError: expect.any(Function),
-                        onFinish: expect.any(Function)
-                    })
-                );
-            });
+    describe('Selection', () => {
+        it('selects all eligible students when select-all is clicked', () => {
+            renderWithStore(<Certificates />);
+            // First connect wallet so airdrop isn't the only focus
+            const selectAll = screen.getByText(/Select All Eligible/i);
+            fireEvent.click(selectAll);
+            // Checkbox for eligible student (id=1) should now be checked
+            const checkbox = screen.getByTestId('checkbox-1');
+            expect(checkbox).toBeChecked();
         });
 
-        it('should show success message after successful mint', async () => {
-            const mockPost = vi.spyOn(Inertia, 'post').mockImplementation((url, data, options) => {
-                options.onSuccess();
-            });
-
-            const consoleLogSpy = vi.spyOn(console, 'log');
-
-            render(<Certificates />);
-
-            const mintButton = screen.getAllByText('Mint')[0];
-            fireEvent.click(mintButton);
-
-            await waitFor(() => {
-                expect(consoleLogSpy).toHaveBeenCalledWith(
-                    'Certificate minted successfully for student:',
-                    1
-                );
-            });
-
-            consoleLogSpy.mockRestore();
-        });
-
-        it('should show error message on mint failure', async () => {
-            const mockPost = vi.spyOn(Inertia, 'post').mockImplementation((url, data, options) => {
-                options.onError({ message: 'Mint failed' });
-            });
-
-            const consoleErrorSpy = vi.spyOn(console, 'error');
-
-            render(<Certificates />);
-
-            const mintButton = screen.getAllByText('Mint')[0];
-            fireEvent.click(mintButton);
-
-            await waitFor(() => {
-                expect(consoleErrorSpy).toHaveBeenCalledWith(
-                    'Failed to mint certificate:',
-                    { message: 'Mint failed' }
-                );
-            });
-
-            consoleErrorSpy.mockRestore();
+        it('clears selection when clear button is clicked', () => {
+            renderWithStore(<Certificates />);
+            fireEvent.click(screen.getByText(/Select All Eligible/i));
+            const clearBtn = screen.getByText(/^Clear$/i);
+            fireEvent.click(clearBtn);
+            const checkbox = screen.getByTestId('checkbox-1');
+            expect(checkbox).not.toBeChecked();
         });
     });
 
-    describe('Batch Certificate Minting', () => {
-        it('should call API when batch minting certificates', async () => {
-            const mockPost = vi.spyOn(Inertia, 'post');
-
-            render(<Certificates />);
-
-            const batchMintButton = screen.getByText(/Mint All Eligible/i);
-            fireEvent.click(batchMintButton);
-
-            await waitFor(() => {
-                expect(mockPost).toHaveBeenCalledWith(
-                    '/api/certificates/courses/1/batch-mint',
-                    { student_ids: [1] },
-                    expect.objectContaining({
-                        preserveScroll: true,
-                        onSuccess: expect.any(Function),
-                        onError: expect.any(Function),
-                        onFinish: expect.any(Function)
-                    })
-                );
-            });
+    describe('Airdrop flow', () => {
+        it('airdrop button is disabled when no wallet connected', () => {
+            renderWithStore(<Certificates />);
+            const airdropBtn = screen.getByText(/Airdrop/i).closest('button');
+            expect(airdropBtn).toBeDisabled();
         });
 
-        it('should disable batch mint button during minting', async () => {
-            vi.spyOn(Inertia, 'post').mockImplementation((url, data, options) => {
-                // Don't call onFinish to simulate ongoing request
-            });
+        it('opens fee dialog when airdrop button clicked with wallet + selection', async () => {
+            renderWithStore(<Certificates />);
 
-            render(<Certificates />);
+            // Connect wallet
+            fireEvent.click(screen.getByTestId('mock-connect-wallet'));
 
-            const batchMintButton = screen.getByText(/Mint All Eligible/i);
-            fireEvent.click(batchMintButton);
+            // Select a student
+            fireEvent.click(screen.getByText(/Select All Eligible/i));
 
-            await waitFor(() => {
-                expect(screen.getByText(/Minting All/i)).toBeInTheDocument();
-                expect(screen.getByText(/Minting All/i).closest('button')).toBeDisabled();
-            });
-        });
-
-        it('should show success message after successful batch mint', async () => {
-            const mockPost = vi.spyOn(Inertia, 'post').mockImplementation((url, data, options) => {
-                options.onSuccess();
-                options.onFinish();
-            });
-
-            const consoleLogSpy = vi.spyOn(console, 'log');
-
-            render(<Certificates />);
-
-            const batchMintButton = screen.getByText(/Mint All Eligible/i);
-            fireEvent.click(batchMintButton);
+            // Click airdrop
+            const airdropBtn = screen.getByText(/Airdrop/i).closest('button');
+            fireEvent.click(airdropBtn);
 
             await waitFor(() => {
-                expect(consoleLogSpy).toHaveBeenCalledWith('Batch minting completed');
+                expect(screen.getByTestId('fee-dialog')).toBeInTheDocument();
             });
-
-            consoleLogSpy.mockRestore();
-        });
-
-        it('should show error message on batch mint failure', async () => {
-            const mockPost = vi.spyOn(Inertia, 'post').mockImplementation((url, data, options) => {
-                options.onError({ message: 'Batch mint failed' });
-                options.onFinish();
-            });
-
-            const consoleErrorSpy = vi.spyOn(console, 'error');
-
-            render(<Certificates />);
-
-            const batchMintButton = screen.getByText(/Mint All Eligible/i);
-            fireEvent.click(batchMintButton);
-
-            await waitFor(() => {
-                expect(consoleErrorSpy).toHaveBeenCalledWith(
-                    'Batch minting failed:',
-                    { message: 'Batch mint failed' }
-                );
-            });
-
-            consoleErrorSpy.mockRestore();
         });
     });
 });
