@@ -1,7 +1,7 @@
 
 import routes from "../../helpers/routes.helper"
 import { Typography, Box, Card, List, IconButton, Drawer, ListItem, ListItemButton, ListItemIcon, Stack, Toolbar, Divider } from "@mui/material"
-import { Article, Logout, History, MenuBook, ManageAccounts, Menu, Wallet, Verified as Badge, HistoryEdu as Teaching } from "@mui/icons-material"
+import { Article, Logout, History, MenuBook, ManageAccounts, Menu, Wallet, Verified as Badge, HistoryEdu as Teaching, ShoppingCart } from "@mui/icons-material"
 import { useState } from "react"
 import { Link, usePage } from "@inertiajs/inertia-react"
 
@@ -64,6 +64,13 @@ const MyPage = ({ window }) => {
             roles: ['student', 'teacher'],
             active: component.startsWith('Portal/MyPage/CourseHistory'),
             icon: <History />,
+        },
+        {
+            name: `${translatables.texts.purchase_history}`,
+            link: routes["mypage.purchase.history.index"],
+            roles: ['student', 'teacher'],
+            active: component.startsWith('Portal/MyPage/PurchaseHistory'),
+            icon: <ShoppingCart />,
         },
         /*
         {
