@@ -18,10 +18,10 @@ class CourseApplicationControllerTest extends TestCase
 
         $this->createRoles(['teacher', 'student']);
 
-        $this->teacher = User::factory()->create();
+        $this->teacher = $this->createTestUser();
         $this->teacher->attachRole('teacher');
 
-        $this->student = User::factory()->create();
+        $this->student = $this->createTestUser();
         $this->student->attachRole('student');
     }
 

@@ -28,9 +28,9 @@ class CertificateServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->service = new CertificateService();
-        $this->setupTestData();
+        $this->retryOnDisconnect(fn () => $this->setupTestData());
     }
 
     private function setupTestData()

@@ -28,12 +28,12 @@ class CourseControllerAttendTest extends TestCase
         $courseType = CourseType::where('name', CourseType::GENERAL)->first()
             ?? CourseType::create(['name' => CourseType::GENERAL, 'type' => 'general']);
 
-        $this->teacher = User::factory()->create([
+        $this->teacher = $this->createTestUser([
             'email' => 'attend-test-teacher@example.com',
         ]);
         $this->teacher->attachRole('teacher');
 
-        $this->student = User::factory()->create([
+        $this->student = $this->createTestUser([
             'email' => 'attend-test-student@example.com',
         ]);
         $this->student->attachRole('student');

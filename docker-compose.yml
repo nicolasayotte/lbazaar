@@ -26,7 +26,7 @@ services:
       - mysql
   mysql:
     image: 'mysql/mysql-server:8.0'
-    command: --wait-timeout=300 --interactive-timeout=300
+    command: --wait-timeout=3600 --interactive-timeout=3600 --max_connections=500 --max-connect-errors=1000000 --skip-name-resolve
     ports:
       - '${FORWARD_DB_PORT:-3306}:3306'
     environment:

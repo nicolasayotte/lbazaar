@@ -25,7 +25,9 @@ class CourseApplicationFactory extends Factory
     {
         $user = User::whereRoleIs(Role::TEACHER)->inRandomOrder()->first();
         if (!$user) {
-            $user = User::factory()->create();
+            $user = User::factory()->create([
+                'custodial_address' => 'addr_test_factory_' . uniqid(),
+            ]);
             // Optionally assign TEACHER role if needed
         }
 

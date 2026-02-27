@@ -22,18 +22,18 @@ class BatchMintCertificatesRequestTest extends TestCase
         // Create roles
         $this->createRoles(['teacher', 'student']);
 
-        // Create teacher with unique email
-        $this->teacher = User::factory()->create([
+        // Create teacher with unique email (withoutEvents to avoid Node.js observer)
+        $this->teacher = $this->createTestUser([
             'email' => 'teacher_' . uniqid() . '@test.com',
             'first_name' => 'Test',
             'last_name' => 'Teacher'
         ]);
         $this->teacher->attachRole('teacher');
 
-        // Create multiple students with unique emails
+        // Create multiple students with unique emails (withoutEvents to avoid Node.js observer)
         $this->students = collect();
         for ($i = 0; $i < 3; $i++) {
-            $student = User::factory()->create([
+            $student = $this->createTestUser([
                 'email' => 'student_' . uniqid() . '_' . $i . '@test.com'
             ]);
             $student->attachRole('student');
@@ -70,7 +70,7 @@ class BatchMintCertificatesRequestTest extends TestCase
     public function test_authorize_returns_false_when_teacher_does_not_own_course()
     {
         // Create another teacher and their course
-        $otherTeacher = User::factory()->create();
+        $otherTeacher = $this->createTestUser();
         $otherTeacher->attachRole('teacher');
         $otherCourse = Course::factory()->create([
             'professor_id' => $otherTeacher->id

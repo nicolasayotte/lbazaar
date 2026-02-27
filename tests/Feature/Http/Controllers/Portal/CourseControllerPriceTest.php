@@ -183,7 +183,7 @@ class CourseControllerPriceTest extends TestCase
     {
         $this->mockExchangeRateOnce();
 
-        $student = User::factory()->create(['email' => 'student-null-status@example.com']);
+        $student = $this->createTestUser(['email' => 'student-null-status@example.com']);
         $student->attachRole('student');
 
         CourseHistory::factory()->create([
@@ -206,7 +206,7 @@ class CourseControllerPriceTest extends TestCase
     {
         $this->mockExchangeRateOnce();
 
-        $student = User::factory()->create(['email' => 'student-confirmed@example.com']);
+        $student = $this->createTestUser(['email' => 'student-confirmed@example.com']);
         $student->attachRole('student');
 
         CourseHistory::factory()->create([
@@ -229,7 +229,7 @@ class CourseControllerPriceTest extends TestCase
     {
         $this->mockExchangeRateOnce();
 
-        $student = User::factory()->create(['email' => 'student-pending@example.com']);
+        $student = $this->createTestUser(['email' => 'student-pending@example.com']);
         $student->attachRole('student');
 
         CourseHistory::factory()->create([
@@ -252,7 +252,7 @@ class CourseControllerPriceTest extends TestCase
     {
         $this->mockExchangeRateOnce();
 
-        $student = User::factory()->create(['email' => 'student-failed@example.com']);
+        $student = $this->createTestUser(['email' => 'student-failed@example.com']);
         $student->attachRole('student');
 
         CourseHistory::factory()->create([
@@ -288,7 +288,7 @@ class CourseControllerPriceTest extends TestCase
     {
         $this->mockExchangeRateOnce();
 
-        $student = User::factory()->create(['email' => 'student-no-pending@example.com']);
+        $student = $this->createTestUser(['email' => 'student-no-pending@example.com']);
         $student->attachRole('student');
 
         $response = $this->actingAs($student)->get("/classes/{$this->course->id}");
@@ -304,7 +304,7 @@ class CourseControllerPriceTest extends TestCase
     {
         $this->mockExchangeRateOnce();
 
-        $student = User::factory()->create(['email' => 'student-has-pending@example.com']);
+        $student = $this->createTestUser(['email' => 'student-has-pending@example.com']);
         $student->attachRole('student');
 
         $history = CourseHistory::factory()->create([

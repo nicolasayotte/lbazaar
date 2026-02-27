@@ -116,7 +116,7 @@ class CourseSearchFilterTest extends TestCase
     public function it_combines_category_filter_with_other_filters()
     {
         // Create user (professor)
-        $professor = User::factory()->create();
+        $professor = $this->createTestUser();
 
         // Create categories
         $categoryProgramming = CourseCategory::factory()->create(['name' => 'Programming']);

@@ -23,7 +23,7 @@ class CoursePricingTest extends TestCase
 
         $this->createRoles(['teacher']);
 
-        $this->teacher = User::factory()->create();
+        $this->teacher = $this->createTestUser();
         $this->teacher->attachRole('teacher');
 
         $this->courseType = $this->createCourseType('general', 'general');

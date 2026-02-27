@@ -12,7 +12,7 @@ class UserWalletAddressTest extends TestCase
      */
     public function test_user_endpoint_returns_linked_wallet_address()
     {
-        $user = User::factory()->create();
+        $user = $this->createTestUser();
         $user->userWallet()->create([
             'stake_key_hash' => 'addr_test1qpmocklinkedaddress',
         ]);
@@ -28,7 +28,7 @@ class UserWalletAddressTest extends TestCase
      */
     public function test_user_endpoint_always_returns_custodial_wallet_address()
     {
-        $user = User::factory()->create();
+        $user = $this->createTestUser();
         $user->userWallet()->create([
             'stake_key_hash' => null,
         ]);

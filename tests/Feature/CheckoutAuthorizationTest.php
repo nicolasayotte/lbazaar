@@ -29,9 +29,9 @@ class CheckoutAuthorizationTest extends TestCase
             });
         $this->app->instance(ExchangeRateService::class, $mockExchangeRateService);
 
-        // Create test users
-        $this->user = User::factory()->create();
-        $this->otherUser = User::factory()->create();
+        // Create test users (withoutEvents to avoid Node.js observer)
+        $this->user = $this->createTestUser();
+        $this->otherUser = $this->createTestUser();
 
         // Create test course
         $this->course = Course::factory()->create();
@@ -176,7 +176,7 @@ class CheckoutAuthorizationTest extends TestCase
     public function test_multiple_users_cannot_access_same_payment(): void
     {
         // Arrange: Create additional users
-        $thirdUser = User::factory()->create();
+        $thirdUser = $this->createTestUser();
 
         // Test 1: Owner can access
         $this->actingAs($this->user);

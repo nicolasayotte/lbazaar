@@ -24,7 +24,7 @@ class CourseTypeAvailabilityTest extends TestCase
         $this->createRoles(['teacher']);
 
         // Create a teacher user
-        $this->teacher = User::factory()->create();
+        $this->teacher = $this->createTestUser();
         $this->teacher->attachRole('teacher');
     }
 

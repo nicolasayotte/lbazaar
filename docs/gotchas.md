@@ -685,8 +685,11 @@ just for Mockery cleanup.
 // tests/TestCase.php
 protected function tearDown(): void
 {
-    while (DB::transactionLevel() > 0) { DB::rollBack(); }
-    DB::disconnect();
+    try {
+        while (DB::transactionLevel() > 0) { DB::rollBack(); }
+    } catch (\Illuminate\Database\QueryException $e) {
+        DB::purge(); // connection dead — purge so next test gets a fresh one
+    }
     parent::tearDown();
     Mockery::close();   // safe: DB already cleaned up
 }
@@ -728,6 +731,79 @@ git commit -m "chore(db): refresh schema dump"
 > been taken.  If you ever need to reset (e.g. after a destructive
 > `migrate:fresh --seed` that changed the baseline), just re-run
 > `sail artisan schema:dump` and commit.
+
+## 20. Parallel Tests: `2006 MySQL server has gone away` Under 8 Workers
+
+### Symptom
+
+Intermittent `SQLSTATE[HY000]: General error: 2006 MySQL server has gone away` on plain
+SQL (INSERT or SELECT) during 8-worker ParaTest. Failing tests vary per run. When one test
+hits `2006`, the next test in the same worker may fail with a stale Mockery expectation.
+
+### Cause
+
+Docker's bridge network sporadically resets TCP connections to the MySQL container under
+rapid parallel connect/disconnect load. Laravel's `handleQueryException` refuses to
+auto-retry inside an open transaction (`$this->transactions >= 1`), so the error propagates.
+If the `2006` hits during `tearDown`'s `DB::rollBack()`, `Mockery::close()` never runs,
+leaking mock state into subsequent tests (cascading failures).
+
+### Solution — Three Layers
+
+**Layer 1 — MySQL Docker flags** (`docker-compose.yml`):
+```yaml
+command: >-
+  --wait-timeout=3600 --interactive-timeout=3600
+  --max_connections=500 --max-connect-errors=1000000
+  --skip-name-resolve
+```
+`--max-connect-errors=1000000` prevents MySQL from blocking the host after accumulated
+connection errors. `--skip-name-resolve` eliminates reverse-DNS lookups in Docker.
+
+**Layer 2 — Resilient tearDown** (`tests/TestCase.php`):
+```php
+try {
+    while (DB::transactionLevel() > 0) { DB::rollBack(); }
+} catch (\Illuminate\Database\QueryException $e) {
+    DB::purge();
+}
+parent::tearDown();
+Mockery::close();
+```
+If the connection is dead, `DB::rollBack()` would throw, skipping `Mockery::close()`.
+The try/catch purges the dead connection and lets cleanup continue — preventing cascading
+failures to subsequent tests.
+
+**Layer 3 — `retryOnDisconnect()` for heavy setUp** (`tests/TestCase.php`):
+```php
+protected function retryOnDisconnect(callable $fn): void
+{
+    try {
+        $fn();
+    } catch (\Illuminate\Database\QueryException $e) {
+        if (!str_contains($e->getMessage(), 'server has gone away')) throw $e;
+        DB::purge();
+        DB::reconnect();
+        DB::beginTransaction();
+        $fn();
+    }
+}
+
+// Usage in test setUp:
+$this->retryOnDisconnect(fn () => $this->setupTestData());
+```
+When `2006` occurs during setUp data creation, the dead connection's transaction is
+auto-rolled back by MySQL. We purge it, start a fresh transaction, and retry from scratch.
+
+**Additional — Atomic upserts in setUp**:
+Replace `Model::delete()` + `Model::create()` with `DB::table()->updateOrInsert()` to
+reduce the number of statements that can fail mid-sequence.
+
+### Which tests need `retryOnDisconnect`?
+
+Any test with a heavy setUp creating multiple DB records (users, courses, settings).
+Currently applied to: `CoursePurchaseServiceTest`, `CertificateServiceTest`,
+`ExchangeRateServiceTest`.
 
 ## Cross-References
 

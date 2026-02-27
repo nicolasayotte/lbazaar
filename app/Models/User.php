@@ -114,6 +114,13 @@ class User extends Authenticatable implements MustVerifyEmail
                 return;
             }
 
+            // In testing, the UserFactory::afterCreating() sets a deterministic
+            // placeholder address. Skip Node.js here to avoid connection-drop races
+            // under parallel test workers.
+            if (app()->environment('testing')) {
+                return;
+            }
+
             // generate custodial_address via Node script
             $script = base_path('web3/common/get-custodial-address.mjs');
             $process = new Process(['node', $script, (string) $user->id]);

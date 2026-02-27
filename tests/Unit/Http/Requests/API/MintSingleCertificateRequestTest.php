@@ -22,16 +22,16 @@ class MintSingleCertificateRequestTest extends TestCase
         // Create roles
         $this->createRoles(['teacher', 'student']);
 
-        // Create teacher with unique email
-        $this->teacher = User::factory()->create([
+        // Create teacher with unique email (withoutEvents to avoid Node.js observer)
+        $this->teacher = $this->createTestUser([
             'email' => 'teacher_' . uniqid() . '@test.com',
             'first_name' => 'Test',
             'last_name' => 'Teacher'
         ]);
         $this->teacher->attachRole('teacher');
 
-        // Create student with unique email
-        $this->student = User::factory()->create([
+        // Create student with unique email (withoutEvents to avoid Node.js observer)
+        $this->student = $this->createTestUser([
             'email' => 'student_' . uniqid() . '@test.com',
             'first_name' => 'Test',
             'last_name' => 'Student'
@@ -66,7 +66,7 @@ class MintSingleCertificateRequestTest extends TestCase
     public function test_authorize_returns_false_when_teacher_does_not_own_course()
     {
         // Create another teacher and their course
-        $otherTeacher = User::factory()->create();
+        $otherTeacher = $this->createTestUser();
         $otherTeacher->attachRole('teacher');
         $otherCourse = Course::factory()->create([
             'professor_id' => $otherTeacher->id

@@ -22,12 +22,12 @@ class CertificateFormRequestsIntegrationTest extends TestCase
         // Create roles
         $this->createRoles(['teacher', 'student']);
 
-        // Create teacher
-        $this->teacher = User::factory()->create();
+        // Create teacher (withoutEvents to avoid Node.js observer)
+        $this->teacher = $this->createTestUser();
         $this->teacher->attachRole('teacher');
 
-        // Create student
-        $this->student = User::factory()->create();
+        // Create student (withoutEvents to avoid Node.js observer)
+        $this->student = $this->createTestUser();
         $this->student->attachRole('student');
 
         // Create course
@@ -50,7 +50,7 @@ class CertificateFormRequestsIntegrationTest extends TestCase
     public function test_mint_single_certificate_request_authorizes_teacher_ownership()
     {
         // Create another teacher's course
-        $otherTeacher = User::factory()->create();
+        $otherTeacher = $this->createTestUser();
         $otherTeacher->attachRole('teacher');
         $otherCourse = Course::factory()->create([
             'professor_id' => $otherTeacher->id
@@ -102,7 +102,7 @@ class CertificateFormRequestsIntegrationTest extends TestCase
     public function test_batch_mint_certificates_request_authorizes_teacher_ownership()
     {
         // Create another teacher's course
-        $otherTeacher = User::factory()->create();
+        $otherTeacher = $this->createTestUser();
         $otherTeacher->attachRole('teacher');
         $otherCourse = Course::factory()->create([
             'professor_id' => $otherTeacher->id

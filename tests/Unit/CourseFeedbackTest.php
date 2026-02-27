@@ -12,7 +12,7 @@ class CourseFeedbackTest extends TestCase
 {
   public function test_course_feedback_can_reference_course_and_schedule()
   {
-    $user = User::factory()->create();
+    $user = $this->createTestUser();
     $course = Course::factory()->create();
     $schedule = CourseSchedule::factory()->create(['course_id' => $course->id]);
 

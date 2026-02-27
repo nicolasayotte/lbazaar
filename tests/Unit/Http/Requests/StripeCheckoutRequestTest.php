@@ -25,16 +25,16 @@ class StripeCheckoutRequestTest extends TestCase
         // Create roles
         $this->createRoles(['student', 'teacher']);
 
-        // Create professor with unique email
-        $this->professor = User::factory()->create([
+        // Create professor with unique email (withoutEvents to avoid Node.js observer)
+        $this->professor = $this->createTestUser([
             'email' => 'professor_' . uniqid() . '@test.com',
             'first_name' => 'Test',
             'last_name' => 'Professor'
         ]);
         $this->professor->attachRole('teacher');
 
-        // Create student with unique email
-        $this->student = User::factory()->create([
+        // Create student with unique email (withoutEvents to avoid Node.js observer)
+        $this->student = $this->createTestUser([
             'email' => 'student_' . uniqid() . '@test.com',
             'first_name' => 'Test',
             'last_name' => 'Student'

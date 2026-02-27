@@ -72,7 +72,7 @@ class CertificateEnabledFieldsTest extends TestCase
      */
     public function test_course_application_can_save_certificate_enabled()
     {
-        $professor = User::factory()->create();
+        $professor = $this->createTestUser();
         $courseApplication = CourseApplication::factory()->create([
             'professor_id' => $professor->id,
             'certificate_enabled' => true
@@ -90,7 +90,7 @@ class CertificateEnabledFieldsTest extends TestCase
      */
     public function test_course_can_save_certificate_enabled()
     {
-        $professor = User::factory()->create();
+        $professor = $this->createTestUser();
         $course = Course::factory()->create([
             'professor_id' => $professor->id,
             'certificate_enabled' => true
@@ -108,7 +108,7 @@ class CertificateEnabledFieldsTest extends TestCase
      */
     public function test_course_history_can_save_certificate_fields()
     {
-        $user = User::factory()->create();
+        $user = $this->createTestUser();
         $course = Course::factory()->create();
         $courseSchedule = CourseSchedule::factory()->create([
             'course_id' => $course->id
@@ -141,7 +141,7 @@ class CertificateEnabledFieldsTest extends TestCase
      */
     public function test_certificate_enabled_defaults_to_false()
     {
-        $professor = User::factory()->create();
+        $professor = $this->createTestUser();
 
         $courseApplication = CourseApplication::factory()->create([
             'professor_id' => $professor->id
