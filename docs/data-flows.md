@@ -750,6 +750,108 @@ Content-Type: application/json
    - Additional authentication modal shown if required
    - No additional backend logic needed
 
+## Flow 7: ADA Course Purchase (Build → Sign → Submit)
+
+**Trigger**: Student clicks "Pay with ADA" on the course details page.
+
+### Step-by-Step Flow
+
+```
+1. Page load
+   Portal\CourseController::details() renders course page.
+   Tries to add price_in_ada via ExchangeRateService.
+   On failure: passes ada_available=false to Inertia (no 500).
+        ↓
+2. Frontend: 60-second ADA price polling
+   useEffect polls GET /api/courses/{course}/ada-price every 60 seconds.
+   ├─ ExchangeRateService::isAvailable() → checks cache, then tries live fetch
+   ├─ available=true  → update currentAdaPrice, check drift vs page-load price
+   │  └─ drift >5%   → show "ADA price has shifted >5%" caption
+   └─ available=false → disable ADA button, show "ADA price temporarily unavailable"
+        ↓
+3. Student clicks "Pay with ADA"
+   handleBuyWithAda() begins (purchaseStep: 'building')
+        ↓
+4. POST /portal/courses/{schedule}/purchase-transaction (build step)
+   CoursePurchaseService::buildPurchaseTransaction($schedule, $user)
+   ├─ Converts JPY → ADA via ExchangeRateService
+   ├─ Calls web3/run/build-purchase-tx.mjs via exec()
+   │  └─ Node builds unsigned CBOR transaction, returns {cborTx, teacherAmount, adminAmount}
+   ├─ Caches quote: Cache::put("purchase_quote_{userId}_{scheduleId}",
+   │    {adaAmount, expiresAt}, quoteWindowSeconds())   ← Gap 1
+   └─ Returns {success, cborTx, adaAmount, quoteExpiresAt}
+        ↓
+5. Frontend receives cborTx + quoteExpiresAt
+   ├─ Starts 1-second countdown timer (quoteSecondsLeft)
+   │  └─ Color shifts to red below 30 seconds
+   └─ If quote expires at 0: reset flow to 'idle', no action needed
+        ↓
+6. purchaseStep: 'signing' — wallet signs the transaction
+   walletAPI.signTx(cborTx) via CIP-30
+   └─ User approves in wallet extension → returns cborSig
+        ↓
+7. purchaseStep: 'submitting'
+   POST /portal/courses/{schedule}/submit-transaction {cborSig, cborTx}
+   CoursePurchaseService::submitPurchaseTransaction($schedule, $user, $cborSig, $cborTx)
+   │
+   ├─ Gap 1: validate quote cache
+   │  └─ Cache miss → return {success:false, quoteExpired:true}
+   │
+   ├─ Gap 2: fast pre-check for duplicate
+   │  CourseHistory::where(user+schedule, status IN [pending,confirmed])->exists()
+   │  └─ exists → return {success:false, duplicate:true}
+   │
+   ├─ Calls web3/run/submit-purchase-tx.mjs {cborSig, cborTx}
+   │  └─ Node signs + submits to Blockfrost, returns {txId}
+   │
+   └─ DB::transaction:
+      ├─ CourseHistory::lockForUpdate() → re-check duplicate under lock   ← Gap 3
+      ├─ CourseHistory::create({payment_tx_hash, payment_ada_amount, ...})
+      └─ WalletTransactionHistory::create(...)
+      Cache::forget("purchase_quote_{userId}_{scheduleId}")
+      return {success:true, txId}
+        ↓
+8. Frontend shows success; timer cleared
+   Redirects to purchase confirmation page
+```
+
+### Error Responses
+
+| Flag | Meaning | Frontend action |
+|------|---------|-----------------|
+| `insufficientFunds: true` | Not enough ADA | Scroll to credit card button |
+| `quoteExpired: true` | Cache miss — 5-min window lapsed | Toast + reset to idle |
+| `duplicate: true` | Payment already pending/confirmed | Toast + no retry |
+
+### Code Locations
+
+| Step | File |
+|------|------|
+| Page render + ada_available | `app/Http/Controllers/Portal/CourseController.php` |
+| ADA price polling endpoint | `app/Http/Controllers/API/CourseController.php` |
+| Rate availability check | `app/Services/API/ExchangeRateService::isAvailable()` |
+| Build + submit service | `app/Services/API/CoursePurchaseService.php` |
+| Frontend flow | `resources/js/pages/Portal/Course/Details.jsx` |
+| Wallet connector + network check | `resources/js/components/cards/WalletConnector.jsx` |
+
+### Critical Points
+
+1. **Network ID guard** (WalletConnector): `getNetworkId()` is checked against
+   `cardano_network_id` from Inertia shared props before `enable()` returns. Mismatched
+   network = rejected connection. See [gotchas.md #21](./gotchas.md).
+
+2. **Quote window** (default 5 min, `PAYMENT_QUOTE_WINDOW_MINUTES`): The ADA amount
+   is locked at build time. If the student takes longer than the window to sign, they
+   must restart checkout to get a fresh rate.
+
+3. **Three-layer duplicate guard**: pre-check `exists()` → web3 call → `lockForUpdate()`
+   inside transaction. The pre-check avoids wasting a blockchain round-trip; the lock
+   catches true concurrent races.
+
+4. **Graceful ADA rate degradation**: If `ExchangeRateService` throws at page load,
+   `ada_available=false` is passed to the view and the ADA button is disabled. The
+   frontend polls every 60s and re-enables it if the rate recovers.
+
 ## Cross-References
 
 - **Architecture**: See [docs/architecture.md](./architecture.md) for layer definitions

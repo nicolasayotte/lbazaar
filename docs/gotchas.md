@@ -805,6 +805,69 @@ Any test with a heavy setUp creating multiple DB records (users, courses, settin
 Currently applied to: `CoursePurchaseServiceTest`, `CertificateServiceTest`,
 `ExchangeRateServiceTest`.
 
+## 21. Wrong Cardano Network ID Silently Breaks Wallet Connect
+
+### Symptom
+
+The "Connect Wallet" button appears to work (no JS error) but wallet API calls fail
+immediately after `enable()`, or the user sees an error toast like "Wrong network.
+Please switch your wallet to Cardano Testnet/Preprod."
+
+### Cause
+
+`WalletConnector` calls `walletAPI.getNetworkId()` after enabling the wallet and
+compares against `cardano_network_id` from Inertia shared props. If the server is
+configured for preprod (`CARDANO_NETWORK_ID=0`) but the user's wallet is on mainnet
+(ID=1), or vice versa, the connection is rejected.
+
+The most common trigger is a misconfigured deployment where `CARDANO_NETWORK_ID` does
+not match `NETWORK`:
+
+```env
+# BAD — mismatch between network and ID
+NETWORK=mainnet
+CARDANO_NETWORK_ID=0  # Should be 1 for mainnet
+```
+
+### Solution
+
+`CARDANO_NETWORK_ID` must always match `NETWORK`:
+
+```env
+# Development / Staging (Preprod)
+NETWORK=preprod
+CARDANO_NETWORK_ID=0
+
+# Production (Mainnet)
+NETWORK=mainnet
+CARDANO_NETWORK_ID=1
+```
+
+`CARDANO_NETWORK_ID` is broadcast globally to every Inertia page via
+`HandleInertiaRequests::share()` as `cardano_network_id`, so any page using
+`WalletConnector` picks it up without extra controller code.
+
+### Debugging
+
+```bash
+# Confirm the value reaching the frontend
+sail artisan tinker
+>>> config('services.cardano.network_id')  # should be 0 or 1
+
+# Browser: open any portal page, DevTools → Network → XHR/fetch
+# Look for the Inertia page response and check:
+# "props": { "cardano_network_id": 0 }
+```
+
+Then in the browser console:
+```javascript
+const wallet = await window.cardano.eternl.enable()
+console.log(await wallet.getNetworkId())  // 0=testnet, 1=mainnet
+```
+
+If the two values differ, fix `CARDANO_NETWORK_ID` in `.env` and run
+`sail artisan config:clear`.
+
 ## Cross-References
 
 - **Architecture**: See [docs/architecture.md](./architecture.md) for system structure

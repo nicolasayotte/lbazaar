@@ -52,10 +52,14 @@ APP_DEBUG=false
 APP_URL=https://lebazaar.com
 
 # Cardano (CRITICAL)
-NETWORK=mainnet  # or preprod for staging
+NETWORK=mainnet             # or preprod for staging
+CARDANO_NETWORK_ID=1        # CRITICAL: 0=preprod, 1=mainnet — MUST match NETWORK
 BLOCKFROST_API_KEY=mainnet_xyz...
-ROOT_KEY=xprv...  # NEVER commit to git
+ROOT_KEY=xprv...            # NEVER commit to git
 OWNER_PKH=abc123...
+
+# ADA Checkout
+PAYMENT_QUOTE_WINDOW_MINUTES=5   # How long a built ADA tx quote stays valid
 
 # Database (production credentials)
 DB_CONNECTION=mysql
@@ -277,6 +281,12 @@ curl http://localhost:8080/health
 tail -f storage/logs/laravel.log
 tail -f storage/logs/web3.log
 ```
+
+**⚠️ CRITICAL — `CARDANO_NETWORK_ID` must match `NETWORK`**:
+- Preprod: `NETWORK=preprod` → `CARDANO_NETWORK_ID=0`
+- Mainnet: `NETWORK=mainnet` → `CARDANO_NETWORK_ID=1`
+
+A mismatch causes wallet connections to fail silently after `enable()`. See [gotchas.md #21](./gotchas.md) for debugging steps.
 
 ## Environment-Specific Concerns
 

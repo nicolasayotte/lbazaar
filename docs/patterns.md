@@ -442,7 +442,103 @@ try {
 { "status": 500, "error": "Error message" }
 ```
 
-### 9. Internationalization (i18n)
+### 9. Graceful Degradation for Optional External APIs
+
+**Rule**: Wrap optional external API calls in try/catch and pass an availability flag to the view — never let a third-party outage cause a 500.
+
+✅ **GOOD**:
+```php
+// app/Http/Controllers/Portal/CourseController.php
+$adaAvailable = true;
+try {
+    $this->exchangeRateService->addPriceInAdaToCourses([$course]);
+} catch (\Throwable $e) {
+    $adaAvailable = false;
+    Log::warning('ADA rate unavailable', ['course' => $id, 'error' => $e->getMessage()]);
+}
+
+return Inertia::render('Portal/Course/Details', [
+    'course'        => $course,
+    'ada_available' => $adaAvailable,
+    // ...
+]);
+```
+
+```jsx
+// Frontend: respect the flag — degrade, don't crash
+const [adaAvailable, setAdaAvailable] = useState(ada_available)
+<Button disabled={!walletAPI || !adaAvailable}>Pay with ADA</Button>
+{!adaAvailable && <Typography>ADA price temporarily unavailable.</Typography>}
+```
+
+❌ **BAD**:
+```php
+// Unguarded external call — CoinGecko outage = 500 for every student (BAD!)
+$this->exchangeRateService->addPriceInAdaToCourses([$course]);
+return Inertia::render('Portal/Course/Details', ['course' => $course]);
+```
+
+**Key Points**:
+- Catch at the controller boundary, not deep in the service
+- Log with context (course ID, error message) — not silently
+- Always pass a boolean availability flag so the frontend can render a degraded UI
+- For polling use `ExchangeRateService::isAvailable()` which checks cache first
+
+### 10. Quote Window + Duplicate Payment Prevention
+
+**Rule**: For two-phase blockchain checkouts (build → sign → submit), cache a price quote on build and validate it on submit. Use `lockForUpdate()` inside a DB transaction to prevent concurrent duplicates.
+
+✅ **GOOD**:
+```php
+// Phase 1 — build: cache quote with expiry
+public function buildPurchaseTransaction(...): array
+{
+    // ... build CBOR tx ...
+    $quoteExpiresAt = now()->addSeconds($this->quoteWindowSeconds())->toIso8601String();
+    Cache::put(
+        "purchase_quote_{$user->id}_{$schedule->id}",
+        ['adaAmount' => $adaTotalAmount, 'expiresAt' => $quoteExpiresAt],
+        $this->quoteWindowSeconds()
+    );
+    return ['success' => true, 'data' => ['cborTx' => ..., 'quoteExpiresAt' => $quoteExpiresAt]];
+}
+
+// Phase 2 — submit: validate quote, then lock against duplicates
+public function submitPurchaseTransaction(...): array
+{
+    // Gap 1: quote expired?
+    $quote = Cache::get("purchase_quote_{$user->id}_{$schedule->id}");
+    if (!$quote) {
+        return ['success' => false, 'message' => '...', 'quoteExpired' => true];
+    }
+
+    // Gap 2: fast pre-check before the expensive web3 call
+    if (CourseHistory::where(...)->whereIn('payment_status', ['pending','confirmed'])->exists()) {
+        return ['success' => false, 'message' => '...', 'duplicate' => true];
+    }
+
+    // ... call web3 submit script ...
+
+    // Gap 3: lock inside transaction to catch true races
+    DB::transaction(function () use (...) {
+        $existing = CourseHistory::where(...)->lockForUpdate()->first();
+        if ($existing) throw new \RuntimeException('Duplicate payment detected under lock.');
+        CourseHistory::create([...]);
+    });
+
+    Cache::forget("purchase_quote_{$user->id}_{$schedule->id}");
+    return ['success' => true, ...];
+}
+```
+
+**Key Points**:
+- Quote key: `purchase_quote_{userId}_{scheduleId}` — scoped, auto-expires via Cache TTL
+- Quote window configurable via `PAYMENT_QUOTE_WINDOW_MINUTES` (default 5 min)
+- Return `quoteExpired: true` and `duplicate: true` as distinct flags so the frontend can show the right message
+- Three layers of duplicate protection: pre-check `exists()`, DB lock, catch RuntimeException
+- Clear the cache on success; leave it to expire naturally on failure (user may retry)
+
+### 11. Internationalization (i18n)
 
 **Rule**: All user-facing strings MUST be in both English and Japanese.
 
@@ -491,6 +587,8 @@ return response()->json(['message' => 'Enrollment successful']);
 | Empty catch blocks | Silent failures, debugging nightmare | Log errors with context |
 | Inconsistent JSON responses | Frontend can't handle errors reliably | Always use `{success, message, data}` |
 | Missing database transactions | Race conditions, inconsistent state | Wrap multi-step operations in `DB::transaction()` |
+| Unguarded optional API calls | Third-party outage causes 500 | Catch + pass `available` flag to view (Pattern #9) |
+| No quote validation on submit | Stale prices, replay risk | Cache quote on build, validate on submit (Pattern #10) |
 | Storing secrets in code | Security breach risk | Use `.env` and `config()` |
 | HTML form submissions in Inertia | Full page reload, breaks SPA | Use `Inertia.post()` |
 | Business logic in repositories | Violates layer boundaries | Keep repositories for data access only |

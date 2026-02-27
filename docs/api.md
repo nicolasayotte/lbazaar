@@ -36,6 +36,7 @@ See `docs/authentication.md` for full auth details.
 | GET | `/categories` | Public | Closure |
 | GET | `/countries` | Public | Closure |
 | POST | `/votes/register` | Public | `API\VoteController@register` |
+| GET | `/courses/{course}/ada-price` | Public | `API\CourseController@getAdaPrice` |
 
 ## Endpoints
 
@@ -162,6 +163,29 @@ Submit a teacher registration application. No auth required.
 #### POST /api/applications/class/create
 
 Submit a class/course creation application. No auth required.
+
+---
+
+### Course Pricing (Public)
+
+#### GET /api/courses/{course}/ada-price
+
+Returns the current ADA price for a course. No authentication required. Used by the frontend to poll for live prices every 60 seconds without a full page reload.
+
+Degrades gracefully: if neither the CoinGecko API nor the DB fallback rate is available, returns `available: false` instead of erroring.
+
+```json
+// Response 200 — rate available
+{ "available": true, "data": { "price_in_ada": 15.27 } }
+
+// Response 200 — rate unavailable (CoinGecko down + no fallback)
+{ "available": false, "data": { "price_in_ada": null } }
+
+// Response 404 — course does not exist
+```
+
+**Controller**: `app/Http/Controllers/API/CourseController.php`
+**Service**: `ExchangeRateService::isAvailable()` + `jpyToAda()`
 
 ---
 

@@ -693,6 +693,8 @@ Fetch real-time ADA to JPY exchange rates for course pricing and payment calcula
 - `services.coingecko.cache_ttl` - Cache duration for successful API responses (default: 600 seconds)
 - `services.coingecko.fallback_cache_ttl` - Cache duration for fallback rates (default: 60 seconds)
 - `services.coingecko.fallback_rate` - Initial fallback rate for seeder (default: 50)
+- `services.cardano.network_id` - Expected Cardano network (0=preprod, 1=mainnet); broadcast to all Inertia pages via `HandleInertiaRequests`
+- `services.cardano.quote_window_minutes` - How long a built ADA transaction quote stays valid (default: 5 minutes)
 
 **Environment Variables**:
 ```env
@@ -701,6 +703,8 @@ COINGECKO_API_URL=https://api.coingecko.com/api/v3
 EXCHANGE_RATE_CACHE_TTL=600
 EXCHANGE_RATE_FALLBACK_CACHE_TTL=60
 EXCHANGE_RATE_FALLBACK=50
+CARDANO_NETWORK_ID=0          # 0=preprod, 1=mainnet — MUST match NETWORK
+PAYMENT_QUOTE_WINDOW_MINUTES=5
 ```
 
 ### Fallback System
@@ -757,12 +761,19 @@ use App\Services\API\ExchangeRateService;
 
 $service = new ExchangeRateService();
 
+// Check if a rate is currently obtainable (cache-first, then live fetch)
+$available = $service->isAvailable();  // false if both API and DB fallback fail
+
 // Get current exchange rate
 $rate = $service->getAdaJpyRate();  // e.g., 65.5 (JPY per ADA)
 
 // Convert JPY to ADA
 $ada = $service->jpyToAda(1000);  // e.g., 15.27 ADA
 ```
+
+`isAvailable()` is used by:
+- `GET /api/courses/{course}/ada-price` — public polling endpoint for the frontend
+- Frontend `WalletConnector` (indirectly via the Inertia `ada_available` prop)
 
 ### Error Handling
 
