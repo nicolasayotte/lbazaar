@@ -6,7 +6,7 @@ import PurchaseHistoryTable from "./components/PurchaseHistoryTable"
 
 const Index = ({ errors }) => {
 
-    const { purchases, page } = usePage().props
+    const { purchases, requiredConfirmations } = usePage().props
     const { get, processing, transform } = useForm({
         page: purchases ? purchases.current_page : 1
     })
@@ -28,18 +28,20 @@ const Index = ({ errors }) => {
             {
                 processing
                     ? <TableLoader />
-                    : <PurchaseHistoryTable data={purchases ? purchases.data : []} />
+                    : <PurchaseHistoryTable data={purchases ? purchases.data : []} requiredConfirmations={requiredConfirmations ?? 10} />
             }
-            <Grid item xs={12} md={12}>
-                <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
-                    <Pagination
-                        onChange={handleOnPaginate}
-                        count={purchases ? purchases.last_page : 1}
-                        page={purchases ? purchases.current_page : 1}
-                        color="primary"
-                    />
-                </Box>
-            </Grid>
+            {purchases && purchases.total > 0 && (
+                <Grid item xs={12} md={12}>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+                        <Pagination
+                            onChange={handleOnPaginate}
+                            count={purchases.last_page}
+                            page={purchases.current_page}
+                            color="primary"
+                        />
+                    </Box>
+                </Grid>
+            )}
         </>
     )
 }

@@ -10,7 +10,9 @@ import {
     Link as MuiLink,
     Box,
     Button,
+    Typography,
 } from "@mui/material"
+import CreditCardIcon from "@mui/icons-material/CreditCard"
 import EmptyCard from "../../../../../components/common/EmptyCard"
 import { usePage } from "@inertiajs/inertia-react"
 import routes from "../../../../../helpers/routes.helper"
@@ -24,7 +26,7 @@ const STATUS_COLORS = {
     refunded: 'info',
 }
 
-const PurchaseHistoryTable = ({ data }) => {
+const PurchaseHistoryTable = ({ data, requiredConfirmations = 10 }) => {
 
     const { translatables } = usePage().props
 
@@ -42,9 +44,34 @@ const PurchaseHistoryTable = ({ data }) => {
 
     const getStatusColor = (status) => STATUS_COLORS[status] || 'default'
 
-    const getPaymentMethodLabel = (type) => {
-        if (type === 'ADA') return 'ADA'
-        return translatables.texts.credit_card
+    const renderPaymentMethod = (type) => {
+        if (type === 'ADA') {
+            return (
+                <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
+                    <Box
+                        component="span"
+                        sx={{
+                            bgcolor: '#0D1E2D',
+                            color: '#fff',
+                            fontWeight: 'bold',
+                            fontSize: '0.7rem',
+                            px: 0.75,
+                            py: 0.25,
+                            borderRadius: 0.5,
+                            lineHeight: 1.4,
+                        }}
+                    >
+                        ADA
+                    </Box>
+                </Box>
+            )
+        }
+        return (
+            <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
+                <CreditCardIcon fontSize="small" color="action" />
+                <Typography variant="body2">{translatables.texts.credit_card}</Typography>
+            </Box>
+        )
     }
 
     const renderReference = (row) => {
@@ -104,7 +131,7 @@ const PurchaseHistoryTable = ({ data }) => {
                     {data.map((row) => (
                         <TableRow key={row.id}>
                             <TableCell align="center">{row.course_name}</TableCell>
-                            <TableCell align="center">{getPaymentMethodLabel(row.type)}</TableCell>
+                            <TableCell align="center">{renderPaymentMethod(row.type)}</TableCell>
                             <TableCell align="center">{row.amount}</TableCell>
                             <TableCell align="center">{formatDate(row.date)}</TableCell>
                             <TableCell align="center">
@@ -113,6 +140,13 @@ const PurchaseHistoryTable = ({ data }) => {
                                     color={getStatusColor(row.status)}
                                     size="small"
                                 />
+                                {row.type === 'ADA' && row.status === 'pending' && (
+                                    <Typography variant="caption" display="block" color="text.secondary" sx={{ mt: 0.5 }}>
+                                        {translatables.texts.payment_confirmations
+                                            .replace(':current', '?')
+                                            .replace(':required', requiredConfirmations)}
+                                    </Typography>
+                                )}
                             </TableCell>
                             <TableCell align="center">{renderReference(row)}</TableCell>
                         </TableRow>

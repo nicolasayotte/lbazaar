@@ -24,9 +24,10 @@ class PurchaseHistoryController extends Controller
         );
 
         return Inertia::render('Portal/MyPage/PurchaseHistory/Index', [
-            'purchases'   => $purchases,
-            'explorerUrl' => $explorerUrl,
-            'title'       => getTranslation('texts.mypage') . ' | ' . getTranslation('texts.purchase_history'),
+            'purchases'             => $purchases,
+            'explorerUrl'           => $explorerUrl,
+            'requiredConfirmations' => (int) config('services.cardano.required_confirmations', 10),
+            'title'                 => getTranslation('texts.mypage') . ' | ' . getTranslation('texts.purchase_history'),
         ])->withViewData([
             'title' => getTranslation('texts.mypage') . ' | ' . getTranslation('texts.purchase_history'),
         ]);
