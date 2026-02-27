@@ -868,6 +868,77 @@ console.log(await wallet.getNetworkId())  // 0=testnet, 1=mainnet
 If the two values differ, fix `CARDANO_NETWORK_ID` in `.env` and run
 `sail artisan config:clear`.
 
+## 22. Laravel `required_if` Does Not Match Boolean `true` — Use `1,true`
+
+### Symptom
+
+A validation rule like `required_if:certificate_enabled,true` never triggers even
+when `certificate_enabled` is checked. The field passes as empty/null without error.
+
+### Cause
+
+`required_if` uses **strict string comparison**. HTML checkboxes and JSON booleans
+send `"1"` (the string) or `1` (integer), not the string `"true"`. Strict comparison
+`"1" === "true"` is false, so the rule never fires.
+
+### Solution
+
+Always list both values you expect from a boolean field:
+
+❌ **BAD**:
+```php
+'certificate_name' => 'required_if:certificate_enabled,true',
+```
+
+✅ **GOOD** — matches both checkbox `"1"` and JSON `true`:
+```php
+'certificate_name' => 'required_if:certificate_enabled,1,true',
+'token_reward_amount' => 'required_if:token_reward_enabled,1,true',
+```
+
+**Rule of thumb**: For any boolean toggle field, the `required_if` value list should
+always be `1,true` — never just `true`.
+
+## 23. `.mjs` Web3 Scripts Cannot Use `require()` — Must Use ES `import`
+
+### Symptom
+
+PHP service returns `"Web3 script failed"` with an error like:
+```
+ReferenceError: require is not defined in ES module scope
+```
+
+The error only surfaces at runtime (when the script is actually executed via `exec()`),
+not during development until the code path is hit.
+
+### Cause
+
+All web3 scripts use the `.mjs` extension which marks them as **ES modules**. Node.js
+ES modules do not have a `require()` function — it is CommonJS-only. Copying code from
+a CommonJS snippet (e.g. `require('child_process').execSync(...)`) into a `.mjs` file
+compiles silently but crashes at runtime.
+
+### Solution
+
+Use ES module `import` syntax throughout all `.mjs` files:
+
+❌ **BAD** (CommonJS — crashes in .mjs):
+```javascript
+const { execSync } = require('child_process');
+const fs = require('fs');
+```
+
+✅ **GOOD** (ES module):
+```javascript
+import { execSync } from 'child_process';
+import { readFileSync } from 'fs';
+```
+
+**Check**: All `web3/run/*.mjs` files should have zero `require(` occurrences:
+```bash
+grep -n 'require(' web3/run/*.mjs
+```
+
 ## Cross-References
 
 - **Architecture**: See [docs/architecture.md](./architecture.md) for system structure
