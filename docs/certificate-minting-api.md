@@ -1,5 +1,7 @@
 # Certificate Minting API
 
+> **AI Context Summary**: NFT certificate minting for course completions. Three-step flow: PHP service (`CertificateService`) calls `exec()` → `web3/run/build-certificate-tx.mjs` (builds Helios TX) → `web3/run/submit-certificate-tx.mjs` (submits to Blockfrost). Each certificate is a unique NFT minted to the student's linked wallet (or a custodial wallet if none linked). Requires `MIN_ADA=2000000` lovelace per UTXO. Teacher must own the course (`professor_id` check). See `docs/api.md` for endpoint details.
+
 This API allows teachers to mint and airdrop completion certificates to students who have successfully completed their courses.
 
 ## Overview

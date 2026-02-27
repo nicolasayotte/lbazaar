@@ -1,6 +1,6 @@
 # Le Bazaar Documentation
 
-> **AI Context Summary**: Le Bazaar is a Cardano-integrated e-learning platform (Laravel 9 + React 18 + Cardano blockchain). Three-tier architecture: Client (Inertia.js) → Application (Laravel services) → Blockchain (Node.js/Helios). Start with [getting-started.md](./getting-started.md) for setup, [architecture.md](./architecture.md) for system overview. 12 docs covering architecture, testing, deployment, patterns, integrations, data flows.
+> **AI Context Summary**: Le Bazaar is a Cardano-integrated e-learning platform (Laravel 9 + React 18 + Cardano blockchain). Three-tier architecture: Client (Inertia.js) → Application (Laravel services) → Blockchain (Node.js/Helios). Start with [getting-started.md](./getting-started.md) for setup, [architecture.md](./architecture.md) for system overview. 16 docs covering architecture, testing, deployment, patterns, integrations, authentication, API reference, tech stack, agent workflow, and data flows.
 
 ## Quick Start
 
@@ -16,12 +16,16 @@ New to Le Bazaar? Start here:
 |----------|-------------|--------------|
 | **[Getting Started](./getting-started.md)** | Installation, configuration, first run | Setting up development environment |
 | **[Architecture](./architecture.md)** | System structure, layers, components | Understanding codebase organization |
+| **[Tech Stack](./tech-stack.md)** | Languages, frameworks, versions, tooling | Knowing what's installed and why |
+| **[Authentication](./authentication.md)** | Session auth, Sanctum tokens, RBAC roles | Implementing auth or protected routes |
+| **[API Reference](./api.md)** | All `/api/*` endpoints, auth tiers, responses | Building or testing API features |
 | **[Data Flows](./data-flows.md)** | Request-response flows, key user journeys | Implementing features that span layers |
 | **[Patterns](./patterns.md)** | Code conventions, anti-patterns | Writing new code or reviewing PRs |
 | **[Testing](./testing.md)** | Test strategy, writing tests, running tests | Adding tests or debugging test failures |
 | **[Deployment](./deployment.md)** | Production deployment, rollback, monitoring | Deploying to staging or production |
 | **[Integrations](./integrations.md)** | Blockfrost, AWS S3, Stripe, Sanctum | Working with external services |
 | **[Gotchas](./gotchas.md)** | Common issues and solutions | Debugging or avoiding common mistakes |
+| **[Workflow](./workflow.md)** | Planner/builder agent orchestration pattern | Multi-part feature implementation |
 | **[Certificate Minting API](./certificate-minting-api.md)** | NFT certificate minting via Helios | Implementing certificate features |
 | **[Local Production Testing](./LOCAL_PROD_TESTING.md)** | Test prod build locally with `./test-prod.sh` | Before deploying to production |
 
@@ -32,14 +36,17 @@ New to Le Bazaar? Start here:
 Read in this order:
 1. [Getting Started](./getting-started.md) - Setup your environment
 2. [Architecture](./architecture.md) - Understand the system
-3. [Patterns](./patterns.md) - Learn coding conventions
-4. [Gotchas](./gotchas.md) - Avoid common mistakes
+3. [Tech Stack](./tech-stack.md) - Know what's installed
+4. [Patterns](./patterns.md) - Learn coding conventions
+5. [Gotchas](./gotchas.md) - Avoid common mistakes
 
 ### For Backend Developers (PHP/Laravel)
 
 Focus on:
 - [Architecture](./architecture.md) - Service layer, controllers, repositories
 - [Patterns](./patterns.md) - Thin controller pattern, service responses
+- [Authentication](./authentication.md) - Sanctum tokens, RBAC
+- [API Reference](./api.md) - Endpoint contracts and auth tiers
 - [Testing](./testing.md) - PHPUnit tests
 - [Data Flows](./data-flows.md) - See service layer in action
 

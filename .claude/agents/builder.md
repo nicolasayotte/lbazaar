@@ -21,8 +21,9 @@ Receive task description via prompt. Implement exactly as specified. Return comp
 1. Read `CLAUDE.md` (project context, commands, standards)
 2. Read the full task description from prompt
 3. For patterns: see `docs/patterns.md` (thin controller, service responses, validation)
-4. For testing: see `docs/testing.md` (PHPUnit, Vitest, Playwright setup)
-5. Check `docs/gotchas.md` for known issues relevant to the task
+4. For tech stack: see `docs/tech-stack.md` (Inertia v0.11.1 legacy adapter — NOT v2; ES modules)
+5. For testing: see `docs/testing.md` (PHPUnit, Vitest, Playwright setup)
+6. Check `docs/gotchas.md` for known issues relevant to the task
 
 ## Workflow
 1. **Parse Task**: Read complete task description from prompt
@@ -68,13 +69,14 @@ When generating code: keep functions pure and isolate side effects at system bou
 | Skip tests | Always test before complete |
 | Refactor unrelated code | Stay in task scope |
 | Run the full test suite | Run only tests relevant to your changes |
-| Put logic in controllers | Delegate to services (see patterns.md) |
-| Add `use DatabaseTransactions` | Base TestCase already applies it |
-| Override `tearDown()` for Mockery | Base TestCase handles it correctly |
+| Put logic in controllers | Delegate to services (see `docs/patterns.md`) |
 
 ## References
 - Project context: `CLAUDE.md`
 - Quality review: `/reviewing-code-quality` skill
 - Patterns: `docs/patterns.md`
+- Tech stack: `docs/tech-stack.md`
 - Testing: `docs/testing.md`
 - Gotchas: `docs/gotchas.md`
+- API contracts: `docs/api.md` (for API-related tasks)
+- Authentication: `docs/authentication.md` (for auth-related tasks)

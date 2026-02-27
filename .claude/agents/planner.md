@@ -20,8 +20,9 @@ Receive feature/bug via prompt. Make all design decisions. Return a task descrip
 2. Read the full feature/bug description from prompt
 3. For architecture: see `docs/architecture.md` (three-tier, thin controller, exec() pattern)
 4. For patterns: see `docs/patterns.md` (service responses, validation, Inertia forms)
-5. For data flows: see `docs/data-flows.md` (request-response flows for similar features)
-6. Check `docs/gotchas.md` for known issues to avoid
+5. For tech stack: see `docs/tech-stack.md` (Inertia v0.11.1 legacy adapter — NOT v2; ES modules; versions)
+6. For data flows: see `docs/data-flows.md` (request-response flows for similar features)
+7. Check `docs/gotchas.md` for known issues to avoid
 
 ## Design Constraints
 When designing solutions: prefer stateless data flow with side effects at system boundaries; decompose so each unit is testable in isolation without complex mocking; match abstraction level to actual complexity — don't introduce patterns ahead of need; define explicit error handling strategy at trust boundaries; specify dependency direction (who depends on whom).
@@ -79,5 +80,9 @@ When specifying test requirements, note these conventions so builder doesn't rei
 - Project context: `CLAUDE.md`
 - Architecture: `docs/architecture.md`
 - Patterns: `docs/patterns.md`
+- Tech stack: `docs/tech-stack.md`
 - Data flows: `docs/data-flows.md`
 - Gotchas: `docs/gotchas.md`
+- API endpoints: `docs/api.md` (for API-related tasks)
+- Authentication: `docs/authentication.md` (for auth-related tasks)
+- Testing conventions: `docs/testing.md` (for complex test requirements)

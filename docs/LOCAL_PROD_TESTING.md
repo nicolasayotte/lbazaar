@@ -1,5 +1,7 @@
 # Local Production Testing Guide
 
+> **AI Context Summary**: Run `./test-prod.sh full-test` before every production deploy. Spins up a production-like Docker environment (Alpine/Nginx, not Sail/Ubuntu) to catch environment-specific bugs locally. Key difference from Sail: production uses Alpine Linux + Nginx, which has different PHP extensions and path resolution than the development Ubuntu container. Run this after any Dockerfile, Nginx config, or environment variable change.
+
 **Purpose:** Test your code with the production Docker image **before** deploying to staging/production.
 
 **Why:** Catch environment-specific bugs (Nginx vs Apache, Alpine vs Ubuntu, missing PHP extensions) on your local machine instead of discovering them in production.
