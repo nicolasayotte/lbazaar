@@ -10,7 +10,6 @@ const NftTable = ({ data, handleOnEdit, handleOnDelete, translatables }) => {
         return (
             <TableRow key={index}>
                 <TableCell children={row.name} />
-                <TableCell children={row.points} />
                 <TableCell>
                     <Checkbox checked={row.for_sale == 1}/>
                 </TableCell>
@@ -22,8 +21,7 @@ const NftTable = ({ data, handleOnEdit, handleOnDelete, translatables }) => {
                             size="small"
                             title={translatables.texts.edit}
                             onClick={() => handleOnEdit(row.id,
-                                                        row.name, 
-                                                        row.points,
+                                                        row.name,
                                                         row.for_sale,
                                                         row.image_url)}
                         >
@@ -52,8 +50,7 @@ const NftTable = ({ data, handleOnEdit, handleOnDelete, translatables }) => {
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell width="30%" children={translatables.texts.name} />
-                        <TableCell width="10%" children={translatables.texts.points} />
+                        <TableCell width="40%" children={translatables.texts.name} />
                         <TableCell width="10%" children={translatables.texts.for_sale} />
                         <TableCell width="30%" children={translatables.texts.image_url} />
                         <TableCell width="20%" align="center" children={translatables.texts.date_created} />

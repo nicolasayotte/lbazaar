@@ -82,7 +82,6 @@ const CourseCompleteConfirmation = () => {
             Inertia.visit(dialog.submitUrl, {
                 method: dialog.method,
                 data: {
-                    points: dialog.points,
                     schedule_id: dialog.schedule_id,
                 }
             })

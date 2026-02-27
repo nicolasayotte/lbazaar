@@ -167,12 +167,8 @@ const View = () => {
                             {nft && (
                                 <TableBody>
                                     <TableRow>
-                                        <TableCell width="50%" children={translatables.texts.name} />
+                                        <TableCell children={translatables.texts.name} />
                                         <TableCell align="right" children={nft.name} />
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell width="50%" children={translatables.texts.points} />
-                                        <TableCell align="right" children={nft.points} />
                                     </TableRow>
                                 </TableBody>
                             )}

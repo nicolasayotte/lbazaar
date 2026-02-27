@@ -35,7 +35,6 @@ const Index = () => {
         text: '',
         value: '',
         name: '',
-        points : 0,
         forSale: 0,
         imageUrl: '',
         submitUrl: '',
@@ -81,11 +80,10 @@ const Index = () => {
         }))
     }
 
-    const handleOnEdit = (id, name, points, forSale, imageUrl) => {
+    const handleOnEdit = (id, name, forSale, imageUrl) => {
 
         // Check if editing the same category that has an error, then set value as the one previously submitted
         const nameValue = (errors.update && errors.update.values && errors.update.values.name) ? errors.update.values.name : name
-        const pointsValue = (errors.update && errors.update.values && errors.update.values.points) ? errors.update.values.points : points
         const forSaleValue = (errors.update && errors.update.values && errors.update.values.forSale) ? errors.update.values.forSale : forSale
         const imageURLValue = (errors.update && errors.update.values && errors.update.values.imageUrl) ? errors.update.values.imageUrl : imageUrl
 
@@ -100,7 +98,6 @@ const Index = () => {
             method: 'patch',
             action: 'update',
             name: nameValue,
-            points: pointsValue,
             forSale: forSaleValue,
             imageUrl: imageURLValue
         }))
@@ -132,7 +129,6 @@ const Index = () => {
             method: dialog.method,
             data: {
                 name: dialog.name,
-                points: dialog.points,
                 for_sale: dialog.forSale,
                 image_url: dialog.imageUrl 
             },
@@ -161,16 +157,6 @@ const Index = () => {
                 onChange={e => setDialog(dialog => ({
                     ...dialog,
                     name: e.target.value
-                }))}
-                errors={hideErrorMessages ? {} : errors[dialog.action]}
-            />
-            <Input
-                name="points"
-                value={dialog.points}
-                placeholder="e.g. Points"
-                onChange={e => setDialog(dialog => ({
-                    ...dialog,
-                    points: e.target.value
                 }))}
                 errors={hideErrorMessages ? {} : errors[dialog.action]}
             />

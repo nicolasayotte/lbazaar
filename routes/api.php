@@ -35,12 +35,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('/auth/login', [AuthController::class, 'authenticate']);
 
-Route::prefix('/points')->name('points.')->group(function() {
-    Route::post('/feed', [UserWalletController::class, 'feed'])->name('feed');
-    Route::post('/exchange', [UserWalletController::class, 'exchange'])->name('exchange');
-});
-
-Route::prefix('/applications')->name('points.')->group(function() {
+Route::prefix('/applications')->name('applications.')->group(function() {
     Route::post('/teachers/create', [UserController::class, 'create'])->name('teachers.create');
     Route::post('/class/create', [CourseApplicationController::class, 'create'])->name('class.create');
 });

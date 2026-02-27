@@ -357,15 +357,6 @@ const Create = () => {
                                                 disabled
                                             />
                                         </Grid>
-                                        <Grid item xs={12}>
-                                            <Input
-                                                label={translatables.texts.points}
-                                                value={nft.points}
-                                                inputProps={{ readOnly: true }}
-                                                InputLabelProps={{ shrink: true }}
-                                                disabled
-                                            />
-                                        </Grid>
                                     </Grid>
                                 </CardContent>
                                 }
