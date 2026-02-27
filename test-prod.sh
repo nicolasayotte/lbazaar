@@ -142,8 +142,8 @@ case "$1" in
         ;;
 
     full-test)
-        STEP_TOTAL=7
-        if [ "$2" = "--integration" ]; then STEP_TOTAL=8; fi
+        STEP_TOTAL=8
+        if [ "$2" = "--integration" ]; then STEP_TOTAL=9; fi
 
         echo -e "${GREEN}========================================${NC}"
         echo -e "${GREEN}Le Bazaar - Full Pre-Deployment Test${NC}"
@@ -163,21 +163,35 @@ case "$1" in
 
         echo ""
         echo -e "${YELLOW}[4/$STEP_TOTAL] Running migrations...${NC}"
-        $COMPOSE exec app php artisan migrate --seed
+        $COMPOSE exec -T app php artisan migrate --schema-path=/dev/null
 
         echo ""
-        echo -e "${YELLOW}[5/$STEP_TOTAL] Running PHP tests...${NC}"
-        $COMPOSE exec app php artisan test
+        echo -e "${YELLOW}[5/$STEP_TOTAL] Smoke-testing production image (no dev deps)...${NC}"
+        $COMPOSE exec -T app php artisan route:list > /dev/null
+        echo -e "${GREEN}  ✓ Artisan boots successfully${NC}"
+        $COMPOSE exec -T app wget --spider -q http://localhost/
+        echo -e "${GREEN}  ✓ HTTP server responds${NC}"
 
         echo ""
-        echo -e "${YELLOW}[6/$STEP_TOTAL] Running Web3 tests...${NC}"
-        $COMPOSE exec app sh -c "cd web3 && npm run test"
+        echo -e "${YELLOW}[6/$STEP_TOTAL] Installing dev dependencies & running PHP tests...${NC}"
+        $COMPOSE exec -T -e COMPOSER_HOME=/tmp/composer app composer install --no-interaction --optimize-autoloader
+        $COMPOSE cp tests/. app:/app/tests
+        $COMPOSE cp phpunit.xml app:/app/phpunit.xml
+        $COMPOSE exec -T \
+            -e APP_ENV=testing \
+            -e SESSION_DRIVER=array \
+            -e CACHE_DRIVER=array \
+            app php artisan test
+
+        echo ""
+        echo -e "${YELLOW}[7/$STEP_TOTAL] Running Web3 tests...${NC}"
+        $COMPOSE exec -T app sh -c "cd web3 && npm run test:show"
 
         if [ "$2" = "--integration" ]; then
             echo ""
-            echo -e "${YELLOW}[7/8] Running integration tests (real APIs)...${NC}"
-            $COMPOSE exec app php vendor/bin/phpunit --testsuite=Integration --no-coverage || true
-            $COMPOSE exec app sh -c "cd web3 && npm run test:integration" || true
+            echo -e "${YELLOW}[8/9] Running integration tests (real APIs)...${NC}"
+            $COMPOSE exec -T app php vendor/bin/phpunit --testsuite=Integration --no-coverage || true
+            $COMPOSE exec -T app sh -c "cd web3 && npm run test:integration" || true
         fi
 
         echo ""

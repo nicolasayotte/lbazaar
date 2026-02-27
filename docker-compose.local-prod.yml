@@ -51,6 +51,7 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: 1
     volumes:
       - 'local-prod-mysql:/var/lib/mysql'
+      - './docker-build/mysql-init.sql:/docker-entrypoint-initdb.d/testing.sql:ro'
     networks:
       - local-prod
     healthcheck:
