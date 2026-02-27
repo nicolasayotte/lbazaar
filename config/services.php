@@ -42,6 +42,8 @@ return [
         'explorer_url'            => env('CARDANO_EXPLORER_URL', 'https://preprod.cardanoscan.io'),
         'required_confirmations'  => env('ADA_REQUIRED_CONFIRMATIONS', 10),
         'payment_timeout_minutes' => env('ADA_PAYMENT_TIMEOUT_MINUTES', 30),
+        'network_id'              => env('CARDANO_NETWORK_ID', 0),
+        'quote_window_minutes'    => env('PAYMENT_QUOTE_WINDOW_MINUTES', 5),
     ],
 
     'blockfrost' => [
