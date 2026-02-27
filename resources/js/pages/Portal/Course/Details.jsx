@@ -4,7 +4,7 @@ import CreditCardIcon from "@mui/icons-material/CreditCard";
 import Feedback from "../../../components/cards/Feedback";
 import { usePage } from "@inertiajs/inertia-react"
 import ConfirmationDialog from "../../../components/common/ConfirmationDialog"
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useDispatch } from "react-redux"
 import { getRoute } from "../../../helpers/routes.helper"
 import { Inertia } from "@inertiajs/inertia"
@@ -45,9 +45,64 @@ const Details = () => {
 
     const creditCardButtonRef = useRef(null)
 
+    // Gap 1: quote countdown
+    const [quoteExpiresAt, setQuoteExpiresAt] = useState(null)
+    const [quoteSecondsLeft, setQuoteSecondsLeft] = useState(null)
+    const quoteTimerRef = useRef(null)
+
+    // Gap 3: ADA price refresh + drift
+    const adaPriceAtLoad = useRef(course.price_in_ada)
+    const [currentAdaPrice, setCurrentAdaPrice] = useState(course.price_in_ada)
+
+    // Gap 4: explicit availability flag
+    const { ada_available: adaAvailableFromServer = true } = usePage().props
+    const [adaAvailable, setAdaAvailable] = useState(adaAvailableFromServer)
+    const [driftWarning, setDriftWarning] = useState(false)
+
     const [showStripeCheckout, setShowStripeCheckout] = useState(false)
     const [clientSecret, setClientSecret] = useState(null)
     const [stripeLoading, setStripeLoading] = useState(false)
+
+    // 60-second ADA price polling
+    useEffect(() => {
+        if (!course.price) return
+        const poll = async () => {
+            try {
+                const res = await axios.get(`/api/courses/${course.id}/ada-price`)
+                const { available, data } = res.data
+                setAdaAvailable(available)
+                if (available && data?.price_in_ada) {
+                    setCurrentAdaPrice(data.price_in_ada)
+                    if (adaPriceAtLoad.current > 0) {
+                        const drift = Math.abs(data.price_in_ada - adaPriceAtLoad.current) / adaPriceAtLoad.current
+                        setDriftWarning(drift > 0.05)
+                    }
+                } else {
+                    setCurrentAdaPrice(null)
+                }
+            } catch (_) {}
+        }
+        const id = setInterval(poll, 60_000)
+        return () => clearInterval(id)
+    }, [course.id])
+
+    // Quote countdown
+    useEffect(() => {
+        if (!quoteExpiresAt) return
+        const expiresMs = new Date(quoteExpiresAt).getTime()
+        quoteTimerRef.current = setInterval(() => {
+            const left = Math.max(0, Math.floor((expiresMs - Date.now()) / 1000))
+            setQuoteSecondsLeft(left)
+            if (left === 0) {
+                clearInterval(quoteTimerRef.current)
+                setQuoteExpiresAt(null)
+                setQuoteSecondsLeft(null)
+                setPurchaseLoading(false)
+                setPurchaseStep('idle')
+            }
+        }, 1000)
+        return () => clearInterval(quoteTimerRef.current)
+    }, [quoteExpiresAt])
 
     const isGeneralCourse = course.course_type && course.course_type.name === 'General'
 
@@ -81,10 +136,16 @@ const Details = () => {
                 if (buildData.insufficientFunds) {
                     dispatch(actions.error({ message: translatables.wallet_error.insufficient_funds }))
                     creditCardButtonRef.current?.scrollIntoView({ behavior: 'smooth' })
+                } else if (buildData.quoteExpired) {
+                    dispatch(actions.error({ message: translatables?.texts?.quote_expired ?? 'The price quote has expired. Please try again.' }))
                 } else {
                     throw new Error(buildData.message || 'Failed to build transaction')
                 }
                 return
+            }
+
+            if (buildData.data?.quoteExpiresAt) {
+                setQuoteExpiresAt(buildData.data.quoteExpiresAt)
             }
 
             // Sign transaction with wallet
@@ -114,6 +175,10 @@ const Details = () => {
                 : submitResponse.data
 
             if (!submitData.success) {
+                if (submitData.duplicate) {
+                    dispatch(actions.error({ message: translatables?.texts?.duplicate_payment ?? 'This transaction has already been submitted. Please check your purchase history.' }))
+                    return
+                }
                 throw new Error(submitData.message || 'Failed to submit transaction')
             }
 
@@ -129,6 +194,9 @@ const Details = () => {
                 message: error.response?.data?.message || error.message || translatables.error
             }))
         } finally {
+            clearInterval(quoteTimerRef.current)
+            setQuoteExpiresAt(null)
+            setQuoteSecondsLeft(null)
             setPurchaseLoading(false)
             setPurchaseStep('idle')
         }
@@ -542,13 +610,6 @@ const Details = () => {
                                 display="block"
                                 children={nft.name}
                             />
-                            <Typography
-                                variant="caption"
-                                textAlign="center"
-                                display="block"
-                                color="GrayText"
-                                children={nft.points}
-                            />
                         </Paper>
                     </Grid>
                 }
@@ -618,7 +679,7 @@ const Details = () => {
                                             variant="outlined"
                                             color="primary"
                                             fullWidth
-                                            disabled={!walletAPI || purchaseLoading || !course.price_in_ada}
+                                            disabled={!walletAPI || purchaseLoading || !adaAvailable}
                                             onClick={() => {
                                                 if (schedules && schedules.length > 0) {
                                                     handleBuyWithAda(schedules[0].id)
@@ -629,9 +690,19 @@ const Details = () => {
                                         >
                                             {purchaseLoading
                                                 ? translatables.texts.processing
-                                                : `${translatables.texts.buy_with_ada} - ${formatDualPrice(parseJpy(course.price), course.price_in_ada)}`
+                                                : `${translatables.texts.buy_with_ada} - ${formatDualPrice(parseJpy(course.price), currentAdaPrice)}`
                                             }
                                         </Button>
+                                        {driftWarning && (
+                                            <Typography variant="caption" color="warning.main" display="block" sx={{ mt: 0.5 }}>
+                                                {translatables?.texts?.ada_price_changed ?? 'ADA price has shifted >5% since page load. Confirm before paying.'}
+                                            </Typography>
+                                        )}
+                                        {!adaAvailable && (
+                                            <Typography variant="caption" color="warning.main" display="block" sx={{ mt: 0.5 }}>
+                                                {translatables?.texts?.ada_rate_unavailable ?? 'ADA price temporarily unavailable. You can still pay by credit card.'}
+                                            </Typography>
+                                        )}
                                         {purchaseLoading && (
                                             <Box sx={{ mt: 1 }}>
                                                 <LinearProgress />
@@ -640,12 +711,12 @@ const Details = () => {
                                                     {purchaseStep === 'signing' && translatables.texts.sign_in_wallet}
                                                     {purchaseStep === 'submitting' && translatables.texts.submitting_transaction}
                                                 </Typography>
+                                                {quoteSecondsLeft !== null && (
+                                                    <Typography variant="caption" color={quoteSecondsLeft < 30 ? 'error' : 'text.secondary'} display="block">
+                                                        Quote expires in {quoteSecondsLeft}s
+                                                    </Typography>
+                                                )}
                                             </Box>
-                                        )}
-                                        {!course.price_in_ada && (
-                                            <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
-                                                {translatables?.texts?.ada_unavailable || 'ADA price unavailable'}
-                                            </Typography>
                                         )}
                                         <Button
                                             ref={creditCardButtonRef}
