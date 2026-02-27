@@ -350,4 +350,43 @@ class CourseControllerPriceTest extends TestCase
                 ->component('Portal/Course/Details', false)
                 ->where('stripe_available', false));
     }
+
+    // -------------------------------------------------------------------------
+    // Task 03: is_teacher prop
+    // -------------------------------------------------------------------------
+
+    public function test_course_details_is_teacher_true_when_user_is_professor(): void
+    {
+        $this->mockExchangeRateOnce();
+        $response = $this->actingAs($this->teacher)->get("/classes/{$this->course->id}");
+        $response->assertStatus(200);
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('Portal/Course/Details', false)
+            ->where('is_teacher', true)
+        );
+    }
+
+    public function test_course_details_is_teacher_false_when_user_is_student(): void
+    {
+        $this->mockExchangeRateOnce();
+        $student = $this->createTestUser(['email' => 'not-teacher@example.com']);
+        $student->attachRole('student');
+        $response = $this->actingAs($student)->get("/classes/{$this->course->id}");
+        $response->assertStatus(200);
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('Portal/Course/Details', false)
+            ->where('is_teacher', false)
+        );
+    }
+
+    public function test_course_details_is_teacher_false_when_unauthenticated(): void
+    {
+        $this->mockExchangeRateOnce();
+        $response = $this->get("/classes/{$this->course->id}");
+        $response->assertStatus(200);
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('Portal/Course/Details', false)
+            ->where('is_teacher', false)
+        );
+    }
 }
