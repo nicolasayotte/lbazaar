@@ -13,6 +13,7 @@ use App\Http\Controllers\API\VoteController;
 use App\Http\Controllers\API\CertificateController;
 use App\Http\Controllers\API\CoursePaymentController;
 use App\Http\Controllers\API\StripeController;
+use App\Http\Controllers\API\TokenRewardController;
 use Illuminate\Support\Facades\Log;
 
 /*
@@ -33,6 +34,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return response()->json($user);
 });
 
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/purchases/{txHash}/status', [\App\Http\Controllers\API\PurchaseStatusController::class, 'show'])
+        ->name('api.purchase.status');
+});
+
 Route::post('/auth/login', [AuthController::class, 'authenticate']);
 
 Route::prefix('/applications')->name('applications.')->group(function() {
@@ -45,6 +51,7 @@ Route::prefix('/certificates')->middleware(['auth:sanctum'])->name('certificates
     Route::get('/completion-summary', [CertificateController::class, 'getCourseCompletionSummary'])->name('completion_summary');
 
     // New certificate API endpoints
+    Route::post('/courses/{course}/estimate-fee', [CertificateController::class, 'estimateAirdropFee'])->name('estimate_fee');
     Route::get('/courses/{course}/eligible-students', [CertificateController::class, 'getEligibleStudents'])->name('eligible_students');
     Route::post('/courses/{course}/students/{student}/mint', [CertificateController::class, 'mintSingleCertificate'])->name('mint_single');
     Route::post('/courses/{course}/batch-mint', [CertificateController::class, 'batchMintCertificates'])->name('batch_mint');
@@ -76,4 +83,20 @@ Route::post('/stripe/webhook', [StripeController::class, 'webhook'])->name('stri
 // Public course price endpoints
 Route::get('/courses/{course}/ada-price', [\App\Http\Controllers\API\CourseController::class, 'getAdaPrice'])
     ->name('api.course.ada_price');
+
+// Public Cardano network status endpoint
+Route::get('/cardano/network-status', [\App\Http\Controllers\API\CardanoController::class, 'networkStatus'])
+    ->name('api.cardano.network_status');
+
+// Token reward routes (teacher-authenticated)
+Route::prefix('/courses')->middleware(['auth:sanctum'])->name('token_reward.')->group(function () {
+    Route::put('/{course}/token-reward', [TokenRewardController::class, 'updateConfig'])->name('update_config');
+    Route::post('/{course}/token-reward/mint', [TokenRewardController::class, 'mintAndAirdrop'])->name('mint');
+});
+
+// Admin refund routes
+Route::prefix('admin/refunds')->middleware(['auth:sanctum'])->group(function () {
+    Route::post('/stripe/{stripePaymentId}', [\App\Http\Controllers\API\AdminRefundController::class, 'refundStripe'])->name('admin.refunds.stripe');
+    Route::post('/ada/{courseHistoryId}', [\App\Http\Controllers\API\AdminRefundController::class, 'refundAda'])->name('admin.refunds.ada');
+});
 

@@ -95,6 +95,7 @@
     "mypage.profile.update": "\/mypage\/profile",
     "mypage.schedules": "\/mypage\/schedules",
     "mypage.user_exam.retake": "\/mypage\/user-exam\/{user_exam_id}\/retake",
+    "mypage.purchase.history.index": "\/mypage\/purchase-history",
     "mypage.wallet.history.index": "\/mypage\/wallet-history",
     "nft.check": "\/nft\/check",
     "nft.verify": "\/nft\/verify",

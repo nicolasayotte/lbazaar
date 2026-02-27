@@ -298,6 +298,9 @@ Route::prefix('mypage')->middleware(['auth'])->name('mypage.')->group(function()
         Route::get('/', [UserBadgeController::class, 'index'])->name('index');
     });
 
+    # Purchase History
+    Route::get('/purchase-history', [\App\Http\Controllers\Portal\PurchaseHistoryController::class, 'index'])->name('purchase.history.index');
+
     # Certificates (Student view of earned certificates)
     Route::prefix('/certificates')->name('certificates.')->group(function() {
         Route::get('/', [PortalCertificateController::class, 'index'])->name('index');
