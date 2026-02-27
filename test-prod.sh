@@ -5,7 +5,7 @@
 set -e
 
 COMPOSE_FILE="docker-compose.local-prod.yml"
-COMPOSE="docker-compose -f $COMPOSE_FILE"
+COMPOSE="docker compose -f $COMPOSE_FILE"
 
 # Colors
 GREEN='\033[0;32m'
