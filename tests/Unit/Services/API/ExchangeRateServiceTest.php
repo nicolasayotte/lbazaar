@@ -440,6 +440,36 @@ class ExchangeRateServiceTest extends TestCase
         $this->assertCount(2, $result);
     }
 
+    public function test_is_available_returns_true_when_cached()
+    {
+        // Arrange: Prime the cache directly — no HTTP call needed
+        Cache::put('ada_jpy_rate', 75.0, 600);
+
+        // Act
+        $result = $this->service->isAvailable();
+
+        // Assert: Should return true immediately from cache
+        $this->assertTrue($result);
+    }
+
+    public function test_is_available_returns_false_when_both_fail()
+    {
+        // Arrange: Delete fallback setting and mock API failure
+        Setting::where('slug', 'ada-to-jpy')->delete();
+
+        Http::fake([
+            'api.coingecko.com/api/v3/simple/price*' => Http::response([], 500)
+        ]);
+
+        Cache::flush();
+
+        // Act
+        $result = $this->service->isAvailable();
+
+        // Assert: Both API and fallback failed — should return false
+        $this->assertFalse($result);
+    }
+
     public function test_batch_computation_fetches_rate_only_once()
     {
         // Arrange: Mock API to track calls

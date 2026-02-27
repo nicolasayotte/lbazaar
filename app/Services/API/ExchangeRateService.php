@@ -62,6 +62,24 @@ class ExchangeRateService
     }
 
     /**
+     * Check whether the ADA/JPY exchange rate is currently available.
+     * Returns true if a cached rate exists or if a fresh fetch succeeds.
+     * Returns false if both cache lookup and API call fail.
+     */
+    public function isAvailable(): bool
+    {
+        if (Cache::get('ada_jpy_rate') !== null) {
+            return true;
+        }
+
+        try {
+            return $this->getAdaJpyRate() > 0;
+        } catch (\Throwable) {
+            return false;
+        }
+    }
+
+    /**
      * Convert JPY amount to ADA equivalent.
      */
     public function jpyToAda(float $jpy): float

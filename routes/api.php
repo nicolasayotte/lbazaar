@@ -73,3 +73,7 @@ Route::prefix('/stripe')->middleware(['auth:sanctum'])->name('stripe.')->group(f
 // Stripe webhook (no auth, CSRF exempt, signature verified in controller)
 Route::post('/stripe/webhook', [StripeController::class, 'webhook'])->name('stripe.webhook');
 
+// Public course price endpoints
+Route::get('/courses/{course}/ada-price', [\App\Http\Controllers\API\CourseController::class, 'getAdaPrice'])
+    ->name('api.course.ada_price');
+

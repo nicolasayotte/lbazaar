@@ -25,6 +25,13 @@ class CoinGeckoRateTest extends TestCase
         if (empty(config('services.coingecko.api_url'))) {
             $this->markTestSkipped('CoinGecko API URL not configured.');
         }
+
+        // Ensure fallback rate exists so the service can fall back to DB when
+        // CoinGecko is unavailable or rate-limited during the test run.
+        \App\Models\Setting::firstOrCreate(
+            ['slug' => 'ada-to-jpy'],
+            ['name' => 'ADA to JPY Rate', 'value' => '50.0', 'type' => 'number', 'category' => 'general']
+        );
     }
 
     /** @test */
