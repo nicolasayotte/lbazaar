@@ -15,6 +15,8 @@ use App\Models\UserWallet;
 use App\Models\WalletTransactionHistory;
 use App\Models\Role;
 use App\Models\Setting;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Mockery;
 
@@ -38,7 +40,7 @@ class CoursePurchaseServiceTest extends TestCase
     {
         parent::setUp();
 
-        $this->setupTestData();
+        $this->retryOnDisconnect(fn () => $this->setupTestData());
 
         // Use mock userRepository so we control getAdmin() behavior
         $this->walletService = new WalletService();
@@ -117,24 +119,26 @@ class CoursePurchaseServiceTest extends TestCase
             'course_id' => $this->course->id
         ]);
 
-        // Create settings — delete first so parallel test processes
-        // don't contend on the same committed row via updateOrCreate
-        Setting::where('slug', 'ada-to-jpy')->delete();
-        Setting::create([
-            'slug' => 'ada-to-jpy',
-            'name' => 'ADA to JPY Exchange Rate',
-            'value' => '50',
-            'type' => 'number',
-            'category' => 'general',
-        ]);
-        Setting::where('slug', 'admin-commission')->delete();
-        Setting::create([
-            'slug' => 'admin-commission',
-            'name' => 'Admin Commission',
-            'value' => '20',
-            'type' => 'number',
-            'category' => 'general',
-        ]);
+        // Atomic upserts — single statements to reduce connection surface area
+        DB::table('settings')->updateOrInsert(
+            ['slug' => 'ada-to-jpy'],
+            ['name' => 'ADA to JPY Exchange Rate', 'value' => '50', 'type' => 'number', 'category' => 'general']
+        );
+        DB::table('settings')->updateOrInsert(
+            ['slug' => 'admin-commission'],
+            ['name' => 'Admin Commission', 'value' => '20', 'type' => 'number', 'category' => 'general']
+        );
+    }
+
+    private function primeQuoteCache(int $userId = null, int $scheduleId = null, float $adaAmount = 20.0): void
+    {
+        $userId     = $userId     ?? $this->student->id;
+        $scheduleId = $scheduleId ?? $this->schedule->id;
+        Cache::put(
+            "purchase_quote_{$userId}_{$scheduleId}",
+            ['adaAmount' => $adaAmount, 'expiresAt' => now()->addMinutes(5)->toIso8601String()],
+            300
+        );
     }
 
     // --- convertJpyToAda tests ---
@@ -357,6 +361,8 @@ class CoursePurchaseServiceTest extends TestCase
 
     public function test_submits_signed_transaction_successfully()
     {
+        $this->primeQuoteCache();
+
         $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
@@ -395,6 +401,8 @@ class CoursePurchaseServiceTest extends TestCase
 
     public function test_submit_returns_web3_error()
     {
+        $this->primeQuoteCache();
+
         $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
@@ -414,6 +422,8 @@ class CoursePurchaseServiceTest extends TestCase
 
     public function test_submit_creates_wallet_transaction_with_course_history_reference()
     {
+        $this->primeQuoteCache();
+
         $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
@@ -588,6 +598,8 @@ class CoursePurchaseServiceTest extends TestCase
 
     public function test_submit_catches_exceptions()
     {
+        $this->primeQuoteCache();
+
         $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
@@ -700,5 +712,96 @@ class CoursePurchaseServiceTest extends TestCase
         $result = $this->service->failPurchaseTransaction('nonexistent_tx');
 
         $this->assertFalse($result['success']);
+    }
+
+    // --- Quote window + concurrent lock tests ---
+
+    public function test_build_stores_quote_in_cache_with_expiry()
+    {
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
+            ->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        $service->shouldReceive('runCommand')
+            ->once()
+            ->andReturn(json_encode([
+                'status' => 200,
+                'cborTx' => 'cbor_tx_data',
+                'teacherAmount' => 16.0,
+                'adminAmount' => 4.0
+            ]));
+
+        request()->merge(['cborUtxos' => 'test_cbor_utxos']);
+
+        $result = $service->buildPurchaseTransaction($this->schedule, $this->student);
+
+        $this->assertTrue($result['success']);
+        $this->assertArrayHasKey('quoteExpiresAt', $result['data']);
+        $this->assertNotNull($result['data']['quoteExpiresAt']);
+
+        $cacheKey = "purchase_quote_{$this->student->id}_{$this->schedule->id}";
+        $cached = Cache::get($cacheKey);
+        $this->assertNotNull($cached);
+        $this->assertArrayHasKey('adaAmount', $cached);
+        $this->assertArrayHasKey('expiresAt', $cached);
+        $this->assertEquals(20.0, $cached['adaAmount']);
+    }
+
+    public function test_submit_returns_quote_expired_when_cache_missing()
+    {
+        // Do not prime cache — quote is absent
+        $result = $this->service->submitPurchaseTransaction($this->schedule, $this->student, 'cbor_sig', 'cbor_tx');
+
+        $this->assertFalse($result['success']);
+        $this->assertTrue($result['quoteExpired'] ?? false);
+        $this->assertStringContainsString('quote expired', strtolower($result['message']));
+    }
+
+    public function test_submit_blocks_concurrent_pending_payment()
+    {
+        // Prime cache so quote validation passes
+        $this->primeQuoteCache();
+
+        // Create an existing pending payment for the same student + schedule
+        CourseHistory::create([
+            'course_schedule_id'   => $this->schedule->id,
+            'course_id'            => $this->course->id,
+            'user_id'              => $this->student->id,
+            'payment_status'       => 'pending',
+            'payment_tx_hash'      => 'already_pending_tx',
+            'payment_ada_amount'   => 20.0,
+            'payment_submitted_at' => now()
+        ]);
+
+        $result = $this->service->submitPurchaseTransaction($this->schedule, $this->student, 'cbor_sig', 'cbor_tx');
+
+        $this->assertFalse($result['success']);
+        $this->assertTrue($result['duplicate'] ?? false);
+        $this->assertStringContainsString('already pending or confirmed', $result['message']);
+    }
+
+    public function test_submit_clears_cache_on_success()
+    {
+        $this->primeQuoteCache();
+
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
+            ->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        $service->shouldReceive('runCommand')
+            ->once()
+            ->andReturn(json_encode([
+                'status' => 200,
+                'txId' => 'success_tx_hash',
+                'teacherAmount' => 16.0,
+                'adminAmount' => 4.0
+            ]));
+
+        $result = $service->submitPurchaseTransaction($this->schedule, $this->student, 'cbor_sig', 'cbor_tx');
+
+        $this->assertTrue($result['success']);
+
+        $cacheKey = "purchase_quote_{$this->student->id}_{$this->schedule->id}";
+        $this->assertNull(Cache::get($cacheKey));
     }
 }

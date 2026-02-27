@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\WalletTransactionHistory;
 use App\Repositories\UserRepository;
 use Exception;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -90,14 +91,22 @@ class CoursePurchaseService
             ];
         }
 
+        $quoteExpiresAt = now()->addSeconds($this->quoteWindowSeconds())->toIso8601String();
+        Cache::put(
+            $this->quoteKey($user->id, $schedule->id),
+            ['adaAmount' => $adaTotalAmount, 'expiresAt' => $quoteExpiresAt],
+            $this->quoteWindowSeconds()
+        );
+
         return [
             'success' => true,
             'message' => 'Transaction built successfully',
             'data' => [
-                'cborTx'        => $responseJSON['cborTx'],
-                'adaAmount'     => $adaTotalAmount,
-                'teacherAmount' => $responseJSON['teacherAmount'] ?? null,
-                'adminAmount'   => $responseJSON['adminAmount'] ?? null,
+                'cborTx'          => $responseJSON['cborTx'],
+                'adaAmount'       => $adaTotalAmount,
+                'teacherAmount'   => $responseJSON['teacherAmount'] ?? null,
+                'adminAmount'     => $responseJSON['adminAmount'] ?? null,
+                'quoteExpiresAt'  => $quoteExpiresAt,
             ]
         ];
     }
@@ -117,6 +126,21 @@ class CoursePurchaseService
                 'success' => false,
                 'message' => 'System wallets not configured. Please contact support.'
             ];
+        }
+
+        // Gap 1: Quote validation
+        $quote = Cache::get($this->quoteKey($user->id, $schedule->id));
+        if (!$quote) {
+            return ['success' => false, 'message' => 'Price quote expired. Please re-initiate checkout.', 'quoteExpired' => true];
+        }
+
+        // Gap 2: Fast pre-check for duplicate
+        $hasPending = CourseHistory::where('user_id', $user->id)
+            ->where('course_schedule_id', $schedule->id)
+            ->whereIn('payment_status', ['pending', 'confirmed'])
+            ->exists();
+        if ($hasPending) {
+            return ['success' => false, 'message' => 'A payment is already pending or confirmed for this class.', 'duplicate' => true];
         }
 
         $cmd = $this->buildWeb3Command('run/submit-purchase-tx.mjs', [
@@ -154,6 +178,15 @@ class CoursePurchaseService
 
         try {
             $courseHistory = DB::transaction(function () use ($schedule, $user, $txId, $adaAmount) {
+                $existing = CourseHistory::where('user_id', $user->id)
+                    ->where('course_schedule_id', $schedule->id)
+                    ->whereIn('payment_status', ['pending', 'confirmed'])
+                    ->lockForUpdate()
+                    ->first();
+                if ($existing) {
+                    throw new \RuntimeException('Duplicate payment detected under lock.');
+                }
+
                 $courseHistory = CourseHistory::create([
                     'course_schedule_id'   => $schedule->id,
                     'course_id'            => $schedule->course->id,
@@ -180,6 +213,9 @@ class CoursePurchaseService
                 return $courseHistory;
             });
         } catch (Exception $e) {
+            if ($e instanceof \RuntimeException && str_contains($e->getMessage(), 'Duplicate payment')) {
+                return ['success' => false, 'message' => 'A payment is already pending or confirmed for this class.', 'duplicate' => true];
+            }
             Log::error('Submit purchase transaction: failed to record in DB', [
                 'schedule_id' => $schedule->id,
                 'user_id'     => $user->id,
@@ -191,6 +227,8 @@ class CoursePurchaseService
                 'message' => 'Transaction submitted to blockchain but failed to record locally. Contact support with tx: ' . $txId
             ];
         }
+
+        Cache::forget($this->quoteKey($user->id, $schedule->id));
 
         return [
             'success' => true,
@@ -321,6 +359,16 @@ class CoursePurchaseService
 
         $rate = floatval($adaToJpy->value);
         return round($jpyAmount / $rate, 6);
+    }
+
+    private function quoteKey(int $userId, int $scheduleId): string
+    {
+        return "purchase_quote_{$userId}_{$scheduleId}";
+    }
+
+    private function quoteWindowSeconds(): int
+    {
+        return (int) config('services.cardano.quote_window_minutes', 5) * 60;
     }
 
     /**
