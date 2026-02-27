@@ -35,12 +35,12 @@ RUN docker-php-ext-install \
 WORKDIR /app
 ENV WEB_DOCUMENT_ROOT=/app/public
 
-# Copy dependency manifests first for better layer caching
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-interaction --optimize-autoloader --no-scripts
-
 # Install Node.js for web3 runtime
 RUN apk add --no-cache nodejs npm
+
+# Copy dependency manifests first for better layer caching
+COPY --chown=application:application composer.json composer.lock ./
+RUN su application -s /bin/sh -c 'composer install --no-dev --no-interaction --optimize-autoloader --no-scripts'
 
 # Copy application code
 COPY --chown=application:application ./ ./
@@ -50,10 +50,10 @@ COPY --from=nodeBuild --chown=application:application /app/public/build ./public
 COPY --from=nodeBuild --chown=application:application /app/web3/node_modules ./web3/node_modules
 
 # Run post-autoload optimization
-RUN composer dump-autoload --optimize
+RUN su application -s /bin/sh -c 'composer dump-autoload --optimize'
 
-# Ensure proper ownership
-RUN chown -R application:application .
+# Ensure runtime-writable dirs have correct ownership
+RUN chown -R application:application storage bootstrap/cache
 
 # Switch to non-root user for security
 USER application
