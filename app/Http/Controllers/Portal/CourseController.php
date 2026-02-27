@@ -125,8 +125,14 @@ class CourseController extends Controller
         $schedules = $this->courseScheduleRepository->findByCourseId($course->id);
         $feedbacks = $this->courseFeedbackRepository->loadByCourseId($id, $feedbackCount);
 
-        // Add price_in_ada to course
-        $this->exchangeRateService->addPriceInAdaToCourses([$course]);
+        // Add price_in_ada to course — degrade gracefully if rate is unavailable
+        $adaAvailable = true;
+        try {
+            $this->exchangeRateService->addPriceInAdaToCourses([$course]);
+        } catch (\Throwable $e) {
+            $adaAvailable = false;
+            Log::warning('ADA rate unavailable', ['course' => $id, 'error' => $e->getMessage()]);
+        }
 
         return Inertia::render('Portal/Course/Details', [
             'course'           => $course,
@@ -144,6 +150,7 @@ class CourseController extends Controller
                     ->select(['id', 'payment_tx_hash', 'payment_submitted_at'])
                     ->first()
                 : null,
+            'ada_available'    => $adaAvailable,
             'stripe_available' => app(StripeService::class)->isAvailable(),
             'hasFeedback'      => auth()->user() && auth()->user()->hasFeedback($id),
             'feedbackCount'    => $feedbackCount,
