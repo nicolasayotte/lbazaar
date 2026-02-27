@@ -49,7 +49,7 @@ class EmailNotification extends Mailable
 
         return new Envelope(
             subject: 'Verify Email Address',
-            from: new Address($this->settingsRepository->getSetting('no-reply-email')),
+            from: new Address($this->settingsRepository->getSetting('no-reply-email') ?? config('mail.from.address')),
             to: [$this->user->email]
         );
     }

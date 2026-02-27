@@ -44,7 +44,7 @@ class RetakeExamRequestEmail extends Mailable
     {
         return new Envelope(
             subject: 'Exam Retake Request from '.$this->userExam->user->first_name . ' ' . $this->userExam->user->last_name,
-            from: new Address($this->settingsRepository->getSetting('no-reply-email')),
+            from: new Address($this->settingsRepository->getSetting('no-reply-email') ?? config('mail.from.address')),
             to: [$this->userExam->course->professor->email]
         );
     }

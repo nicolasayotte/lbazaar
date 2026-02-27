@@ -39,7 +39,7 @@ class ExamCleared extends Mailable
     {
         return new Envelope(
             subject: 'Retake Exam Request Approved',
-            from: new Address($this->settingsRepository->getSetting('no-reply-email')),
+            from: new Address($this->settingsRepository->getSetting('no-reply-email') ?? config('mail.from.address')),
             to: $this->userExam->user->email
         );
     }

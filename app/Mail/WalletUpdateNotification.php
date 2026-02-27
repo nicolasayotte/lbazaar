@@ -45,7 +45,7 @@ class WalletUpdateNotification extends Mailable
 
         return new Envelope(
             subject: 'Wallet Updated',
-            from: new Address($settingsRepository->getSetting('no-reply-email')),
+            from: new Address($settingsRepository->getSetting('no-reply-email') ?? config('mail.from.address')),
             to: [$this->user->email]
         );
     }
