@@ -614,6 +614,101 @@ class CoursePurchaseServiceTest extends TestCase
         $this->assertStringContainsString('Connection refused', $result['message']);
     }
 
+    // --- getTxStatus tests ---
+
+    public function test_get_tx_status_returns_pending_when_confirmations_below_required()
+    {
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
+            ->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        $service->shouldReceive('runCommand')
+            ->once()
+            ->andReturn(json_encode([
+                'status' => 200,
+                'confirmations' => 5,
+            ]));
+
+        $result = $service->getTxStatus('some_tx_id');
+
+        $this->assertEquals('pending', $result['status']);
+        $this->assertEquals(5, $result['confirmations']);
+        $this->assertEquals(10, $result['required']);
+    }
+
+    public function test_get_tx_status_returns_confirmed_when_confirmations_at_or_above_required()
+    {
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
+            ->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        $service->shouldReceive('runCommand')
+            ->once()
+            ->andReturn(json_encode([
+                'status' => 200,
+                'confirmations' => 12,
+            ]));
+
+        $result = $service->getTxStatus('some_tx_id');
+
+        $this->assertEquals('confirmed', $result['status']);
+        $this->assertEquals(12, $result['confirmations']);
+        $this->assertEquals(10, $result['required']);
+    }
+
+    public function test_get_tx_status_returns_not_found_on_404()
+    {
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
+            ->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        $service->shouldReceive('runCommand')
+            ->once()
+            ->andReturn(json_encode([
+                'status' => 404,
+                'error' => 'Transaction not found',
+            ]));
+
+        $result = $service->getTxStatus('some_tx_id');
+
+        $this->assertEquals('not_found', $result['status']);
+    }
+
+    public function test_get_tx_status_returns_error_on_script_error()
+    {
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
+            ->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        $service->shouldReceive('runCommand')
+            ->once()
+            ->andReturn(json_encode([
+                'status' => 500,
+                'error' => 'Script failed',
+            ]));
+
+        $result = $service->getTxStatus('some_tx_id');
+
+        $this->assertEquals('error', $result['status']);
+        $this->assertStringContainsString('Script failed', $result['message']);
+    }
+
+    public function test_get_tx_status_returns_error_on_exception()
+    {
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
+            ->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        $service->shouldReceive('runCommand')
+            ->once()
+            ->andThrow(new \Exception('Connection refused'));
+
+        $result = $service->getTxStatus('some_tx_id');
+
+        $this->assertEquals('error', $result['status']);
+        $this->assertStringContainsString('Connection refused', $result['message']);
+    }
+
     // --- getTxConfirmations tests ---
 
     public function test_get_tx_confirmations_returns_count()

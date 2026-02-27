@@ -296,6 +296,37 @@ class CoursePurchaseService
     }
 
     /**
+     * Query the blockchain for the on-chain status of a transaction.
+     *
+     * Never throws. Returns a structured status array:
+     *   ['status' => 'pending'|'confirmed'|'not_found'|'error', 'confirmations' => int, 'required' => int, 'message' => string]
+     */
+    public function getTxStatus(string $txId): array
+    {
+        $required = (int) config('services.cardano.required_confirmations', 10);
+        try {
+            $command = $this->buildWeb3Command('run/check-tx-confirmations.mjs', [$txId]);
+            $output = $this->runCommand($command);
+            $result = json_decode($output, true);
+
+            if (($result['status'] ?? 0) === 404) {
+                return ['status' => 'not_found'];
+            }
+            if (($result['status'] ?? 0) !== 200) {
+                return ['status' => 'error', 'message' => $result['error'] ?? 'Failed to get tx status'];
+            }
+            $confirmations = (int) $result['confirmations'];
+            if ($confirmations >= $required) {
+                return ['status' => 'confirmed', 'confirmations' => $confirmations, 'required' => $required];
+            }
+            return ['status' => 'pending', 'confirmations' => $confirmations, 'required' => $required];
+        } catch (\Exception $e) {
+            Log::warning('getTxStatus: error', ['tx_id' => $txId, 'error' => $e->getMessage()]);
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    /**
      * Query the blockchain for the number of confirmations a transaction has.
      *
      * @throws \Exception if the script returns an error
@@ -359,6 +390,90 @@ class CoursePurchaseService
 
         $rate = floatval($adaToJpy->value);
         return round($jpyAmount / $rate, 6);
+    }
+
+    /**
+     * Refund an ADA payment for a confirmed course purchase.
+     *
+     * Builds, signs and submits a refund transaction from the platform wallet
+     * back to the student's registered wallet address.
+     *
+     * @param bool $force  When true, bypasses the rewards guard and sets
+     *                     rewards_invalidated_at on the CourseHistory record.
+     * @return array{success: bool, message: string, hasRewards?: bool, data?: array{txId: string, adaAmount: string}}
+     *   On success: data contains txId and adaAmount.
+     *   On rewards block: hasRewards=true is returned so callers can prompt for force confirmation.
+     */
+    public function refundPurchaseTransaction(CourseHistory $history, bool $force = false): array
+    {
+        if ($history->payment_status !== 'confirmed') {
+            return ['success' => false, 'message' => 'Only confirmed ADA payments can be refunded.'];
+        }
+        if (!$history->payment_tx_hash || !$history->payment_ada_amount) {
+            return ['success' => false, 'message' => 'Missing ADA transaction data.'];
+        }
+
+        if ($this->hasEarnedRewards($history) && !$force) {
+            return ['success' => false, 'hasRewards' => true, 'message' => 'Student has earned rewards. Use force=true to proceed.'];
+        }
+
+        $studentWallet = $history->user->userWallet()->first();
+        if (!$studentWallet || !$studentWallet->address) {
+            return ['success' => false, 'message' => 'Student wallet address not found.'];
+        }
+
+        $adaAmount = (string) $history->payment_ada_amount;
+        $cmd = $this->buildWeb3Command('run/build-refund-tx.mjs', [$studentWallet->address, $adaAmount]);
+
+        try {
+            $response = $this->runCommand($cmd, 60);
+        } catch (\Exception $e) {
+            Log::error('ADA refund failed', ['id' => $history->id, 'error' => $e->getMessage()]);
+            return ['success' => false, 'message' => 'Failed to build refund transaction: ' . $e->getMessage()];
+        }
+
+        $result = json_decode($response, true);
+        if (!is_array($result) || ($result['status'] ?? 0) !== 200) {
+            return ['success' => false, 'message' => $result['error'] ?? 'Refund transaction failed'];
+        }
+
+        $txId = $result['txId'];
+
+        try {
+            DB::transaction(function () use ($history, $force) {
+                $locked = CourseHistory::where('id', $history->id)->lockForUpdate()->first();
+                if ($locked->payment_status === 'refunded') {
+                    throw new \RuntimeException('Already refunded.');
+                }
+                $updates = ['payment_status' => 'refunded', 'is_cancelled' => true];
+                if ($force) {
+                    $updates['rewards_invalidated_at'] = now();
+                }
+                $locked->update($updates);
+            });
+        } catch (\RuntimeException $e) {
+            if (str_contains($e->getMessage(), 'Already refunded')) {
+                Log::error('ADA refund: double-submit race — orphaned on-chain tx', [
+                    'id' => $history->id, 'txId' => $txId,
+                ]);
+                return ['success' => false, 'message' => 'This payment has already been refunded.'];
+            }
+            throw $e;
+        }
+
+        Log::info('ADA payment refunded', ['id' => $history->id, 'txId' => $txId, 'amount' => $adaAmount]);
+
+        return ['success' => true, 'message' => 'ADA refund submitted.', 'data' => ['txId' => $txId, 'adaAmount' => $adaAmount]];
+    }
+
+    /**
+     * Check whether a student has earned rewards (NFT certificate or token) for a course.
+     */
+    private function hasEarnedRewards(CourseHistory $history): bool
+    {
+        return \App\Models\NftTransactions::where('user_id', $history->user_id)
+            ->where('course_id', $history->course_id)
+            ->exists();
     }
 
     private function quoteKey(int $userId, int $scheduleId): string

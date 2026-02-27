@@ -193,6 +193,9 @@ class StripeService
                 case 'payment_intent.canceled':
                     return $this->handlePaymentCanceled($event->data->object);
 
+                case 'charge.dispute.created':
+                    return $this->handleChargeback($event->data->object);
+
                 default:
                     Log::info('Unhandled webhook event type', [
                         'event_type' => $event->type,
@@ -433,7 +436,7 @@ class StripeService
      * @param StripePayment $payment
      * @return array
      */
-    public function refund(StripePayment $payment): array
+    public function refund(StripePayment $payment, array $options = []): array
     {
         try {
             // Only refund succeeded payments
@@ -444,11 +447,21 @@ class StripeService
                 ];
             }
 
+            $courseHistory = $payment->course_history_id ? CourseHistory::find($payment->course_history_id) : null;
+            if ($courseHistory) {
+                $hasRewards = \App\Models\NftTransactions::where('user_id', $courseHistory->user_id)
+                    ->where('course_id', $courseHistory->course_id)
+                    ->exists();
+                if ($hasRewards && !($options['force'] ?? false)) {
+                    return ['success' => false, 'hasRewards' => true, 'message' => 'Student has earned rewards. Use force=true to proceed.'];
+                }
+            }
+
             // Use pass-by-reference to get refund ID out of transaction closure
             $refundId = null;
 
             // Execute Stripe refund and database update atomically
-            DB::transaction(function () use ($payment, &$refundId) {
+            DB::transaction(function () use ($payment, $options, &$refundId) {
                 // Create Stripe refund INSIDE transaction for atomicity
                 $refund = Refund::create([
                     'payment_intent' => $payment->stripe_payment_intent_id,
@@ -466,8 +479,14 @@ class StripeService
 
                 // Cancel enrollment if exists
                 if ($payment->course_history_id) {
-                    CourseHistory::where('id', $payment->course_history_id)
-                        ->update(['is_cancelled' => true]);
+                    $ch = CourseHistory::where('id', $payment->course_history_id)->lockForUpdate()->first();
+                    if ($ch) {
+                        $updates = ['is_cancelled' => true];
+                        if ($options['force'] ?? false) {
+                            $updates['rewards_invalidated_at'] = now();
+                        }
+                        $ch->update($updates);
+                    }
                 }
             });
 
@@ -513,6 +532,53 @@ class StripeService
                 'success' => false,
                 'message' => 'Refund failed: ' . $e->getMessage()
             ];
+        }
+    }
+
+    /**
+     * Handle Stripe chargeback (dispute) by recording it and revoking course access.
+     *
+     * @param mixed $dispute
+     * @return array
+     */
+    private function handleChargeback($dispute): array
+    {
+        try {
+            $paymentIntentId = $dispute->payment_intent ?? null;
+
+            Log::warning('Stripe chargeback received', [
+                'dispute_id' => $dispute->id,
+                'payment_intent' => $paymentIntentId,
+                'reason' => $dispute->reason ?? null,
+            ]);
+
+            if (!$paymentIntentId) {
+                return ['success' => true, 'message' => 'Chargeback logged; no payment_intent for revocation'];
+            }
+
+            $payment = StripePayment::where('stripe_payment_intent_id', $paymentIntentId)->first();
+            if (!$payment) {
+                return ['success' => true, 'message' => 'Chargeback logged; payment not found'];
+            }
+
+            DB::transaction(function () use ($payment, $dispute) {
+                $payment->update([
+                    'metadata' => array_merge($payment->metadata ?? [], [
+                        'chargeback_dispute_id' => $dispute->id,
+                        'chargeback_at' => now()->toISOString(),
+                        'chargeback_reason' => $dispute->reason ?? null,
+                    ]),
+                ]);
+                if ($payment->course_history_id) {
+                    CourseHistory::where('id', $payment->course_history_id)
+                        ->update(['is_cancelled' => true]);
+                }
+            });
+
+            return ['success' => true, 'message' => 'Chargeback recorded and access revoked'];
+        } catch (\Exception $e) {
+            Log::error('Chargeback handling failed', ['error' => $e->getMessage()]);
+            return ['success' => false, 'message' => 'Chargeback handling failed'];
         }
     }
 }

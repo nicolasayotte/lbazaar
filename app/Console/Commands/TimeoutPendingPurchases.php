@@ -14,6 +14,7 @@ class TimeoutPendingPurchases extends Command
     public function handle(CoursePurchaseService $purchaseService): int
     {
         $timeoutMinutes = (int) config('services.cardano.payment_timeout_minutes', 30);
+        $required = (int) config('services.cardano.required_confirmations', 10);
 
         if ($timeoutMinutes <= 0) {
             $this->warn('ADA_PAYMENT_TIMEOUT_MINUTES is set to 0 or invalid. Defaulting to 30 minutes.');
@@ -32,19 +33,31 @@ class TimeoutPendingPurchases extends Command
 
         $this->info("Found {$stale->count()} stale pending purchase(s).");
 
-        if ($this->option('dry-run')) {
-            foreach ($stale as $history) {
-                $this->line("  [dry-run] Would fail course_history_id={$history->id} tx={$history->payment_tx_hash}");
-            }
-            return Command::SUCCESS;
-        }
-
         foreach ($stale as $history) {
-            $result = $purchaseService->failPurchaseTransaction($history->payment_tx_hash);
-            if ($result['success']) {
-                $this->info("  Failed course_history_id={$history->id} tx={$history->payment_tx_hash}");
-            } else {
-                $this->warn("  Skipped course_history_id={$history->id}: {$result['message']}");
+            try {
+                $txHash = $history->payment_tx_hash;
+                $statusData = $purchaseService->getTxStatus($txHash);
+                $status = $statusData['status'] ?? 'error';
+
+                if ($this->option('dry-run')) {
+                    $this->line("  [dry-run] id={$history->id} tx={$txHash} on-chain={$status}");
+                    continue;
+                }
+
+                if ($status === 'confirmed') {
+                    $purchaseService->confirmPurchaseTransaction($txHash);
+                    $this->info("  Confirmed id={$history->id} (≥{$required} confirmations)");
+                } elseif ($status === 'pending') {
+                    $count = $statusData['confirmations'] ?? '?';
+                    $this->info("  Skipped id={$history->id} (still confirming: {$count}/{$required})");
+                } elseif ($status === 'not_found') {
+                    $purchaseService->failPurchaseTransaction($txHash);
+                    $this->info("  Failed id={$history->id} (not found on chain after {$timeoutMinutes} min)");
+                } else {
+                    $this->warn("  Skipped id={$history->id}: check error ({$statusData['message']})");
+                }
+            } catch (\Exception $e) {
+                $this->error("  Error id={$history->id}: {$e->getMessage()}");
             }
         }
 
