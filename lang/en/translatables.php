@@ -23,6 +23,8 @@ return [
         'no_signin' => 'User must sign in to access wallet',
         'verify' => 'The Wallet could not be verified',
         'disconnected' => 'Your wallet was disconnected. Please reconnect to continue.',
+        'account_changed' => 'Your wallet account changed. Please reconnect to continue.',
+        'network_changed' => 'Your wallet switched networks. Please reconnect your wallet to continue.',
     ],
     'success' => [
         'forgotPassword' => 'Reset password link already sent to you email.',

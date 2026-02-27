@@ -45,6 +45,7 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
     const [walletStakeAddrBech32, setWalletStakeAddrBech32] = useState(undefined)
     const [hardwareWallet, setHardwareWallet] = useState(false)
     const heartbeatRef = useRef(null)
+    const eventListenersRef = useRef({ accountChange: null, networkChange: null })
     const [walletDisconnected, setWalletDisconnected] = useState(false)
 
     useEffect(() => {
@@ -117,6 +118,46 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
         heartbeatRef.current = setInterval(runHeartbeat, 10_000)
         return () => clearInterval(heartbeatRef.current)
     }, [walletAPI, whichWalletSelected, expectedNetworkId, handleHeartbeatDisconnect])
+
+    const cleanupEventListeners = useCallback((api) => {
+        if (!api?.experimental?.off) return
+        if (eventListenersRef.current.accountChange) {
+            api.experimental.off('accountChange', eventListenersRef.current.accountChange)
+            eventListenersRef.current.accountChange = null
+        }
+        if (eventListenersRef.current.networkChange) {
+            api.experimental.off('networkChange', eventListenersRef.current.networkChange)
+            eventListenersRef.current.networkChange = null
+        }
+    }, [])
+
+    useEffect(() => {
+        if (!walletAPI || !whichWalletSelected) return
+        if (!walletAPI?.experimental?.on) return
+
+        const handleAccountChange = async () => {
+            try {
+                const hexChangeAddr = await walletAPI.getChangeAddress()
+                setChangeAddr(hexChangeAddr)
+                await getWalletInfo(hexChangeAddr)
+            } catch (_) {
+                handleHeartbeatDisconnect('account_changed')
+            }
+        }
+
+        const handleNetworkChange = (networkId) => {
+            if (networkId !== expectedNetworkId) {
+                handleHeartbeatDisconnect('network_changed')
+            }
+        }
+
+        eventListenersRef.current.accountChange = handleAccountChange
+        eventListenersRef.current.networkChange = handleNetworkChange
+        walletAPI.experimental.on('accountChange', handleAccountChange)
+        walletAPI.experimental.on('networkChange', handleNetworkChange)
+
+        return () => cleanupEventListeners(walletAPI)
+    }, [walletAPI, whichWalletSelected, expectedNetworkId, handleHeartbeatDisconnect, cleanupEventListeners])
 
     const handleOnDialogClose = () => {
         setDialog(dialog => ({
@@ -450,6 +491,7 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
     }
 
     const handleWalletSwitch = () => {
+        cleanupEventListeners(walletAPI)
         clearInterval(heartbeatRef.current)
         setWalletDisconnected(false)
         setWhichWalletSelected(undefined)
