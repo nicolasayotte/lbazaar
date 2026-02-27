@@ -683,4 +683,76 @@ class CertificateControllerTest extends TestCase
                 'message' => 'Student has not completed this course'
             ]);
     }
+
+    // -------------------------------------------------------------------------
+    // Fee estimation endpoint tests (F-10.1)
+    // -------------------------------------------------------------------------
+
+    public function test_estimate_fee_requires_teacher_role(): void
+    {
+        $response = $this->actingAs($this->student)
+            ->postJson("/api/certificates/courses/{$this->course->id}/estimate-fee", [
+                'student_ids'             => [$this->student->id],
+                'wallet_balance_lovelace' => 100_000_000,
+            ]);
+
+        $response->assertStatus(403);
+    }
+
+    public function test_estimate_fee_returns_estimate_for_course_owner(): void
+    {
+        // Enable certificate on the course
+        $this->course->certificate_enabled = true;
+        $this->course->save();
+
+        $this->certificateService
+            ->shouldReceive('estimateAirdropFee')
+            ->once()
+            ->andReturn([
+                'success' => true,
+                'message' => 'Fee estimated successfully',
+                'data' => [
+                    'student_count'           => 1,
+                    'per_student_lovelace'    => 2_500_000,
+                    'fee_lovelace'            => 2_500_000,
+                    'fee_ada'                 => 2.5,
+                    'insufficient'            => false,
+                    'shortfall_lovelace'      => 0,
+                    'wallet_balance_lovelace' => 100_000_000,
+                ],
+            ]);
+
+        $response = $this->actingAs($this->teacher)
+            ->postJson("/api/certificates/courses/{$this->course->id}/estimate-fee", [
+                'student_ids'             => [$this->student->id],
+                'wallet_balance_lovelace' => 100_000_000,
+            ]);
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'data' => [
+                    'fee_ada' => 2.5,
+                ],
+            ]);
+    }
+
+    public function test_estimate_fee_returns_403_for_non_owner(): void
+    {
+        $otherTeacher = User::factory()->create([
+            'custodial_address' => 'addr_test1qzestimate_other_teacher_mock'
+        ]);
+        $otherTeacher->attachRole('teacher');
+
+        $response = $this->actingAs($otherTeacher)
+            ->postJson("/api/certificates/courses/{$this->course->id}/estimate-fee", [
+                'student_ids'             => [$this->student->id],
+                'wallet_balance_lovelace' => 100_000_000,
+            ]);
+
+        $response->assertStatus(403)
+            ->assertJson([
+                'success' => false,
+            ]);
+    }
 }

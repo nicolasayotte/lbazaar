@@ -1649,4 +1649,68 @@ class CertificateServiceTest extends TestCase
         $this->assertNull($result['tx_hash']);
         $this->assertNull($result['explorer_url']);
     }
+
+    // -------------------------------------------------------------------------
+    // Fee estimation tests (F-10.1)
+    // -------------------------------------------------------------------------
+
+    public function test_estimates_fee_correctly_for_certificate_only(): void
+    {
+        // 5 students, cert only (MIN_ADA=2000000 + MAX_TX_FEE=500000 = 2500000 each)
+        $this->course->certificate_enabled  = true;
+        $this->course->token_reward_enabled = false;
+
+        $result = $this->service->estimateAirdropFee(
+            $this->course,
+            5,
+            true,
+            false,
+            100_000_000 // 100 ADA — more than enough
+        );
+
+        $this->assertTrue($result['success']);
+        $this->assertEquals(5, $result['data']['student_count']);
+        $this->assertEquals(2_500_000, $result['data']['per_student_lovelace']);
+        $this->assertEquals(12_500_000, $result['data']['fee_lovelace']);
+        $this->assertEquals(12.5, $result['data']['fee_ada']);
+        $this->assertFalse($result['data']['insufficient']);
+        $this->assertEquals(0, $result['data']['shortfall_lovelace']);
+    }
+
+    public function test_reports_insufficient_funds(): void
+    {
+        $this->course->certificate_enabled  = true;
+        $this->course->token_reward_enabled = false;
+
+        $result = $this->service->estimateAirdropFee(
+            $this->course,
+            5,
+            true,
+            false,
+            5_000_000 // only 5 ADA — not enough for 12.5 ADA
+        );
+
+        $this->assertTrue($result['success']);
+        $this->assertTrue($result['data']['insufficient']);
+        $this->assertEquals(7_500_000, $result['data']['shortfall_lovelace']);
+    }
+
+    public function test_doubles_fee_when_both_rewards_enabled(): void
+    {
+        $this->course->certificate_enabled  = true;
+        $this->course->token_reward_enabled = true;
+
+        $result = $this->service->estimateAirdropFee(
+            $this->course,
+            1,
+            true,
+            true,
+            100_000_000
+        );
+
+        $this->assertTrue($result['success']);
+        // cert + token = 2 * (2000000 + 500000) = 5000000 per student
+        $this->assertEquals(5_000_000, $result['data']['per_student_lovelace']);
+        $this->assertFalse($result['data']['insufficient']);
+    }
 }

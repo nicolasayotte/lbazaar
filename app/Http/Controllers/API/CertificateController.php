@@ -11,6 +11,8 @@ use App\Models\UserExam;
 use App\Models\Role;
 use App\Models\NftTransactions;
 use App\Services\API\CertificateService;
+use App\Services\API\TokenRewardService;
+use App\Http\Requests\EstimateAirdropFeeRequest;
 use App\Http\Requests\GetEligibleStudentsRequest;
 use App\Http\Requests\MintSingleCertificateRequest;
 use App\Http\Requests\BatchMintCertificatesRequest;
@@ -24,17 +26,51 @@ use Illuminate\Support\Facades\Log;
 class CertificateController extends Controller
 {
     protected $certificateService;
+    protected $tokenRewardService;
 
     public function __construct(CertificateService $certificateService)
     {
         $this->middleware('auth');
         $this->middleware('teacher');
         $this->certificateService = $certificateService;
+
+        if (class_exists(TokenRewardService::class)) {
+            $this->tokenRewardService = app(TokenRewardService::class);
+        }
+    }
+
+    /**
+     * Estimate total ADA cost for an airdrop before execution.
+     *
+     * @param EstimateAirdropFeeRequest $request
+     * @param Course $course
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function estimateAirdropFee(EstimateAirdropFeeRequest $request, Course $course)
+    {
+        if ($course->professor_id !== Auth::id()) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $studentIds         = $request->input('student_ids');
+        $walletBalance      = (int) $request->input('wallet_balance_lovelace');
+        $includeCertificate = (bool) $course->certificate_enabled;
+        $includeToken       = !empty($course->token_reward_enabled);
+
+        $result = $this->certificateService->estimateAirdropFee(
+            $course,
+            count($studentIds),
+            $includeCertificate,
+            $includeToken,
+            $walletBalance
+        );
+
+        return response()->json($result, 200);
     }
 
     /**
      * Mint and airdrop certificates to students who successfully completed a course
-     * 
+     *
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
@@ -97,17 +133,37 @@ class CertificateController extends Controller
                         $scheduleId
                     );
 
+                    // Optionally mint token reward when enabled
+                    $tokenSuccess = null;
+                    $tokenReason  = null;
+
+                    if ($this->tokenRewardService && !empty($course->token_reward_enabled)) {
+                        try {
+                            $tokenResult  = $this->tokenRewardService->mintAndAirdropTokenReward($course, $student);
+                            $tokenSuccess = $tokenResult['success'];
+                            $tokenReason  = $tokenResult['message'] ?? null;
+                        } catch (Exception $e) {
+                            $tokenSuccess = false;
+                            $tokenReason  = 'Token reward failed: ' . $e->getMessage();
+                        }
+                    }
+
+                    $studentSuccess = $result['success'];
+
                     $results[] = [
-                        'student_id' => $student->id,
-                        'student_name' => $student->fullname,
-                        'student_email' => $student->email,
-                        'success' => $result['success'],
-                        'transaction_id' => $result['transaction_id'] ?? null,
-                        'wallet_address' => $result['wallet_address'] ?? null,
-                        'message' => $result['message'] ?? null
+                        'student_id'          => $student->id,
+                        'student_name'        => $student->fullname,
+                        'student_email'       => $student->email,
+                        'success'             => $studentSuccess,
+                        'certificate_success' => $result['success'],
+                        'token_success'       => $tokenSuccess,
+                        'transaction_id'      => $result['transaction_id'] ?? null,
+                        'wallet_address'      => $result['wallet_address'] ?? null,
+                        'message'             => $result['message'] ?? null,
+                        'reason'              => $result['message'] ?? null,
                     ];
 
-                    if ($result['success']) {
+                    if ($studentSuccess) {
                         $successCount++;
                     } else {
                         $failureCount++;
@@ -116,13 +172,16 @@ class CertificateController extends Controller
                 } catch (Exception $e) {
                     $failureCount++;
                     $results[] = [
-                        'student_id' => $student->id,
-                        'student_name' => $student->fullname,
-                        'student_email' => $student->email,
-                        'success' => false,
-                        'transaction_id' => null,
-                        'wallet_address' => null,
-                        'message' => 'Failed to mint certificate: ' . $e->getMessage()
+                        'student_id'          => $student->id,
+                        'student_name'        => $student->fullname,
+                        'student_email'       => $student->email,
+                        'success'             => false,
+                        'certificate_success' => false,
+                        'token_success'       => null,
+                        'transaction_id'      => null,
+                        'wallet_address'      => null,
+                        'message'             => 'Failed to mint certificate: ' . $e->getMessage(),
+                        'reason'              => 'Failed to mint certificate: ' . $e->getMessage(),
                     ];
 
                     Log::error('Certificate minting failed for student ' . $student->id, [

@@ -9,11 +9,14 @@ use App\Models\UserExam;
 use App\Models\UserWallet;
 use App\Models\Nft;
 use App\Models\NftTransactions;
+use App\Traits\Web3CommandTrait;
 use Exception;
 use Illuminate\Support\Facades\Log;
 
 class CertificateService
 {
+    use Web3CommandTrait;
+
     private const DEFAULT_ADMIN_USER_ID = 1;
 
     /**
@@ -221,68 +224,6 @@ class CertificateService
                 'message' => 'NFT minting error: ' . $e->getMessage()
             ];
         }
-    }
-
-    /**
-     * Build a command for executing a Node script in the web3 directory.
-     *
-     * @param string $scriptRelativePath
-     * @param array $arguments
-     * @return string
-     */
-    protected function buildWeb3Command(string $scriptRelativePath, array $arguments = []): string
-    {
-        $web3Directory = base_path('web3');
-        $scriptPath = './' . ltrim($scriptRelativePath, '/');
-        $logPath = storage_path('logs/web3.log');
-
-        $argumentString = '';
-        if (!empty($arguments)) {
-            $argumentString = ' ' . implode(' ', array_map('escapeshellarg', $arguments));
-        }
-
-        return sprintf(
-            '(cd %s && node %s%s) 2>> %s',
-            escapeshellarg($web3Directory),
-            escapeshellarg($scriptPath),
-            $argumentString,
-            escapeshellarg($logPath)
-        );
-    }
-
-    /**
-     * Execute a shell command and return its output.
-     *
-     * @param string $command
-     * @param int $timeout Maximum execution time in seconds (default: 30)
-     * @return string
-     */
-    protected function runCommand(string $command, int $timeout = 30): string
-    {
-        $output = [];
-        $returnVar = null;
-
-        // Add timeout to the command using 'timeout' utility
-        $timedCommand = sprintf('timeout %d %s', $timeout, $command);
-        
-        exec($timedCommand, $output, $returnVar);
-
-        if ($returnVar === 124) { // timeout exit code
-            Log::error('Command execution timed out', [
-                'command' => $command,
-                'timeout' => $timeout,
-            ]);
-            throw new Exception("Command execution timed out after {$timeout} seconds");
-        }
-
-        if ($returnVar !== 0) {
-            Log::error('Command execution failed', [
-                'command' => $command,
-                'exit_code' => $returnVar,
-            ]);
-        }
-
-        return trim(implode(PHP_EOL, $output));
     }
 
     /**
@@ -764,6 +705,53 @@ class CertificateService
 
         // All exams must be passed
         return $totalExams === $passedExams;
+    }
+
+    /**
+     * Estimate total ADA cost for an airdrop.
+     *
+     * @param Course $course
+     * @param int $studentCount
+     * @param bool $includeCertificate
+     * @param bool $includeToken
+     * @param int $walletBalanceLovelace
+     * @return array
+     */
+    public function estimateAirdropFee(
+        Course $course,
+        int $studentCount,
+        bool $includeCertificate,
+        bool $includeToken,
+        int $walletBalanceLovelace
+    ): array {
+        $minAda   = (int) config('services.cardano.min_ada', 2000000);
+        $maxTxFee = (int) config('services.cardano.max_tx_fee', 500000);
+        $perStudentLovelace = 0;
+
+        if ($includeCertificate && $course->certificate_enabled) {
+            $perStudentLovelace += $minAda + $maxTxFee;
+        }
+        if ($includeToken && !empty($course->token_reward_enabled)) {
+            $perStudentLovelace += $minAda + $maxTxFee;
+        }
+
+        $totalLovelace = $perStudentLovelace * $studentCount;
+        $insufficient  = $walletBalanceLovelace < $totalLovelace;
+        $shortfall     = $insufficient ? ($totalLovelace - $walletBalanceLovelace) : 0;
+
+        return [
+            'success' => true,
+            'message' => 'Fee estimated successfully',
+            'data' => [
+                'student_count'           => $studentCount,
+                'per_student_lovelace'    => $perStudentLovelace,
+                'fee_lovelace'            => $totalLovelace,
+                'fee_ada'                 => round($totalLovelace / 1_000_000, 2),
+                'insufficient'            => $insufficient,
+                'shortfall_lovelace'      => $shortfall,
+                'wallet_balance_lovelace' => $walletBalanceLovelace,
+            ],
+        ];
     }
 
     /**
