@@ -1,7 +1,7 @@
 
 import { Typography, Tooltip, IconButton, Stack, Box, Icon, CardContent, Card, CardActions} from "@mui/material"
 import { useDispatch } from "react-redux"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef, useCallback } from "react"
 import { actions } from "../../store/slices/ToasterSlice"
 import {BrowserView, MobileView} from 'react-device-detect'
 import { usePage } from "@inertiajs/inertia-react"
@@ -44,7 +44,9 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
     const [walletStakeKeyDisplay, setwalletStakeKeyDisplay] = useState(undefined)
     const [walletStakeAddrBech32, setWalletStakeAddrBech32] = useState(undefined)
     const [hardwareWallet, setHardwareWallet] = useState(false)
-    
+    const heartbeatRef = useRef(null)
+    const [walletDisconnected, setWalletDisconnected] = useState(false)
+
     useEffect(() => {
         const checkWallet = async () => {
             if (await checkIfWalletFound()) {
@@ -75,6 +77,46 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
             }
             walletInfo()
     }, [walletIsEnabled])
+
+    const handleHeartbeatDisconnect = useCallback((errorKey) => {
+        clearInterval(heartbeatRef.current)
+        setWhichWalletSelected(undefined)
+        setWalletIsEnabled(false)
+        onWalletAPI(undefined)
+        setWalletVerify(false)
+        setwalletStakeAddr(undefined)
+        setwalletStakeKeyDisplay(undefined)
+        setWalletStakeAddrBech32(undefined)
+        onStakeKeyHash(undefined)
+        setWalletDisconnected(true)
+        dispatch(actions.error({
+            message: translatables?.wallet_error?.[errorKey] ?? 'Your wallet was disconnected. Please reconnect.'
+        }))
+    }, [dispatch, translatables, onWalletAPI, onStakeKeyHash])
+
+    useEffect(() => {
+        if (!walletAPI || !whichWalletSelected) {
+            clearInterval(heartbeatRef.current)
+            return
+        }
+        const walletName = whichWalletSelected.name
+        const runHeartbeat = async () => {
+            try {
+                if (!window?.cardano?.[walletName]) {
+                    handleHeartbeatDisconnect('disconnected')
+                    return
+                }
+                const networkId = await walletAPI.getNetworkId()
+                if (networkId !== expectedNetworkId) {
+                    handleHeartbeatDisconnect('disconnected')
+                }
+            } catch (_) {
+                handleHeartbeatDisconnect('disconnected')
+            }
+        }
+        heartbeatRef.current = setInterval(runHeartbeat, 10_000)
+        return () => clearInterval(heartbeatRef.current)
+    }, [walletAPI, whichWalletSelected, expectedNetworkId, handleHeartbeatDisconnect])
 
     const handleOnDialogClose = () => {
         setDialog(dialog => ({
@@ -217,6 +259,7 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
         }
 
         try {
+            setWalletDisconnected(false)
             const walletChoice = whichWalletSelected.name
             if (walletChoice === "eternl") {
                 const walletAPI = await window.cardano.eternl.enable()
@@ -407,6 +450,8 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
     }
 
     const handleWalletSwitch = () => {
+        clearInterval(heartbeatRef.current)
+        setWalletDisconnected(false)
         setWhichWalletSelected(undefined)
         setWalletIsEnabled(false)
         onWalletAPI(undefined)
@@ -473,6 +518,13 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                 </CardActions>
                 </Card>
             }
+            {walletDisconnected && !walletIsEnabled && (
+                <Box sx={{ p: 1.5, mb: 1, border: '1px solid', borderColor: 'warning.main', borderRadius: 1, backgroundColor: 'warning.light' }}>
+                    <Typography variant="body2" color="warning.dark">
+                        {translatables?.texts?.wallet_reconnect_prompt ?? 'Wallet disconnected. Please reconnect your wallet to continue.'}
+                    </Typography>
+                </Box>
+            )}
             <BrowserView>
             {!walletIsEnabled && <Card>
                 <CardContent>  
