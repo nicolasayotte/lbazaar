@@ -44,7 +44,7 @@ export default defineConfig({
         },
         {
             name: 'teacher',
-            testMatch: [],  // reserved for future teacher-specific tests
+            testMatch: '**/teacher/**/*.spec.js',
             use: {
                 browserName: 'chromium',
                 storageState: 'tests/Browser/fixtures/teacher.json',
