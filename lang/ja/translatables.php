@@ -121,7 +121,11 @@ return [
         ],
         'video'=> [
             'watched'=> 'ビデオの閲覧は終了しました'
-        ]
+        ],
+        'refund' => [
+            'stripe' => 'Stripe返金が正常に処理されました。',
+            'ada'    => 'ADA返金トランザクションが送信されました。',
+        ],
     ],
     'confirm'=> [
         'class'=> [
@@ -212,7 +216,8 @@ return [
         'password'=> [
             'update'=> 'パスワード更新'
         ],
-        'top_page'=> 'LE Bazaar にようこそ'
+        'top_page'=> 'LE Bazaar にようこそ',
+        'refunds' => '返金管理',
     ],
     'filters'=> [
         'status'=> [
@@ -373,6 +378,9 @@ return [
         'confirm'=> '確認',
         'confirm_password'=> 'パスワードの確認',
         'complete_class_description'=> 'おめでとうございます。クラス受講完了です',
+        'reward_notification_cert_only'  => '「:course」の受講おめでとうございます！NFT証明書を受け取る資格があります。リワードページでご確認ください。',
+        'reward_notification_token_only' => '「:course」の受講おめでとうございます！トークンリワードを受け取る資格があります。リワードページでご確認ください。',
+        'reward_notification_both'       => '「:course」の受講おめでとうございます！NFT証明書とトークンリワードを受け取る資格があります。リワードページでご確認ください。',
         'content'=> '内容',
         'content_information'=> '内容詳細',
         'correct_value'=> '正解',
@@ -462,6 +470,24 @@ return [
         'certificates_not_enabled' => 'このコースでは証明書が有効になっていません。コース設定で有効にして、受講完了証明書を発行してください。',
         'no_students' => 'まだこのコースに登録した生徒はいません。',
         'no_eligible_students' => '現在、証明書の対象となる生徒はいません。生徒がコースを修了し、全ての試験に合格する必要があります。',
+        'airdrop_fee_title'          => 'エアドロップ費用見積もり',
+        'estimating_fee'             => '手数料を見積もっています...',
+        'students_selected'          => '選択された生徒数',
+        'students_selected_of'       => '{total}名中{selected}名の対象生徒を選択中',
+        'fee_per_student'            => '生徒1人あたりのコスト',
+        'total_fee'                  => '合計見積もりコスト',
+        'wallet_balance_label'       => 'ウォレット残高',
+        'insufficient_funds_detail'  => '残高が不足しています。あと₳{shortfall}必要です。',
+        'confirm_airdrop'            => 'エアドロップを確認',
+        'airdrop_results_title'      => 'エアドロップ結果',
+        'airdrop_success_count'      => '{count}件の証明書が正常にエアドロップされました。',
+        'airdrop_failed_count'       => '{count}件のエアドロップが失敗しました。',
+        'failed_students'            => '失敗した生徒：',
+        'retry_failed'               => '失敗した生徒を再試行',
+        'no_results'                 => '表示する結果がありません。',
+        'unknown_error'              => '不明なエラー',
+        'connect_wallet_to_airdrop'  => '証明書をエアドロップするにはウォレットを接続してください',
+        'no_rewards_configured'      => 'このコースに報酬が設定されていません。コース設定で証明書またはトークン報酬を有効にしてください。',
         'no_schedules_available'=> 'スケジュールがありません',
         'on_demand'=> 'オンデマンド',
         'overall_rating'=> 'レート',
@@ -602,6 +628,7 @@ return [
         'certificate_reward_enabled'   => 'NFT証明書リワード',
         'certificate_name'             => '証明書名',
         'certificate_description'      => '証明書の説明',
+        'certificate_image_url'        => '証明書画像URL',
         'token_reward_enabled'         => 'トークンリワード',
         'token_reward_amount'          => 'トークン数量',
         'token_reward_amount_hint'     => 'コース修了時に付与するトークンの数量（最大1,000,000）',
@@ -610,6 +637,7 @@ return [
         'payment_failed_retry' => 'ブロックチェーン上で支払いに失敗しました。再度お試しください。',
         'wallet_disconnected_pending' => 'ウォレットが切断されましたが、ブロックチェーン上で保留中のトランザクションは引き続き追跡されています。再接続して監視を続けることができます。',
         'wallet_reconnect_prompt' => 'ウォレットが切断されました。続けるにはウォレットを再接続してください。',
+        'wallet_reconnect_button' => '再接続',
         'cardano_network_degraded' => 'Cardanoネットワークは遅延が発生しています。取引に時間がかかる場合があります。クレジットカードでのお支払いをお勧めします。',
         'cardano_network_unreachable' => 'Cardanoネットワークは現在利用できません。ADA支払いは一時的に無効です。クレジットカードでお支払いください。',
         'total_rewards'                 => '報酬合計',
@@ -637,6 +665,9 @@ return [
         'stripe_success' => 'Stripe決済が正常に返金されました。',
         'ada_success' => 'ADA返金トランザクションが送信されました。',
         'has_rewards_warning' => 'この学生はコースの報酬を獲得しています。force=trueを指定して続行してください。',
+        'has_rewards_warning_title' => '学生が報酬を取得済み',
+        'has_rewards_warning_body' => 'この学生はすでにこのコースの報酬（NFT証明書またはトークン）を取得しています。続行すると報酬が無効になります。強制返金しますか？',
+        'force_refund' => '強制返金',
         'already_refunded' => 'この決済はすでに返金済みです。',
         'not_refundable' => '確認済みまたは成功した決済のみ返金できます。',
         'chargeback_logged' => 'チャージバックが記録され、コースへのアクセスが取り消されました。',
