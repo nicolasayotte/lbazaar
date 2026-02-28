@@ -939,6 +939,69 @@ import { readFileSync } from 'fs';
 grep -n 'require(' web3/run/*.mjs
 ```
 
+## 24. Playwright `fullyParallel` + Shared `storageState` + State-Mutating Tests → 419 CSRF Error
+
+### Symptom
+
+A "419 | PAGE EXPIRED" modal appears in the Playwright failure screenshot. The test fails on a URL assertion or `waitForApp` timeout — not on finding the target button — because the POST navigation never completes.
+
+### Cause
+
+All tests in a project inherit the same `storageState` file (e.g. `fixtures/student.json`). Every browser context loads the **same session cookie**. With `fullyParallel: true`, two tests that both log out run concurrently. Whichever context completes its logout first destroys the server-side session. The other context still holds the same (now-invalidated) session cookie, so its subsequent POST carries a CSRF token that no longer matches any live session — Laravel returns 419.
+
+### Solution
+
+Any test file that **mutates session state** (logout, password change, account deletion) must opt out of the shared fixture and do a fresh login instead:
+
+```javascript
+// ❌ BAD — shared fixture; first concurrent logout breaks the second test
+test.use({ storageState: STORAGE_STATE.student });
+
+// ✅ GOOD — each test creates its own independent server-side session
+test.use({ storageState: { cookies: [], origins: [] } });
+
+test('can log out', async ({ page }) => {
+    const loginPage = new LoginPage(page);
+    await loginPage.goto();
+    await loginPage.loginAndWaitForRedirect(TEST_USERS.student.email, TEST_USERS.student.password);
+    // ... rest of test
+});
+```
+
+**Rule**: If a test destroys authentication state, it must not share a `storageState` fixture with other concurrent tests.
+
+---
+
+## 25. React Blank-Page Crash from Null Eloquent Relationship in JSX
+
+### Symptom
+
+A page renders as a blank grey screen. `waitForApp` times out with `app.children.length > 0` never becoming true. The browser console (F12) shows a `TypeError: Cannot read properties of null`.
+
+### Cause
+
+Eloquent eager-loads a relationship (e.g. `->with(['professor', ...])`) but a row has a null foreign key (`professor_id IS NULL`), so the relationship is `null`. In JSX, accessing a property on it directly crashes React's entire render tree — no error boundary catches it, so `#app` is left childless.
+
+```jsx
+// ❌ BAD — crashes React if professor is null
+`By ${course.professor.fullname}`
+```
+
+### Solution
+
+Always use optional chaining when accessing eager-loaded relationships in JSX:
+
+```jsx
+// ✅ GOOD — degrades gracefully
+`By ${course.professor?.fullname ?? 'Unknown'}`
+```
+
+**Diagnostic signal**: Blank grey page (MUI background) + `waitForApp` timeout = React render crash. Check browser console for a `TypeError` on a relationship property.
+
+**Note**: The home page (`/`) is particularly exposed because `getFeaturedClass()` fetches the most-recently-created courses ordered by `id DESC`, which may include seeded or imported rows with null relationships. Any component rendering those rows must null-guard all relationship accesses.
+
+---
+
 ## Cross-References
 
 - **Architecture**: See [docs/architecture.md](./architecture.md) for system structure
