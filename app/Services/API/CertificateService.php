@@ -635,6 +635,183 @@ class CertificateService
     }
 
     /**
+     * Get unified rewards view for a student — certificates and token rewards.
+     *
+     * Returns one row per eligible reward type per completed course history.
+     *
+     * @param int $userId
+     * @return array
+     */
+    public function getStudentRewards(int $userId): array
+    {
+        try {
+            $histories = CourseHistory::where('user_id', $userId)
+                ->whereNotNull('completed_at')
+                ->where(function ($q) {
+                    $q->where('is_cancelled', false)
+                      ->orWhere('is_cancelled', 0)
+                      ->orWhereNull('is_cancelled');
+                })
+                ->with(['course.professor', 'possibleCertificateTransactions', 'user.userWallet'])
+                ->orderBy('completed_at', 'desc')
+                ->get();
+
+            $rewards = [];
+
+            foreach ($histories as $history) {
+                $course = $history->course;
+
+                if (!$course) {
+                    continue;
+                }
+
+                $revoked = $history->rewards_invalidated_at !== null;
+                $revokedAt = $history->rewards_invalidated_at;
+
+                // Determine wallet destination
+                $userWallet = $history->user?->userWallet;
+                $walletDestination = ($userWallet && $userWallet->stake_key_hash) ? 'external' : 'custodial';
+
+                $professor = $course->professor;
+                $professorName = $professor ? $professor->fullname : '';
+
+                // --- Certificate reward row ---
+                if ($history->effectiveCertificateEnabled()) {
+                    $certTx = $history->certificateTransaction;
+                    $certStatus = $this->resolveCertificateDeliveryStatus($history, $certTx, $revoked);
+                    $certTxHash = $certTx ? $certTx->tx_id : ($history->certificate_tx_hash ?? null);
+                    $explorerUrl = null;
+                    if ($certTxHash) {
+                        $explorerUrl = config('services.cardano.explorer_url') . '/tx/' . $certTxHash;
+                    }
+                    $nftMetadata = null;
+                    if ($certTx && $certTx->metadata) {
+                        $nftMetadata = json_decode($certTx->metadata, true);
+                    }
+
+                    $rewards[] = [
+                        'id'                 => 'cert-' . $history->id,
+                        'course_history_id'  => $history->id,
+                        'course_id'          => $history->course_id,
+                        'course_name'        => $course->title,
+                        'professor_name'     => $professorName,
+                        'reward_type'        => 'certificate',
+                        'amount'             => null,
+                        'delivery_date'      => $history->certificate_minted_at?->toISOString(),
+                        'delivery_status'    => $certStatus,
+                        'wallet_destination' => $walletDestination,
+                        'tx_hash'            => $certTxHash,
+                        'explorer_url'       => $explorerUrl,
+                        'nft_metadata'       => $nftMetadata,
+                        'completed_at'       => $history->completed_at,
+                        'revoked_at'         => $revokedAt?->toISOString(),
+                    ];
+                }
+
+                // --- Token reward row ---
+                if ($history->effectiveTokenRewardEnabled()) {
+                    $tokenStatus = $this->resolveTokenDeliveryStatus($history, $revoked);
+                    $tokenTxHash = $history->token_reward_tx_hash ?? null;
+                    $tokenExplorerUrl = null;
+                    if ($tokenTxHash) {
+                        $tokenExplorerUrl = config('services.cardano.explorer_url') . '/tx/' . $tokenTxHash;
+                    }
+
+                    $rewards[] = [
+                        'id'                 => 'token-' . $history->id,
+                        'course_history_id'  => $history->id,
+                        'course_id'          => $history->course_id,
+                        'course_name'        => $course->title,
+                        'professor_name'     => $professorName,
+                        'reward_type'        => 'token',
+                        'amount'             => $history->effectiveTokenRewardAmount(),
+                        'delivery_date'      => $history->token_reward_minted_at?->toISOString(),
+                        'delivery_status'    => $tokenStatus,
+                        'wallet_destination' => $walletDestination,
+                        'tx_hash'            => $tokenTxHash,
+                        'explorer_url'       => $tokenExplorerUrl,
+                        'nft_metadata'       => null,
+                        'completed_at'       => $history->completed_at,
+                        'revoked_at'         => $revokedAt?->toISOString(),
+                    ];
+                }
+            }
+
+            return [
+                'success' => true,
+                'message' => 'Rewards retrieved successfully',
+                'data'    => [
+                    'rewards' => $rewards,
+                ],
+            ];
+
+        } catch (Exception $e) {
+            Log::error('Failed to retrieve student rewards', [
+                'user_id' => $userId,
+                'error'   => $e->getMessage(),
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'Failed to retrieve rewards: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Resolve the delivery status for a certificate reward row.
+     *
+     * @param CourseHistory    $history
+     * @param mixed|null       $certTx
+     * @param bool             $revoked
+     * @return string
+     */
+    private function resolveCertificateDeliveryStatus(CourseHistory $history, $certTx, bool $revoked): string
+    {
+        if ($revoked) {
+            return 'revoked';
+        }
+
+        if ($certTx) {
+            return 'minted';
+        }
+
+        $status = $history->certificate_status ?? 'eligible';
+
+        return match ($status) {
+            'minted'  => 'minted',
+            'minting' => 'minting',
+            'pending' => 'pending',
+            'failed'  => 'failed',
+            default   => 'eligible',
+        };
+    }
+
+    /**
+     * Resolve the delivery status for a token reward row.
+     *
+     * @param CourseHistory $history
+     * @param bool          $revoked
+     * @return string
+     */
+    private function resolveTokenDeliveryStatus(CourseHistory $history, bool $revoked): string
+    {
+        if ($revoked) {
+            return 'revoked';
+        }
+
+        $status = $history->token_reward_status ?? 'eligible';
+
+        return match ($status) {
+            'minted'  => 'minted',
+            'minting' => 'minting',
+            'pending' => 'pending',
+            'failed'  => 'failed',
+            default   => 'eligible',
+        };
+    }
+
+    /**
      * Get all certificates earned by a student
      *
      * @param int $userId
@@ -815,6 +992,94 @@ class CertificateService
                 'student_id' => $studentId,
                 'schedule_id' => $scheduleId,
                 'error' => $e->getMessage()
+            ]);
+
+            return null;
+        }
+    }
+
+    /**
+     * Get unified reward eligibility data for the student self-mint confirmation page.
+     *
+     * Returns null if the student has no completed CourseHistory for this course/schedule.
+     * Otherwise returns a structured array describing certificate and token reward
+     * eligibility, current status, and fee estimates.
+     *
+     * @param int $courseId
+     * @param int $studentId
+     * @param int $scheduleId
+     * @return array|null
+     */
+    public function getSelfMintEligibility(int $courseId, int $studentId, int $scheduleId): ?array
+    {
+        try {
+            $courseHistory = CourseHistory::where('user_id', $studentId)
+                ->where('course_id', $courseId)
+                ->where('course_schedule_id', $scheduleId)
+                ->first();
+
+            if (!$courseHistory || !$courseHistory->completed_at) {
+                return null;
+            }
+
+            $minAda       = (int) config('services.cardano.min_ada', 2_000_000);
+            $maxTxFee     = (int) config('services.cardano.max_tx_fee', 500_000);
+            $feePerReward = $minAda + $maxTxFee;
+            $explorerBase = config('services.cardano.explorer_url');
+
+            $certEnabled  = $courseHistory->effectiveCertificateEnabled();
+            $tokenEnabled = $courseHistory->effectiveTokenRewardEnabled();
+
+            $certData  = null;
+            $tokenData = null;
+
+            if ($certEnabled) {
+                $certStatus   = $courseHistory->certificate_status ?? 'not_eligible';
+                $certTxHash   = $courseHistory->certificate_tx_hash;
+                $certExplorer = ($certTxHash && $explorerBase)
+                    ? $explorerBase . '/tx/' . $certTxHash
+                    : null;
+
+                $certData = [
+                    'status'       => $certStatus,
+                    'tx_hash'      => $certTxHash,
+                    'explorer_url' => $certExplorer,
+                    'minted_at'    => $courseHistory->certificate_minted_at,
+                    'fee_lovelace' => $feePerReward,
+                ];
+            }
+
+            if ($tokenEnabled) {
+                $tokenStatus  = $courseHistory->token_reward_status ?? 'not_eligible';
+                $tokenTxHash  = $courseHistory->token_reward_tx_hash;
+                $tokenExplorer = ($tokenTxHash && $explorerBase)
+                    ? $explorerBase . '/tx/' . $tokenTxHash
+                    : null;
+
+                $tokenData = [
+                    'status'       => $tokenStatus,
+                    'amount'       => $courseHistory->effectiveTokenRewardAmount(),
+                    'tx_hash'      => $tokenTxHash,
+                    'explorer_url' => $tokenExplorer,
+                    'minted_at'    => $courseHistory->token_reward_minted_at,
+                    'fee_lovelace' => $feePerReward,
+                ];
+            }
+
+            $totalFee = ($certData ? $feePerReward : 0) + ($tokenData ? $feePerReward : 0);
+
+            return [
+                'certificate'        => $certData,
+                'token'              => $tokenData,
+                'total_fee_lovelace' => $totalFee,
+            ];
+
+        } catch (Exception $e) {
+            Log::error('Failed to get self-mint eligibility', [
+                'course_id'   => $courseId,
+                'student_id'  => $studentId,
+                'schedule_id' => $scheduleId,
+                'error'       => $e->getMessage(),
             ]);
 
             return null;

@@ -1882,4 +1882,250 @@ class CertificateServiceTest extends TestCase
         $this->assertEquals('Certificate of Completion', $metadata['name']);
         $this->assertNull($metadata['description']);
     }
+
+    // ---------------------------------------------------------------------------
+    // getStudentRewards tests
+    // ---------------------------------------------------------------------------
+
+    public function test_get_student_rewards_returns_empty_when_no_completions()
+    {
+        // No CourseHistory rows exist for this student, so rewards should be empty.
+        $result = $this->service->getStudentRewards($this->student->id);
+
+        $this->assertTrue($result['success']);
+        $this->assertEmpty($result['data']['rewards']);
+    }
+
+    public function test_get_student_rewards_returns_certificate_row_for_cert_enabled_course()
+    {
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id,
+        ]);
+
+        $this->course->update(['certificate_enabled' => true]);
+
+        CourseHistory::create([
+            'user_id'                    => $this->student->id,
+            'course_id'                  => $this->course->id,
+            'course_schedule_id'         => $schedule->id,
+            'completed_at'               => now()->subDays(1),
+            'enrolled_certificate_enabled' => true,
+            'enrolled_token_reward_enabled' => false,
+        ]);
+
+        $result = $this->service->getStudentRewards($this->student->id);
+
+        $this->assertTrue($result['success']);
+        $rewards = $result['data']['rewards'];
+        $this->assertCount(1, $rewards);
+        $this->assertEquals('certificate', $rewards[0]['reward_type']);
+        $this->assertStringStartsWith('cert-', $rewards[0]['id']);
+        $this->assertEquals($this->course->title, $rewards[0]['course_name']);
+    }
+
+    public function test_get_student_rewards_returns_token_row_for_token_enabled_course()
+    {
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id,
+        ]);
+
+        CourseHistory::create([
+            'user_id'                      => $this->student->id,
+            'course_id'                    => $this->course->id,
+            'course_schedule_id'           => $schedule->id,
+            'completed_at'                 => now()->subDays(1),
+            'enrolled_certificate_enabled' => false,
+            'enrolled_token_reward_enabled' => true,
+            'enrolled_token_reward_amount'  => 500,
+        ]);
+
+        $result = $this->service->getStudentRewards($this->student->id);
+
+        $this->assertTrue($result['success']);
+        $rewards = $result['data']['rewards'];
+        $this->assertCount(1, $rewards);
+        $this->assertEquals('token', $rewards[0]['reward_type']);
+        $this->assertStringStartsWith('token-', $rewards[0]['id']);
+        $this->assertEquals(500, $rewards[0]['amount']);
+    }
+
+    public function test_get_student_rewards_returns_two_rows_when_both_rewards_enabled()
+    {
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id,
+        ]);
+
+        CourseHistory::create([
+            'user_id'                      => $this->student->id,
+            'course_id'                    => $this->course->id,
+            'course_schedule_id'           => $schedule->id,
+            'completed_at'                 => now()->subDays(1),
+            'enrolled_certificate_enabled' => true,
+            'enrolled_token_reward_enabled' => true,
+            'enrolled_token_reward_amount'  => 250,
+        ]);
+
+        $result = $this->service->getStudentRewards($this->student->id);
+
+        $this->assertTrue($result['success']);
+        $rewards = $result['data']['rewards'];
+        $this->assertCount(2, $rewards);
+
+        $types = array_column($rewards, 'reward_type');
+        $this->assertContains('certificate', $types);
+        $this->assertContains('token', $types);
+    }
+
+    public function test_get_student_rewards_marks_revoked_when_rewards_invalidated_at_set()
+    {
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id,
+        ]);
+
+        CourseHistory::create([
+            'user_id'                      => $this->student->id,
+            'course_id'                    => $this->course->id,
+            'course_schedule_id'           => $schedule->id,
+            'completed_at'                 => now()->subDays(5),
+            'enrolled_certificate_enabled' => true,
+            'enrolled_token_reward_enabled' => true,
+            'enrolled_token_reward_amount'  => 100,
+            'rewards_invalidated_at'        => now()->subDays(1),
+        ]);
+
+        $result = $this->service->getStudentRewards($this->student->id);
+
+        $this->assertTrue($result['success']);
+        $rewards = $result['data']['rewards'];
+        $this->assertCount(2, $rewards);
+
+        foreach ($rewards as $reward) {
+            $this->assertEquals('revoked', $reward['delivery_status']);
+            $this->assertNotNull($reward['revoked_at']);
+        }
+    }
+
+    public function test_get_self_mint_eligibility_returns_null_when_not_completed()
+    {
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id,
+        ]);
+
+        // Create a booking WITHOUT completed_at
+        CourseHistory::create([
+            'user_id'            => $this->student->id,
+            'course_id'          => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'completed_at'       => null,
+        ]);
+
+        $result = $this->service->getSelfMintEligibility(
+            $this->course->id,
+            $this->student->id,
+            $schedule->id
+        );
+
+        $this->assertNull($result);
+    }
+
+    public function test_get_self_mint_eligibility_returns_null_when_no_history()
+    {
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id,
+        ]);
+
+        // No CourseHistory created
+
+        $result = $this->service->getSelfMintEligibility(
+            $this->course->id,
+            $this->student->id,
+            $schedule->id
+        );
+
+        $this->assertNull($result);
+    }
+
+    public function test_get_self_mint_eligibility_returns_structured_array_when_completed()
+    {
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id,
+        ]);
+
+        $txHash = 'abc123certtest';
+
+        CourseHistory::create([
+            'user_id'                      => $this->student->id,
+            'course_id'                    => $this->course->id,
+            'course_schedule_id'           => $schedule->id,
+            'completed_at'                 => now()->subDays(1),
+            'certificate_status'           => 'minted',
+            'certificate_tx_hash'          => $txHash,
+            'certificate_minted_at'        => now()->subHours(12),
+            'enrolled_certificate_enabled' => true,
+            'enrolled_token_reward_enabled' => false,
+        ]);
+
+        $result = $this->service->getSelfMintEligibility(
+            $this->course->id,
+            $this->student->id,
+            $schedule->id
+        );
+
+        $this->assertNotNull($result);
+        $this->assertArrayHasKey('certificate', $result);
+        $this->assertArrayHasKey('token', $result);
+        $this->assertArrayHasKey('total_fee_lovelace', $result);
+
+        // Certificate block should be present since enrolled_certificate_enabled = true
+        $this->assertNotNull($result['certificate']);
+        $this->assertEquals('minted', $result['certificate']['status']);
+        $this->assertEquals($txHash, $result['certificate']['tx_hash']);
+        $this->assertStringContainsString($txHash, $result['certificate']['explorer_url']);
+        $this->assertArrayHasKey('fee_lovelace', $result['certificate']);
+        $this->assertGreaterThan(0, $result['certificate']['fee_lovelace']);
+
+        // Token block should be null since enrolled_token_reward_enabled = false
+        $this->assertNull($result['token']);
+
+        // Total fee should equal certificate fee only
+        $this->assertEquals($result['certificate']['fee_lovelace'], $result['total_fee_lovelace']);
+    }
+
+    public function test_get_self_mint_eligibility_includes_token_when_enabled()
+    {
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id,
+        ]);
+
+        $tokenTxHash = 'tokentxhash456';
+
+        CourseHistory::create([
+            'user_id'                       => $this->student->id,
+            'course_id'                     => $this->course->id,
+            'course_schedule_id'            => $schedule->id,
+            'completed_at'                  => now()->subDays(1),
+            'certificate_status'            => 'not_eligible',
+            'token_reward_status'           => 'minted',
+            'token_reward_tx_hash'          => $tokenTxHash,
+            'token_reward_minted_at'        => now()->subHours(6),
+            'enrolled_certificate_enabled'  => false,
+            'enrolled_token_reward_enabled' => true,
+            'enrolled_token_reward_amount'  => 50,
+        ]);
+
+        $result = $this->service->getSelfMintEligibility(
+            $this->course->id,
+            $this->student->id,
+            $schedule->id
+        );
+
+        $this->assertNotNull($result);
+        $this->assertNull($result['certificate']);
+        $this->assertNotNull($result['token']);
+        $this->assertEquals('minted', $result['token']['status']);
+        $this->assertEquals($tokenTxHash, $result['token']['tx_hash']);
+        $this->assertEquals(50, $result['token']['amount']);
+        $this->assertStringContainsString($tokenTxHash, $result['token']['explorer_url']);
+        $this->assertEquals($result['token']['fee_lovelace'], $result['total_fee_lovelace']);
+    }
 }

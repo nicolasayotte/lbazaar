@@ -1,14 +1,14 @@
 
 import { usePage } from "@inertiajs/inertia-react"
 import { Box, Card, CardContent, Grid, Typography } from "@mui/material"
-import BadgesTable from "./components/BadgesTable"
+import RewardsTable from "./components/RewardsTable"
 import { Verified as Badge } from "@mui/icons-material"
 
 const Index = () => {
 
-    const { certificates, translatables, auth, title } = usePage().props
+    const { rewards, translatables, auth, title } = usePage().props
 
-    const hasCertificates = certificates && certificates.length > 0
+    const hasRewards = rewards && rewards.length > 0
 
     return (
         <>
@@ -28,14 +28,14 @@ const Index = () => {
                                 variant="h6"
                                 sx={{ display: { xs: 'none', md: 'inline-block' } }}
                                 ml={1}
-                                children={` ${translatables.texts.total_badges} : ${certificates?.length || 0}`}
+                                children={` ${translatables.texts.total_rewards || 'Total Rewards'} : ${rewards?.length || 0}`}
                             />
                         </Box>
                     </Grid>
                 </Grid>
             </Grid>
 
-            {!hasCertificates ? (
+            {!hasRewards ? (
                 <Card sx={{ width: '100%' }}>
                     <CardContent>
                         <Typography
@@ -43,19 +43,19 @@ const Index = () => {
                             textAlign="center"
                             sx={{ my: 5 }}
                         >
-                            {translatables.texts.no_certificates || 'No certificates yet'}
+                            {translatables.texts.no_rewards || 'No rewards yet'}
                         </Typography>
                         <Typography
                             variant="body2"
                             textAlign="center"
                             color="textSecondary"
                         >
-                            {translatables.texts.complete_courses_hint || 'Complete courses with certificates enabled to earn NFT certificates'}
+                            {translatables.texts.complete_courses_rewards_hint || 'Complete courses with rewards enabled to earn NFT certificates and tokens'}
                         </Typography>
                     </CardContent>
                 </Card>
             ) : (
-                <BadgesTable data={certificates} />
+                <RewardsTable data={rewards} />
             )}
 
         </>
