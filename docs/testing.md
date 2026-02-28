@@ -91,7 +91,17 @@ tests/
     │   ├── admin.setup.js          (setup: login as admin via /admin/login, save storageState)
     │   ├── login.spec.js           (login form rendering, success, failure, route protection)
     │   ├── logout.spec.js          (authenticated student logout flow)
-    │   └── registration.spec.js    (registration form rendering and flow)
+    │   ├── registration.spec.js    (registration form rendering and flow)
+    │   └── route-protection.spec.js (F-06.3, F-06.4: non-admin/non-teacher student rejected from protected routes)
+    ├── guest/
+    │   ├── admin-login.spec.js        (F-05: admin login form, success, invalid credentials)
+    │   ├── course-detail-extra.spec.js (F-01.3, F-03.4, F-03.5: featured content, schedule, 404)
+    │   ├── forgot-password.spec.js    (F-10: forgot password form, success, error)
+    │   ├── inquiries.spec.js          (F-08: inquiry form, valid submit, empty submit)
+    │   ├── language-switching.spec.js  (F-09: EN/JA language switch)
+    │   ├── registration-extra.spec.js  (F-07.1, F-07.4–F-07.6: registration index, duplicate, teacher)
+    │   ├── route-protection.spec.js    (F-06.2: unauthenticated admin redirect)
+    │   └── route-smoke.spec.js         (F-11: 9 public routes return non-500)
     ├── admin/
     │   ├── navigation-smoke.spec.js       (F-14, F-15: sidebar navigation + route smoke for all 12 admin routes)
     │   ├── profile-users.spec.js          (F-01, F-02: profile update, user CRUD, status toggle)
@@ -217,6 +227,7 @@ The suite uses **Playwright projects** to separate setup (auth) from tests, enab
 | `teacher-setup` | `**/auth/teacher.setup.js` | — | — |
 | `admin-setup` | `**/auth/admin.setup.js` | — | — |
 | `unauthenticated` | `top-page.spec.js`, `course-browsing.spec.js` | — | — |
+| `guest` | `**/guest/**/*.spec.js` | — | — |
 | `student` | `**/auth/**/*.spec.js` | `fixtures/student.json` | `student-setup` |
 | `teacher` | `**/teacher/**/*.spec.js` | `fixtures/teacher.json` | `teacher-setup` |
 | `admin` | `**/admin/**/*.spec.js` | `fixtures/admin.json` | `admin-setup` |

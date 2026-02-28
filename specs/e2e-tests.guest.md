@@ -5,7 +5,7 @@
 **Glossary:** specs/glossary.md
 **See also:** specs/e2e-tests.xrefs.md
 **Generated:** 2026-02-27
-**Status:** DRAFT — requires operator review
+**Status:** IMPLEMENTED — all features covered by Playwright tests in `tests/Browser/guest/` and `tests/Browser/auth/route-protection.spec.js`
 
 ---
 
@@ -272,14 +272,14 @@
 
 ## Open Questions
 
-- OQ-01: Does the test database seeder guarantee a minimum set of courses, schedules, and users for tests to run against, or must every test defensively skip when data is absent?
+- ~~OQ-01~~: **RESOLVED** — The `PlaywrightTestSeeder` provides 3 test users (student, teacher, admin) and the main seeder provides courses. Tests defensively skip when specific data (schedules, featured courses) is absent.
 
 ## Assumptions
 
-- A-01: Test database is reset between full test suite runs.
-- A-02: Schedules are visible to Guests on course detail pages.
-- A-03: Teacher registration does not require admin approval before the user can log in.
-- A-04: Inquiry form fields include at minimum: name, email, and message body.
-- A-05: Language switching supports at least Japanese and English.
-- A-06: Forgot password does not reveal email existence (security-safe response).
-- A-07: Registration tests create real users in the DB (full integration).
+- A-01: Test database is reset between full test suite runs. **CONFIRMED** — `PlaywrightTestSeeder` re-seeds users.
+- A-02: Schedules are visible to Guests on course detail pages. **CONFIRMED** — Details.jsx renders schedule section for guests. Test skips gracefully if no schedules seeded.
+- A-03: Teacher registration does not require admin approval before the user can log in. **CONFIRMED** — Teacher registration creates a `TeacherApplication` and redirects to `/register/teacher/success`. No immediate login required.
+- A-04: Inquiry form fields include at minimum: name, email, and message body. **UPDATED** — Actual fields are: `name`, `email`, `subject`, and `message`. The `subject` field was not anticipated.
+- A-05: Language switching supports at least Japanese and English. **CONFIRMED** — `GET /lang/{locale}` sets session locale; top page renders `translatables.title.top_page` in both EN and JA.
+- A-06: Forgot password does not reveal email existence (security-safe response). **INVALIDATED** — The app returns distinct error messages: registered emails get a success toast, unregistered emails get `"We can't find a user with that email address."` inline error. F-10.3 tests the actual behavior.
+- A-07: Registration tests create real users in the DB (full integration). **CONFIRMED** — F-07.3 (student) and F-07.6 (teacher) use timestamped emails to avoid conflicts.

@@ -68,3 +68,23 @@ Existing test files and their overlap with new specs:
 - `auth/ada-*.spec.js`, `auth/stripe-*.spec.js` — external service tests, no overlap. Keep as-is.
 
 New spec tests should be placed in new files grouped by epic to avoid merge conflicts with existing tests.
+
+---
+
+## E-01 Guest Workflow Test Files
+
+New files added to fill coverage gaps from `specs/e2e-tests.guest.md`:
+
+| File | Features | Project |
+|------|----------|---------|
+| `guest/admin-login.spec.js` | F-05.1, F-05.2, F-05.3 | `guest` |
+| `guest/course-detail-extra.spec.js` | F-01.3, F-03.4, F-03.5 | `guest` |
+| `guest/forgot-password.spec.js` | F-10.1, F-10.2, F-10.3 | `guest` |
+| `guest/inquiries.spec.js` | F-08.1, F-08.2, F-08.3 | `guest` |
+| `guest/language-switching.spec.js` | F-09.1 | `guest` |
+| `guest/registration-extra.spec.js` | F-07.1, F-07.4, F-07.5, F-07.6 | `guest` |
+| `guest/route-protection.spec.js` | F-06.2 | `guest` |
+| `guest/route-smoke.spec.js` | F-11.1 | `guest` |
+| `auth/route-protection.spec.js` | F-06.3, F-06.4 | `student` |
+
+**Note:** F-06.3 and F-06.4 require an authenticated student session to test that a non-admin/non-teacher student is rejected from protected routes. These live in `auth/` (matched by the `student` project) rather than `guest/`.
