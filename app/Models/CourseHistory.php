@@ -35,6 +35,11 @@ class CourseHistory extends Model
         'token_reward_status',
         'token_reward_tx_hash',
         'token_reward_minted_at',
+        'enrolled_certificate_enabled',
+        'enrolled_certificate_name',
+        'enrolled_certificate_description',
+        'enrolled_token_reward_enabled',
+        'enrolled_token_reward_amount',
     ];
 
     protected $casts = [
@@ -44,6 +49,9 @@ class CourseHistory extends Model
         'rewards_invalidated_at' => 'datetime',
         'payment_ada_amount' => 'decimal:6',
         'token_reward_minted_at' => 'datetime',
+        'enrolled_certificate_enabled' => 'boolean',
+        'enrolled_token_reward_enabled' => 'boolean',
+        'enrolled_token_reward_amount' => 'integer',
     ];
 
     public function courseSchedule()
@@ -139,6 +147,68 @@ class CourseHistory extends Model
         }
 
         return config('services.cardano.explorer_url') . '/tx/' . $this->certificate_tx_hash;
+    }
+
+    /**
+     * Return the certificate_enabled value that was active at enrollment time.
+     * For post-migration rows (enrolled_certificate_enabled is not null), return the
+     * snapshot. For pre-migration rows fall back to the current course setting.
+     */
+    public function effectiveCertificateEnabled(): bool
+    {
+        if ($this->enrolled_certificate_enabled !== null) {
+            return (bool) $this->enrolled_certificate_enabled;
+        }
+
+        return (bool) ($this->course?->certificate_enabled ?? false);
+    }
+
+    /**
+     * Return the certificate_name that was active at enrollment time.
+     */
+    public function effectiveCertificateName(): ?string
+    {
+        if ($this->enrolled_certificate_enabled !== null) {
+            return $this->enrolled_certificate_name;
+        }
+
+        return $this->course?->certificate_name;
+    }
+
+    /**
+     * Return the certificate_description that was active at enrollment time.
+     */
+    public function effectiveCertificateDescription(): ?string
+    {
+        if ($this->enrolled_certificate_enabled !== null) {
+            return $this->enrolled_certificate_description;
+        }
+
+        return $this->course?->certificate_description;
+    }
+
+    /**
+     * Return the token_reward_enabled value that was active at enrollment time.
+     */
+    public function effectiveTokenRewardEnabled(): bool
+    {
+        if ($this->enrolled_certificate_enabled !== null) {
+            return (bool) $this->enrolled_token_reward_enabled;
+        }
+
+        return (bool) ($this->course?->token_reward_enabled ?? false);
+    }
+
+    /**
+     * Return the token_reward_amount that was active at enrollment time.
+     */
+    public function effectiveTokenRewardAmount(): ?int
+    {
+        if ($this->enrolled_certificate_enabled !== null) {
+            return $this->enrolled_token_reward_amount;
+        }
+
+        return $this->course?->token_reward_amount;
     }
 
     public function getCreatedAtAttribute($value)
