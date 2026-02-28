@@ -206,20 +206,8 @@ test.describe.serial('F-07: Settings — Classifications', () => {
     });
 
     test('F-07.2c: deleting the classification via dialog succeeds', async ({ page }) => {
-        const response = await page.goto('/admin/settings/classifications');
-        if (!response || response.status() >= 500) {
-            test.skip(true, 'Classifications page returns 500 — skipping delete test');
-            return;
-        }
+        await page.goto('/admin/settings/classifications');
         await waitForApp(page);
-
-        // Wait for table — skip if page crashed (known blank page issue)
-        try {
-            await expect(page.locator('table')).toBeVisible({ timeout: 5000 });
-        } catch {
-            test.skip(true, 'Known app bug — classifications page renders blank after serial CRUD');
-            return;
-        }
 
         let testRow = page.locator('table tbody tr').filter({ hasText: updatedClassificationName }).first();
         if (await testRow.count() === 0) {
@@ -233,14 +221,7 @@ test.describe.serial('F-07: Settings — Classifications', () => {
         const deleteBtn = testRow.locator('button[title="Delete"]');
         await expect(deleteBtn).toBeVisible();
         await deleteBtn.click();
-
-        // Known app bug: clicking Delete on classifications sometimes crashes the page
-        try {
-            await waitForDialog(page, 'Delete');
-        } catch {
-            test.skip(true, 'Known app bug — classifications delete button crashes the page');
-            return;
-        }
+        await waitForDialog(page, 'Delete');
 
         const responsePromise = page.waitForResponse(resp =>
             resp.url().includes('/admin/settings/classifications') && resp.request().method() === 'DELETE'
@@ -273,17 +254,86 @@ test.describe.serial('F-08: Settings — NFT Configuration', () => {
         await expect(page.locator('button').filter({ hasText: /Create/i }).first()).toBeVisible();
     });
 
-    // Known app bug: NftFormRequest requires 'points' field but the React form doesn't send it.
-    // The POST always fails with 422 validation error. Skipping CRUD tests until app is fixed.
     test('F-08.2a: creating a new NFT config via dialog succeeds', async ({ page }) => {
-        test.skip(true, 'Known app bug — NFT form missing required "points" field (NftFormRequest.php:40-44)');
+        await page.goto('/admin/settings/nft');
+        await waitForApp(page);
+
+        await page.locator('button').filter({ hasText: /Create/i }).first().click();
+        await waitForDialog(page, 'Create');
+
+        const nameInput = page.locator('.MuiDialog-root input[name="name"]');
+        await nameInput.click();
+        await nameInput.pressSequentially(testNftName);
+
+        const imageInput = page.locator('.MuiDialog-root input[name="image_url"]');
+        await imageInput.click();
+        await imageInput.pressSequentially(testImageUrl);
+
+        const responsePromise = page.waitForResponse(resp =>
+            resp.url().includes('/admin/settings/nft') && resp.request().method() === 'POST'
+        );
+        await clickDialogConfirm(page);
+        await responsePromise;
+        await waitForInertiaNavigation(page);
+
+        await expect(page.locator('table td').filter({ hasText: testNftName }).first())
+            .toBeVisible({ timeout: 5000 });
     });
 
     test('F-08.2b: editing the NFT config via dialog succeeds', async ({ page }) => {
-        test.skip(true, 'Depends on F-08.2a which is skipped — known app bug');
+        await page.goto('/admin/settings/nft');
+        await waitForApp(page);
+
+        const testRow = page.locator('table tbody tr').filter({ hasText: testNftName }).first();
+        if (await testRow.count() === 0) {
+            test.skip(true, 'Test NFT not found — skipping edit test');
+            return;
+        }
+
+        await testRow.locator('button[title="Edit"]').click();
+        await waitForDialog(page, 'Edit');
+
+        const nameInput = page.locator('.MuiDialog-root input[name="name"]');
+        await nameInput.click();
+        await nameInput.press('Control+a');
+        await nameInput.press('Backspace');
+        await nameInput.pressSequentially(updatedNftName);
+
+        const responsePromise = page.waitForResponse(resp =>
+            resp.url().includes('/admin/settings/nft') && resp.request().method() === 'PATCH'
+        );
+        await clickDialogConfirm(page);
+        await responsePromise;
+        await waitForInertiaNavigation(page);
+
+        await expect(page.locator('table td').filter({ hasText: updatedNftName }).first())
+            .toBeVisible({ timeout: 5000 });
     });
 
     test('F-08.2c: deleting the NFT config via dialog succeeds', async ({ page }) => {
-        test.skip(true, 'Depends on F-08.2a which is skipped — known app bug');
+        await page.goto('/admin/settings/nft');
+        await waitForApp(page);
+
+        let testRow = page.locator('table tbody tr').filter({ hasText: updatedNftName }).first();
+        if (await testRow.count() === 0) {
+            testRow = page.locator('table tbody tr').filter({ hasText: testNftName }).first();
+        }
+        if (await testRow.count() === 0) {
+            test.skip(true, 'Test NFT not found — skipping delete test');
+            return;
+        }
+
+        await testRow.locator('button[title="Delete"]').click();
+        await waitForDialog(page, 'Delete');
+
+        const responsePromise = page.waitForResponse(resp =>
+            resp.url().includes('/admin/settings/nft') && resp.request().method() === 'DELETE'
+        );
+        await clickDialogConfirm(page);
+        await responsePromise;
+        await waitForInertiaNavigation(page);
+
+        await expect(page.locator('table td').filter({ hasText: testNftName }).first())
+            .not.toBeVisible({ timeout: 5000 });
     });
 });

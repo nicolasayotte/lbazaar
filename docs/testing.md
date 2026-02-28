@@ -98,9 +98,6 @@ tests/
     │   ├── inquiries-applications.spec.js (F-03, F-04: inquiries list/detail, class app status update)
     │   ├── settings-crud.spec.js          (F-05–F-08: categories/classifications/NFT CRUD via dialogs)
     │   └── settings-misc.spec.js          (F-09–F-13: translations, general, wallet, refunds, certificates)
-    │   ⚠ Known app bugs (tests skip gracefully):
-    │     - F-07.2c: Classifications delete crashes page (blank render after clicking Delete)
-    │     - F-08 CRUD: NFT form missing required "points" field (NftFormRequest.php:40-44)
     ├── teacher/
     │   ├── route-smoke.spec.js       (F-08: smoke test for all teacher-accessible routes)
     │   ├── class-applications.spec.js (F-01: class application CRUD and validation)
@@ -421,11 +418,6 @@ test.skip(true, 'Known app bug — NFT form missing required "points" field (Nft
 ```
 
 **After form POST** — Use `waitForInertiaNavigation(page)` (not just `waitForApp`) to ensure Inertia has fully re-rendered with server validation errors before asserting on error messages.
-
-**Known admin app bugs** (tests skip gracefully — see [gotchas.md #27](./gotchas.md)):
-- **F-07.2c**: Classifications delete button crashes page (blank render)
-- **F-08 CRUD**: NFT form doesn't send the required `points` field
-- See also [gotchas.md #26](./gotchas.md) for teacher route 500 errors
 
 ### All Fast-Pipeline Tests
 
