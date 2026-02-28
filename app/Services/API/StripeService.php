@@ -259,12 +259,20 @@ class StripeService
                 // Get course_schedule_id from payment metadata
                 $courseScheduleId = $payment->metadata['course_schedule_id'] ?? null;
 
+                // Load course to snapshot reward config at enrollment time
+                $course = $payment->course;
+
                 // Create CourseHistory enrollment record
                 $courseHistory = CourseHistory::create([
-                    'user_id' => $payment->user_id,
-                    'course_id' => $payment->course_id,
-                    'course_schedule_id' => $courseScheduleId,
-                    'is_cancelled' => false,
+                    'user_id'                         => $payment->user_id,
+                    'course_id'                       => $payment->course_id,
+                    'course_schedule_id'              => $courseScheduleId,
+                    'is_cancelled'                    => false,
+                    'enrolled_certificate_enabled'    => $course ? (bool) $course->certificate_enabled : false,
+                    'enrolled_certificate_name'       => $course ? $course->certificate_name : null,
+                    'enrolled_certificate_description' => $course ? $course->certificate_description : null,
+                    'enrolled_token_reward_enabled'   => $course ? (bool) $course->token_reward_enabled : false,
+                    'enrolled_token_reward_amount'    => $course ? $course->token_reward_amount : null,
                 ]);
 
                 // Get receipt URL from charges

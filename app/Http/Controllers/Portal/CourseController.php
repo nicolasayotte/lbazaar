@@ -223,9 +223,14 @@ class CourseController extends Controller
             $schedule->course->course_type_id == 4 &&
             isset($hasNft) && !isset($nftBurnt)) {
             $courseHistory = CourseHistory::create([
-                'course_schedule_id' => $schedule->id,
-                'course_id'          => $schedule->course->id,
-                'user_id'            => auth()->user()->id,
+                'course_schedule_id'               => $schedule->id,
+                'course_id'                        => $schedule->course->id,
+                'user_id'                          => auth()->user()->id,
+                'enrolled_certificate_enabled'     => (bool) $schedule->course->certificate_enabled,
+                'enrolled_certificate_name'        => $schedule->course->certificate_name,
+                'enrolled_certificate_description' => $schedule->course->certificate_description,
+                'enrolled_token_reward_enabled'    => (bool) $schedule->course->token_reward_enabled,
+                'enrolled_token_reward_amount'     => $schedule->course->token_reward_amount,
             ]);
             $this->sendBookEmailCourse($schedule);
 
@@ -250,9 +255,14 @@ class CourseController extends Controller
                     ($userCardanoWallet->ada >= $schedule->course->price)) {
 
             $courseHistory = CourseHistory::create([
-                'course_schedule_id' => $schedule->id,
-                'course_id'          => $schedule->course->id,
-                'user_id'            => auth()->user()->id,
+                'course_schedule_id'               => $schedule->id,
+                'course_id'                        => $schedule->course->id,
+                'user_id'                          => auth()->user()->id,
+                'enrolled_certificate_enabled'     => (bool) $schedule->course->certificate_enabled,
+                'enrolled_certificate_name'        => $schedule->course->certificate_name,
+                'enrolled_certificate_description' => $schedule->course->certificate_description,
+                'enrolled_token_reward_enabled'    => (bool) $schedule->course->token_reward_enabled,
+                'enrolled_token_reward_amount'     => $schedule->course->token_reward_amount,
             ]);
 
             $this->sendBookEmailCourse($schedule);

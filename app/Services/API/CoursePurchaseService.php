@@ -188,13 +188,18 @@ class CoursePurchaseService
                 }
 
                 $courseHistory = CourseHistory::create([
-                    'course_schedule_id'   => $schedule->id,
-                    'course_id'            => $schedule->course->id,
-                    'user_id'              => $user->id,
-                    'payment_status'       => 'pending',
-                    'payment_tx_hash'      => $txId,
-                    'payment_ada_amount'   => $adaAmount,
-                    'payment_submitted_at' => now()
+                    'course_schedule_id'              => $schedule->id,
+                    'course_id'                       => $schedule->course->id,
+                    'user_id'                         => $user->id,
+                    'payment_status'                  => 'pending',
+                    'payment_tx_hash'                 => $txId,
+                    'payment_ada_amount'              => $adaAmount,
+                    'payment_submitted_at'            => now(),
+                    'enrolled_certificate_enabled'    => (bool) $schedule->course->certificate_enabled,
+                    'enrolled_certificate_name'       => $schedule->course->certificate_name,
+                    'enrolled_certificate_description' => $schedule->course->certificate_description,
+                    'enrolled_token_reward_enabled'   => (bool) $schedule->course->token_reward_enabled,
+                    'enrolled_token_reward_amount'    => $schedule->course->token_reward_amount,
                 ]);
 
                 $userWallet = $user->userWallet()->first();
