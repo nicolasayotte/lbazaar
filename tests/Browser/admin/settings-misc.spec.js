@@ -92,11 +92,17 @@ test.describe('F-10: Settings — General', () => {
         const rowCount = await rows.count();
         test.skip(rowCount === 0, 'No general settings rows — skipping edit test');
 
+        // First input may be type="number" — use a numeric increment instead of text suffix
         const firstInput = rows.first().locator('input').first();
+        const inputType = await firstInput.getAttribute('type');
         const originalValue = await firstInput.inputValue();
-        const testValue = originalValue + '_pw';
+        const testValue = inputType === 'number'
+            ? String(Number(originalValue) + 1)
+            : originalValue + '_pw';
 
-        await firstInput.fill(testValue);
+        await firstInput.click();
+        await page.keyboard.press('Control+a');
+        await firstInput.pressSequentially(testValue);
 
         const saveBtn = page.locator('button:has-text("Save")').first();
         await saveBtn.click();
@@ -118,7 +124,9 @@ test.describe('F-10: Settings — General', () => {
         await expect(reloadedInput).toHaveValue(testValue);
 
         // Restore original value
-        await reloadedInput.fill(originalValue);
+        await reloadedInput.click();
+        await page.keyboard.press('Control+a');
+        await reloadedInput.pressSequentially(originalValue);
         const restoreSaveBtn = page.locator('button:has-text("Save")').first();
         await restoreSaveBtn.click();
         const restoreDialog = page.locator('[role="dialog"]');

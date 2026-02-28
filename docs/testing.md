@@ -93,7 +93,14 @@ tests/
     │   ├── logout.spec.js          (authenticated student logout flow)
     │   └── registration.spec.js    (registration form rendering and flow)
     ├── admin/
-    │   └── admin-pages.spec.js     (authenticated admin: /admin/class-applications, /admin/wallet-history)
+    │   ├── navigation-smoke.spec.js       (F-14, F-15: sidebar navigation + route smoke for all 12 admin routes)
+    │   ├── profile-users.spec.js          (F-01, F-02: profile update, user CRUD, status toggle)
+    │   ├── inquiries-applications.spec.js (F-03, F-04: inquiries list/detail, class app status update)
+    │   ├── settings-crud.spec.js          (F-05–F-08: categories/classifications/NFT CRUD via dialogs)
+    │   └── settings-misc.spec.js          (F-09–F-13: translations, general, wallet, refunds, certificates)
+    │   ⚠ Known app bugs (tests skip gracefully):
+    │     - F-07.2c: Classifications delete crashes page (blank render after clicking Delete)
+    │     - F-08 CRUD: NFT form missing required "points" field (NftFormRequest.php:40-44)
     ├── teacher/
     │   ├── route-smoke.spec.js       (F-08: smoke test for all teacher-accessible routes)
     │   ├── class-applications.spec.js (F-01: class application CRUD and validation)

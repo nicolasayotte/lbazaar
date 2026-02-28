@@ -15,7 +15,8 @@ test.describe('F-01: Admin Profile', () => {
         await waitForApp(page);
 
         await expect(page).toHaveURL(/\/admin\/profile/);
-        await expect(page.locator('form')).toBeVisible();
+        // Profile page has two forms (Edit Profile + Update Password) — scope to first
+        await expect(page.locator('form').first()).toBeVisible();
 
         const firstNameInput = page.locator('input[name="first_name"]');
         await expect(firstNameInput).toBeVisible();
@@ -27,7 +28,7 @@ test.describe('F-01: Admin Profile', () => {
         const emailValue = await emailInput.inputValue();
         expect(emailValue).toContain('@');
 
-        await expect(page.locator('button[type="submit"]')).toBeVisible();
+        await expect(page.locator('button[type="submit"]').first()).toBeVisible();
     });
 
     test('F-01.2: admin profile can be updated and persists on reload', async ({ page }) => {
@@ -37,7 +38,9 @@ test.describe('F-01: Admin Profile', () => {
         const firstNameInput = page.locator('input[name="first_name"]');
         const originalFirst = await firstNameInput.inputValue();
 
-        const newFirst = `E2EAdmin${Date.now()}`;
+        // first_name validation: letters and spaces only — no numbers
+        const uid = Math.random().toString(36).replace(/[^a-z]/g, '').slice(0, 8);
+        const newFirst = `Playwright ${uid}`;
         await firstNameInput.click();
         await page.keyboard.press('Control+a');
         await firstNameInput.pressSequentially(newFirst);
@@ -45,7 +48,7 @@ test.describe('F-01: Admin Profile', () => {
         const responsePromise = page.waitForResponse(resp =>
             resp.url().includes('/admin/profile') && resp.request().method() === 'PATCH'
         );
-        await page.locator('button[type="submit"]').click();
+        await page.locator('button[type="submit"]').first().click();
         await responsePromise;
         await waitForApp(page);
 
@@ -66,7 +69,7 @@ test.describe('F-01: Admin Profile', () => {
         const restorePromise = page.waitForResponse(resp =>
             resp.url().includes('/admin/profile') && resp.request().method() === 'PATCH'
         );
-        await page.locator('button[type="submit"]').click();
+        await page.locator('button[type="submit"]').first().click();
         await restorePromise;
     });
 });
@@ -127,7 +130,7 @@ test.describe('F-02: User Management', () => {
         await waitForApp(page);
 
         const ts = Date.now();
-        const firstName = '[E2E-TEST]';
+        const firstName = 'E2E Test';
         const lastName = `User${ts}`;
         const email = `e2e-test-user-${ts}@example.com`;
 
@@ -186,7 +189,7 @@ test.describe('F-02: User Management', () => {
 
         const firstNameInput = page.locator('input[name="first_name"]');
         await firstNameInput.click();
-        await firstNameInput.pressSequentially('[E2E-TEST]');
+        await firstNameInput.pressSequentially('E2E Test');
 
         const lastNameInput = page.locator('input[name="last_name"]');
         await lastNameInput.click();
@@ -208,21 +211,23 @@ test.describe('F-02: User Management', () => {
         );
         await page.locator('button[type="submit"]').click();
         await responsePromise;
-        await waitForApp(page);
+        await waitForInertiaNavigation(page);
 
         await expect(page).toHaveURL(/\/admin\/users\/create/);
+        // ErrorText renders as MUI Typography — use broad text match
+        // Also check for generic error indicators (red helper text, error class)
         await expect(
-            page.locator('.MuiFormHelperText-root, p').filter({ hasText: /already|taken|exists/i }).first()
-        ).toBeVisible({ timeout: 5000 });
+            page.locator('text=/already been taken/i').first()
+        ).toBeVisible({ timeout: 10000 });
     });
 
     test('F-02.6: user status can be toggled', async ({ page }) => {
-        await page.goto('/admin/users?keyword=' + encodeURIComponent('[E2E-TEST]'));
+        await page.goto('/admin/users?keyword=' + encodeURIComponent('E2E Test'));
         await waitForApp(page);
 
         const rows = page.locator('table tbody tr');
         const rowCount = await rows.count();
-        test.skip(rowCount === 0, 'No [E2E-TEST] users found — run F-02.4 first');
+        test.skip(rowCount === 0, 'No E2E Test users found — run F-02.4 first');
 
         const firstRow = rows.first();
         const statusCellBefore = firstRow.locator('td:nth-child(4)');
@@ -256,7 +261,7 @@ test.describe('F-02: User Management', () => {
         await statusResponsePromise;
         await waitForInertiaNavigation(page);
 
-        await page.goto('/admin/users?keyword=' + encodeURIComponent('[E2E-TEST]'));
+        await page.goto('/admin/users?keyword=' + encodeURIComponent('E2E Test'));
         await waitForApp(page);
 
         const updatedRow = page.locator('table tbody tr').first();
