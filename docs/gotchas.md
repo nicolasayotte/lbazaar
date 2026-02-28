@@ -1002,6 +1002,27 @@ Always use optional chaining when accessing eager-loaded relationships in JSX:
 
 ---
 
+## 26. Three Teacher Routes Return 500 in Development
+
+**Symptom**: Playwright teacher smoke tests discover three routes that return HTTP 500.
+
+**Affected routes and root causes**:
+
+| Route | Error | Location |
+|---|---|---|
+| `/mypage/class-history` | `Unknown column 'courses.course_category_id'` | `CourseHistoryRepository:69` |
+| `/mypage/wallet-history` | `userWalletTransactions() on null` | `WalletTransactionHistoryController:13` |
+| `/mypage/class-application` | `Assign property "price_in_ada" on array` | `ExchangeRateService:121` |
+
+**Root causes**:
+1. **class-history**: `course_category_id` column referenced in the repository JOIN does not exist in the `courses` table.
+2. **wallet-history**: Teacher test user has no `userWallet` relation, so `->first()->userWalletTransactions()` crashes on null.
+3. **class-application index**: `ExchangeRateService::addPriceInAdaToCourses()` tries to assign `$course->price_in_ada` on array elements. Also crashes when CoinGecko exchange rate is unavailable.
+
+**Workaround**: Teacher Playwright tests skip these routes with comments documenting the bugs. The tests will start asserting once the backend bugs are fixed.
+
+---
+
 ## Cross-References
 
 - **Architecture**: See [docs/architecture.md](./architecture.md) for system structure

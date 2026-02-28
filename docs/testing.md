@@ -94,6 +94,12 @@ tests/
     │   └── registration.spec.js    (registration form rendering and flow)
     ├── admin/
     │   └── admin-pages.spec.js     (authenticated admin: /admin/class-applications, /admin/wallet-history)
+    ├── teacher/
+    │   ├── route-smoke.spec.js       (F-08: smoke test for all teacher-accessible routes)
+    │   ├── class-applications.spec.js (F-01: class application CRUD and validation)
+    │   ├── manage-classes.spec.js    (F-02: manage classes dashboard, tab navigation)
+    │   ├── course-management.spec.js (F-03–F-05: course/exam/schedule CRUD)
+    │   └── teaching-history.spec.js  (F-06–F-07: teaching schedules, certificate UI)
     ├── helpers/
     │   ├── wait-for-app.js         (waitForApp, waitForInertiaNavigation)
     │   └── test-users.js           (TEST_USERS credentials, STORAGE_STATE paths)
@@ -208,6 +214,7 @@ The suite uses **Playwright projects** to separate setup (auth) from tests, enab
 | `admin-setup` | `**/auth/admin.setup.js` | — | — |
 | `unauthenticated` | `top-page.spec.js`, `course-browsing.spec.js` | — | — |
 | `student` | `**/auth/**/*.spec.js` | `fixtures/student.json` | `student-setup` |
+| `teacher` | `**/teacher/**/*.spec.js` | `fixtures/teacher.json` | `teacher-setup` |
 | `admin` | `**/admin/**/*.spec.js` | `fixtures/admin.json` | `admin-setup` |
 
 **Auth flow**: Each setup project logs in via `LoginPage`, then calls `page.context().storageState({ path })` to save the browser session. Dependent test projects load that saved session, so tests start already authenticated without a login step.
