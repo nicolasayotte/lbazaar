@@ -100,3 +100,12 @@ Route::prefix('admin/refunds')->middleware(['auth:sanctum'])->group(function () 
     Route::post('/ada/{courseHistoryId}', [\App\Http\Controllers\API\AdminRefundController::class, 'refundAda'])->name('admin.refunds.ada');
 });
 
+// Admin certificate routes (any course, fees from platform wallet)
+Route::prefix('admin/certificates')->middleware(['auth:sanctum'])->name('admin.certificates.')->group(function () {
+    Route::post('/courses/{course}/estimate-fee', [\App\Http\Controllers\Admin\CertificateController::class, 'estimateAirdropFee'])->name('estimate_fee');
+    Route::get('/courses/{course}/eligible-students', [\App\Http\Controllers\Admin\CertificateController::class, 'getEligibleStudents'])->name('eligible_students');
+    Route::post('/courses/{course}/students/{student}/mint', [\App\Http\Controllers\Admin\CertificateController::class, 'mintSingleCertificate'])->name('mint_single');
+    Route::post('/courses/{course}/batch-mint', [\App\Http\Controllers\Admin\CertificateController::class, 'batchMintCertificates'])->name('batch_mint');
+    Route::get('/courses/{course}/students/{student}/status', [\App\Http\Controllers\Admin\CertificateController::class, 'getCertificateStatus'])->name('certificate_status');
+});
+

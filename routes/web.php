@@ -114,6 +114,9 @@ Route::prefix('admin')->name('admin.')->group(function() {
             Route::patch('/{id}/status/{status}', [CourseApplicationController::class, 'updateStatus'])->name('status.update');
         });
 
+        # Admin Certificate Roster (any course)
+        Route::get('/courses/{id}/certificates', [\App\Http\Controllers\Admin\ManageCertificateController::class, 'certificates'])->name('courses.certificates');
+
         # Settings
         Route::prefix('settings')->name('settings.')->group(function() {
 
