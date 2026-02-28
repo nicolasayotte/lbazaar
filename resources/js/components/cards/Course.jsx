@@ -106,7 +106,7 @@ const Course = ({ course, schedule = null, showDescription = true, viewDetailId 
                                 </Stack>
                             </Box>
                             <Typography variant="h6" children={course.title} />
-                            <Typography variant="subtitle2" color="GrayText" gutterBottom children={`By ${course.professor.fullname}`} />
+                            <Typography variant="subtitle2" color="GrayText" gutterBottom children={`By ${course.professor?.fullname ?? 'Unknown'}`} />
                             <Description />
                         </Grid>
                         <Grid item xs={12}>
