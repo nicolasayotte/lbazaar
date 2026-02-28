@@ -3,7 +3,7 @@ import FormDialog from "../../../../../components/common/FormDialog"
 
 const Dialogs = ({ dialog, handleClose, handleSubmit, inputs }) => {
 
-    if (dialog.method === 'delete') {
+    if (dialog.action === 'delete') {
         return (
             <ConfirmationDialog
                 {...dialog}

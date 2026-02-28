@@ -15,7 +15,7 @@ const Index = () => {
 
     const dispatch = useDispatch()
 
-    const { classifications, messages, errors } = usePage().props
+    const { classifications, translatables, errors } = usePage().props
 
     const [hideErrorMessages, setHideErrorMessages] = useState(false)
 
@@ -93,7 +93,7 @@ const Index = () => {
             method: 'delete',
             action: 'delete',
             open: true,
-            text: messages.confirm.classification.delete,
+            text: translatables.confirm.classification.delete,
             submitUrl: getRoute('admin.settings.classifications.delete', { id })
         }))
     }
@@ -113,10 +113,10 @@ const Index = () => {
             data,
             errorBag: dialog.action,
             onSuccess: () => dispatch(actions.success({
-                message: messages.success.classification[dialog.action]
+                message: translatables.success.classification[dialog.action]
             })),
             onError: () => dispatch(actions.error({
-                message: messages.error
+                message: translatables.error
             }))
         })
     }
