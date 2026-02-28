@@ -1,5 +1,5 @@
 
-import { Typography, Tooltip, IconButton, Stack, Box, Icon, CardContent, Card, CardActions} from "@mui/material"
+import { Typography, Tooltip, IconButton, Stack, Box, Icon, CardContent, Card, CardActions, Button } from "@mui/material"
 import { useDispatch } from "react-redux"
 import { useEffect, useState, useRef, useCallback } from "react"
 import { actions } from "../../store/slices/ToasterSlice"
@@ -561,10 +561,19 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                 </Card>
             }
             {walletDisconnected && !walletIsEnabled && (
-                <Box sx={{ p: 1.5, mb: 1, border: '1px solid', borderColor: 'warning.main', borderRadius: 1, backgroundColor: 'warning.light' }}>
+                <Box sx={{ p: 1.5, mb: 1, border: '1px solid', borderColor: 'warning.main', borderRadius: 1, backgroundColor: 'warning.light', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Typography variant="body2" color="warning.dark">
                         {translatables?.texts?.wallet_reconnect_prompt ?? 'Wallet disconnected. Please reconnect your wallet to continue.'}
                     </Typography>
+                    <Button
+                        variant="outlined"
+                        size="small"
+                        color="warning"
+                        onClick={handleWalletSwitch}
+                        sx={{ ml: 1, whiteSpace: 'nowrap' }}
+                    >
+                        {translatables?.texts?.wallet_reconnect_button ?? 'Reconnect'}
+                    </Button>
                 </Box>
             )}
             <BrowserView>
