@@ -32,6 +32,12 @@ export default defineConfig({
             testMatch: ['**/top-page.spec.js', '**/course-browsing.spec.js'],
             use: { browserName: 'chromium' },
         },
+        // Guest tests — unauthenticated, matched by directory
+        {
+            name: 'guest',
+            testMatch: '**/guest/**/*.spec.js',
+            use: { browserName: 'chromium' },
+        },
         // Authenticated tests — depend on setup projects
         {
             name: 'student',
