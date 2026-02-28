@@ -63,6 +63,10 @@ const RewardsTable = ({ data }) => {
 
     const handleDialogClose = () => {
         setDialogOpen(false)
+        // selectedReward kept alive for animation
+    }
+
+    const handleDialogExited = () => {
         setSelectedReward(null)
     }
 
@@ -145,6 +149,7 @@ const RewardsTable = ({ data }) => {
                 open={dialogOpen}
                 reward={selectedReward}
                 onClose={handleDialogClose}
+                onExited={handleDialogExited}
             />
         </>
     )

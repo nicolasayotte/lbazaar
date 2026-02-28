@@ -202,6 +202,12 @@ const Certificates = () => {
                 />
             </Box>
 
+            {walletNotConnected && hasRewards && (
+                <Alert severity="warning" sx={{ mb: 2 }}>
+                    {translatables?.texts?.connect_wallet_to_airdrop ?? 'Connect your wallet to airdrop certificates'}
+                </Alert>
+            )}
+
             <Grid container spacing={2} justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
                 <Grid item xs={12} md="auto">
                     <Typography variant="h5">
@@ -287,6 +293,7 @@ const Certificates = () => {
                 open={feeDialogOpen}
                 loading={feeLoading}
                 feeData={feeData}
+                totalEligibleCount={eligibleStudents.length}
                 onConfirm={handleFeeConfirm}
                 onClose={() => setFeeDialogOpen(false)}
                 translatables={translatables}

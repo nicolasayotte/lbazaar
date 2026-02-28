@@ -22,7 +22,7 @@ const LabeledValue = ({ label, value }) => (
     </Box>
 )
 
-const RewardDetailDialog = ({ open, reward, onClose }) => {
+const RewardDetailDialog = ({ open, reward, onClose, onExited }) => {
     const { translatables } = usePage().props
     const texts = translatables.texts
 
@@ -39,7 +39,7 @@ const RewardDetailDialog = ({ open, reward, onClose }) => {
         : (texts.wallet_custodial || 'Custodial Wallet')
 
     return (
-        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth TransitionProps={{ onExited }}>
             <DialogTitle>{texts.reward_detail_title || 'Reward Details'}</DialogTitle>
             <DialogContent>
                 <Stack spacing={2}>

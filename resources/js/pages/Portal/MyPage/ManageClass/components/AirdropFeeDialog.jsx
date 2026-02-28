@@ -10,7 +10,7 @@ import {
     Typography,
 } from '@mui/material'
 
-const AirdropFeeDialog = ({ open, loading, feeData, onConfirm, onClose, translatables }) => {
+const AirdropFeeDialog = ({ open, loading, feeData, totalEligibleCount, onConfirm, onClose, translatables }) => {
     const texts = translatables?.texts ?? {}
 
     const formatAda = (lovelace) => {
@@ -40,7 +40,11 @@ const AirdropFeeDialog = ({ open, loading, feeData, onConfirm, onClose, translat
                                 {texts.students_selected ?? 'Students selected'}
                             </Typography>
                             <Typography variant="body1" fontWeight="bold">
-                                {feeData.student_count}
+                                {totalEligibleCount != null && totalEligibleCount !== feeData.student_count
+                                    ? (texts.students_selected_of ?? '{selected} of {total} eligible students selected')
+                                        .replace('{selected}', feeData.student_count)
+                                        .replace('{total}', totalEligibleCount)
+                                    : feeData.student_count}
                             </Typography>
                         </Stack>
 
