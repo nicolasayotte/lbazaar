@@ -306,6 +306,56 @@ class CourseHistoryTest extends TestCase
     }
 
     /** @test */
+    public function test_effective_certificate_image_url_returns_snapshot_for_post_migration_row()
+    {
+        // Post-migration row: enrolled_certificate_enabled is not null (sentinel)
+        $history = CourseHistory::factory()->create([
+            'user_id'                          => $this->student1->id,
+            'course_id'                        => $this->course->id,
+            'course_schedule_id'               => $this->schedule->id,
+            'enrolled_certificate_enabled'     => true,
+            'enrolled_certificate_image_url'   => 'https://example.com/snapshot-image.png',
+        ]);
+
+        $this->assertEquals('https://example.com/snapshot-image.png', $history->effectiveCertificateImageUrl());
+    }
+
+    /** @test */
+    public function test_effective_certificate_image_url_falls_back_to_course_for_pre_migration_row()
+    {
+        // Pre-migration row: enrolled_certificate_enabled is null (no snapshot)
+        $this->course->certificate_image_url = 'https://example.com/course-image.png';
+        $this->course->save();
+
+        $history = CourseHistory::factory()->create([
+            'user_id'                      => $this->student1->id,
+            'course_id'                    => $this->course->id,
+            'course_schedule_id'           => $this->schedule->id,
+            'enrolled_certificate_enabled' => null,
+        ]);
+
+        // Reload to get fresh course relationship
+        $history = CourseHistory::with('course')->find($history->id);
+
+        $this->assertEquals('https://example.com/course-image.png', $history->effectiveCertificateImageUrl());
+    }
+
+    /** @test */
+    public function test_effective_certificate_image_url_returns_null_when_snapshot_is_null()
+    {
+        // Post-migration row with null image URL in snapshot
+        $history = CourseHistory::factory()->create([
+            'user_id'                          => $this->student1->id,
+            'course_id'                        => $this->course->id,
+            'course_schedule_id'               => $this->schedule->id,
+            'enrolled_certificate_enabled'     => true,
+            'enrolled_certificate_image_url'   => null,
+        ]);
+
+        $this->assertNull($history->effectiveCertificateImageUrl());
+    }
+
+    /** @test */
     public function test_multiple_students_with_eager_loading_see_correct_certificates()
     {
         // Create 5 students with course histories and certificates

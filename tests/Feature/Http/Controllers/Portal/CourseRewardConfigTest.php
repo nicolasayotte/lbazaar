@@ -184,6 +184,62 @@ class CourseRewardConfigTest extends TestCase
         $this->assertEquals(500, $course->token_reward_amount);
     }
 
+    public function test_store_saves_certificate_image_url_when_provided(): void
+    {
+        $this->actingAs($this->teacher);
+        $application = $this->createApprovedApplication();
+
+        $response = $this->post(route('course.store', ['id' => $application->id]), $this->buildStorePayload([
+            'certificate_enabled'     => true,
+            'certificate_name'        => 'My Certificate',
+            'certificate_description' => 'Award for completion',
+            'certificate_image_url'   => 'https://example.com/cert-image.png',
+        ]));
+
+        $response->assertRedirect();
+        $response->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('courses', [
+            'course_application_id' => $application->id,
+            'certificate_image_url' => 'https://example.com/cert-image.png',
+        ]);
+    }
+
+    public function test_store_accepts_null_certificate_image_url(): void
+    {
+        $this->actingAs($this->teacher);
+        $application = $this->createApprovedApplication();
+
+        $response = $this->post(route('course.store', ['id' => $application->id]), $this->buildStorePayload([
+            'certificate_enabled'     => true,
+            'certificate_name'        => 'My Certificate',
+            'certificate_description' => 'Award for completion',
+            'certificate_image_url'   => null,
+        ]));
+
+        $response->assertRedirect();
+        $response->assertSessionHasNoErrors();
+
+        $course = Course::where('course_application_id', $application->id)->first();
+        $this->assertNotNull($course);
+        $this->assertNull($course->certificate_image_url);
+    }
+
+    public function test_store_rejects_invalid_certificate_image_url(): void
+    {
+        $this->actingAs($this->teacher);
+        $application = $this->createApprovedApplication();
+
+        $response = $this->post(route('course.store', ['id' => $application->id]), $this->buildStorePayload([
+            'certificate_enabled'     => true,
+            'certificate_name'        => 'My Certificate',
+            'certificate_description' => 'Award for completion',
+            'certificate_image_url'   => 'not-a-valid-url',
+        ]));
+
+        $response->assertSessionHasErrors('certificate_image_url');
+    }
+
     public function test_update_saves_reward_config_changes(): void
     {
         $this->actingAs($this->teacher);
