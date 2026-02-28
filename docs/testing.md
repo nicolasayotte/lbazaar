@@ -358,6 +358,75 @@ test('admin page renders', async ({ page }) => {
 });
 ```
 
+#### Admin & Teacher Playwright Test Patterns
+
+The admin and teacher test suites exercise full CRUD workflows (create → edit → delete) against real server-rendered pages. Key patterns and gotchas discovered during development:
+
+**Serial CRUD tests** — Use `test.describe.serial()` when tests depend on data created in earlier tests (e.g., create a category, then edit it, then delete it). Each test in the serial group gets a fresh `page` but shares `const` variables declared at the describe scope:
+
+```javascript
+test.describe.serial('Category CRUD', () => {
+    const testName = `PW Test Category ${uid}`;
+
+    test('create', async ({ page }) => { /* ... */ });
+    test('edit',   async ({ page }) => { /* ... */ });
+    test('delete', async ({ page }) => { /* ... */ });
+});
+```
+
+**Input filling** — Use `pressSequentially()` (not `fill()`) for React-controlled inputs bound to Inertia `useForm` or React `useState`. Playwright's `fill()` may not fire React's synthetic `onChange`:
+
+```javascript
+const input = page.locator('input[name="title"]');
+await input.click();
+await input.pressSequentially('My Test Value');
+```
+
+**Server-side name validation** — Many admin settings enforce character restrictions:
+
+| Field | Validation Rule | Safe Test Pattern |
+|---|---|---|
+| Category name | `alpha` (letters + spaces only) | `PW Test Category ${alphaUid}` |
+| Profile first_name | `alpha` (letters + spaces only) | `Playwright ${alphaUid}` |
+| NFT name | `alpha_dash` (letters, numbers, dashes, underscores) | `E2E-Test-NFT-${Date.now()}` |
+| Classification name | No format restriction | Any string works |
+
+Generate letters-only unique IDs with:
+```javascript
+const uid = Math.random().toString(36).replace(/[^a-z]/g, '').slice(0, 8);
+```
+
+**MUI dialog interactions** — Admin settings pages use MUI `Dialog` for create/edit/delete. Wait for the dialog to appear before interacting:
+
+```javascript
+await expect(page.locator('.MuiDialog-root')).toBeVisible({ timeout: 5000 });
+await expect(page.locator('.MuiDialogTitle-root')).toContainText('Create');
+// Fill fields, then confirm:
+await page.locator('.MuiDialogActions-root button.MuiButton-contained').click();
+```
+
+**Number inputs** — Detect `input[type="number"]` and use numeric values instead of text suffixes:
+
+```javascript
+const inputType = await input.getAttribute('type');
+const testValue = inputType === 'number'
+    ? String(Number(originalValue) + 1)
+    : originalValue + '_pw';
+```
+
+**Graceful skips for app bugs** — When a test discovers an application bug (not a test bug), skip with a descriptive message referencing the source file and line:
+
+```javascript
+test.skip(true, 'Known app bug — NFT form missing required "points" field (NftFormRequest.php:40-44)');
+```
+
+**After form POST** — Use `waitForInertiaNavigation(page)` (not just `waitForApp`) to ensure Inertia has fully re-rendered with server validation errors before asserting on error messages.
+
+**Known admin app bugs** (tests skip gracefully — see [gotchas.md #27](./gotchas.md)):
+- **F-07.2c**: Classifications delete button crashes page (blank render)
+- **F-08 CRUD**: NFT form doesn't send the required `points` field
+- See also [gotchas.md #26](./gotchas.md) for teacher route 500 errors
+
 ### All Fast-Pipeline Tests
 
 Run the backend, frontend, and browser tests in one command:
