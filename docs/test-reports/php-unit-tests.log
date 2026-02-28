@@ -1,72 +1,14 @@
-Certificate Service (Tests\Unit\Services\API\CertificateService)
- [x] Mint and airdrop certificate with linked wallet
- [x] Mint and airdrop certificate with custodial wallet
- [x] Mint and airdrop certificate handles minting failure
- [x] Create certificate metadata
- [x] Get custodial wallet address success
- [x] Get custodial wallet address failure
- [x] Get linked wallet address success
- [x] Get linked wallet address fallback to custodial
- [x] Mint certificate nft success
- [x] Mint certificate nft build failure
- [x] Mint certificate nft submit failure
- [x] Mint certificate nft missing template
- [x] Record nft transaction
- [x] Get user id from stake key
- [x] Get user id from stake key not found
- [x] Send certificate notification logs info
- [x] Mint and airdrop certificate handles exceptions
- [x] Get student wallet address uses linked when available
- [x] Get student wallet address uses custodial when no stake key
- [x] Update certificate status to pending
- [x] Update certificate status to minted with tx hash
- [x] Update certificate status to failed
- [x] Update certificate status with schedule id
- [x] Update certificate status logs warning when record not found
- [x] Update certificate status logs info on success
- [x] Update certificate status transitions from not eligible to pending
- [x] Update certificate status transitions from pending to minted
- [x] Update certificate status transitions from pending to failed
- [x] Update certificate status transitions from failed to pending retry
- [x] Update certificate status preserves existing tx hash when null provided
- [x] Get eligible students returns completed students
- [x] Get eligible students excludes already minted
- [x] Get eligible students excludes cancelled
- [x] Batch mint processes multiple students
- [x] Mint certificate updates status to pending
- [x] Mint certificate success updates status to minted
- [x] Mint certificate failure updates status to failed
- [x] Get student certificates returns completed courses with certificates enabled
- [x] Get student certificates excludes cancelled courses
- [x] Get student certificates excludes courses without certificate enabled
- [x] Get student certificates excludes incomplete courses
- [x] Get student certificates returns all required fields
- [x] Get student certificates defaults certificate status to not eligible
- [x] Get student certificates returns empty array when no certificates
- [x] Get student certificates handles exceptions
- [x] Get student certificates orders by completed at descending
- [x] Get student certificates includes certificate transaction relationship
- [x] Get certificate data for completion returns null when not completed
- [x] Get certificate data for completion returns null when no record
- [x] Get certificate data for completion returns not eligible status
- [x] Get certificate data for completion returns minted status with explorer url
- [x] Get certificate data for completion uses config for explorer url
- [x] Get certificate data for completion returns pending status
- [x] Get certificate data for completion returns failed status
- [x] Estimates fee correctly for certificate only
- [x] Reports insufficient funds
- [x] Doubles fee when both rewards enabled
- [x] Mint and airdrop certificate updates certificate status on success
- [x] Mint and airdrop certificate does not update status on failure
- [x] Create certificate metadata uses enrolled name when history provided
- [x] Create certificate metadata uses default when no history
- [x] Get student rewards returns empty when no completions
- [x] Get student rewards returns certificate row for cert enabled course
- [x] Get student rewards returns token row for token enabled course
- [x] Get student rewards returns two rows when both rewards enabled
- [x] Get student rewards marks revoked when rewards invalidated at set
- [x] Get self mint eligibility returns null when not completed
- [x] Get self mint eligibility returns null when no history
- [x] Get self mint eligibility returns structured array when completed
- [x] Get self mint eligibility includes token when enabled
+Student Certificate (Tests\Feature\StudentCertificate)
+ [x] Student can view their certificates
+ [x] Student only sees own certificates
+ [x] Certificates include correct status
+ [x] Minted certificates include explorer url
+ [x] Only completed courses show certificates
+ [x] Courses without certificate enabled excluded
+ [x] Guest cannot access certificates page
+ [x] Student can get certificate status via ajax
+ [x] Student cannot access other students certificate status
+ [x] Eager loading shows correct certificate transactions
+ [x] Certificate image url from nft transaction
+ [x] Multiple students see own certificates with eager loading
 
