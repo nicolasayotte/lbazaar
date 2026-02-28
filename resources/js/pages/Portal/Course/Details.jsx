@@ -65,6 +65,9 @@ const Details = () => {
     const [adaAvailable, setAdaAvailable] = useState(adaAvailableFromServer)
     const [driftWarning, setDriftWarning] = useState(false)
 
+    // Live network status (server-side prop as initial, updated by polling)
+    const [liveNetworkStatus, setLiveNetworkStatus] = useState(cardanoNetworkStatus)
+
     const [showStripeCheckout, setShowStripeCheckout] = useState(false)
     const [clientSecret, setClientSecret] = useState(null)
     const [stripeLoading, setStripeLoading] = useState(false)
@@ -91,6 +94,24 @@ const Details = () => {
         const id = setInterval(poll, 60_000)
         return () => clearInterval(id)
     }, [course.id])
+
+    // 60-second Cardano network status polling
+    useEffect(() => {
+        const poll = async () => {
+            try {
+                const res = await axios.get('/api/cardano/network-status')
+                const status = res.data?.status ?? 'healthy'
+                setLiveNetworkStatus(status)
+                if (status === 'unreachable') {
+                    setAdaAvailable(false)
+                } else {
+                    setAdaAvailable(currentAdaPrice !== null)
+                }
+            } catch (_) {}
+        }
+        const id = setInterval(poll, 60_000)
+        return () => clearInterval(id)
+    }, [currentAdaPrice])
 
     // Quote countdown
     useEffect(() => {
@@ -730,7 +751,7 @@ const Details = () => {
                                                 </Typography>
                                             </Box>
                                         )}
-                                        <CardanoNetworkStatus status={cardanoNetworkStatus} translatables={translatables} />
+                                        <CardanoNetworkStatus status={liveNetworkStatus} translatables={translatables} />
                                         {!adaAvailable && stripeAvailable === false && (
                                             <Alert severity="warning" sx={{ mb: 2 }}>
                                                 {translatables?.texts?.purchases_unavailable ?? 'Purchases are temporarily unavailable. Please try again later.'}
@@ -808,6 +829,24 @@ const Details = () => {
                                 <Alert severity="info" sx={{ mb: 1 }}>
                                     {translatables?.texts?.teacher_view_label ?? 'Teacher view — pricing preview only'}
                                 </Alert>
+                                <Button
+                                    variant="outlined"
+                                    fullWidth
+                                    disabled
+                                    startIcon={<AccountBalanceWalletIcon />}
+                                    sx={{ py: 1.5 }}
+                                >
+                                    {`${translatables.texts.buy_with_ada} - ${formatDualPrice(parseJpy(course.price), currentAdaPrice)}`}
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    fullWidth
+                                    disabled
+                                    startIcon={<CreditCardIcon />}
+                                    sx={{ py: 1.5, mt: 1 }}
+                                >
+                                    {`${translatables?.texts?.pay_with_card || 'Pay with Credit Card'} - ¥${course.price?.toLocaleString()}`}
+                                </Button>
                             </Box>
                         )}
                         {nft && walletAPI && <CourseScheduleList data={schedules} handleOnBook={handleBookNFT} handleOnCancelBook={handleCancelBooking} />}
