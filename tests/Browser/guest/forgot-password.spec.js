@@ -42,9 +42,7 @@ test.describe('F-10.3: Unregistered email shows error', () => {
         await page.locator('input[name="email"]').fill('no-such-user@example.com');
         await page.locator('button[type="submit"]').click();
         await waitForInertiaNavigation(page);
-        // ErrorText renders as <span class="MuiTypography-root MuiTypography-p ...">
-        // color="error" is applied via generated css class, not MuiTypography-colorError
-        const errorEl = page.locator('span.MuiTypography-p').first();
-        await expect(errorEl).toBeVisible();
+        // Assert on error text content — stable across MUI versions
+        await expect(page.getByText(/can't find a user/i)).toBeVisible();
     });
 });

@@ -88,7 +88,7 @@ test.describe('F-08.3: Empty inquiry shows validation errors', () => {
 
         const submitBtn = page.locator('button').filter({ hasText: /submit/i });
         await submitBtn.click();
-        await waitForApp(page);
+        await waitForInertiaNavigation(page);
 
         const errorEl = page.locator('.Mui-error').first();
         await expect(errorEl).toBeVisible();

@@ -49,10 +49,8 @@ test.describe('F-05.3: Invalid admin credentials', () => {
         await loginPage.goto();
         await loginPage.login('wrong@example.com', 'wrongpassword');
         await waitForInertiaNavigation(page);
-        // ErrorText renders as <span class="MuiTypography-root MuiTypography-p ...">
-        // color="error" is applied via generated css class, not MuiTypography-colorError
-        const errorEl = page.locator('span.MuiTypography-p').first();
-        await expect(errorEl).toBeVisible();
+        // Assert on error text content — stable across MUI versions
+        await expect(page.getByText(/do not match our records/i)).toBeVisible();
         await expect(page).toHaveURL(/\/admin\/login/);
     });
 });
