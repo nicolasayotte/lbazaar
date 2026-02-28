@@ -8,6 +8,7 @@ use App\Models\Course;
 use App\Models\CourseSchedule;
 use App\Models\CourseHistory;
 use App\Services\API\CertificateService;
+use App\Services\API\TokenRewardService;
 use Mockery;
 
 class CourseCompletionTest extends TestCase
@@ -174,16 +175,21 @@ class CourseCompletionTest extends TestCase
             'certificate_status' => 'not_eligible'
         ]);
 
-        // Mock the CertificateService
+        // Mock the CertificateService — controller now calls getSelfMintEligibility
         $mockService = Mockery::mock(CertificateService::class);
-        $mockService->shouldReceive('getCertificateDataForCompletion')
+        $mockService->shouldReceive('getSelfMintEligibility')
             ->once()
             ->with($this->course->id, $this->student->id, $this->schedule->id)
             ->andReturn([
-                'status' => 'not_eligible',
-                'tx_hash' => null,
-                'explorer_url' => null,
-                'minted_at' => null
+                'certificate' => [
+                    'status'       => 'not_eligible',
+                    'tx_hash'      => null,
+                    'explorer_url' => null,
+                    'minted_at'    => null,
+                    'fee_lovelace' => 2500000,
+                ],
+                'token'              => null,
+                'total_fee_lovelace' => 2500000,
             ]);
 
         $this->app->instance(CertificateService::class, $mockService);
@@ -196,6 +202,34 @@ class CourseCompletionTest extends TestCase
         ]));
 
         $response->assertStatus(200);
+    }
+
+    public function test_complete_confirmation_includes_rewards_and_wallet_flag()
+    {
+        // Create completed booking with certificate
+        CourseHistory::create([
+            'user_id'               => $this->student->id,
+            'course_id'             => $this->course->id,
+            'course_schedule_id'    => $this->schedule->id,
+            'completed_at'          => now()->subDays(1),
+            'certificate_status'    => 'not_eligible',
+            'enrolled_certificate_enabled' => true,
+        ]);
+
+        $this->actingAs($this->student);
+
+        $response = $this->get(route('course.attend.complete.confirmation', [
+            'course_id'   => $this->course->id,
+            'schedule_id' => $this->schedule->id,
+        ]));
+
+        $response->assertStatus(200);
+        $response->assertInertia(fn ($page) => $page
+            ->component('Portal/CourseCompleteConfirmation')
+            ->has('rewards')
+            ->has('has_external_wallet')
+            ->has('certificate')  // legacy prop must still be present
+        );
     }
 
     public function test_complete_confirmation_explorer_url_uses_config()
@@ -277,5 +311,104 @@ class CourseCompletionTest extends TestCase
         $response->assertInertia(fn ($page) => $page
             ->where('certificate.status', 'failed')
         );
+    }
+
+    public function test_student_self_mint_certificate_succeeds()
+    {
+        // Create completed booking with certificate enabled
+        CourseHistory::create([
+            'user_id'                      => $this->student->id,
+            'course_id'                    => $this->course->id,
+            'course_schedule_id'           => $this->schedule->id,
+            'completed_at'                 => now()->subDays(1),
+            'certificate_status'           => 'not_eligible',
+            'enrolled_certificate_enabled' => true,
+        ]);
+
+        // Mock CertificateService
+        $mockCertService = Mockery::mock(CertificateService::class);
+        $mockCertService->shouldReceive('mintAndAirdropCertificate')
+            ->once()
+            ->andReturn([
+                'success'        => true,
+                'message'        => 'Certificate minted and airdropped successfully',
+                'transaction_id' => 'mock_cert_tx_hash_123',
+                'wallet_address' => 'addr1mock',
+            ]);
+
+        $this->app->instance(CertificateService::class, $mockCertService);
+
+        $this->actingAs($this->student);
+
+        $response = $this->postJson(route('course.attend.self.mint', [
+            'course_id'   => $this->course->id,
+            'schedule_id' => $this->schedule->id,
+        ]), ['type' => 'certificate']);
+
+        $response->assertStatus(200);
+        $response->assertJsonFragment([
+            'success' => true,
+            'tx_hash' => 'mock_cert_tx_hash_123',
+        ]);
+    }
+
+    public function test_student_self_mint_blocked_when_already_minted()
+    {
+        // Create completed booking with certificate already minted
+        CourseHistory::create([
+            'user_id'                      => $this->student->id,
+            'course_id'                    => $this->course->id,
+            'course_schedule_id'           => $this->schedule->id,
+            'completed_at'                 => now()->subDays(1),
+            'certificate_status'           => 'minted',
+            'certificate_tx_hash'          => 'existing_tx_hash',
+            'enrolled_certificate_enabled' => true,
+        ]);
+
+        $this->actingAs($this->student);
+
+        $response = $this->postJson(route('course.attend.self.mint', [
+            'course_id'   => $this->course->id,
+            'schedule_id' => $this->schedule->id,
+        ]), ['type' => 'certificate']);
+
+        $response->assertStatus(409);
+        $response->assertJsonFragment([
+            'success'        => false,
+            'already_minted' => true,
+        ]);
+    }
+
+    public function test_student_self_mint_requires_completed_course()
+    {
+        // Create booking WITHOUT completed_at
+        CourseHistory::create([
+            'user_id'            => $this->student->id,
+            'course_id'          => $this->course->id,
+            'course_schedule_id' => $this->schedule->id,
+            'completed_at'       => null,
+        ]);
+
+        $this->actingAs($this->student);
+
+        $response = $this->postJson(route('course.attend.self.mint', [
+            'course_id'   => $this->course->id,
+            'schedule_id' => $this->schedule->id,
+        ]), ['type' => 'certificate']);
+
+        $response->assertStatus(404);
+    }
+
+    public function test_student_self_mint_validates_type_field()
+    {
+        $this->actingAs($this->student);
+
+        $response = $this->postJson(route('course.attend.self.mint', [
+            'course_id'   => $this->course->id,
+            'schedule_id' => $this->schedule->id,
+        ]), ['type' => 'invalid_type']);
+
+        $response->assertStatus(422);
+        $response->assertJsonFragment(['success' => false]);
     }
 }

@@ -77,7 +77,7 @@ class StudentCertificateTest extends TestCase
         $response->assertStatus(200);
         $response->assertInertia(fn ($page) => $page
             ->component('Portal/MyPage/Badges/Index')
-            ->has('certificates')
+            ->has('rewards')
             ->where('hasButtons', true)
         );
     }
@@ -105,8 +105,8 @@ class StudentCertificateTest extends TestCase
         $response->assertStatus(200);
         $response->assertInertia(fn ($page) => $page
             ->component('Portal/MyPage/Badges/Index')
-            ->has('certificates', 1)
-            ->where('certificates.0.course_name', 'Test Course')
+            ->has('rewards', 1)
+            ->where('rewards.0.course_name', 'Test Course')
         );
     }
 
@@ -141,10 +141,10 @@ class StudentCertificateTest extends TestCase
         $response->assertStatus(200);
         $response->assertInertia(fn ($page) => $page
             ->component('Portal/MyPage/Badges/Index')
-            ->has('certificates', 3)
-            ->where('certificates.0.certificate_status', 'minted')
-            ->where('certificates.1.certificate_status', 'minting')
-            ->where('certificates.2.certificate_status', 'eligible')
+            ->has('rewards', 3)
+            ->where('rewards.0.delivery_status', 'minted')
+            ->where('rewards.1.delivery_status', 'minting')
+            ->where('rewards.2.delivery_status', 'eligible')
         );
     }
 
@@ -164,10 +164,10 @@ class StudentCertificateTest extends TestCase
         $response->assertStatus(200);
         $response->assertInertia(fn ($page) => $page
             ->component('Portal/MyPage/Badges/Index')
-            ->has('certificates', 1)
-            ->where('certificates.0.certificate_status', 'minted')
-            ->where('certificates.0.certificate_tx_hash', $history->certificate_tx_hash)
-            ->has('certificates.0.certificate_explorer_url')
+            ->has('rewards', 1)
+            ->where('rewards.0.delivery_status', 'minted')
+            ->where('rewards.0.tx_hash', $history->certificate_tx_hash)
+            ->has('rewards.0.explorer_url')
         );
     }
 
@@ -196,8 +196,8 @@ class StudentCertificateTest extends TestCase
         $response->assertStatus(200);
         $response->assertInertia(fn ($page) => $page
             ->component('Portal/MyPage/Badges/Index')
-            ->has('certificates', 1)
-            ->where('certificates.0.certificate_status', 'minted')
+            ->has('rewards', 1)
+            ->where('rewards.0.delivery_status', 'minted')
         );
     }
 
@@ -236,8 +236,8 @@ class StudentCertificateTest extends TestCase
         $response->assertStatus(200);
         $response->assertInertia(fn ($page) => $page
             ->component('Portal/MyPage/Badges/Index')
-            ->has('certificates', 1)
-            ->where('certificates.0.course_name', 'Test Course')
+            ->has('rewards', 1)
+            ->where('rewards.0.course_name', 'Test Course')
         );
     }
 
@@ -332,8 +332,8 @@ class StudentCertificateTest extends TestCase
         $response->assertStatus(200);
         $response->assertInertia(fn ($page) => $page
             ->component('Portal/MyPage/Badges/Index')
-            ->has('certificates', 1)
-            ->where('certificates.0.course_name', 'Test Course')
+            ->has('rewards', 1)
+            ->where('rewards.0.course_name', 'Test Course')
         );
     }
 
@@ -404,8 +404,8 @@ class StudentCertificateTest extends TestCase
             $response->assertStatus(200);
             $response->assertInertia(fn ($page) => $page
                 ->component('Portal/MyPage/Badges/Index')
-                ->has('certificates', 1)
-                ->where('certificates.0.course_name', 'Test Course')
+                ->has('rewards', 1)
+                ->where('rewards.0.course_name', 'Test Course')
             );
         }
     }
