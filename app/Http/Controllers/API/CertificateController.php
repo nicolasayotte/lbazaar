@@ -240,7 +240,14 @@ class CertificateController extends Controller
                 $q->where('is_cancelled', false)
                   ->orWhere('is_cancelled', 0)
                   ->orWhereNull('is_cancelled');
-            }); // Not cancelled
+            }) // Not cancelled
+            ->where(function ($q) {
+                // MySQL: NULL NOT IN (...) evaluates to NULL (unknown), not TRUE.
+                // Include rows with null certificate_status (never minted);
+                // exclude 'minted' and 'self_minted' to prevent duplicate minting.
+                $q->whereNull('certificate_status')
+                  ->orWhereNotIn('certificate_status', ['minted', 'self_minted']);
+            });
 
         // If schedule_id is provided, filter by specific schedule
         if ($scheduleId) {
