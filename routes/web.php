@@ -91,6 +91,9 @@ Route::prefix('admin')->name('admin.')->group(function() {
         # admin wallet
         Route::get('/wallet-history', [AdminWalletController::class, 'index'])->name('wallet.index');
 
+        # Refunds
+        Route::get('/refunds', [\App\Http\Controllers\Admin\RefundController::class, 'index'])->name('refunds.index');
+
         # Inquiries
         Route::prefix('inquiries')->name('inquiries.')->group(function() {
             Route::get('/', [AdminInquiriesController::class, 'index'])->name('index');

@@ -1,5 +1,5 @@
 import { Link, usePage } from "@inertiajs/inertia-react"
-import { Wallet, AccountBalanceWallet, AccountCircle, Article, ExpandLess, ExpandMore, GTranslate, Inbox, LibraryBooks, LocalOffer, Logout, Mail, ManageAccounts, Menu, People, Redeem, Settings, DisplaySettings } from "@mui/icons-material"
+import { Wallet, AccountBalanceWallet, AccountCircle, Article, ExpandLess, ExpandMore, GTranslate, Inbox, LibraryBooks, LocalOffer, Logout, Mail, ManageAccounts, Menu, People, Redeem, Settings, DisplaySettings, Undo } from "@mui/icons-material"
 import { AppBar, Box, Collapse, Divider, Drawer, Grid, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar, Typography, Stack } from "@mui/material"
 import { useState } from "react"
 import routes from "../../helpers/routes.helper"
@@ -47,6 +47,12 @@ const AdminNavbar = ({ drawerWidth, window }) => {
             link: routes["admin.wallet.index"],
             active: component.startsWith('Admin/WalletHistory'),
             icon: <Wallet />,
+        },
+        {
+            name: translatables?.title?.refunds ?? 'Refunds',
+            link: routes["admin.refunds.index"],
+            active: component.startsWith('Admin/Refunds'),
+            icon: <Undo />,
         }
     ]
 
