@@ -65,6 +65,8 @@ class ManageCertificateController extends Controller
 
             if ($certificateStatus === 'minted') {
                 $deliveryStatus = 'delivered';
+            } elseif ($certificateStatus === 'revoked') {
+                $deliveryStatus = 'revoked';
             } elseif ($certificateStatus === 'self_minted') {
                 $deliveryStatus = 'self_minted';
             } elseif ($certificateStatus === 'failed') {
@@ -84,15 +86,18 @@ class ManageCertificateController extends Controller
             $completionStatus = $history->completed_at ? 'completed' : 'in_progress';
 
             return [
-                'id'                    => $history->user->id,
-                'name'                  => $history->user->fullname ?? $history->user->name,
-                'email'                 => $history->user->email,
-                'completed_at'          => $history->completed_at,
-                'completion_status'     => $completionStatus,
-                'delivery_status'       => $deliveryStatus,
-                'certificate_status'    => $certificateStatus,
-                'certificate_tx_hash'   => $history->certificate_tx_hash,
-                'certificate_minted_at' => $history->certificate_minted_at,
+                'id'                      => $history->user->id,
+                'name'                    => $history->user->fullname ?? $history->user->name,
+                'email'                   => $history->user->email,
+                'completed_at'            => $history->completed_at,
+                'completion_status'       => $completionStatus,
+                'delivery_status'         => $deliveryStatus,
+                'certificate_status'      => $certificateStatus,
+                'certificate_tx_hash'     => $history->certificate_tx_hash,
+                'certificate_minted_at'   => $history->certificate_minted_at,
+                'token_reward_status'     => $history->token_reward_status,
+                'token_reward_tx_hash'    => $history->token_reward_tx_hash,
+                'rewards_invalidated_at'  => $history->rewards_invalidated_at,
             ];
         })->toArray();
     }
