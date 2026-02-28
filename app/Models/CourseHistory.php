@@ -32,12 +32,14 @@ class CourseHistory extends Model
         'payment_submitted_at',
         'payment_confirmed_at',
         'rewards_invalidated_at',
+        'rewards_notification_sent_at',
         'token_reward_status',
         'token_reward_tx_hash',
         'token_reward_minted_at',
         'enrolled_certificate_enabled',
         'enrolled_certificate_name',
         'enrolled_certificate_description',
+        'enrolled_certificate_image_url',
         'enrolled_token_reward_enabled',
         'enrolled_token_reward_amount',
     ];
@@ -47,6 +49,7 @@ class CourseHistory extends Model
         'payment_submitted_at' => 'datetime',
         'payment_confirmed_at' => 'datetime',
         'rewards_invalidated_at' => 'datetime',
+        'rewards_notification_sent_at' => 'datetime',
         'payment_ada_amount' => 'decimal:6',
         'token_reward_minted_at' => 'datetime',
         'enrolled_certificate_enabled' => 'boolean',
@@ -185,6 +188,18 @@ class CourseHistory extends Model
         }
 
         return $this->course?->certificate_description;
+    }
+
+    /**
+     * Return the certificate_image_url that was active at enrollment time.
+     */
+    public function effectiveCertificateImageUrl(): ?string
+    {
+        if ($this->enrolled_certificate_enabled !== null) {
+            return $this->enrolled_certificate_image_url;
+        }
+
+        return $this->course?->certificate_image_url;
     }
 
     /**

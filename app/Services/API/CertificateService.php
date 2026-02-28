@@ -11,6 +11,7 @@ use App\Models\Nft;
 use App\Models\NftTransactions;
 use App\Traits\Web3CommandTrait;
 use Exception;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class CertificateService
@@ -37,12 +38,13 @@ class CertificateService
             // Resolve override values from enrollment-time snapshot when available
             $certNameOverride        = $history?->effectiveCertificateName();
             $certDescriptionOverride = $history?->effectiveCertificateDescription();
+            $certImageUrlOverride    = $history?->effectiveCertificateImageUrl();
 
             // Create certificate metadata
             $certificateData = $this->createCertificateMetadata($course, $student, $certNameOverride, $certDescriptionOverride);
-            
+
             // Mint the certificate NFT
-            $mintResult = $this->mintCertificateNFT($certificateData, $walletAddress);
+            $mintResult = $this->mintCertificateNFT($certificateData, $walletAddress, $certImageUrlOverride);
             
             if (!$mintResult['success']) {
                 return [
@@ -155,12 +157,13 @@ class CertificateService
 
     /**
      * Mint certificate NFT using web3 scripts
-     * 
+     *
      * @param array $certificateData
      * @param string $walletAddress
+     * @param string|null $imageUrlOverride  Override image URL from enrollment-time snapshot.
      * @return array
      */
-    protected function mintCertificateNFT($certificateData, $walletAddress)
+    protected function mintCertificateNFT($certificateData, $walletAddress, ?string $imageUrlOverride = null)
     {
         try {
             $metadataJson = json_encode($certificateData);
@@ -172,14 +175,14 @@ class CertificateService
             // Create NFT name and metadata
             $nftName = 'Certificate-' . $certificateData['course_id'] . '-' . $certificateData['student_id'];
             $serialNum = $certificateData['serial_number'];
-            
+
             $certificateNft = Nft::where('name', 'Certificate')->first();
             if (!$certificateNft) {
                 throw new Exception('Certificate NFT template not found in database');
             }
 
             $mph = $certificateNft->mph;
-            $imageUrl = $certificateNft->image_url;
+            $imageUrl = $imageUrlOverride ?? $certificateNft->image_url;
 
             $buildCommand = $this->buildWeb3Command('run/build-certificate-tx.mjs', [
                 $walletAddress,
@@ -373,6 +376,64 @@ class CertificateService
             Log::error('Failed to send certificate notification', [
                 'student_id' => $student->id,
                 'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Dispatch an in-app notification if the course has rewards and
+     * no notification has been sent yet (idempotent via rewards_notification_sent_at).
+     */
+    public function dispatchCompletionNotificationIfEligible(CourseHistory $booking): void
+    {
+        if ($booking->rewards_notification_sent_at !== null) {
+            return;
+        }
+
+        $certEnabled  = $booking->effectiveCertificateEnabled();
+        $tokenEnabled = $booking->effectiveTokenRewardEnabled();
+
+        if (!$certEnabled && !$tokenEnabled) {
+            return;
+        }
+
+        $course = $booking->course ?? $booking->course()->first();
+
+        if ($certEnabled && $tokenEnabled) {
+            $langKey = 'translatables.texts.reward_notification_both';
+        } elseif ($certEnabled) {
+            $langKey = 'translatables.texts.reward_notification_cert_only';
+        } else {
+            $langKey = 'translatables.texts.reward_notification_token_only';
+        }
+
+        $message = __($langKey, ['course' => $course->title ?? '']);
+
+        $this->notifyStudentRewardsAvailable($booking, $message);
+    }
+
+    /**
+     * Insert the in-app notification row and stamp rewards_notification_sent_at.
+     * Wrapped in try/catch — notification failure must never abort completion.
+     */
+    protected function notifyStudentRewardsAvailable(CourseHistory $booking, string $message): void
+    {
+        try {
+            DB::table('notifications')->insert([
+                'from_user_id' => null,
+                'to_user_id'   => $booking->user_id,
+                'message'      => $message,
+                'is_read'      => false,
+                'created_at'   => now(),
+                'updated_at'   => now(),
+            ]);
+
+            $booking->update(['rewards_notification_sent_at' => now()]);
+        } catch (\Throwable $e) {
+            Log::warning('CertificateService: failed to send reward notification', [
+                'course_history_id' => $booking->id,
+                'user_id'           => $booking->user_id,
+                'error'             => $e->getMessage(),
             ]);
         }
     }

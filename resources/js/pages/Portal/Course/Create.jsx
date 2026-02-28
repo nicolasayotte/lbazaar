@@ -39,6 +39,7 @@ const Create = () => {
         certificate_enabled: initialData?.certificate_enabled ?? false,
         certificate_name: initialData?.certificate_name ?? '',
         certificate_description: initialData?.certificate_description ?? '',
+        certificate_image_url: initialData?.certificate_image_url ?? '',
         token_reward_enabled: initialData?.token_reward_enabled ?? false,
         token_reward_amount: initialData?.token_reward_amount ?? '',
     })
@@ -381,6 +382,15 @@ const Create = () => {
                                                         value={data.certificate_description}
                                                         multiline
                                                         rows={3}
+                                                        onChange={e => handleOnChange(e, setData)}
+                                                        errors={errors}
+                                                    />
+                                                </Grid>
+                                                <Grid item xs={12}>
+                                                    <Input
+                                                        label={translatables.texts.certificate_image_url}
+                                                        name="certificate_image_url"
+                                                        value={data.certificate_image_url}
                                                         onChange={e => handleOnChange(e, setData)}
                                                         errors={errors}
                                                     />

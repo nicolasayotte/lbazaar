@@ -200,10 +200,11 @@ class CoursePurchaseService
                     'payment_tx_hash'                 => $txId,
                     'payment_ada_amount'              => $adaAmount,
                     'payment_submitted_at'            => now(),
-                    'enrolled_certificate_enabled'    => (bool) $schedule->course->certificate_enabled,
-                    'enrolled_certificate_name'       => $schedule->course->certificate_name,
-                    'enrolled_certificate_description' => $schedule->course->certificate_description,
-                    'enrolled_token_reward_enabled'   => (bool) $schedule->course->token_reward_enabled,
+                    'enrolled_certificate_enabled'      => (bool) $schedule->course->certificate_enabled,
+                    'enrolled_certificate_name'         => $schedule->course->certificate_name,
+                    'enrolled_certificate_description'  => $schedule->course->certificate_description,
+                    'enrolled_certificate_image_url'    => $schedule->course->certificate_image_url,
+                    'enrolled_token_reward_enabled'     => (bool) $schedule->course->token_reward_enabled,
                     'enrolled_token_reward_amount'    => $schedule->course->token_reward_amount,
                 ]);
 

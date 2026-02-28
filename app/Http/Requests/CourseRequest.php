@@ -42,6 +42,7 @@ class CourseRequest extends FormRequest
             'certificate_enabled'      => 'boolean',
             'certificate_name'         => 'required_if:certificate_enabled,1,true|nullable|string|max:255',
             'certificate_description'  => 'required_if:certificate_enabled,1,true|nullable|string|max:1000',
+            'certificate_image_url'    => 'nullable|url|max:2048',
             'token_reward_enabled'     => 'boolean',
             'token_reward_amount'      => 'required_if:token_reward_enabled,1,true|nullable|integer|min:1|max:1000000',
         ];

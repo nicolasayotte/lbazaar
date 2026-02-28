@@ -41,6 +41,7 @@ class Course extends Model
         "certificate_enabled",
         "certificate_name",
         "certificate_description",
+        "certificate_image_url",
         "token_reward_enabled",
         "token_reward_amount",
     ];

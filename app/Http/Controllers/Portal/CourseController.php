@@ -594,6 +594,9 @@ class CourseController extends Controller
 
         $booking->update(['completed_at' => Carbon::now()]);
 
+        // Dispatch in-app reward notification if eligible (F-19.1)
+        app(CertificateService::class)->dispatchCompletionNotificationIfEligible($booking);
+
         $isBadgeReceived = $this->courseHistoryRepository->feedBadge($booking->id);
         $earnedPoints = $this->giveRewards($course_id, $schedule_id);
 
