@@ -87,8 +87,19 @@ class ManageCourseController extends Controller
 
         $students = $this->getCompletedStudents($id);
 
-        $hasRewards = !empty($course->certificate_enabled)
-            || !empty($course->token_reward_enabled);
+        // Derive has_rewards and token_reward_enabled from per-student snapshot data.
+        // Fall back to course-level settings when no students have completed yet.
+        if (!empty($students)) {
+            $hasRewards = collect($students)->contains(
+                fn ($s) => !empty($s['has_certificate_reward']) || !empty($s['has_token_reward'])
+            );
+            $tokenRewardEnabled = collect($students)->contains(
+                fn ($s) => !empty($s['has_token_reward'])
+            );
+        } else {
+            $hasRewards = !empty($course->certificate_enabled) || !empty($course->token_reward_enabled);
+            $tokenRewardEnabled = !empty($course->token_reward_enabled);
+        }
 
         return Inertia::render('Portal/MyPage/ManageClass/Certificates', [
             'course'               => $this->courseRepository->findByIdManageClass($id),
@@ -97,7 +108,7 @@ class ManageCourseController extends Controller
             'courseId'             => (int) $id,
             'explorerUrl'          => config('services.cardano.explorer_url'),
             'has_rewards'          => $hasRewards,
-            'token_reward_enabled' => !empty($course->token_reward_enabled),
+            'token_reward_enabled' => $tokenRewardEnabled,
             'title'                => $this->baseTitle . getTranslation('title.certificates'),
         ])->withViewData([
             'title' => $this->baseTitle . getTranslation('title.certificates'),
@@ -121,7 +132,7 @@ class ManageCourseController extends Controller
     {
         $completedHistories = CourseHistory::where('course_id', $courseId)
             ->whereNotNull('completed_at')
-            ->with(['user', 'courseSchedule'])
+            ->with(['user', 'courseSchedule', 'course'])
             ->get();
 
         return $completedHistories->map(function ($history) {
@@ -160,6 +171,8 @@ class ManageCourseController extends Controller
                 'certificate_status'    => $certificateStatus,
                 'certificate_tx_hash'   => $history->certificate_tx_hash,
                 'certificate_minted_at' => $history->certificate_minted_at,
+                'has_certificate_reward' => $history->effectiveCertificateEnabled(),
+                'has_token_reward'       => $history->effectiveTokenRewardEnabled(),
             ];
         })->toArray();
     }
