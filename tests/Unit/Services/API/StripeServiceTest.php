@@ -3,6 +3,7 @@
 namespace Tests\Unit\Services\API;
 
 use Tests\TestCase;
+use App\Services\API\RewardInvalidationService;
 use App\Services\API\StripeService;
 use App\Models\User;
 use App\Models\Course;
@@ -25,7 +26,7 @@ class StripeServiceTest extends TestCase
         parent::setUp();
 
         $this->setupTestData();
-        $this->service = new StripeService();
+        $this->service = new StripeService(app(RewardInvalidationService::class));
     }
 
     private function setupTestData()

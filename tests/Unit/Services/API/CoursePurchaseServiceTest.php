@@ -5,6 +5,7 @@ namespace Tests\Unit\Services\API;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use App\Services\API\CoursePurchaseService;
+use App\Services\API\RewardInvalidationService;
 use App\Services\API\WalletService;
 use App\Repositories\UserRepository;
 use App\Models\User;
@@ -47,7 +48,7 @@ class CoursePurchaseServiceTest extends TestCase
         $this->userRepository = Mockery::mock(UserRepository::class);
         $this->userRepository->shouldReceive('getAdmin')->andReturn($this->admin)->byDefault();
 
-        $this->service = new CoursePurchaseService($this->walletService, $this->userRepository);
+        $this->service = new CoursePurchaseService($this->walletService, $this->userRepository, app(RewardInvalidationService::class));
     }
 
     private function setupTestData()
@@ -227,7 +228,7 @@ class CoursePurchaseServiceTest extends TestCase
 
     public function test_builds_purchase_transaction_successfully()
     {
-        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository, app(RewardInvalidationService::class)])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
 
@@ -254,7 +255,7 @@ class CoursePurchaseServiceTest extends TestCase
 
     public function test_build_returns_insufficient_funds_flag()
     {
-        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository, app(RewardInvalidationService::class)])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
 
@@ -276,7 +277,7 @@ class CoursePurchaseServiceTest extends TestCase
 
     public function test_build_returns_web3_error()
     {
-        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository, app(RewardInvalidationService::class)])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
 
@@ -300,7 +301,7 @@ class CoursePurchaseServiceTest extends TestCase
     {
         Setting::where('slug', 'admin-commission')->update(['value' => '30']);
 
-        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository, app(RewardInvalidationService::class)])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
 
@@ -330,7 +331,7 @@ class CoursePurchaseServiceTest extends TestCase
     {
         Setting::where('slug', 'admin-commission')->delete();
 
-        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository, app(RewardInvalidationService::class)])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
 
@@ -363,7 +364,7 @@ class CoursePurchaseServiceTest extends TestCase
     {
         $this->primeQuoteCache();
 
-        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository, app(RewardInvalidationService::class)])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
 
@@ -403,7 +404,7 @@ class CoursePurchaseServiceTest extends TestCase
     {
         $this->primeQuoteCache();
 
-        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository, app(RewardInvalidationService::class)])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
 
@@ -424,7 +425,7 @@ class CoursePurchaseServiceTest extends TestCase
     {
         $this->primeQuoteCache();
 
-        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository, app(RewardInvalidationService::class)])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
 
@@ -580,7 +581,7 @@ class CoursePurchaseServiceTest extends TestCase
 
     public function test_build_catches_exceptions()
     {
-        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository, app(RewardInvalidationService::class)])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
 
@@ -600,7 +601,7 @@ class CoursePurchaseServiceTest extends TestCase
     {
         $this->primeQuoteCache();
 
-        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository, app(RewardInvalidationService::class)])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
 
@@ -618,7 +619,7 @@ class CoursePurchaseServiceTest extends TestCase
 
     public function test_get_tx_status_returns_pending_when_confirmations_below_required()
     {
-        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository, app(RewardInvalidationService::class)])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
 
@@ -638,7 +639,7 @@ class CoursePurchaseServiceTest extends TestCase
 
     public function test_get_tx_status_returns_confirmed_when_confirmations_at_or_above_required()
     {
-        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository, app(RewardInvalidationService::class)])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
 
@@ -658,7 +659,7 @@ class CoursePurchaseServiceTest extends TestCase
 
     public function test_get_tx_status_returns_not_found_on_404()
     {
-        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository, app(RewardInvalidationService::class)])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
 
@@ -676,7 +677,7 @@ class CoursePurchaseServiceTest extends TestCase
 
     public function test_get_tx_status_returns_error_on_script_error()
     {
-        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository, app(RewardInvalidationService::class)])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
 
@@ -695,7 +696,7 @@ class CoursePurchaseServiceTest extends TestCase
 
     public function test_get_tx_status_returns_error_on_exception()
     {
-        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository, app(RewardInvalidationService::class)])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
 
@@ -713,7 +714,7 @@ class CoursePurchaseServiceTest extends TestCase
 
     public function test_get_tx_confirmations_returns_count()
     {
-        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository, app(RewardInvalidationService::class)])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
 
@@ -733,7 +734,7 @@ class CoursePurchaseServiceTest extends TestCase
 
     public function test_get_tx_confirmations_throws_on_not_found()
     {
-        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository, app(RewardInvalidationService::class)])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
 
@@ -751,7 +752,7 @@ class CoursePurchaseServiceTest extends TestCase
 
     public function test_get_tx_confirmations_throws_on_script_error()
     {
-        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository, app(RewardInvalidationService::class)])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
 
@@ -813,7 +814,7 @@ class CoursePurchaseServiceTest extends TestCase
 
     public function test_build_stores_quote_in_cache_with_expiry()
     {
-        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository, app(RewardInvalidationService::class)])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
 
@@ -879,7 +880,7 @@ class CoursePurchaseServiceTest extends TestCase
     {
         $this->primeQuoteCache();
 
-        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository, app(RewardInvalidationService::class)])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
 
@@ -918,7 +919,7 @@ class CoursePurchaseServiceTest extends TestCase
 
         $this->primeQuoteCache();
 
-        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository, app(RewardInvalidationService::class)])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
 

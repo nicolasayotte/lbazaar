@@ -17,11 +17,16 @@ class CoursePurchaseService
 {
     protected $walletService;
     protected $userRepository;
+    protected RewardInvalidationService $rewardInvalidationService;
 
-    public function __construct(WalletService $walletService, UserRepository $userRepository)
-    {
+    public function __construct(
+        WalletService $walletService,
+        UserRepository $userRepository,
+        RewardInvalidationService $rewardInvalidationService
+    ) {
         $this->walletService = $walletService;
         $this->userRepository = $userRepository;
+        $this->rewardInvalidationService = $rewardInvalidationService;
     }
 
     /**
@@ -451,10 +456,10 @@ class CoursePurchaseService
                     throw new \RuntimeException('Already refunded.');
                 }
                 $updates = ['payment_status' => 'refunded', 'is_cancelled' => true];
-                if ($force) {
-                    $updates['rewards_invalidated_at'] = now();
-                }
                 $locked->update($updates);
+                if ($force) {
+                    $this->rewardInvalidationService->invalidateRewards($locked);
+                }
             });
         } catch (\RuntimeException $e) {
             if (str_contains($e->getMessage(), 'Already refunded')) {

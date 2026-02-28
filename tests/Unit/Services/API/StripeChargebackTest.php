@@ -7,6 +7,7 @@ use App\Models\CourseHistory;
 use App\Models\CourseSchedule;
 use App\Models\StripePayment;
 use App\Models\User;
+use App\Services\API\RewardInvalidationService;
 use App\Services\API\StripeService;
 use stdClass;
 use Tests\TestCase;
@@ -35,7 +36,7 @@ class StripeChargebackTest extends TestCase
         parent::setUp();
 
         $this->setupTestData();
-        $this->service = new StripeService();
+        $this->service = new StripeService(app(RewardInvalidationService::class));
     }
 
     private function setupTestData(): void

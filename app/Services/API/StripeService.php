@@ -5,6 +5,7 @@ namespace App\Services\API;
 use App\Models\Course;
 use App\Models\CourseHistory;
 use App\Models\StripePayment;
+use App\Services\API\RewardInvalidationService;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -17,7 +18,7 @@ use Stripe\Exception\IdempotencyException;
 
 class StripeService
 {
-    public function __construct()
+    public function __construct(private RewardInvalidationService $rewardInvalidationService)
     {
         Stripe::setApiKey(config('services.stripe.secret'));
     }
@@ -490,10 +491,10 @@ class StripeService
                     $ch = CourseHistory::where('id', $payment->course_history_id)->lockForUpdate()->first();
                     if ($ch) {
                         $updates = ['is_cancelled' => true];
-                        if ($options['force'] ?? false) {
-                            $updates['rewards_invalidated_at'] = now();
-                        }
                         $ch->update($updates);
+                        if ($options['force'] ?? false) {
+                            $this->rewardInvalidationService->invalidateRewards($ch);
+                        }
                     }
                 }
             });
