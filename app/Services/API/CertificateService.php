@@ -21,20 +21,25 @@ class CertificateService
 
     /**
      * Mint and airdrop certificate NFT to a student
-     * 
+     *
      * @param Course $course
      * @param User $student
      * @param int|null $scheduleId
+     * @param CourseHistory|null $history  When provided, enrollment-time snapshot values override course defaults.
      * @return array
      */
-    public function mintAndAirdropCertificate(Course $course, User $student, $scheduleId = null)
+    public function mintAndAirdropCertificate(Course $course, User $student, $scheduleId = null, ?CourseHistory $history = null)
     {
         try {
             // Determine wallet address for airdrop
             $walletAddress = $this->getStudentWalletAddress($student);
-            
+
+            // Resolve override values from enrollment-time snapshot when available
+            $certNameOverride        = $history?->effectiveCertificateName();
+            $certDescriptionOverride = $history?->effectiveCertificateDescription();
+
             // Create certificate metadata
-            $certificateData = $this->createCertificateMetadata($course, $student);
+            $certificateData = $this->createCertificateMetadata($course, $student, $certNameOverride, $certDescriptionOverride);
             
             // Mint the certificate NFT
             $mintResult = $this->mintCertificateNFT($certificateData, $walletAddress);
@@ -49,6 +54,15 @@ class CertificateService
 
             // Record the NFT transaction
             $this->recordNftTransaction($student->id, $mintResult, $certificateData);
+
+            // Sync certificate status to 'minted' in course history
+            $this->updateCertificateStatus(
+                $course->id,
+                $student->id,
+                'minted',
+                $scheduleId,
+                $mintResult['transaction_id']
+            );
 
             // Send notification email (optional)
             $this->sendCertificateNotification($student, $course, $mintResult);
@@ -113,18 +127,21 @@ class CertificateService
 
     /**
      * Create certificate metadata
-     * 
+     *
      * @param Course $course
      * @param User $student
+     * @param string|null $certName          Override for the certificate name (from enrollment snapshot).
+     * @param string|null $certDescription   Override for the certificate description (from enrollment snapshot).
      * @return array
      */
-    protected function createCertificateMetadata(Course $course, User $student)
+    protected function createCertificateMetadata(Course $course, User $student, ?string $certName = null, ?string $certDescription = null)
     {
         $timestamp = now();
         $serialNumber = $timestamp->timestamp;
 
         return [
-            'name' => 'Certificate of Completion',
+            'name' => $certName ?? 'Certificate of Completion',
+            'description' => $certDescription,
             'course_title' => $course->title,
             'student_name' => $student->fullname,
             'student_email' => $student->email,
