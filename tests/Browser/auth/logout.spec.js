@@ -1,10 +1,15 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 import { waitForApp, waitForInertiaNavigation } from '../helpers/wait-for-app.js';
-import { STORAGE_STATE } from '../helpers/test-users.js';
+import { TEST_USERS } from '../helpers/test-users.js';
+import { LoginPage } from '../pages/LoginPage.js';
 
-// All tests in this file run as the authenticated student
-test.use({ storageState: STORAGE_STATE.student });
+// Each logout test does a fresh login so it gets its own independent
+// server-side session.  Using the shared storageState fixture would cause
+// whichever test runs first to invalidate the session for the other
+// (both tests actually log out, so concurrent shared-session use causes
+// a 419 CSRF error for the second test to arrive at the server).
+test.use({ storageState: { cookies: [], origins: [] } });
 
 // In Navbar.jsx the sign-out item renders as:
 //   <Link as="div" href="/portal/logout" method="POST"> ... </Link>
@@ -13,7 +18,12 @@ test.use({ storageState: STORAGE_STATE.student });
 const LOGOUT_SELECTOR = 'button:has-text("Sign Out")';
 
 test('logged-in user can logout', async ({ page }) => {
-    await page.goto('/');
+    // Fresh login gives this test its own session, independent of other tests.
+    const loginPage = new LoginPage(page);
+    await loginPage.goto();
+    await loginPage.loginAndWaitForRedirect(TEST_USERS.student.email, TEST_USERS.student.password);
+
+    await page.goto('/classes');
     await waitForApp(page);
 
     // Click the logout link (Inertia Link with method="POST")
@@ -30,7 +40,12 @@ test('logged-in user can logout', async ({ page }) => {
 });
 
 test('after logout, /mypage redirects to login', async ({ page }) => {
-    await page.goto('/');
+    // Fresh login gives this test its own session, independent of other tests.
+    const loginPage = new LoginPage(page);
+    await loginPage.goto();
+    await loginPage.loginAndWaitForRedirect(TEST_USERS.student.email, TEST_USERS.student.password);
+
+    await page.goto('/classes');
     await waitForApp(page);
 
     // Perform logout
