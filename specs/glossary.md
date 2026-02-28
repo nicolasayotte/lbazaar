@@ -24,6 +24,10 @@ A platform user who creates classes, sets pricing in JPY, and configures complet
 A platform operator with elevated privileges for platform-level configuration and oversight.
 *Cannot:* access or transact with student or teacher wallets directly, or modify individual class pricing or reward configuration on behalf of a Teacher.
 
+**Guest**
+An unauthenticated visitor to the platform. Can browse public pages, view course listings and details, submit inquiries, register as a Student or Teacher, and switch language. Cannot access any authenticated routes (MyPage, manage classes, admin panel).
+*Cannot:* book or purchase classes, view profiles, access any MyPage section, or perform any action requiring authentication.
+
 **Community Member**
 Any user of the platform. Not a distinct role — this is a superset label covering Students, Teachers, and Admins. Used only when a capability applies universally.
 
@@ -49,6 +53,18 @@ A browser-based wallet (e.g., the set of wallets currently supported by the plat
 
 **ADA Price**
 The class price expressed in ADA, derived from the teacher-set JPY price via a market-rate conversion at the time of purchase.
+
+**Schedule**
+A specific date/time offering of a Class. A single Class may have multiple Schedules. Students book and attend Schedules, not Classes directly.
+
+**Class Application**
+A Teacher's request to create a new Class on the platform. Must be reviewed and approved by an Admin before the Class becomes available.
+
+**Classification**
+A platform-level categorization tag used to organize Classes (distinct from Course Category and Course Type).
+
+**Inquiry**
+A contact form submission from any visitor (Guest or authenticated user). Stored for Admin review.
 
 ---
 
