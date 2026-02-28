@@ -1713,4 +1713,173 @@ class CertificateServiceTest extends TestCase
         $this->assertEquals(5_000_000, $result['data']['per_student_lovelace']);
         $this->assertFalse($result['data']['insufficient']);
     }
+
+    // -------------------------------------------------------------------------
+    // Certificate status sync tests
+    // -------------------------------------------------------------------------
+
+    public function test_mint_and_airdrop_certificate_updates_certificate_status_on_success(): void
+    {
+        // Create course schedule and course history with null certificate_status
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        $courseHistory = CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'completed_at' => now()->subDays(1),
+            'is_cancelled' => false,
+            'certificate_status' => null
+        ]);
+
+        $service = Mockery::mock(CertificateService::class)->makePartial()->shouldAllowMockingProtectedMethods();
+
+        $service->shouldReceive('getStudentWalletAddress')
+            ->once()
+            ->with($this->student)
+            ->andReturn('addr1test_wallet');
+
+        $service->shouldReceive('createCertificateMetadata')
+            ->once()
+            ->andReturn([
+                'name' => 'Certificate of Completion',
+                'course_title' => $this->course->title,
+                'student_name' => $this->student->fullname,
+                'student_email' => $this->student->email,
+                'teacher_name' => $this->teacher->fullname,
+                'completion_date' => now()->format('Y-m-d'),
+                'serial_number' => '1234567890',
+                'course_id' => $this->course->id,
+                'student_id' => $this->student->id
+            ]);
+
+        $service->shouldReceive('mintCertificateNFT')
+            ->once()
+            ->andReturn([
+                'success' => true,
+                'transaction_id' => 'tx_sync_test',
+                'nft_name' => 'Certificate-' . $this->course->id . '-' . $this->student->id,
+                'serial_number' => '1234567890',
+                'mph' => 'test_mph_hash'
+            ]);
+
+        $service->shouldReceive('recordNftTransaction')
+            ->once();
+
+        $service->shouldReceive('sendCertificateNotification')
+            ->once();
+
+        $result = $service->mintAndAirdropCertificate($this->course, $this->student, $schedule->id);
+
+        $this->assertTrue($result['success']);
+
+        $courseHistory->refresh();
+        $this->assertEquals('minted', $courseHistory->certificate_status);
+        $this->assertEquals('tx_sync_test', $courseHistory->certificate_tx_hash);
+    }
+
+    public function test_mint_and_airdrop_certificate_does_not_update_status_on_failure(): void
+    {
+        // Create course schedule and course history with null certificate_status
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id
+        ]);
+
+        $courseHistory = CourseHistory::create([
+            'user_id' => $this->student->id,
+            'course_id' => $this->course->id,
+            'course_schedule_id' => $schedule->id,
+            'completed_at' => now()->subDays(1),
+            'is_cancelled' => false,
+            'certificate_status' => null
+        ]);
+
+        $service = Mockery::mock(CertificateService::class)->makePartial()->shouldAllowMockingProtectedMethods();
+
+        $service->shouldReceive('getStudentWalletAddress')
+            ->once()
+            ->with($this->student)
+            ->andReturn('addr1test_wallet');
+
+        $service->shouldReceive('createCertificateMetadata')
+            ->once()
+            ->andReturn([
+                'name' => 'Certificate of Completion',
+                'course_title' => $this->course->title,
+                'student_name' => $this->student->fullname,
+                'student_email' => $this->student->email,
+                'teacher_name' => $this->teacher->fullname,
+                'completion_date' => now()->format('Y-m-d'),
+                'serial_number' => '1234567890',
+                'course_id' => $this->course->id,
+                'student_id' => $this->student->id
+            ]);
+
+        $service->shouldReceive('mintCertificateNFT')
+            ->once()
+            ->andReturn([
+                'success' => false,
+                'message' => 'Insufficient funds'
+            ]);
+
+        $result = $service->mintAndAirdropCertificate($this->course, $this->student, $schedule->id);
+
+        $this->assertFalse($result['success']);
+
+        $courseHistory->refresh();
+        $this->assertNull($courseHistory->certificate_status);
+    }
+
+    // --- Enrollment-time snapshot tests (SC-E02-06) ---
+
+    public function test_create_certificate_metadata_uses_enrolled_name_when_history_provided()
+    {
+        $schedule = CourseSchedule::factory()->create([
+            'course_id' => $this->course->id,
+        ]);
+
+        // Post-migration row: enrolled_certificate_enabled is not null (sentinel)
+        $history = CourseHistory::factory()->create([
+            'user_id'                      => $this->student->id,
+            'course_id'                    => $this->course->id,
+            'course_schedule_id'           => $schedule->id,
+            'enrolled_certificate_enabled' => true,
+            'enrolled_certificate_name'    => 'Custom Cert Name',
+            'enrolled_certificate_description' => 'Custom description',
+        ]);
+
+        $reflection = new \ReflectionClass($this->service);
+        $method = $reflection->getMethod('createCertificateMetadata');
+        $method->setAccessible(true);
+
+        $metadata = $method->invokeArgs($this->service, [
+            $this->course,
+            $this->student,
+            $history->effectiveCertificateName(),
+            $history->effectiveCertificateDescription(),
+        ]);
+
+        $this->assertEquals('Custom Cert Name', $metadata['name']);
+        $this->assertEquals('Custom description', $metadata['description']);
+    }
+
+    public function test_create_certificate_metadata_uses_default_when_no_history()
+    {
+        $reflection = new \ReflectionClass($this->service);
+        $method = $reflection->getMethod('createCertificateMetadata');
+        $method->setAccessible(true);
+
+        // No overrides passed — should use defaults
+        $metadata = $method->invokeArgs($this->service, [
+            $this->course,
+            $this->student,
+            null,
+            null,
+        ]);
+
+        $this->assertEquals('Certificate of Completion', $metadata['name']);
+        $this->assertNull($metadata['description']);
+    }
 }

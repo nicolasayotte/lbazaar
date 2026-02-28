@@ -899,4 +899,48 @@ class CoursePurchaseServiceTest extends TestCase
         $cacheKey = "purchase_quote_{$this->student->id}_{$this->schedule->id}";
         $this->assertNull(Cache::get($cacheKey));
     }
+
+    // --- Enrollment-time snapshot tests (SC-E02-06) ---
+
+    public function test_submit_purchase_transaction_snapshots_reward_config()
+    {
+        // Update course with known reward config before enrollment
+        $this->course->update([
+            'certificate_enabled'     => true,
+            'certificate_name'        => 'Snapshot Cert',
+            'certificate_description' => 'Snapshot Desc',
+            'token_reward_enabled'    => true,
+            'token_reward_amount'     => 250,
+        ]);
+
+        // Reload the schedule so it carries the updated course
+        $this->schedule->load('course');
+
+        $this->primeQuoteCache();
+
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository])
+            ->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        $service->shouldReceive('runCommand')
+            ->once()
+            ->andReturn(json_encode([
+                'status' => 200,
+                'txId' => 'snapshot_tx_hash',
+                'teacherAmount' => 16.0,
+                'adminAmount' => 4.0,
+            ]));
+
+        $result = $service->submitPurchaseTransaction($this->schedule, $this->student, 'cbor_sig', 'cbor_tx');
+
+        $this->assertTrue($result['success']);
+
+        $courseHistory = CourseHistory::where('payment_tx_hash', 'snapshot_tx_hash')->first();
+        $this->assertNotNull($courseHistory);
+        $this->assertTrue($courseHistory->enrolled_certificate_enabled);
+        $this->assertEquals('Snapshot Cert', $courseHistory->enrolled_certificate_name);
+        $this->assertEquals('Snapshot Desc', $courseHistory->enrolled_certificate_description);
+        $this->assertTrue($courseHistory->enrolled_token_reward_enabled);
+        $this->assertEquals(250, $courseHistory->enrolled_token_reward_amount);
+    }
 }

@@ -755,4 +755,27 @@ class CertificateControllerTest extends TestCase
                 'success' => false,
             ]);
     }
+
+    // -------------------------------------------------------------------------
+    // Duplicate prevention guard tests
+    // -------------------------------------------------------------------------
+
+    public function test_mint_and_airdrop_skips_already_minted_students(): void
+    {
+        // Update the existing student's CourseHistory to certificate_status = 'minted'
+        CourseHistory::where('user_id', $this->student->id)
+            ->where('course_id', $this->course->id)
+            ->update(['certificate_status' => 'minted']);
+
+        $response = $this->actingAs($this->teacher)
+            ->postJson('/api/certificates/mint-and-airdrop', [
+                'course_id' => $this->course->id
+            ]);
+
+        $response->assertStatus(404)
+            ->assertJson([
+                'success' => false,
+                'message' => 'No eligible students found for certificate minting.'
+            ]);
+    }
 }

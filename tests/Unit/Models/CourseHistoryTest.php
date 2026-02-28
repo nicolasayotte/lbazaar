@@ -258,6 +258,53 @@ class CourseHistoryTest extends TestCase
         $this->assertNull($history->certificate_explorer_url);
     }
 
+    // --- Enrollment-time snapshot helper method tests (SC-E02-06) ---
+
+    /** @test */
+    public function test_effective_certificate_enabled_returns_snapshot_for_post_migration_row()
+    {
+        // Post-migration row: enrolled_certificate_enabled is not null (sentinel)
+        $history = CourseHistory::factory()->create([
+            'user_id'                      => $this->student1->id,
+            'course_id'                    => $this->course->id,
+            'course_schedule_id'           => $this->schedule->id,
+            'enrolled_certificate_enabled' => false,
+        ]);
+
+        // The course has certificate_enabled = true (set in setUp)
+        // but the snapshot says false — snapshot must win
+        $this->assertFalse($history->effectiveCertificateEnabled());
+    }
+
+    /** @test */
+    public function test_effective_certificate_enabled_falls_back_to_course_for_pre_migration_row()
+    {
+        // Pre-migration row: enrolled_certificate_enabled is null (no snapshot)
+        $history = CourseHistory::factory()->create([
+            'user_id'                      => $this->student1->id,
+            'course_id'                    => $this->course->id,
+            'course_schedule_id'           => $this->schedule->id,
+            'enrolled_certificate_enabled' => null,
+        ]);
+
+        // Course has certificate_enabled = true — fallback must use that
+        $this->assertTrue($history->effectiveCertificateEnabled());
+    }
+
+    /** @test */
+    public function test_effective_token_reward_amount_returns_snapshot_value()
+    {
+        $history = CourseHistory::factory()->create([
+            'user_id'                    => $this->student1->id,
+            'course_id'                  => $this->course->id,
+            'course_schedule_id'         => $this->schedule->id,
+            'enrolled_certificate_enabled' => true,
+            'enrolled_token_reward_amount' => 500,
+        ]);
+
+        $this->assertEquals(500, $history->effectiveTokenRewardAmount());
+    }
+
     /** @test */
     public function test_multiple_students_with_eager_loading_see_correct_certificates()
     {
