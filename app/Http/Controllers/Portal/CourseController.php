@@ -639,23 +639,24 @@ class CourseController extends Controller
         $course = $this->courseRepository->findOrFail($course_id)->load('professor');
         $schedule = $this->courseScheduleRepository->findOrFail($schedule_id);
 
-        // Get certificate status for this course/schedule if certificate enabled
-        $certificateData = null;
+        $certificateService = app(CertificateService::class);
+        $rewards = $certificateService->getSelfMintEligibility(
+            (int) $course_id,
+            (int) auth()->id(),
+            (int) $schedule_id
+        );
 
-        if ($course->certificate_enabled) {
-            $certificateService = app(CertificateService::class);
-            $certificateData = $certificateService->getCertificateDataForCompletion(
-                $course_id,
-                auth()->id(),
-                $schedule_id
-            );
-        }
+        $userWallet = auth()->user()->userWallet()->first();
+        $hasExternalWallet = $userWallet && !empty($userWallet->stake_key_hash);
 
         return Inertia::render('Portal/CourseCompleteConfirmation', [
-            'course'      => $course,
-            'schedule'    => $schedule,
-            'certificate' => $certificateData,
-            'title'       => getTranslation('texts.complete_class')
+            'course'              => $course,
+            'schedule'            => $schedule,
+            'rewards'             => $rewards,
+            'has_external_wallet' => $hasExternalWallet,
+            // Legacy prop for backward compatibility
+            'certificate'         => $rewards['certificate'] ?? null,
+            'title'               => getTranslation('texts.complete_class')
         ])->withViewData([
             'title' => getTranslation('texts.complete_class')
         ]);

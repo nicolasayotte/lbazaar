@@ -413,6 +413,9 @@ Route::prefix('classes/{course_id}/attend/{schedule_id}')->middleware(['auth'])-
 
      # complete confirmation
      Route::get('/complete-confirmation', [CourseController::class, 'completeConfirmation'])->name('complete.confirmation');
+
+     # Student self-mint
+     Route::post('/self-mint', [\App\Http\Controllers\Portal\StudentMintController::class, 'selfMint'])->name('self.mint');
 });
 
 # Web3 Connect Wallet

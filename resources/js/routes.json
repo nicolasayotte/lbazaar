@@ -37,6 +37,7 @@
     "admin.wallet.index": "\/admin\/wallet-history",
     "course.attend.complete": "\/classes\/{course_id}\/attend\/{schedule_id}\/complete",
     "course.attend.complete.confirmation": "\/classes\/{course_id}\/attend\/{schedule_id}\/complete-confirmation",
+    "course.attend.self.mint": "\/classes\/{course_id}\/attend\/{schedule_id}\/self-mint",
     "course.attend.exams.result": "\/classes\/{course_id}\/attend\/{schedule_id}\/exams\/{id}\/result",
     "course.attend.exams.submit": "\/classes\/{course_id}\/attend\/{schedule_id}\/exams\/{id}",
     "course.attend.exams.view": "\/classes\/{course_id}\/attend\/{schedule_id}\/exams\/{id}",
