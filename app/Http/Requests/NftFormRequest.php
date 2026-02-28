@@ -38,7 +38,7 @@ class NftFormRequest extends FormRequest
                 $uniqueRule
             ],
             'points' => [
-                'required',
+                'sometimes',
                 'integer',
                 'min:0'
             ],

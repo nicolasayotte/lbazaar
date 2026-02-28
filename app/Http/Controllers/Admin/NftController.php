@@ -41,6 +41,7 @@ class NftController extends Controller
         $response = exec($cmd);
         $responseJSON = json_decode($response, false);
         $request['mph'] = $responseJSON->mph;
+        $request->merge(['points' => $request->input('points', 0)]);
 
         $this->nftRepository->create($request->all());
 
@@ -54,7 +55,9 @@ class NftController extends Controller
         $nft = $this->nftRepository->findOrFail($id);
 
         $nft->update(['name' => @$input['name']]);
-        $nft->update(['points' => @$input['points']]);
+        if (isset($input['points'])) {
+            $nft->update(['points' => $input['points']]);
+        }
         $nft->update(['for_sale' => @$input['for_sale']]);
         $nft->update(['image_url' => @$input['image_url']]);
 
