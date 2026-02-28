@@ -579,8 +579,13 @@ class StripeService
                     ]),
                 ]);
                 if ($payment->course_history_id) {
-                    CourseHistory::where('id', $payment->course_history_id)
-                        ->update(['is_cancelled' => true]);
+                    $ch = CourseHistory::where('id', $payment->course_history_id)
+                        ->lockForUpdate()
+                        ->first();
+                    if ($ch) {
+                        $ch->update(['is_cancelled' => true]);
+                        $this->rewardInvalidationService->invalidateRewards($ch);
+                    }
                 }
             });
 
