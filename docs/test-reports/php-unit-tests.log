@@ -1,21 +1,10 @@
-Course Controller Price (Tests\Feature\Http\Controllers\Portal\CourseControllerPrice)
- [x] Courses index includes price in ada when exchange rate available
- [x] Course details includes price in ada when exchange rate available
- [x] Courses index handles null price in ada without crash
- [x] Course details handles null price in ada without crash
- [x] Is booked true when payment status is null
- [x] Is booked true when payment status is confirmed
- [x] Is booked false when payment status is pending
- [x] Is booked false when payment status is failed
- [x] Pending payment is null when unauthenticated
- [x] Pending payment is null when no pending history exists
- [x] Pending payment returned when pending history exists
- [x] Course details stripe available true
- [x] Course details stripe available false
- [x] Course details is teacher true when user is professor
- [x] Course details is teacher false when user is student
- [x] Course details is teacher false when unauthenticated
- [x] Course details network status healthy
- [x] Course details network status degraded
- [x] Course details network status unreachable disables ada
+Course Reward Config (Tests\Feature\Http\Controllers\Portal\CourseRewardConfig)
+ [x] Store saves certificate enabled with metadata
+ [x] Store saves certificate disabled without metadata
+ [x] Store fails when certificate enabled but name missing
+ [x] Store saves token reward enabled with amount
+ [x] Store fails when token reward enabled but amount missing
+ [x] Store fails when token reward amount exceeds max
+ [x] Store saves both rewards independently
+ [x] Update saves reward config changes
 
