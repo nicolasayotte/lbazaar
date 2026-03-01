@@ -37,7 +37,12 @@ class CourseHistoryRepository extends BaseRepository
                 return $q->where('courses.course_type_id', $request->get('type_id'));
             })
             ->when($request->has('category_id') && !empty($request->get('category_id')), function ($q) use ($request)  {
-                return $q->where('courses.course_category_id', $request->get('category_id'));
+                return $q->whereExists(function ($sub) use ($request) {
+                    $sub->select(\DB::raw(1))
+                        ->from('course_category_course')
+                        ->whereColumn('course_category_course.course_id', 'courses.id')
+                        ->where('course_category_course.course_category_id', $request->get('category_id'));
+                });
             })
             ->when($request->has('language') && !empty($request->get('language')), function ($q) use ($request)  {
                 return $q->where('courses.language', $request->get('language'));
@@ -64,7 +69,6 @@ class CourseHistoryRepository extends BaseRepository
             ->join('courses', 'courses.id', '=', 'course_histories.course_id')
             ->join('users', 'users.id', '=', 'courses.professor_id')
             ->join('course_types', 'course_types.id', '=', 'courses.course_type_id')
-            ->join('course_categories', 'course_categories.id', '=', 'courses.course_category_id')
             ->orderBy($sortBy, $sortOrder)
             ->paginate(self::PER_PAGE)->withQueryString()
             ->through(function($histories) {
