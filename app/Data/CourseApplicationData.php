@@ -43,6 +43,8 @@ class CourseApplicationData
 
 	private $isCourseCreated;
 
+	private $price_in_ada;
+
 	// Setters
 	public function setId($id)
 	{
@@ -153,6 +155,12 @@ class CourseApplicationData
 		return $this;
 	}
 
+	public function setPriceInAda($price_in_ada)
+	{
+		$this->price_in_ada = $price_in_ada;
+		return $this;
+	}
+
 	// Getters
 	public function getId()
 	{
@@ -244,6 +252,11 @@ class CourseApplicationData
 		return $this->isCourseCreated;
 	}
 
+	public function getPriceInAda()
+	{
+		return $this->price_in_ada;
+	}
+
 	public function getProperties()
 	{
 		return get_object_vars($this);
@@ -278,6 +291,7 @@ class CourseApplicationData
 		$courseData->setApprovedAt(@$courseApplication->approved_at ? Carbon::parse($courseApplication->approved_at)->format('M j, Y') : NULL);
 
 		$courseData->setIsCourseCreated(!empty($courseApplication->course) ? true : false);
+		$courseData->setPriceInAda($courseApplication->price_in_ada ?? null);
 
 		$courseStatus = CourseApplication::PENDING;
 

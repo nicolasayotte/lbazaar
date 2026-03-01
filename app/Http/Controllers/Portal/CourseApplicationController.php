@@ -41,8 +41,13 @@ class CourseApplicationController extends Controller
     {
         $courseApplications = $this->courseApplicationRepository->getMyCourseApplications($request->all());
 
-        // Add price_in_ada to course applications
+        // Add price_in_ada to raw Eloquent models before DTO transformation
         $this->exchangeRateService->addPriceInAdaToCourses($courseApplications);
+
+        // Transform to DTOs (price_in_ada is carried over in fromModel)
+        $courseApplications->through(function ($item) {
+            return CourseApplicationData::fromModel($item);
+        });
 
         return Inertia::render('Portal/MyPage/ClassApplications/Index', [
             'courseApplications' => $courseApplications,

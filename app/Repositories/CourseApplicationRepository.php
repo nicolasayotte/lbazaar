@@ -98,10 +98,7 @@ class CourseApplicationRepository extends BaseRepository
                 ->where('professor_id', Auth::user()->id)
                 ->whereDoesntHave('course')
                 ->orderBy($sortBy, $sortOrder)
-                ->paginate(CourseApplication::PER_PAGE)
-                ->through(function($item) {
-                    return CourseApplicationData::fromModel($item);
-                });
+                ->paginate(CourseApplication::PER_PAGE);
     }
 
     public function approve($id)
