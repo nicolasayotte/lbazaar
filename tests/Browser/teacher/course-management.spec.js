@@ -68,7 +68,7 @@ test.describe('F-03: Course CRUD', () => {
         await waitForApp(page);
 
         await expect(page.locator('input[name="title"]')).toBeVisible();
-        await expect(page.locator('button[type="submit"]')).toBeVisible();
+        await expect(page.locator('button[type="submit"]').first()).toBeVisible();
     });
 
     test('F-03.2: updating course description succeeds', async ({ page }) => {
@@ -107,7 +107,7 @@ test.describe('F-03: Course CRUD', () => {
         await waitForApp(page);
 
         await expect(page.locator('input[name="title"]')).toBeVisible();
-        await expect(page.locator('button[type="submit"]')).toBeVisible();
+        await expect(page.locator('button[type="submit"]').first()).toBeVisible();
     });
 
 });

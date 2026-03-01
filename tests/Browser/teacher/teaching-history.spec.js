@@ -64,8 +64,8 @@ test.describe('F-07: Certificate Management UI', () => {
         const rowCount = await rows.count();
         test.skip(rowCount === 0, 'No students with completed status — skipping');
 
-        // First row should have a non-empty name cell
-        const nameCell = rows.first().locator('td').first();
+        // First data cell (skip checkbox column)
+        const nameCell = rows.first().locator('td:not(.MuiTableCell-paddingCheckbox)').first();
         await expect(nameCell).not.toBeEmpty();
     });
 
