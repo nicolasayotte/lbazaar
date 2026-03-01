@@ -265,7 +265,7 @@ test.describe.serial('F-08: Settings — NFT Configuration', () => {
         await nameInput.click();
         await nameInput.pressSequentially(testNftName);
 
-        const imageInput = page.locator('.MuiDialog-root input[name="image_url"]');
+        const imageInput = page.locator('.MuiDialog-root input[name="imageUrl"]');
         await imageInput.click();
         await imageInput.pressSequentially(testImageUrl);
 

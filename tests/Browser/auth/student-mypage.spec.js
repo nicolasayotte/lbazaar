@@ -16,10 +16,10 @@ test.describe('F-01: MyPage Navigation', () => {
         await page.goto('/mypage/profile');
         await waitForApp(page);
 
-        await expect(page.getByText('Profile').first()).toBeVisible();
-        await expect(page.getByText('Badges').first()).toBeVisible();
-        await expect(page.getByText('Class History').first()).toBeVisible();
-        await expect(page.getByText('Purchase History').first()).toBeVisible();
+        await expect(page.getByText('Profile', { exact: true }).first()).toBeVisible();
+        await expect(page.getByText('Badges', { exact: true }).first()).toBeVisible();
+        await expect(page.getByText('Class History', { exact: true }).first()).toBeVisible();
+        await expect(page.getByText('Purchase History', { exact: true }).first()).toBeVisible();
     });
 
     test('F-01.3: Profile page loads at /mypage/profile', async ({ page }) => {
