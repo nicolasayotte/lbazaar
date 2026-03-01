@@ -5,7 +5,7 @@
 **Glossary:** specs/glossary.md
 **See also:** specs/e2e-tests.xrefs.md
 **Generated:** 2026-02-27
-**Status:** DRAFT — requires operator review
+**Status:** IMPLEMENTED — all features covered by Playwright tests in `tests/Browser/admin/`
 
 ---
 
