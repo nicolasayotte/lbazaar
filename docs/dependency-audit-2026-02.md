@@ -1,5 +1,7 @@
 # Dependency Audit -- February 2026
 
+> **AI Context Summary**: February 2026 audit of all dependencies across `composer.json`, `package.json`, and `web3/package.json`. Critical risks: Laravel 9 (unsupported since Feb 2024), Inertia.js 0.x (deprecated), Vite 3.x (EOL), @hyperionbt/helios (abandoned). Laravel upgrade is the highest priority — it cascades to Inertia server, Sanctum, PHPUnit, and other packages. Read this before planning any dependency or framework upgrade work.
+
 Audit of all dependencies across `composer.json`, `package.json`, and `web3/package.json`.
 
 ---

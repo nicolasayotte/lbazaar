@@ -1,5 +1,7 @@
 # Certificate Form Requests Usage Guide
 
+> **AI Context Summary**: Usage guide for `MintSingleCertificateRequest` and `BatchMintCertificatesRequest` Form Request classes. Both validate course/student IDs, authorize teacher role and course ownership, and return JSON responses. Use these in `CertificateController` instead of manual validation. See [certificate-minting-api.md](./certificate-minting-api.md) for the full minting flow.
+
 This document provides examples of how to use the newly created Form Request classes for certificate minting.
 
 ## Overview

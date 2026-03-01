@@ -1,6 +1,6 @@
 # Le Bazaar Documentation
 
-> **AI Context Summary**: Le Bazaar is a Cardano-integrated e-learning platform (Laravel 9 + React 18 + Cardano blockchain). Three-tier architecture: Client (Inertia.js) → Application (Laravel services) → Blockchain (Node.js/Helios). Start with [getting-started.md](./getting-started.md) for setup, [architecture.md](./architecture.md) for system overview. 16 docs covering architecture, testing, deployment, patterns, integrations, authentication, API reference, tech stack, agent workflow, and data flows.
+> **AI Context Summary**: Le Bazaar is a Cardano-integrated e-learning platform (Laravel 9 + React 18 + Cardano blockchain). Three-tier architecture: Client (Inertia.js) → Application (Laravel services) → Blockchain (Node.js/Helios). Start with [getting-started.md](./getting-started.md) for setup, [architecture.md](./architecture.md) for system overview. 16 core docs plus reference files covering architecture, testing, deployment, patterns, integrations, authentication, API reference, tech stack, agent workflow, and data flows.
 
 ## Quick Start
 
@@ -28,6 +28,8 @@ New to Le Bazaar? Start here:
 | **[Workflow](./workflow.md)** | Planner/builder agent orchestration pattern | Multi-part feature implementation |
 | **[Certificate Minting API](./certificate-minting-api.md)** | NFT certificate minting via Helios | Implementing certificate features |
 | **[Local Production Testing](./LOCAL_PROD_TESTING.md)** | Test prod build locally with `./test-prod.sh` | Before deploying to production |
+| **[E2E Test Status](./e2e-test-status.md)** | Playwright test coverage map (115 scenarios) | Checking E2E test coverage or adding new tests |
+| **[Dependency Audit](./dependency-audit-2026-02.md)** | Feb 2026 audit: critical/high/medium upgrade risks | Planning dependency upgrades |
 
 ## Documentation by Role
 
@@ -98,6 +100,7 @@ Focus on:
 
 Focus on:
 - [Testing](./testing.md) - Test strategy, running tests
+- [E2E Test Status](./e2e-test-status.md) - Playwright coverage map
 - [Data Flows](./data-flows.md) - User journeys to test
 - [Gotchas](./gotchas.md) - Known issues
 

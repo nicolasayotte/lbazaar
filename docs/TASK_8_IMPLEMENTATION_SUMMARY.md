@@ -1,5 +1,7 @@
 # Task #8 Implementation Summary - CertificateTable Component
 
+> **AI Context Summary**: Implementation record for the `CertificateTable` React component (`resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.jsx`). Displays student certificate status, provides mint/retry actions, and links to blockchain explorer. Includes manual test cases. Historical reference — see [certificate-minting-api.md](./certificate-minting-api.md) for the current minting API.
+
 ## Status: Completed
 
 ## Summary

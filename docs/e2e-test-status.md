@@ -1,5 +1,7 @@
 # E2E Playwright Test Status
 
+> **AI Context Summary**: Tracks implementation status of all Playwright E2E tests against behavioral specs. 115 scenarios across 4 epics (Guest/Student/Teacher/Admin), all IMPLEMENTED as of 2026-02-28. Maps spec features to test files in `tests/Browser/`. Read [testing.md](./testing.md) for test strategy and how to run these tests.
+
 **Generated:** 2026-02-28
 **Branch:** catalyst/f12/m4
 

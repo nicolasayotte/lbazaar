@@ -1,14 +1,11 @@
-Student Certificate (Tests\Feature\StudentCertificate)
- [x] Student can view their certificates
- [x] Student only sees own certificates
- [x] Certificates include correct status
- [x] Minted certificates include explorer url
- [x] Only completed courses show certificates
- [x] Courses without certificate enabled excluded
- [x] Guest cannot access certificates page
- [x] Student can get certificate status via ajax
- [x] Student cannot access other students certificate status
- [x] Eager loading shows correct certificate transactions
- [x] Certificate image url from nft transaction
- [x] Multiple students see own certificates with eager loading
+Course Pricing (Tests\Unit\Models\CoursePricing)
+ [x] Course price in ada accessor returns converted value
+ [x] Course price in ada returns null when no price
+ [x] Course price in ada returns null when price is zero
+ [x] Course application does not have price in ada accessor
+ [x] Price in ada not auto appended to json
+
+Course Pricing (Tests\Feature\CoursePricing)
+ [x] Course api returns both jpy and ada prices
+ [x] Course creation accepts jpy price
 
