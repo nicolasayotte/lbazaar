@@ -199,11 +199,11 @@
 
 ## Open Questions
 
-- OQ-01: Does the test seeder create a Student with at least one booked schedule, one course history record, one purchase record, and one certificate? This determines how many F-08 scenarios can run without skipping.
-- OQ-02: Is the MyPage sidebar/navigation consistent across all MyPage pages, or does it vary by page?
+- ~~OQ-01~~: **RESOLVED** — Yes, partially. `PlaywrightTestSeeder` creates pw-student with: one ongoing enrollment (upcoming schedule, 2030-01-15) and one completed enrollment (completed schedule, 2024-06-01). This provides course history records and a booked schedule for F-08 attend tests. Purchase records and certificates are **not** seeded — those tests skip gracefully when data is absent.
+- ~~OQ-02~~: **RESOLVED** — The sidebar navigation is consistent across all MyPage pages. It is rendered by `SidebarMenu.jsx` which is shared across all MyPage layouts.
 
 ## Assumptions
 
-- A-01: All MyPage sections are visible in navigation for authenticated Students.
-- A-02: Profile editing of non-sensitive fields does not require password re-entry.
-- A-03: Course listing looks the same for Guests and authenticated users.
+- A-01: All MyPage sections are visible in navigation for authenticated Students. **CONFIRMED** — `SidebarMenu.jsx` renders all links regardless of page.
+- A-02: Profile editing of non-sensitive fields does not require password re-entry. **CONFIRMED** — profile update uses a separate form from password change.
+- A-03: Course listing looks the same for Guests and authenticated users. **CONFIRMED** — booking controls appear on the detail page, not the listing.

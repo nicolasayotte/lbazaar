@@ -3,6 +3,7 @@
 > **AI Context Summary**: Tracks implementation status of all Playwright E2E tests against behavioral specs. 115 scenarios across 4 epics (Guest/Student/Teacher/Admin), all IMPLEMENTED as of 2026-02-28. Maps spec features to test files in `tests/Browser/`. Read [testing.md](./testing.md) for test strategy and how to run these tests.
 
 **Generated:** 2026-02-28
+**Updated:** 2026-02-28 — skip reduction work completed (28 → 9 skipped)
 **Branch:** catalyst/f12/m4
 
 ---
@@ -160,6 +161,51 @@ All test files live under `tests/Browser/`.
 | `auth/stripe-unavailable.spec.js` | Stripe unavailability handling |
 | `helpers/test-users.js` | Test user credentials & storage state paths |
 | `helpers/wait-for-app.js` | Inertia/React hydration wait helpers |
+
+---
+
+## Skip Reduction (2026-02-28)
+
+Prior to this work, 28 tests were conditionally skipped at runtime due to missing seed data and an app bug. Three categories of fixes were applied:
+
+### Changes Made
+
+| Change | Files | Effect |
+|--------|-------|--------|
+| Fix `addPriceInAdaToCourses` 500 error | `CourseApplicationController`, `CourseApplicationRepository`, `CourseApplicationData` | Unblocked E-03 F-01.1, F-01.5 (2 tests) |
+| Expand `PlaywrightTestSeeder` | `database/seeders/PlaywrightTestSeeder.php` | Unblocked 16 teacher + student tests |
+| Fix strict-mode and selector issues | `course-management.spec.js`, `teaching-history.spec.js` | Fixed assertions that failed once data existed |
+
+### Seed Data Now Created by PlaywrightTestSeeder
+
+- Approved `CourseApplication` (no course) — for class-applications list
+- Approved `CourseApplication` + linked `Course` (published, certificate-enabled)
+- `CourseSchedule` (upcoming: 2030-01-15) — for attend/watch/exam/feedback tests
+- `CourseSchedule` (completed: 2024-06-01) — for teaching-history tests
+- `Exam` with 2 questions and answer choices
+- `CourseHistory` enrollments for pw-student (ongoing + completed)
+- `UserWallet` for all 3 test users
+- `UserEducation`, `UserCertification`, `UserWorkHistory` for pw-teacher
+- Reference data: `CourseType`, `CourseCategory`, `Status`, `Classifications`, `Setting(ada-to-jpy)`
+
+### Results
+
+| Metric | Before | After |
+|--------|--------|-------|
+| Passed | ~180 | 197 |
+| Skipped | 28 | 9 |
+| Failed | 2 | 2 (pre-existing) |
+
+### Remaining Skips (9 — all expected)
+
+| Tests | Reason | Action Needed |
+|-------|--------|---------------|
+| `stripe-unavailable.spec.js` (1) | Requires `STRIPE_UNAVAILABLE_MODE=true` env var | None — run in dedicated CI job |
+| `ada-conversion-failure.spec.js` (3) | Requires `ADA_FAILURE_MODE=true` env var | None — run in dedicated CI job |
+| `ada-price-freshness.spec.js` (2) | Blocked on OQ-02 — features not yet implemented | None — implement features first |
+| `admin/profile-users.spec.js` F-02.6 (1) | Serial dependency — needs F-02.4 to create test user first | None — passes in full serial run |
+| `auth/student-courses.spec.js` F-08.3 (1) | Hardcoded `/classes/1/attend/1/exams/1` — ID mismatch on non-fresh DB | Refactor to use dynamic IDs |
+| `teacher/course-management.spec.js` F-03.3 (1) | 30s timeout under full parallel load (passes in isolation) | Increase timeout or reduce parallelism |
 
 ---
 

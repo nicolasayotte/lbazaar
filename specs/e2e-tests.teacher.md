@@ -178,11 +178,11 @@
 
 ## Open Questions
 
-- OQ-01: Does the test seeder create at least one approved class application and one class owned by the test Teacher user?
-- OQ-02: Are course creation and class application creation separate flows, or does creating a class application automatically create the course upon approval?
+- ~~OQ-01~~: **RESOLVED** — Yes. `PlaywrightTestSeeder` creates two approved class applications for pw-teacher: one without a linked course (appears on class-applications list via `whereDoesntHave('course')`), and one with a linked published course, schedule, exam, and enrolled student.
+- ~~OQ-02~~: **RESOLVED** — They are separate flows. A `CourseApplication` is created and approved first. Then a `Course` is created from the approved application via `/classes/{applicationId}/create`. The application's `course` relationship links them after course creation.
 
 ## Assumptions
 
-- A-01: Test database is reset between full test suite runs.
-- A-02: Class application required fields include at minimum: name, description, and category.
-- A-03: Course creation is linked to an approved class application.
+- A-01: Test database is reset between full test suite runs. **CONFIRMED** — `PlaywrightTestSeeder` uses `firstOrCreate` for idempotency.
+- A-02: Class application required fields include at minimum: name, description, and category. **CONFIRMED** — see `CourseApplicationRequest` validation rules.
+- A-03: Course creation is linked to an approved class application. **CONFIRMED** — `/classes/{applicationId}/create` route requires an approved application with no existing course.

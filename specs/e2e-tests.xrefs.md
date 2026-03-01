@@ -32,16 +32,46 @@ E-01 F-06 tests that unauthenticated users are redirected and that wrong-role us
 
 ## Test Seed Data Dependencies
 
-**Owner:** Test database seeder (outside spec scope)
+**Owner:** `database/seeders/PlaywrightTestSeeder.php`
 **Consumers:** All epics
 
-All epics depend on seed data. Features that require specific seed state (courses, schedules, course history, class applications) defensively skip when data is absent. The minimum expected seed data:
+All epics depend on seed data. Features that require specific seed state defensively skip when data is absent. The `PlaywrightTestSeeder` creates the following fixture data (all using `firstOrCreate` for idempotency):
 
-- At least one published course with at least one schedule (used by E-01 F-02/F-03, E-02 F-08/F-09)
-- Test Student with at least one course history record (used by E-02 F-03, F-04, F-06)
-- Test Teacher with at least one owned class and one class application (used by E-03 F-01, F-02, F-03)
-- At least one inquiry submitted (used by E-04 F-03)
-- At least one pending class application (used by E-04 F-04)
+### Users & Wallets
+- **pw-student** (`pw-student@example.com`) — student role, 100,000 points wallet
+- **pw-teacher** (`pw-teacher@example.com`) — teacher role, Professor classification, 0 points wallet
+- **pw-admin** (`pw-admin@example.com`) — admin role, 0 points wallet
+
+### Course Data (owned by pw-teacher)
+- **CourseApplication** "PW Pending Application" — approved, no linked course (visible on class-applications page)
+- **CourseApplication** "PW Test Course" — approved, with linked course
+- **Course** "PW Test Course" — published, certificate-enabled, Programming category
+- **CourseSchedule** (upcoming: 2030-01-15 to 2030-01-29) — for attend/watch/exam/feedback tests
+- **CourseSchedule** (completed: 2024-06-01 to 2024-06-15) — for teaching-history/certificate tests
+- **Exam** "PW Test Exam" — published, 2 questions with answer choices
+
+### Enrollments (pw-student)
+- **CourseHistory** — ongoing enrollment in upcoming schedule (no `completed_at`)
+- **CourseHistory** — completed enrollment in completed schedule (`completed_at` set)
+
+### Teacher Profile
+- **UserEducation** — PW Test University, MS in Computer Science
+- **UserCertification** — PW Teaching Certificate
+- **UserWorkHistory** — PW Tech Corp, Senior Instructor
+
+### Reference Data
+- Country (Japan/JPN), CourseType (General), CourseCategory (Programming)
+- Status (Published), Classifications (Professor, 70% commission)
+- Setting (ada-to-jpy = 65)
+
+### Data used by each epic
+- E-01 F-02/F-03: published course + schedule (from main seeder or PlaywrightTestSeeder)
+- E-02 F-03: course history records (PlaywrightTestSeeder — 2 enrollments)
+- E-02 F-08: booked schedule (PlaywrightTestSeeder — upcoming schedule enrollment)
+- E-03 F-01: class applications (PlaywrightTestSeeder — "PW Pending Application")
+- E-03 F-02–F-07: owned class, exam, schedules, certificates tab (PlaywrightTestSeeder)
+- E-04 F-03: inquiries (created by E-01 F-08.2 guest inquiry test)
+- E-04 F-04: pending class application (PlaywrightTestSeeder — approved, but admin tests use different apps)
 
 ---
 
