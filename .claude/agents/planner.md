@@ -86,3 +86,4 @@ When specifying test requirements, note these conventions so builder doesn't rei
 - API endpoints: `docs/api.md` (for API-related tasks)
 - Authentication: `docs/authentication.md` (for auth-related tasks)
 - Testing conventions: `docs/testing.md` (for complex test requirements)
+- Agent workflow: `docs/workflow.md` (for multi-part feature decomposition)

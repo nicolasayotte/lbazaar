@@ -78,5 +78,6 @@ When generating code: keep functions pure and isolate side effects at system bou
 - Tech stack: `docs/tech-stack.md`
 - Testing: `docs/testing.md`
 - Gotchas: `docs/gotchas.md`
+- Data flows: `docs/data-flows.md` (for features spanning Client→Service→Blockchain)
 - API contracts: `docs/api.md` (for API-related tasks)
 - Authentication: `docs/authentication.md` (for auth-related tasks)

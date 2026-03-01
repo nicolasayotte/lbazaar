@@ -1,10 +1,8 @@
 # Le Bazaar Project Context
 
-Work methodically: read relevant docs before tasks, validate assumptions, test thoroughly.
+**Mission:** E-learning platform where instructors publish courses and students earn verifiable NFT certificates on Cardano upon completion.
 
 ## About This Project
-
-**Le Bazaar**: Cardano-integrated e-learning platform where students earn NFT certificates.
 
 **Stack**: Laravel 9 (PHP 8.2) + React 18 + Inertia.js + MySQL + Node.js + Helios (Cardano).
 
