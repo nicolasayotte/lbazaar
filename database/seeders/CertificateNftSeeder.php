@@ -20,8 +20,9 @@ class CertificateNftSeeder extends Seeder
                 'name' => 'Certificate',
                 'description' => 'Certificate of Completion NFT for course graduates',
                 'image_url' => 'QmCertificateImageHashPlaceholder', // Replace with actual IPFS hash
-                'points' => 0, // Certificates are free/earned
-                'mph' => env('CERTIFICATE_MPH', ''), // Set this in your .env file
+                'points' => 0,
+                'for_sale' => false,
+                'mph' => '', // Derived at runtime from CERTIFICATE_LOCK_DATE
                 'created_at' => now(),
                 'updated_at' => now()
             ]

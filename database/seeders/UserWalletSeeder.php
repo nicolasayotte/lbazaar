@@ -18,10 +18,17 @@ class UserWalletSeeder extends Seeder
         $users = User::all();
 
         foreach ($users as $user) {
-            UserWallet::updateOrCreate([
-                'user_id' => $user->id,
-                'points' => fake()->numberBetween(500, 1000),
-            ]);
+            $hash = substr(hash('sha256', 'seed-wallet-' . $user->id), 0, 56);
+
+            // Only seed stake_key_hash; leave address null so it must be set
+            // via wallet verification (CIP-30). Fake bech32 addresses cause
+            // Helios Address.fromBech32() to reject them at runtime.
+            UserWallet::updateOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'stake_key_hash' => $hash,
+                ]
+            );
         }
     }
 }

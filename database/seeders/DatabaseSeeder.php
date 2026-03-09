@@ -34,6 +34,8 @@ class DatabaseSeeder extends Seeder
             UserWalletSeeder::class,
             CourseHistorySeeder::class,
             CourseFeedbackSeeder::class,
+            CertificateNftSeeder::class,
+            CertificateTestDataSeeder::class,
         ]);
     }
 }

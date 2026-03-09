@@ -17,7 +17,7 @@ class CourseScheduleSeeder extends Seeder
      */
     public function run()
     {
-        $courses = Course::all();
+        $courses = Course::doesntHave('schedules')->get();
 
         foreach ($courses as $course) {
             CourseSchedule::factory()
