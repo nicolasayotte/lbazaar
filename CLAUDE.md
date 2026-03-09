@@ -46,6 +46,9 @@ cd web3 && npm test           # Web3 tests
 - **DB transactions**: Use `lockForUpdate()` for race conditions (see `docs/patterns.md`)
 - **.env required**: Copy `.env.example` to `.env` and configure `BLOCKFROST_API_KEY`, `ROOT_KEY`, `OWNER_PKH`
 - **Production testing**: ALWAYS run `./test-prod.sh full-test` before deploying
+- **Protocol params**: `web3/config/preprod.json` must match on-chain params. Stale params cause `PPViewHashesDontMatch`. Refresh from Blockfrost when Cardano hard forks.
+- **Address resolution**: Recipients (teacher, admin) use custodial addresses derived from user ID via `get-custodial-address.mjs`. CIP-30 wallet addresses are for spending only. Admin uses `OWNER_WALLET_ADDR` from `.env`.
+- **CIP-30 signing**: `signTx(tx, partial=true)` returns a `TransactionWitnessSet`, not a full `Transaction`. Witness merge + submit must happen server-side (`submit-signed-tx.mjs`).
 
 ## Workflow
 
