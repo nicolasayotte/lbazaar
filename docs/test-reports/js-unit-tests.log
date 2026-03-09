@@ -17,30 +17,183 @@
  ✓ resources/js/helpers/__tests__/currency.helper.test.js > currency.helper > parseJpy > parses formatted JPY string to number
  ✓ resources/js/helpers/__tests__/currency.helper.test.js > currency.helper > parseJpy > handles numeric strings
  ✓ resources/js/helpers/__tests__/currency.helper.test.js > currency.helper > parseJpy > handles null and empty strings
- ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > UI Rendering > should render UI when certificates are enabled
- ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > UI Rendering > should show batch mint button when eligible students exist
-stdout | resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Single Certificate Minting > should show success message after successful mint
-Certificate minted successfully for student: [33m1[39m
+ ✓ resources/js/components/cards/CardanoNetworkStatus.test.jsx > CardanoNetworkStatus > renders nothing when healthy
+ ✓ resources/js/components/cards/CardanoNetworkStatus.test.jsx > CardanoNetworkStatus > renders warning for degraded
+ ✓ resources/js/components/cards/CardanoNetworkStatus.test.jsx > CardanoNetworkStatus > renders error for unreachable
+ ✓ resources/js/components/cards/WalletConnector.test.jsx > F-12.3: CIP-30 event listener registration > 1. Registers accountChange and networkChange listeners on connect
+ ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > UI Rendering > renders the page heading
+ ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > UI Rendering > renders the certificate table
+ × resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > UI Rendering > renders the wallet connector
+   → Unable to find an element by: [data-testid="wallet-connector"]
 
-stderr | resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Single Certificate Minting > should show error message on mint failure
-Failed to mint certificate: { message: [32m'Mint failed'[39m }
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-1ieer4h-MuiGrid-root"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-auto css-lvo4zz-MuiGrid-root"[39m
+      [36m>[39m
+        [36m<h5[39m
+          [33mclass[39m=[32m"MuiTypography-root MuiTypography-h5 css-ag7rrr-MuiTypography-root"[39m
+        [36m>[39m
+          [0mCompletion Certificates[0m
+        [36m</h5>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-auto css-lvo4zz-MuiGrid-root"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"css-6bkps5-MuiStack-root"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeSmall MuiButton-outlinedSizeSmall MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeSmall MuiButton-outlinedSizeSmall css-1k23hlb-MuiButtonBase-root-MuiButton-root"[39m
+            [33mtabindex[39m=[32m"0"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mSelect All Eligible[0m
+            [36m<span[39m
+              [33mclass[39m=[32m"MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"[39m
+            [36m/>[39m
+          [36m</button>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall Mui-disabled MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall css-1knaqv7-MuiButtonBase-root-MuiButton-root"[39m
+            [33mdisabled[39m=[32m""[39m
+            [33mtabindex[39m=[32m"-1"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mClear[0m
+          [36m</button>[39m
+          [36m<span[39m
+            [33maria-label[39m=[32m"Select students to airdrop"[39m
+            [33mclass[39m=[32m""[39m
+            [33mdata-mui-internal-clone-element[39m=[32m"true"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedSuccess MuiButton-sizeMedium MuiButton-containedSizeMedium Mui-disabled MuiButton-root MuiButton-contained MuiButton-containedSuccess MuiButton-sizeMedium MuiButton-containedSizeMedium css-ke5b6m-MuiButtonBase-root-MuiButton-root"[39m
+              [33mdisabled[39m=[32m""[39m
+              [33mtabindex[39m=[32m"-1"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mAirdrop[0m
+            [36m</button>[39m
+          [36m</span>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"MuiBox-root css-0"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mdata-testid[39m=[32m"certificate-table"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mdata-testid[39m=[32m"student-1"[39m
+        [36m>[39m
+          [0mAlice Smith[0m
+          [36m<input[39m
+            [33mdata-testid[39m=[32m"checkbox-1"[39m
+            [33mtype[39m=[32m"checkbox"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mdata-testid[39m=[32m"student-2"[39m
+        [36m>[39m
+          [0mBob Johnson[0m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > UI Rendering > shows select all eligible button when eligible students exist
+ ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > UI Rendering > shows airdrop button
+ ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Selection > selects all eligible students when select-all is clicked
+ ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Selection > clears selection when clear button is clicked
+ ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Airdrop flow > airdrop button is disabled when no wallet connected
+ × resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Airdrop flow > opens fee dialog when airdrop button clicked with wallet + selection
+   → Unable to find an element by: [data-testid="mock-connect-wallet"]
 
-stderr | resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Batch Certificate Minting > should call API when batch minting certificates
-Batch minting failed: { message: [32m'Mint failed'[39m }
-
- ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Single Certificate Minting > should call API when minting single certificate
- ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Single Certificate Minting > should show success message after successful mint
- ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Single Certificate Minting > should show error message on mint failure
-stdout | resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Batch Certificate Minting > should show success message after successful batch mint
-Batch minting completed
-
-stderr | resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Batch Certificate Minting > should show error message on batch mint failure
-Batch minting failed: { message: [32m'Batch mint failed'[39m }
-
- ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Batch Certificate Minting > should call API when batch minting certificates
- ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Batch Certificate Minting > should disable batch mint button during minting
- ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Batch Certificate Minting > should show success message after successful batch mint
- ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Batch Certificate Minting > should show error message on batch mint failure
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-1ieer4h-MuiGrid-root"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-auto css-lvo4zz-MuiGrid-root"[39m
+      [36m>[39m
+        [36m<h5[39m
+          [33mclass[39m=[32m"MuiTypography-root MuiTypography-h5 css-ag7rrr-MuiTypography-root"[39m
+        [36m>[39m
+          [0mCompletion Certificates[0m
+        [36m</h5>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-auto css-lvo4zz-MuiGrid-root"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"css-6bkps5-MuiStack-root"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeSmall MuiButton-outlinedSizeSmall MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeSmall MuiButton-outlinedSizeSmall css-1k23hlb-MuiButtonBase-root-MuiButton-root"[39m
+            [33mtabindex[39m=[32m"0"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mSelect All Eligible[0m
+            [36m<span[39m
+              [33mclass[39m=[32m"MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"[39m
+            [36m/>[39m
+          [36m</button>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall Mui-disabled MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall css-1knaqv7-MuiButtonBase-root-MuiButton-root"[39m
+            [33mdisabled[39m=[32m""[39m
+            [33mtabindex[39m=[32m"-1"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mClear[0m
+          [36m</button>[39m
+          [36m<span[39m
+            [33maria-label[39m=[32m"Select students to airdrop"[39m
+            [33mclass[39m=[32m""[39m
+            [33mdata-mui-internal-clone-element[39m=[32m"true"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedSuccess MuiButton-sizeMedium MuiButton-containedSizeMedium Mui-disabled MuiButton-root MuiButton-contained MuiButton-containedSuccess MuiButton-sizeMedium MuiButton-containedSizeMedium css-ke5b6m-MuiButtonBase-root-MuiButton-root"[39m
+              [33mdisabled[39m=[32m""[39m
+              [33mtabindex[39m=[32m"-1"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mAirdrop[0m
+            [36m</button>[39m
+          [36m</span>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"MuiBox-root css-0"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mdata-testid[39m=[32m"certificate-table"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mdata-testid[39m=[32m"student-1"[39m
+        [36m>[39m
+          [0mAlice Smith[0m
+          [36m<input[39m
+            [33mdata-testid[39m=[32m"checkbox-1"[39m
+            [33mtype[39m=[32m"checkbox"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mdata-testid[39m=[32m"student-2"[39m
+        [36m>[39m
+          [0mBob Johnson[0m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
  ✓ resources/js/components/payments/StripeCheckout.test.jsx > StripeCheckout > Loading State > renders loading state when clientSecret is null
  ✓ resources/js/components/payments/StripeCheckout.test.jsx > StripeCheckout > Loading State > renders loading text with default value when translatables not provided
  ✓ resources/js/components/payments/StripeCheckout.test.jsx > StripeCheckout > Payment Form Rendering > renders payment form when clientSecret is provided
@@ -50,13 +203,20 @@ Batch minting failed: { message: [32m'Batch mint failed'[39m }
  ✓ resources/js/components/payments/StripeCheckout.test.jsx > StripeCheckout > Cancel Button Interaction > calls onCancel when cancel button is clicked
  ✓ resources/js/components/payments/StripeCheckout.test.jsx > StripeCheckout > Cancel Button Interaction > does not call onCancel multiple times on rapid clicks
  ✓ resources/js/components/payments/StripeCheckout.test.jsx > StripeCheckout > Payment Submission > disables submit button while processing
+ ✓ resources/js/components/cards/WalletConnector.test.jsx > F-12.3: CIP-30 event listener registration > 2. Does not register listeners when experimental.on is absent
  ✓ resources/js/components/payments/StripeCheckout.test.jsx > StripeCheckout > Payment Submission > calls stripe.confirmPayment with correct parameters
  ✓ resources/js/components/payments/StripeCheckout.test.jsx > StripeCheckout > Payment Submission > does not submit if stripe is not loaded
+ ✓ resources/js/components/cards/WalletConnector.test.jsx > F-12.3: CIP-30 event listener registration > 3. networkChange with matching network ID causes no disconnect
  ✓ resources/js/components/payments/StripeCheckout.test.jsx > StripeCheckout > Error Handling > displays error message when payment fails
  ✓ resources/js/components/payments/StripeCheckout.test.jsx > StripeCheckout > Error Handling > re-enables submit button after payment failure
+ ✓ resources/js/components/cards/WalletConnector.test.jsx > F-12.3: CIP-30 event listener registration > 4. networkChange with wrong network ID triggers disconnect
+ ✓ resources/js/components/cards/WalletConnector.test.jsx > F-12.3: CIP-30 event listener registration > 5. accountChange success: re-fetches address and wallet info
  ✓ resources/js/components/payments/StripeCheckout.test.jsx > StripeCheckout > Error Handling > clears previous error message on new submission
  ✓ resources/js/components/payments/StripeCheckout.test.jsx > StripeCheckout > Processing State > disables cancel button while processing
  ✓ resources/js/components/payments/StripeCheckout.test.jsx > StripeCheckout > Processing State > shows CircularProgress icon while processing
+ ✓ resources/js/components/cards/WalletConnector.test.jsx > F-12.3: CIP-30 event listener registration > 6. accountChange error: triggers disconnect
+ ✓ resources/js/components/cards/WalletConnector.test.jsx > F-12.3: CIP-30 event listener registration > 7. Cleanup on unmount: calls experimental.off for both listeners
+ ✓ resources/js/components/cards/WalletConnector.test.jsx > F-12.3: CIP-30 event listener registration > 8. Cleanup on wallet switch: calls experimental.off
  ✓ resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx > Create > Certificate Toggle Rendering > should render certificate toggle switch
  ✓ resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx > Create > Certificate Toggle Rendering > should have toggle unchecked by default
  ✓ resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx > Create > Certificate Toggle State Changes > should change state when toggle is clicked
@@ -393,33 +553,241 @@ Make sure you have customized the input component correctly.
  ✓ resources/js/pages/Portal/Course/Details.test.jsx > Details — pending payment UI (Task 10) > TS-10.05: shows both buy buttons when pendingPayment is null
  ✓ resources/js/pages/Portal/Course/Details.test.jsx > Details — pending payment UI (Task 10) > TS-10.06: does not show payment_pending text when pendingPayment is null
  ✓ resources/js/pages/Portal/Course/Details.test.jsx > Details — pending payment UI (Task 10) > shows_insufficient_funds_message_on_build_failure: creditCardButtonRef target renders without breaking layout
+ ✓ resources/js/pages/Portal/Course/Details.test.jsx > TS-04: Parallel payment options — visual parity and independent degradation > TS-04.01: Both ADA and CC buttons present when stripe_available and price_in_ada set
+ ✓ resources/js/pages/Portal/Course/Details.test.jsx > TS-04: Parallel payment options — visual parity and independent degradation > TS-04.02: Both payment buttons use outlined variant (visual parity)
+ ✓ resources/js/pages/Portal/Course/Details.test.jsx > TS-04: Parallel payment options — visual parity and independent degradation > TS-04.03: No payment buttons shown when user is not authenticated
+ ✓ resources/js/pages/Portal/Course/Details.test.jsx > TS-04: Parallel payment options — visual parity and independent degradation > TS-04.04: ADA unavailable hint appears when price_in_ada is null
+ ✓ resources/js/pages/Portal/Course/Details.test.jsx > TS-04: Parallel payment options — visual parity and independent degradation > TS-04.06: CC button is disabled and explanation shown when stripe_available is false
+ ✓ resources/js/pages/Portal/Course/Details.test.jsx > TS-04: Parallel payment options — visual parity and independent degradation > TS-04.07: ADA button is still present when stripe_available is false
+ ✓ resources/js/pages/Portal/Course/Details.test.jsx > T2: Wallet disconnect — pending tx resilience message > TS-T2.01: shows wallet_disconnected_pending when pendingPayment is set and walletAPI is undefined
+ ✓ resources/js/pages/Portal/Course/Details.test.jsx > T2: Wallet disconnect — pending tx resilience message > TS-T2.02: does not show wallet_disconnected_pending when pendingPayment is null
+ ✓ resources/js/pages/Portal/Course/Details.test.jsx > T2: Wallet disconnect — pending tx resilience message > TS-T2.03: LinearProgress and explorer link visible even when walletAPI is undefined and pendingPayment is set
+ ✓ resources/js/pages/Portal/Course/Details.test.jsx > F-02.1: Confirmation count polling display > TS-F02-01: shows indeterminate LinearProgress before first poll response resolves
+ ✓ resources/js/pages/Portal/Course/Details.test.jsx > F-02.1: Confirmation count polling display > TS-F02-02: shows "4/10 confirmations" text after poll returns pending with count 4
+ ✓ resources/js/pages/Portal/Course/Details.test.jsx > F-02.1: Confirmation count polling display > TS-F02-03: shows "0/10 confirmations" when API returns null confirmations
+ ✓ resources/js/pages/Portal/Course/Details.test.jsx > F-02.1: Confirmation count polling display > TS-F02-04: axios error does not crash the component
+ ✓ resources/js/pages/Portal/Course/Details.test.jsx > F-02.1: Confirmation count polling display > TS-F02-05: failed status shows payment_failed_retry message
+ ✓ resources/js/pages/Portal/Course/Details.test.jsx > F-02.1: Confirmation count polling display > TS-F02-06: no polling request made when pendingPayment is null
  ✓ resources/js/components/cards/Course.test.jsx > Course card — ADA price display (TS-01.01, TS-01.03) > TS-01.01: shows JPY price on General course card
  ✓ resources/js/components/cards/Course.test.jsx > Course card — ADA price display (TS-01.01, TS-01.03) > TS-01.03: shows ADA equivalent with live-conversion indicator (~₳) when price_in_ada is set
  ✓ resources/js/components/cards/Course.test.jsx > Course card — ADA price display (TS-01.01, TS-01.03) > hides ADA portion when price_in_ada is null (conversion unavailable)
  ✓ resources/js/components/cards/Course.test.jsx > Course card — ADA price display (TS-01.01, TS-01.03) > hides price entirely for Free courses (course_type.name !== General)
  ✓ resources/js/components/cards/Course.test.jsx > Course card — ADA price display (TS-01.01, TS-01.03) > hides price for General course with no price set
- ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Empty State > should render EmptyCard when no students
- ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Empty State > should render EmptyCard when students is null
- ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Student List Rendering > should render student list with correct names
- ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Student List Rendering > should render table headers correctly
- ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Status Badges > should render eligible status badge with info color
- ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Status Badges > should render minting status badge with warning color
- ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Status Badges > should render minted status badge with success color
- ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Status Badges > should render failed status badge with error color
- ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Action Buttons > should show mint button for eligible students
- ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Action Buttons > should show retry button for failed students
- ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Action Buttons > should call onMint when mint button is clicked
- ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Action Buttons > should call onRetry when retry button is clicked
- ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Loading State > should show loading spinner during minting
- ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Loading State > should disable mint button during minting
- ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Loading State > should disable retry button during minting
- ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Transaction Hash Display > should display transaction hash for minted certificates
- ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Transaction Hash Display > should show explorer link for minted certificates
- ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Transaction Hash Display > should render tx hash as plain text when explorerUrl is undefined
- ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Transaction Hash Display > should not crash when explorerUrl is null
+ ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Empty State > renders EmptyCard when no students
+ ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Empty State > renders EmptyCard when students is null
+ ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Student List Rendering > renders student names
+ ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Student List Rendering > renders table headers
+ ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Student List Rendering > hides reward columns when hasRewards is false
+ ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Delivery Status Badges > shows Eligible badge for eligible status
+ ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Delivery Status Badges > shows Delivered badge for delivered status
+ ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Delivery Status Badges > shows Self-minted badge for self_minted status
+ ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Delivery Status Badges > shows Failed badge for failed status
+ ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Delivery Status Badges > shows Not eligible badge for not_eligible status
+ ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Checkbox > renders checkbox for eligible students
+ ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Checkbox > does not render checkbox for non-eligible students
+ ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Checkbox > shows checkbox as checked when student is selected
+ ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Checkbox > calls onToggleSelect when checkbox is clicked
+ ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Transaction Link > shows explorer link for delivered students with tx hash
+ ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Transaction Link > shows truncated hash when no explorerUrl
 
- Test Files  7 passed (7)
-      Tests  85 passed (85)
-   Start at  14:37:38
-   Duration  7.25s (transform 654ms, setup 589ms, collect 14.30s, tests 3.21s, environment 3.53s, prepare 2.32s)
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > UI Rendering > renders the wallet connector
+TestingLibraryElementError: Unable to find an element by: [data-testid="wallet-connector"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-1ieer4h-MuiGrid-root"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-auto css-lvo4zz-MuiGrid-root"[39m
+      [36m>[39m
+        [36m<h5[39m
+          [33mclass[39m=[32m"MuiTypography-root MuiTypography-h5 css-ag7rrr-MuiTypography-root"[39m
+        [36m>[39m
+          [0mCompletion Certificates[0m
+        [36m</h5>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-auto css-lvo4zz-MuiGrid-root"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"css-6bkps5-MuiStack-root"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeSmall MuiButton-outlinedSizeSmall MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeSmall MuiButton-outlinedSizeSmall css-1k23hlb-MuiButtonBase-root-MuiButton-root"[39m
+            [33mtabindex[39m=[32m"0"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mSelect All Eligible[0m
+            [36m<span[39m
+              [33mclass[39m=[32m"MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"[39m
+            [36m/>[39m
+          [36m</button>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall Mui-disabled MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall css-1knaqv7-MuiButtonBase-root-MuiButton-root"[39m
+            [33mdisabled[39m=[32m""[39m
+            [33mtabindex[39m=[32m"-1"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mClear[0m
+          [36m</button>[39m
+          [36m<span[39m
+            [33maria-label[39m=[32m"Select students to airdrop"[39m
+            [33mclass[39m=[32m""[39m
+            [33mdata-mui-internal-clone-element[39m=[32m"true"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedSuccess MuiButton-sizeMedium MuiButton-containedSizeMedium Mui-disabled MuiButton-root MuiButton-contained MuiButton-containedSuccess MuiButton-sizeMedium MuiButton-containedSizeMedium css-ke5b6m-MuiButtonBase-root-MuiButton-root"[39m
+              [33mdisabled[39m=[32m""[39m
+              [33mtabindex[39m=[32m"-1"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mAirdrop[0m
+            [36m</button>[39m
+          [36m</span>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"MuiBox-root css-0"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mdata-testid[39m=[32m"certificate-table"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mdata-testid[39m=[32m"student-1"[39m
+        [36m>[39m
+          [0mAlice Smith[0m
+          [36m<input[39m
+            [33mdata-testid[39m=[32m"checkbox-1"[39m
+            [33mtype[39m=[32m"checkbox"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mdata-testid[39m=[32m"student-2"[39m
+        [36m>[39m
+          [0mBob Johnson[0m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx:171:27
+    169|         it('renders the wallet connector', () => {
+    170|             renderWithStore(<Certificates />);
+    171|             expect(screen.getByTestId('wallet-connector')).toBeInTheDo…
+       |                           ^
+    172|         });
+    173| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Airdrop flow > opens fee dialog when airdrop button clicked with wallet + selection
+TestingLibraryElementError: Unable to find an element by: [data-testid="mock-connect-wallet"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-1ieer4h-MuiGrid-root"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-auto css-lvo4zz-MuiGrid-root"[39m
+      [36m>[39m
+        [36m<h5[39m
+          [33mclass[39m=[32m"MuiTypography-root MuiTypography-h5 css-ag7rrr-MuiTypography-root"[39m
+        [36m>[39m
+          [0mCompletion Certificates[0m
+        [36m</h5>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-auto css-lvo4zz-MuiGrid-root"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"css-6bkps5-MuiStack-root"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeSmall MuiButton-outlinedSizeSmall MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeSmall MuiButton-outlinedSizeSmall css-1k23hlb-MuiButtonBase-root-MuiButton-root"[39m
+            [33mtabindex[39m=[32m"0"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mSelect All Eligible[0m
+            [36m<span[39m
+              [33mclass[39m=[32m"MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"[39m
+            [36m/>[39m
+          [36m</button>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall Mui-disabled MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall css-1knaqv7-MuiButtonBase-root-MuiButton-root"[39m
+            [33mdisabled[39m=[32m""[39m
+            [33mtabindex[39m=[32m"-1"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mClear[0m
+          [36m</button>[39m
+          [36m<span[39m
+            [33maria-label[39m=[32m"Select students to airdrop"[39m
+            [33mclass[39m=[32m""[39m
+            [33mdata-mui-internal-clone-element[39m=[32m"true"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedSuccess MuiButton-sizeMedium MuiButton-containedSizeMedium Mui-disabled MuiButton-root MuiButton-contained MuiButton-containedSuccess MuiButton-sizeMedium MuiButton-containedSizeMedium css-ke5b6m-MuiButtonBase-root-MuiButton-root"[39m
+              [33mdisabled[39m=[32m""[39m
+              [33mtabindex[39m=[32m"-1"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mAirdrop[0m
+            [36m</button>[39m
+          [36m</span>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"MuiBox-root css-0"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mdata-testid[39m=[32m"certificate-table"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mdata-testid[39m=[32m"student-1"[39m
+        [36m>[39m
+          [0mAlice Smith[0m
+          [36m<input[39m
+            [33mdata-testid[39m=[32m"checkbox-1"[39m
+            [33mtype[39m=[32m"checkbox"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mdata-testid[39m=[32m"student-2"[39m
+        [36m>[39m
+          [0mBob Johnson[0m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx:217:36
+    215| 
+    216|             // Connect wallet
+    217|             fireEvent.click(screen.getByTestId('mock-connect-wallet'));
+       |                                    ^
+    218| 
+    219|             // Select a student
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+ Test Files  1 failed | 8 passed (9)
+      Tests  2 failed | 106 passed (108)
+   Start at  16:24:15
+   Duration  7.47s (transform 788ms, setup 883ms, collect 16.75s, tests 4.85s, environment 4.71s, prepare 2.57s)
 
