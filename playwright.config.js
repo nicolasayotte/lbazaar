@@ -41,7 +41,7 @@ export default defineConfig({
         // Authenticated tests — depend on setup projects
         {
             name: 'student',
-            testMatch: '**/auth/**/*.spec.js',
+            testMatch: ['**/auth/**/*.spec.js', '**/student/**/*.spec.js'],
             use: {
                 browserName: 'chromium',
                 storageState: 'tests/Browser/fixtures/student.json',
