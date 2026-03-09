@@ -8,6 +8,7 @@ use App\Models\Setting;
 use App\Models\User;
 use App\Models\WalletTransactionHistory;
 use App\Repositories\UserRepository;
+use App\Traits\Web3CommandTrait;
 use Exception;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -15,6 +16,8 @@ use Illuminate\Support\Facades\Log;
 
 class CoursePurchaseService
 {
+    use Web3CommandTrait;
+
     protected $walletService;
     protected $userRepository;
     protected RewardInvalidationService $rewardInvalidationService;
@@ -43,14 +46,25 @@ class CoursePurchaseService
         }
 
         $professor = $schedule->course->professor;
-        $teacherWallet = $professor ? $professor->userWallet()->first() : null;
-        $admin = $this->userRepository->getAdmin();
-        $adminWallet = $admin ? $admin->userWallet()->first() : null;
+        $teacherWalletAddr = $this->resolvePaymentAddress($professor);
 
-        if (!$teacherWallet || !$adminWallet) {
+        if (!$teacherWalletAddr) {
+            Log::warning('Purchase aborted: cannot resolve teacher wallet address', [
+                'professor_id' => $professor?->id,
+            ]);
             return [
                 'success' => false,
-                'message' => 'System wallets not configured. Please contact support.'
+                'message' => 'Teacher wallet address could not be resolved. Please contact support.'
+            ];
+        }
+
+        // Admin commission goes to the platform owner wallet (configured in .env)
+        $adminWalletAddr = config('services.cardano.owner_wallet_addr');
+        if (empty($adminWalletAddr)) {
+            Log::error('Purchase aborted: OWNER_WALLET_ADDR not configured');
+            return [
+                'success' => false,
+                'message' => 'Platform wallet not configured. Please contact support.'
             ];
         }
 
@@ -65,8 +79,8 @@ class CoursePurchaseService
             $userWallet->address,
             $cborUtxos,
             (string) $adaTotalAmount,
-            $teacherWallet->address,
-            $adminWallet->address,
+            $teacherWalletAddr,
+            $adminWalletAddr,
             (string) $adminCommissionPercent
         ]);
 
@@ -122,11 +136,10 @@ class CoursePurchaseService
     public function submitPurchaseTransaction(CourseSchedule $schedule, User $user, string $cborSig, string $cborTx): array
     {
         $professor = $schedule->course->professor;
-        $teacherWallet = $professor ? $professor->userWallet()->first() : null;
-        $admin = $this->userRepository->getAdmin();
-        $adminWallet = $admin ? $admin->userWallet()->first() : null;
+        $teacherWalletAddr = $this->resolvePaymentAddress($professor);
+        $adminWalletAddr = config('services.cardano.owner_wallet_addr');
 
-        if (!$teacherWallet || !$adminWallet) {
+        if (!$teacherWalletAddr || empty($adminWalletAddr)) {
             return [
                 'success' => false,
                 'message' => 'System wallets not configured. Please contact support.'
@@ -151,8 +164,8 @@ class CoursePurchaseService
         $cmd = $this->buildWeb3Command('run/submit-purchase-tx.mjs', [
             $cborSig,
             $cborTx,
-            $teacherWallet->address,
-            $adminWallet->address
+            $teacherWalletAddr,
+            $adminWalletAddr
         ]);
 
         try {
@@ -498,55 +511,53 @@ class CoursePurchaseService
     }
 
     /**
-     * Build web3 command with proper escaping
-     * Following CertificateService pattern
+     * Validate that an address looks like a valid Cardano bech32 address.
      */
-    protected function buildWeb3Command(string $scriptRelativePath, array $arguments = []): string
+    private function isValidBech32Address(?string $address): bool
     {
-        $web3Directory = base_path('web3');
-        $scriptPath = './' . ltrim($scriptRelativePath, '/');
-        $logPath = storage_path('logs/web3.log');
-
-        $argumentString = '';
-        if (!empty($arguments)) {
-            $argumentString = ' ' . implode(' ', array_map('escapeshellarg', $arguments));
+        if (empty($address)) {
+            return false;
         }
 
-        return sprintf(
-            '(cd %s && node %s%s) 2>> %s',
-            escapeshellarg($web3Directory),
-            escapeshellarg($scriptPath),
-            $argumentString,
-            escapeshellarg($logPath)
-        );
+        // Enterprise addresses are ~63 chars, base addresses ~103 chars
+        return (bool) preg_match('/^addr(_test)?1[0-9a-zA-Z]{50,}$/', $address);
     }
 
     /**
-     * Execute a shell command and return its output
+     * Resolve a payment (receiving) address for a user.
+     * Recipients always use custodial addresses derived from their user ID.
+     * Priority: cached custodial_address → derive from user ID.
      */
-    protected function runCommand(string $command, int $timeout = 30): string
+    private function resolvePaymentAddress(?User $user): ?string
     {
-        if (app()->environment('testing')) {
-            throw new \RuntimeException(
-                'runCommand() must be mocked in tests. Use shouldAllowMockingProtectedMethods() and shouldReceive(\'runCommand\'). Command: '
-                . substr($command, 0, 100)
-            );
+        if (!$user) {
+            return null;
         }
 
-        $output = [];
-        $returnVar = null;
+        // 1. Pre-existing custodial address
+        if ($this->isValidBech32Address($user->custodial_address)) {
+            return $user->custodial_address;
+        }
 
-        $timedCommand = sprintf('timeout %d %s', $timeout, $command);
-        exec($timedCommand, $output, $returnVar);
+        // 2. Derive custodial address from user ID
+        try {
+            $cmd = $this->buildWeb3Command('common/get-custodial-address.mjs', [(string) $user->id]);
+            $response = $this->runCommand($cmd);
+            $json = json_decode($response, true);
 
-        if ($returnVar === 124) {
-            Log::error('Command execution timed out', [
-                'command' => $command,
-                'timeout' => $timeout,
+            if (is_array($json) && ($json['status'] ?? 0) === 200 && !empty($json['address'])) {
+                // Cache it on the user record for next time
+                $user->update(['custodial_address' => $json['address']]);
+                return $json['address'];
+            }
+        } catch (\Exception $e) {
+            Log::warning('Failed to derive custodial address for payment', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
             ]);
-            throw new Exception("Command execution timed out after {$timeout} seconds");
         }
 
-        return implode("\n", $output);
+        return null;
     }
+
 }
