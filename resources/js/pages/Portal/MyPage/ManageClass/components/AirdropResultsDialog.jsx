@@ -18,8 +18,9 @@ const AirdropResultsDialog = ({ open, results, onClose, onRetryFailed, translata
 
     if (!results) return null
 
-    const succeeded = (results.results ?? []).filter((r) => r.success)
-    const failed    = (results.results ?? []).filter((r) => !r.success)
+    const allResults = results.data?.results ?? results.results ?? []
+    const succeeded = allResults.filter((r) => r.success)
+    const failed    = allResults.filter((r) => !r.success)
 
     const handleRetry = () => {
         const failedIds = failed.map((r) => r.student_id)

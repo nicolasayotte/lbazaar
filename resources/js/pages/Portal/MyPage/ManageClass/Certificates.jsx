@@ -1,9 +1,14 @@
+import { Inertia } from '@inertiajs/inertia'
 import { usePage } from '@inertiajs/inertia-react'
 import {
     Alert,
     Box,
     Button,
     CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
     Grid,
     Stack,
     Tooltip,
@@ -11,9 +16,7 @@ import {
 } from '@mui/material'
 import { useState } from 'react'
 import axios from 'axios'
-import WalletConnector from '../../../../components/cards/WalletConnector'
 import CertificateTable from './components/CertificateTable'
-import AirdropFeeDialog from './components/AirdropFeeDialog'
 import AirdropResultsDialog from './components/AirdropResultsDialog'
 
 const Certificates = () => {
@@ -23,11 +26,9 @@ const Certificates = () => {
         translatables,
         explorerUrl,
         has_rewards: hasRewards,
+        certificatePolicyId,
+        certificateLockDate,
     } = usePage().props
-
-    // Wallet state
-    const [walletAPI, setWalletAPI] = useState(undefined)
-    const [walletStakeKeyDisplay, setWalletStakeKeyDisplay] = useState(undefined)
 
     // Selection state
     const [selectedStudentIds, setSelectedStudentIds] = useState([])
@@ -35,10 +36,8 @@ const Certificates = () => {
     // Airdrop process state
     const [airdropping, setAirdropping] = useState(false)
 
-    // Fee dialog state
-    const [feeDialogOpen, setFeeDialogOpen] = useState(false)
-    const [feeLoading, setFeeLoading] = useState(false)
-    const [feeData, setFeeData] = useState(null)
+    // Confirm dialog state
+    const [confirmOpen, setConfirmOpen] = useState(false)
 
     // Results dialog state
     const [resultsDialogOpen, setResultsDialogOpen] = useState(false)
@@ -67,82 +66,13 @@ const Certificates = () => {
         )
     }
 
-    // Parse CIP-30 CBOR-encoded wallet balance to lovelace integer.
-    // Handles CBOR major type 0 (unsigned int) for lovelace-only wallets.
-    // Wallets with native tokens use a CBOR array — returns 0 in that case (known limitation).
-    const parseCborLovelace = async () => {
-        try {
-            const balanceCbor = await walletAPI.getBalance()
-            const bytes = balanceCbor.match(/.{1,2}/g).map((b) => parseInt(b, 16))
-            const firstByte = bytes[0]
-            const majorType = (firstByte >> 5) & 0x07
-            if (majorType === 0) {
-                const additionalInfo = firstByte & 0x1f
-                if (additionalInfo <= 23) return additionalInfo
-                if (additionalInfo === 24) return bytes[1]
-                if (additionalInfo === 25) return (bytes[1] << 8) | bytes[2]
-                if (additionalInfo === 26) return (bytes[1] << 24) | (bytes[2] << 16) | (bytes[3] << 8) | bytes[4]
-                if (additionalInfo === 27) {
-                    return Number(BigInt('0x' + bytes.slice(1, 9).map((b) => b.toString(16).padStart(2, '0')).join('')))
-                }
-            }
-            // CBOR array (multi-asset wallet) — extract first element (lovelace)
-            if (majorType === 4) {
-                const innerMajor = (bytes[1] >> 5) & 0x07
-                if (innerMajor === 0) {
-                    const info = bytes[1] & 0x1f
-                    if (info <= 23) return info
-                    if (info === 24) return bytes[2]
-                    if (info === 25) return (bytes[2] << 8) | bytes[3]
-                    if (info === 26) return (bytes[2] << 24) | (bytes[3] << 16) | (bytes[4] << 8) | bytes[5]
-                    if (info === 27) {
-                        return Number(BigInt('0x' + bytes.slice(2, 10).map((b) => b.toString(16).padStart(2, '0')).join('')))
-                    }
-                }
-            }
-            return 0
-        } catch (_) {
-            return 0
-        }
+    const handleAirdropClick = () => {
+        if (selectedStudentIds.length === 0) return
+        setConfirmOpen(true)
     }
 
-    const openFeeDialog = async (studentIds) => {
-        if (!walletAPI || studentIds.length === 0) return
-
-        try {
-            setFeeLoading(true)
-            setFeeData(null)
-            setFeeDialogOpen(true)
-
-            const walletBalanceLovelace = await parseCborLovelace()
-
-            const response = await axios.post(
-                `/api/certificates/courses/${course.id}/estimate-fee`,
-                {
-                    student_ids: studentIds,
-                    wallet_balance_lovelace: walletBalanceLovelace,
-                }
-            )
-
-            const data =
-                typeof response.data === 'string'
-                    ? JSON.parse(response.data)
-                    : response.data
-
-            if (data.success) {
-                setFeeData(data.data)
-            }
-        } catch (err) {
-            console.error('Fee estimation failed:', err)
-        } finally {
-            setFeeLoading(false)
-        }
-    }
-
-    const handleAirdropClick = () => openFeeDialog(selectedStudentIds)
-
-    const handleFeeConfirm = async () => {
-        setFeeDialogOpen(false)
+    const handleConfirmAirdrop = async () => {
+        setConfirmOpen(false)
         setAirdropping(true)
 
         try {
@@ -166,7 +96,7 @@ const Certificates = () => {
                 results: selectedStudentIds.map((id) => ({
                     student_id: id,
                     success: false,
-                    reason: 'Airdrop request failed',
+                    reason: err?.response?.data?.message ?? 'Airdrop request failed',
                 })),
             })
             setResultsDialogOpen(true)
@@ -175,39 +105,28 @@ const Certificates = () => {
         }
     }
 
+    const handleResultsClose = () => {
+        setResultsDialogOpen(false)
+        setSelectedStudentIds([])
+        // Reload page to refresh student statuses
+        Inertia.reload()
+    }
+
     const handleRetryFailed = (failedIds) => {
         setResultsDialogOpen(false)
         setSelectedStudentIds(failedIds)
-        openFeeDialog(failedIds)
+        setConfirmOpen(true)
     }
 
-    const walletNotConnected = !walletAPI
     const noSelection = selectedStudentIds.length === 0
-    const airdropDisabled = walletNotConnected || noSelection || airdropping
+    const airdropDisabled = noSelection || airdropping
 
-    const airdropTooltip = walletNotConnected
-        ? (translatables?.texts?.connect_wallet_to_airdrop ?? 'Connect your wallet to airdrop certificates')
-        : noSelection
+    const airdropTooltip = noSelection
         ? (translatables?.texts?.select_students_to_airdrop ?? 'Select students to airdrop')
         : null
 
     return (
         <>
-            {/* Wallet connector */}
-            <Box mb={3}>
-                <WalletConnector
-                    onStakeKeyHash={(display) => setWalletStakeKeyDisplay(display)}
-                    walletAPI={walletAPI}
-                    onWalletAPI={setWalletAPI}
-                />
-            </Box>
-
-            {walletNotConnected && hasRewards && (
-                <Alert severity="warning" sx={{ mb: 2 }}>
-                    {translatables?.texts?.connect_wallet_to_airdrop ?? 'Connect your wallet to airdrop certificates'}
-                </Alert>
-            )}
-
             <Grid container spacing={2} justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
                 <Grid item xs={12} md="auto">
                     <Typography variant="h5">
@@ -257,6 +176,20 @@ const Certificates = () => {
                 </Grid>
             </Grid>
 
+            {/* Certificate policy info */}
+            {certificatePolicyId && (
+                <Alert severity="info" sx={{ mb: 2 }}>
+                    <Typography variant="body2" sx={{ fontFamily: 'monospace', wordBreak: 'break-all' }}>
+                        <strong>Policy ID:</strong> {certificatePolicyId}
+                    </Typography>
+                    {certificateLockDate && (
+                        <Typography variant="body2" sx={{ mt: 0.5 }}>
+                            <strong>Lock date:</strong> {new Date(certificateLockDate).toLocaleDateString()}
+                        </Typography>
+                    )}
+                </Alert>
+            )}
+
             {/* Status alerts */}
             {!hasRewards ? (
                 <Alert severity="info" sx={{ mb: 2 }}>
@@ -288,22 +221,33 @@ const Certificates = () => {
                 </Box>
             )}
 
-            {/* Fee dialog */}
-            <AirdropFeeDialog
-                open={feeDialogOpen}
-                loading={feeLoading}
-                feeData={feeData}
-                totalEligibleCount={eligibleStudents.length}
-                onConfirm={handleFeeConfirm}
-                onClose={() => setFeeDialogOpen(false)}
-                translatables={translatables}
-            />
+            {/* Confirm dialog */}
+            <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)} maxWidth="sm" fullWidth>
+                <DialogTitle>
+                    {translatables?.texts?.confirm_airdrop_title ?? 'Confirm Airdrop'}
+                </DialogTitle>
+                <DialogContent>
+                    <Typography>
+                        {(translatables?.texts?.confirm_airdrop_body ??
+                            'Mint and airdrop certificates to {count} selected student(s)?')
+                            .replace('{count}', selectedStudentIds.length)}
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setConfirmOpen(false)}>
+                        {translatables?.texts?.cancel ?? 'Cancel'}
+                    </Button>
+                    <Button variant="contained" color="success" onClick={handleConfirmAirdrop}>
+                        {translatables?.texts?.confirm ?? 'Confirm'}
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
             {/* Results dialog */}
             <AirdropResultsDialog
                 open={resultsDialogOpen}
                 results={airdropResults}
-                onClose={() => setResultsDialogOpen(false)}
+                onClose={handleResultsClose}
                 onRetryFailed={handleRetryFailed}
                 translatables={translatables}
             />
