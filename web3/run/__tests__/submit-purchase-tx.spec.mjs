@@ -35,7 +35,7 @@ vi.mock('@hyperionbt/helios', () => ({
 
 const mockSubmitTx = vi.fn(async () => 'abc123def456ghi789jkl012mno345pqr678stu901vwx234yz567abc890def123');
 
-vi.mock('../../common/network.mjs', () => ({
+vi.mock('../../common/sign-tx.mjs', () => ({
   submitTx: mockSubmitTx
 }));
 

@@ -18,12 +18,14 @@ const mockAddress = {
     pubKeyHash: 'test-pub-key-hash'
   })),
   fromBech32: vi.fn((addr) => ({
+    stakingHash: { hex: 'test-stake-hash' },
+    pubKeyHash: 'test-pub-key-hash',
     toBech32: () => addr
   }))
 };
 
-const mockUTxO = {
-  fromCbor: vi.fn(() => ({
+const mockTxInput = {
+  fromFullCbor: vi.fn(() => ({
     txHash: 'test-tx-hash',
     outputIndex: 0,
     value: { lovelace: 100000000n }
@@ -62,9 +64,9 @@ vi.mock('@hyperionbt/helios', () => ({
   NetworkParams: mockNetworkParams,
   PubKeyHash: mockPubKeyHash,
   Value: mockValue,
+  TxInput: mockTxInput,
   TxOutput: mockTxOutput,
   Tx: vi.fn(() => mockTx),
-  UTxO: mockUTxO
 }));
 
 const mockSignTx = vi.fn((tx) => ({
@@ -382,10 +384,11 @@ describe('build-purchase-tx.mjs', () => {
 
   describe('Stake Key Validation', () => {
     it('validates stake key hash matches change address', async () => {
-      // Mock Address.fromHex to return mismatched stake hash
-      mockAddress.fromHex.mockReturnValueOnce({
+      // Mock Address.fromBech32 to return mismatched stake hash
+      mockAddress.fromBech32.mockReturnValueOnce({
         stakingHash: { hex: 'different-stake-hash' },
-        pubKeyHash: 'test-pub-key-hash'
+        pubKeyHash: 'test-pub-key-hash',
+        toBech32: () => 'addr_test1mismatch'
       });
 
       process.argv = [
