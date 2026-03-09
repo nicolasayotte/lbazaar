@@ -1,6 +1,6 @@
 import { hexToBytes, Tx, TxWitnesses } from '@hyperionbt/helios';
 
-import { submitTx } from '../common/network.mjs';
+import { submitTx } from '../common/sign-tx.mjs';
 
 /**
  * Submit signed purchase transaction to Cardano blockchain.

@@ -99,7 +99,7 @@ const main = async () => {
     // Add the signature from the server side private key
     // This way, we lock the transaction now and then need
     // the end user to sign the tx.
-    const txSigned = signTx(tx);
+    const txSigned = await signTx(tx);
 
     const returnObj = {
       status: 200,

@@ -7,9 +7,9 @@ import {
   NetworkParams,
   PubKeyHash,
   Value,
+  TxInput,
   TxOutput,
   Tx,
-  UTxO,
 } from '@hyperionbt/helios';
 
 import { signTx } from '../common/sign-tx.mjs';
@@ -38,7 +38,7 @@ const main = async () => {
 
     const args = process.argv;
     const stakeKeyHash = args[2];
-    const hexChangeAddr = args[3];
+    const changeAddrBech32 = args[3];
     const cborUtxos = args[4].split(',');
     const coursePrice = BigInt(args[5]) * BigInt(1_000_000);
     const teacherWalletAddr = args[6];
@@ -52,15 +52,15 @@ const main = async () => {
     const minUTXOVal = new Value(minAda + maxTxFee + minChangeAmt + coursePrice);
 
     // Get the change address from the wallet
-    const changeAddr = Address.fromHex(hexChangeAddr);
+    const changeAddr = Address.fromBech32(changeAddrBech32);
 
     if (stakeKeyHash !== changeAddr.stakingHash.hex) {
       throw console.error('build-purchase-tx.mjs: stake key hash does not match verified stake key');
     }
     console.error('build-purchase-tx.mjs: stake keys match OK');
 
-    // Get UTXOs from wallet
-    const walletUtxos = cborUtxos.map((u) => UTxO.fromCbor(hexToBytes(u)));
+    // Get UTXOs from wallet (CIP-30 returns full CBOR format)
+    const walletUtxos = cborUtxos.map((u) => TxInput.fromFullCbor(hexToBytes(u)));
     const utxos = CoinSelection.selectLargestFirst(walletUtxos, minUTXOVal);
     canPay = true;
 
@@ -107,7 +107,7 @@ const main = async () => {
     await tx.finalize(networkParams, changeAddr, utxos[1]);
 
     // Add the signature from the server side private key
-    const txSigned = signTx(tx);
+    const txSigned = await signTx(tx);
 
     const returnObj = {
       status: 200,
@@ -123,7 +123,7 @@ const main = async () => {
     const returnObj = {
       status: canPay ? 500 : 501,
       date: timestamp,
-      error: err,
+      error: err instanceof Error ? err.message : String(err),
     };
     console.error('build-purchase-tx: returnObj: ', returnObj);
     process.stdout.write(JSON.stringify(returnObj));

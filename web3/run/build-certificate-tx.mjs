@@ -9,21 +9,22 @@ import {
   PubKeyHash,
   textToBytes,
   Tx,
+  TxInput,
   TxOutput,
-  UTxO,
   Value
 } from '@hyperionbt/helios';
 import fs from 'fs/promises';
 import { buildCIP25Metadata, buildCustomMetadata } from '../common/certificate-metadata.mjs';
-import { getNetworkParams } from '../common/utils.mjs';
+import { getNetworkParams } from '../common/network.mjs';
+import { fetchUtxos } from '../common/get-owner-utxos.mjs';
 
 const network = process.env.NETWORK || 'preprod';
 const optimize = false;
 
 /**
  * Main function to build certificate minting transaction
- * Usage: node build-certificate-tx.mjs recipientAddress nftName serialNum mph imageUrl metadata
- * @params {string, string, string, string, string, string}
+ * Usage: node build-certificate-tx.mjs recipientAddress nftName serialNum imageUrl metadata
+ * @params {string, string, string, string, string}
  * @output {string} JSON response with transaction details
  */
 const main = async () => {
@@ -32,17 +33,20 @@ const main = async () => {
     const recipientAddress = args[2];
     const nftName = args[3];
     const serialNum = args[4];
-    const mph = args[5];
-    const imageUrl = args[6];
-    const metadataJson = args[7];
+    const imageUrl = args[5];
+    const metadataJson = args[6];
 
     const ownerPkh = process.env.OWNER_PKH;
+    const lockDate = process.env.CERTIFICATE_LOCK_DATE;
     const minAda = BigInt(process.env.MIN_ADA);
     const maxTxFee = BigInt(process.env.MAX_TX_FEE);
     const minChangeAmt = BigInt(process.env.MIN_CHANGE_AMT);
 
-    if (!recipientAddress || !nftName || !serialNum || !mph || !imageUrl) {
+    if (!recipientAddress || !nftName || !serialNum || !imageUrl) {
       throw new Error('Missing required parameters');
+    }
+    if (!lockDate) {
+      throw new Error('CERTIFICATE_LOCK_DATE env var required');
     }
 
     // Parse metadata
@@ -67,28 +71,25 @@ const main = async () => {
     const nftMintingPolicyScript = nftMintingPolicyFile.toString();
     const nftMintingProgram = Program.new(nftMintingPolicyScript);
 
+    const lockTimestamp = new Date(lockDate).getTime();
+    if (isNaN(lockTimestamp)) {
+      throw new Error('Invalid CERTIFICATE_LOCK_DATE format');
+    }
+
     nftMintingProgram.parameters = { ['OWNER_PKH']: ownerPkh };
-    nftMintingProgram.parameters = { ['VERSION']: '1.0' };
+    nftMintingProgram.parameters = { ['LOCK_DATE']: BigInt(lockTimestamp) };
 
     const compiledNftMintingProgram = nftMintingProgram.compile(optimize);
     const nftTokenMPH = compiledNftMintingProgram.mintingPolicyHash;
 
-    // Verify the minting policy hash matches (if provided)
-    if (mph && nftTokenMPH.hex !== mph) {
-      throw new Error('Certificate Token minting policy hash does not match');
-    }
-
-    // Get owner wallet UTXOs (we'll use owner wallet to pay for minting)
+    // Get owner wallet UTXOs (platform wallet pays for airdrop minting)
     const ownerWalletAddr = process.env.OWNER_WALLET_ADDR;
-    const ownerUtxosCmd = 'node ../common/get-owner-utxos.mjs';
-    const ownerUtxosResponse = require('child_process').execSync(ownerUtxosCmd, { encoding: 'utf8' });
-    const ownerUtxosData = JSON.parse(ownerUtxosResponse);
-
-    if (ownerUtxosData.status !== 200) {
-      throw new Error('Failed to get owner UTXOs: ' + ownerUtxosData.error);
+    if (!ownerWalletAddr) {
+      throw new Error('OWNER_WALLET_ADDR env var required');
     }
 
-    const walletUtxos = ownerUtxosData.utxos.map((u) => UTxO.fromCbor(hexToBytes(u)));
+    const utxoCborHexes = await fetchUtxos(ownerWalletAddr);
+    const walletUtxos = utxoCborHexes.map((u) => TxInput.fromFullCbor(hexToBytes(u)));
     const minUTXOVal = new Value(minAda + maxTxFee + minChangeAmt);
     const utxos = CoinSelection.selectLargestFirst(walletUtxos, minUTXOVal);
 

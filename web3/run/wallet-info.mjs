@@ -24,6 +24,7 @@ const main = async () => {
     const returnObj = {
       status: 200,
       accountAmt: accountAmt,
+      changeAddrBech32: changeAddr.toBech32(),
       stakeKeyAddr: stakeAddr.toHex(),
       stakeAddrBech32: stakeAddr.toBech32(),
       stakeKeyHash: stakeAddr.stakingHash.hex,

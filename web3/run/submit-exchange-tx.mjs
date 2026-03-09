@@ -1,6 +1,6 @@
 import { hexToBytes, MintingPolicyHash, textToBytes, Tx, TxWitnesses } from '@hyperionbt/helios';
 
-import { submitTx } from '../common/network.mjs';
+import { submitTx } from '../common/sign-tx.mjs';
 
 /**
  * Main calling function via the command line.
