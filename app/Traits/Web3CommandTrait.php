@@ -12,6 +12,7 @@ trait Web3CommandTrait
         $web3Directory = base_path('web3');
         $scriptPath = './' . ltrim($scriptRelativePath, '/');
         $logPath = storage_path('logs/web3.log');
+        $envFile = base_path('.env');
 
         $argumentString = '';
         if (!empty($arguments)) {
@@ -19,8 +20,9 @@ trait Web3CommandTrait
         }
 
         return sprintf(
-            '(cd %s && node %s%s) 2>> %s',
+            '(cd %s && node --env-file=%s %s%s) 2>> %s',
             escapeshellarg($web3Directory),
+            escapeshellarg($envFile),
             escapeshellarg($scriptPath),
             $argumentString,
             escapeshellarg($logPath)
@@ -29,10 +31,17 @@ trait Web3CommandTrait
 
     protected function runCommand(string $command, int $timeout = 30): string
     {
+        if (app()->environment('testing')) {
+            throw new \RuntimeException(
+                'runCommand() must be mocked in tests. Use shouldAllowMockingProtectedMethods() and shouldReceive(\'runCommand\'). Command: '
+                . substr($command, 0, 100)
+            );
+        }
+
         $output = [];
         $returnVar = null;
 
-        $timedCommand = sprintf('timeout %d %s', $timeout, $command);
+        $timedCommand = sprintf('timeout %d bash -c %s', $timeout, escapeshellarg($command));
 
         exec($timedCommand, $output, $returnVar);
 
@@ -51,6 +60,14 @@ trait Web3CommandTrait
             ]);
         }
 
-        return trim(implode(PHP_EOL, $output));
+        $raw = trim(implode(PHP_EOL, $output));
+
+        // Helios prints INFO lines to stdout during contract compilation.
+        // Extract the last JSON object from the output.
+        if (preg_match('/\{.*\}\s*$/s', $raw, $matches)) {
+            return $matches[0];
+        }
+
+        return $raw;
     }
 }

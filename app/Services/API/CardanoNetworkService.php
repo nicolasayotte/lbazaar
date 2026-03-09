@@ -2,11 +2,14 @@
 
 namespace App\Services\API;
 
+use App\Traits\Web3CommandTrait;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class CardanoNetworkService
 {
+    use Web3CommandTrait;
+
     const STATUS_HEALTHY = 'healthy';
     const STATUS_DEGRADED = 'degraded';
     const STATUS_UNREACHABLE = 'unreachable';
@@ -19,7 +22,7 @@ class CardanoNetworkService
 
         try {
             $cmd = $this->buildWeb3Command('run/check-network-health.mjs');
-            $output = $this->runCommand($cmd);
+            $output = $this->runCommand($cmd, 15);
             if (empty($output)) {
                 Log::warning('CardanoNetworkService: empty output');
                 return $this->unreachable();
@@ -33,7 +36,13 @@ class CardanoNetworkService
                 'status' => $data['networkStatus'] ?? self::STATUS_UNREACHABLE,
                 'lastBlockTime' => $data['latestBlock']['time'] ?? null,
             ];
-            Cache::put(self::CACHE_KEY, $result, config('services.cardano.network_health_cache_ttl', 60));
+            if ($result['status'] === self::STATUS_HEALTHY) {
+                try {
+                    Cache::put(self::CACHE_KEY, $result, config('services.cardano.network_health_cache_ttl', 60));
+                } catch (\Throwable $cacheEx) {
+                    Log::warning('CardanoNetworkService: cache write failed', ['error' => $cacheEx->getMessage()]);
+                }
+            }
             return $result;
         } catch (\Throwable $e) {
             Log::warning('CardanoNetworkService: exception', ['error' => $e->getMessage()]);
@@ -44,24 +53,5 @@ class CardanoNetworkService
     private function unreachable(): array
     {
         return ['status' => self::STATUS_UNREACHABLE, 'lastBlockTime' => null];
-    }
-
-    protected function buildWeb3Command(string $scriptRelativePath, array $arguments = []): string
-    {
-        $web3Directory = base_path('web3');
-        $scriptPath = './' . ltrim($scriptRelativePath, '/');
-        $logPath = storage_path('logs/web3.log');
-        $argumentString = '';
-        if (!empty($arguments)) {
-            $argumentString = ' ' . implode(' ', array_map('escapeshellarg', $arguments));
-        }
-        return sprintf('(cd %s && node %s%s) 2>> %s',
-            escapeshellarg($web3Directory), escapeshellarg($scriptPath), $argumentString, escapeshellarg($logPath));
-    }
-
-    protected function runCommand(string $command, int $timeout = 15): string
-    {
-        $timedCommand = sprintf('timeout %d %s', $timeout, $command);
-        return shell_exec($timedCommand) ?? '';
     }
 }
