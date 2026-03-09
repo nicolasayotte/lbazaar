@@ -8,9 +8,15 @@ enum Redeemer {
 // Define the owner public key hash (PKH)
 const OWNER_PKH: ByteArray = #
 const ownerPkh: PubKeyHash = PubKeyHash::new(OWNER_PKH)
-const VERSION: ByteArray = #
+
+// Lock date: minting is only allowed before this timestamp (milliseconds)
+const LOCK_DATE: Int = 0
+const lockTime: Time = Time::new(LOCK_DATE)
 
 func main(_, ctx: ScriptContext) -> Bool {
 
-    ctx.tx.is_signed_by(ownerPkh).trace("NFT_MP1: ")
+    tx: Tx = ctx.tx;
+
+    tx.is_signed_by(ownerPkh).trace("NFT_MP1: ") &&
+    (tx.time_range.start < lockTime).trace("NFT_MP2: ")
 }

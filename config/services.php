@@ -47,6 +47,8 @@ return [
         'min_ada'                   => env('MIN_ADA', 2000000),
         'max_tx_fee'                => env('MAX_TX_FEE', 500000),
         'network_health_cache_ttl'  => env('CARDANO_NETWORK_HEALTH_CACHE_TTL', 60),
+        'certificate_lock_date'     => env('CERTIFICATE_LOCK_DATE'),
+        'owner_wallet_addr'         => env('OWNER_WALLET_ADDR'),
     ],
 
     'blockfrost' => [
