@@ -4,9 +4,13 @@ import { RootPrivateKey, Address, Tx } from '@hyperionbt/helios';
 export { getAccountAddr, signTx, submitTx };
 
 const isTestnet = process.env.NETWORK !== "mainnet"
-const client = new BlockFrostAPI({
-    projectId: process.env.BLOCKFROST_API_KEY,
-});
+let _client;
+const getClient = () => {
+    if (!_client) {
+        _client = new BlockFrostAPI({ projectId: process.env.BLOCKFROST_API_KEY });
+    }
+    return _client;
+};
 
 const defaultEntropy = 'kiss smile exotic pigeon jealous inmate bomb unit pelican tissue viable immense demand flee equal always decrease advance swallow stock replace list enhance item';
 
@@ -33,7 +37,8 @@ const getAccountAddr = async (accountId = 0) => {
         const bech32Addr = Address.fromHash(paymentHash, isTestnet).toBech32();
         return bech32Addr;
     } catch (err) {
-        throw console.error('get-addr: ', err);
+        console.error('get-addr: ', err);
+        throw err;
     }
 };
 
@@ -46,13 +51,13 @@ const signTx = async (tx, accountId = 0) => {
     try {
         const rootKey = RootPrivateKey.fromPhrase(entropy)
         const spendingKey = rootKey.deriveSpendingKey(accountId);
-        const bodyHash = Crypto.blake2b(tx.body.toCbor(), 32);  // 32-byte digest
-        const signature = spendingKey.sign(bodyHash);
+        const signature = spendingKey.sign(tx.bodyHash);
 
-        tx.addSignature(signature);
+        tx.addSignature(signature, false);
         return tx;
     } catch (err) {
-        throw console.error('sign-tx: ', err);
+        console.error('sign-tx: ', err);
+        throw err;
     }
 };
 
@@ -66,7 +71,7 @@ const signTx = async (tx, accountId = 0) => {
 const submitTx = async (tx) => {
     try {
         const payload = new Uint8Array(tx.toCbor());
-        const txHash = await client.txSubmit(payload);
+        const txHash = await getClient().txSubmit(payload);
         return txHash;
     } catch (err) {
         throw err;

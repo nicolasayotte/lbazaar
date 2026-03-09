@@ -6,6 +6,29 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 /**
+ * Convert a plain JS object to Helios metadata format.
+ * Helios encodeMetadata only supports: string, number, Array, { map: [[k,v],...] }.
+ * Plain objects must be converted to the { map: [...] } form recursively.
+ */
+export function toHeliosMetadata(value) {
+  if (value === null || value === undefined) {
+    return '';
+  }
+  if (typeof value === 'string' || typeof value === 'number') {
+    return value;
+  }
+  if (Array.isArray(value)) {
+    return value.map(toHeliosMetadata);
+  }
+  if (typeof value === 'object') {
+    return {
+      map: Object.entries(value).map(([k, v]) => [k, toHeliosMetadata(v)])
+    };
+  }
+  return String(value);
+}
+
+/**
  * Builds certificate metadata from template and input data
  * @param {Object} inputData - The metadata input containing certificate details
  * @param {string} assetName - The asset name for the certificate
@@ -62,10 +85,10 @@ export async function buildCIP25Metadata(policyId, assetName, inputData, imageUr
   try {
     const certificateMetadata = await buildCertificateMetadata(inputData, assetName, imageUrl);
 
-    return {
+    return toHeliosMetadata({
       [policyId]: certificateMetadata,
       version: 1
-    };
+    });
   } catch (error) {
     throw new Error(`Failed to build CIP-25 metadata: ${error.message}`);
   }
@@ -77,7 +100,7 @@ export async function buildCIP25Metadata(policyId, assetName, inputData, imageUr
  * @returns {Object} Custom metadata object for label 674
  */
 export function buildCustomMetadata(inputData) {
-  return {
+  return toHeliosMetadata({
     msg: [
       'Certificate of Completion',
       `Course: ${inputData.course_title || 'Unknown Course'}`,
@@ -85,7 +108,7 @@ export function buildCustomMetadata(inputData) {
       `Teacher: ${inputData.teacher_name || 'Unknown Teacher'}`,
       `Date: ${inputData.completion_date || new Date().toISOString()}`
     ]
-  };
+  });
 }
 
 /**

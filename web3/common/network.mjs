@@ -8,7 +8,7 @@ async function getNetworkParams(network) {
         throw new Error(err)
     }
 
-    const networkParamsFile = getParamsFile(`./config/${network}.json`)
+    const networkParamsFile = `./config/${network}.json`
     const networkParams = await fs.readFile(networkParamsFile, 'utf8');
     return networkParams.toString();
 }
