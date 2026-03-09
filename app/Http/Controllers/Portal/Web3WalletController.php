@@ -48,8 +48,8 @@ class Web3WalletController extends Controller
             $inputs = $request->all();
             $userId = Auth::user()->id;
             $user = UserWallet::where('user_id', $userId)->first();
-            $changeAddr = $request->input('changeAddr'); 
-            $stakeKeyHash = $user->stake_key_hash;
+            $changeAddr = $request->input('changeAddr');
+            $stakeKeyHash = $user?->stake_key_hash ?? '';
 
             $cmd = '(cd ../web3/;node ./run/wallet-info.mjs '.escapeshellarg($changeAddr).' '.escapeshellarg($stakeKeyHash).') 2>> ../storage/logs/web3.log'; 
             

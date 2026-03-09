@@ -41,7 +41,7 @@ class RefundController extends Controller
                 'amount'            => '¥' . number_format($p->amount),
                 'payment_date'      => $p->created_at?->format('Y-m-d'),
                 'has_rewards'       => $p->courseHistory && (
-                    $p->courseHistory->certificate_status === 'minted'
+                    in_array($p->courseHistory->certificate_status, ['minted', 'self_minted'])
                     || $p->courseHistory->token_reward_minted_at !== null
                 ),
             ]);
@@ -71,7 +71,7 @@ class RefundController extends Controller
                 'course_name'       => $h->course->title ?? '',
                 'amount'            => number_format((float) $h->payment_ada_amount, 2) . ' ADA',
                 'payment_date'      => $h->created_at?->format('Y-m-d') ?? '',
-                'has_rewards'       => $h->certificate_status === 'minted'
+                'has_rewards'       => in_array($h->certificate_status, ['minted', 'self_minted'])
                     || $h->token_reward_minted_at !== null,
             ]);
         }
