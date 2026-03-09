@@ -282,7 +282,11 @@ class CertificateServiceTest extends TestCase
 
         // Create a mock that doesn't call external scripts
         $service = Mockery::mock(CertificateService::class)->makePartial()->shouldAllowMockingProtectedMethods();
-        
+
+        $service->shouldReceive('buildWeb3Command')
+            ->twice()
+            ->andReturn('echo test');
+
         $service->shouldReceive('runCommand')
             ->twice() // build and submit
             ->andReturn(
@@ -353,18 +357,39 @@ class CertificateServiceTest extends TestCase
         $this->assertStringContainsString('Submit failed', $result['message']);
     }
 
-    public function test_mint_certificate_nft_missing_template()
+    public function test_mint_certificate_nft_without_nft_row_uses_empty_image()
     {
-        // Delete the certificate NFT template
+        // Delete the certificate NFT template — minting should still work
+        // (MPH is derived from CERTIFICATE_LOCK_DATE, not from the DB row)
         Nft::where('name', 'Certificate')->delete();
 
-        $service = new CertificateService();
-        
         $certificateData = [
             'course_id' => $this->course->id,
             'student_id' => $this->student->id,
             'serial_number' => '1234567890'
         ];
+
+        $service = Mockery::mock(CertificateService::class)->makePartial()->shouldAllowMockingProtectedMethods();
+
+        $service->shouldReceive('buildWeb3Command')
+            ->with('run/build-certificate-tx.mjs', Mockery::on(function ($args) {
+                // imageUrl argument (index 3) should be empty when no Nft row exists
+                return $args[3] === '';
+            }))
+            ->once()
+            ->andReturn('echo build');
+
+        $service->shouldReceive('buildWeb3Command')
+            ->with('run/submit-certificate-tx.mjs', Mockery::any())
+            ->once()
+            ->andReturn('echo submit');
+
+        $service->shouldReceive('runCommand')
+            ->twice()
+            ->andReturn(
+                '{"status": 200, "cborTx": "tx_cbor_data", "mph": "derived_mph"}',
+                '{"status": 200, "txId": "tx_no_template"}'
+            );
 
         $reflection = new \ReflectionClass($service);
         $method = $reflection->getMethod('mintCertificateNFT');
@@ -372,8 +397,17 @@ class CertificateServiceTest extends TestCase
 
         $result = $method->invokeArgs($service, [$certificateData, 'addr1test']);
 
-        $this->assertFalse($result['success']);
-        $this->assertStringContainsString('Certificate NFT template not found', $result['message']);
+        $this->assertTrue($result['success']);
+        $this->assertEquals('tx_no_template', $result['transaction_id']);
+
+        // Re-create the Certificate NFT for subsequent tests
+        Nft::factory()->create([
+            'name' => 'Certificate',
+            'description' => 'Certificate NFT',
+            'image_url' => 'QmTestImageHash',
+            'mph' => '',
+            'points' => 0
+        ]);
     }
 
     public function test_record_nft_transaction()
@@ -2127,5 +2161,63 @@ class CertificateServiceTest extends TestCase
         $this->assertEquals(50, $result['token']['amount']);
         $this->assertStringContainsString($tokenTxHash, $result['token']['explorer_url']);
         $this->assertEquals($result['token']['fee_lovelace'], $result['total_fee_lovelace']);
+    }
+
+    // ── deriveCertificatePolicyId ──────────────────────────────────────
+
+    public function test_derive_certificate_policy_id_returns_mph_on_success()
+    {
+        $service = Mockery::mock(CertificateService::class)->makePartial()->shouldAllowMockingProtectedMethods();
+
+        $service->shouldReceive('buildWeb3Command')
+            ->once()
+            ->with('run/derive-certificate-mph.mjs')
+            ->andReturn('echo test');
+
+        $service->shouldReceive('runCommand')
+            ->once()
+            ->andReturn(json_encode(['status' => 200, 'mph' => 'abc123def456']));
+
+        $result = $service->deriveCertificatePolicyId();
+
+        $this->assertEquals('abc123def456', $result);
+    }
+
+    public function test_derive_certificate_policy_id_returns_null_on_script_error()
+    {
+        $service = Mockery::mock(CertificateService::class)->makePartial()->shouldAllowMockingProtectedMethods();
+
+        $service->shouldReceive('buildWeb3Command')
+            ->once()
+            ->andReturn('echo test');
+
+        $service->shouldReceive('runCommand')
+            ->once()
+            ->andReturn(json_encode(['status' => 500, 'error' => 'CERTIFICATE_LOCK_DATE env var or argument required']));
+
+        Log::shouldReceive('error')->once();
+
+        $result = $service->deriveCertificatePolicyId();
+
+        $this->assertNull($result);
+    }
+
+    public function test_derive_certificate_policy_id_returns_null_on_exception()
+    {
+        $service = Mockery::mock(CertificateService::class)->makePartial()->shouldAllowMockingProtectedMethods();
+
+        $service->shouldReceive('buildWeb3Command')
+            ->once()
+            ->andReturn('echo test');
+
+        $service->shouldReceive('runCommand')
+            ->once()
+            ->andThrow(new \Exception('Command timed out'));
+
+        Log::shouldReceive('error')->once();
+
+        $result = $service->deriveCertificatePolicyId();
+
+        $this->assertNull($result);
     }
 }

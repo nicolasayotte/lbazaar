@@ -48,6 +48,9 @@ class CoursePurchaseServiceTest extends TestCase
         $this->userRepository = Mockery::mock(UserRepository::class);
         $this->userRepository->shouldReceive('getAdmin')->andReturn($this->admin)->byDefault();
 
+        // Admin commission goes to the owner wallet (from config, not DB)
+        config(['services.cardano.owner_wallet_addr' => 'addr_test1vqn86mwqux5w7d7qxx0tcz8j4fz5lw8k7n796rwul4zfc8g7up3fs']);
+
         $this->service = new CoursePurchaseService($this->walletService, $this->userRepository, app(RewardInvalidationService::class));
     }
 
@@ -62,7 +65,7 @@ class CoursePurchaseServiceTest extends TestCase
                 'first_name' => 'Admin',
                 'last_name' => 'User',
                 'email' => 'purchase-admin@example.com',
-                'custodial_address' => 'addr1test_admin_custodial'
+                'custodial_address' => 'addr_test1qrxhyr2flena4ams5pcx26n0yj4ttpmjq2tmuesu4waw8n0qkvmnz8mkxqdmena3rtxkl0v2v7uf6ehw9ns0swkgwejhq6gyhvq'
             ]);
         });
         $this->admin->attachRole('administrator');
@@ -72,7 +75,7 @@ class CoursePurchaseServiceTest extends TestCase
             return User::factory()->create([
                 'first_name' => 'John',
                 'last_name' => 'Teacher',
-                'custodial_address' => 'addr1test_teacher_custodial'
+                'custodial_address' => 'addr_test1qpq2yf7caahrlrfqgzpna0fxmk3qqtv4r8a94x07u9kpnkqz8rswuu3fhgujcfvmlmjr6v2n7kl6qrfhykgdqpsj0zsmy9v9r'
             ]);
         });
         $this->teacher->attachRole('teacher');
@@ -83,29 +86,30 @@ class CoursePurchaseServiceTest extends TestCase
                 'first_name' => 'Jane',
                 'last_name' => 'Student',
                 'email' => 'purchase-student@example.com',
-                'custodial_address' => 'addr1test_student_custodial'
+                'custodial_address' => 'addr_test1qz3qle7au7w627ftsrperl7jw0cz27q4jw2cdk5a7y5fud96wfg54pe7w8qd4rcfhmvu0gw0kuuujf7lta943mfq0z4qv0g2tj'
             ]);
         });
         $this->student->attachRole('student');
 
-        // Create wallets
+        // Create wallets — use valid-length bech32 testnet addresses
+        // (real Shelley base addresses are ~103 chars on testnet)
         $this->userWallet = UserWallet::factory()->create([
             'user_id' => $this->student->id,
             'points' => 100,
             'stake_key_hash' => 'abc123def456',
-            'address' => 'addr1student_wallet_address'
+            'address' => 'addr_test1qz3qle7au7w627ftsrperl7jw0cz27q4jw2cdk5a7y5fud96wfg54pe7w8qd4rcfhmvu0gw0kuuujf7lta943mfq0z4qv0g2tj'
         ]);
 
         $this->teacherWallet = UserWallet::factory()->create([
             'user_id' => $this->teacher->id,
             'points' => 50,
-            'address' => 'addr1teacher_wallet_address'
+            'address' => 'addr_test1qpq2yf7caahrlrfqgzpna0fxmk3qqtv4r8a94x07u9kpnkqz8rswuu3fhgujcfvmlmjr6v2n7kl6qrfhykgdqpsj0zsmy9v9r'
         ]);
 
         $this->adminWallet = UserWallet::factory()->create([
             'user_id' => $this->admin->id,
             'points' => 1000,
-            'address' => 'addr1admin_wallet_address'
+            'address' => 'addr_test1qrxhyr2flena4ams5pcx26n0yj4ttpmjq2tmuesu4waw8n0qkvmnz8mkxqdmena3rtxkl0v2v7uf6ehw9ns0swkgwejhq6gyhvq'
         ]);
 
         // Create course
@@ -208,22 +212,23 @@ class CoursePurchaseServiceTest extends TestCase
 
     public function test_build_fails_without_teacher_wallet()
     {
-        $this->teacherWallet->delete();
+        // Clear the teacher's custodial address so resolution fails
+        $this->teacher->update(['custodial_address' => null]);
 
         $result = $this->service->buildPurchaseTransaction($this->schedule, $this->student);
 
         $this->assertFalse($result['success']);
-        $this->assertStringContainsString('System wallets not configured', $result['message']);
+        $this->assertStringContainsString('Teacher wallet address could not be resolved', $result['message']);
     }
 
     public function test_build_fails_without_admin_wallet()
     {
-        $this->adminWallet->delete();
+        config(['services.cardano.owner_wallet_addr' => null]);
 
         $result = $this->service->buildPurchaseTransaction($this->schedule, $this->student);
 
         $this->assertFalse($result['success']);
-        $this->assertStringContainsString('System wallets not configured', $result['message']);
+        $this->assertStringContainsString('Platform wallet not configured', $result['message']);
     }
 
     public function test_builds_purchase_transaction_successfully()

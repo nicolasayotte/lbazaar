@@ -115,6 +115,24 @@ class CardanoNetworkServiceTest extends TestCase
         $this->assertEquals('healthy', $result2['status']);
     }
 
+    public function test_does_not_cache_degraded_result(): void
+    {
+        $service = $this->makeService();
+        $service->shouldReceive('runCommand')
+            ->twice()
+            ->andReturn(json_encode([
+                'status' => 200,
+                'networkStatus' => 'degraded',
+                'latestBlock' => ['hash' => 'def456', 'height' => 999, 'time' => '2024-01-01T00:00:00.000Z'],
+            ]));
+
+        $result1 = $service->getNetworkStatus();
+        $result2 = $service->getNetworkStatus();
+
+        $this->assertEquals('degraded', $result1['status']);
+        $this->assertEquals('degraded', $result2['status']);
+    }
+
     public function test_does_not_cache_unreachable_result(): void
     {
         $service = $this->makeService();
