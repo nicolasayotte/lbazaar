@@ -13,6 +13,7 @@ use App\Repositories\CourseHistoryRepository;
 use App\Repositories\CourseRepository;
 use App\Repositories\CourseTypeRepository;
 use App\Repositories\UserRepository;
+use App\Services\API\CertificateService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -101,6 +102,8 @@ class ManageCourseController extends Controller
             $tokenRewardEnabled = !empty($course->token_reward_enabled);
         }
 
+        $certificateService = new CertificateService();
+
         return Inertia::render('Portal/MyPage/ManageClass/Certificates', [
             'course'               => $this->courseRepository->findByIdManageClass($id),
             'students'             => $students,
@@ -109,6 +112,8 @@ class ManageCourseController extends Controller
             'explorerUrl'          => config('services.cardano.explorer_url'),
             'has_rewards'          => $hasRewards,
             'token_reward_enabled' => $tokenRewardEnabled,
+            'certificatePolicyId'  => $certificateService->deriveCertificatePolicyId(),
+            'certificateLockDate'  => config('services.cardano.certificate_lock_date'),
             'title'                => $this->baseTitle . getTranslation('title.certificates'),
         ])->withViewData([
             'title' => $this->baseTitle . getTranslation('title.certificates'),

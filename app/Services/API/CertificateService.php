@@ -136,7 +136,7 @@ class CertificateService
      * @param string|null $certDescription   Override for the certificate description (from enrollment snapshot).
      * @return array
      */
-    protected function createCertificateMetadata(Course $course, User $student, ?string $certName = null, ?string $certDescription = null)
+    public function createCertificateMetadata(Course $course, User $student, ?string $certName = null, ?string $certDescription = null)
     {
         $timestamp = now();
         $serialNumber = $timestamp->timestamp;
@@ -173,22 +173,16 @@ class CertificateService
             }
 
             // Create NFT name and metadata
-            $nftName = 'Certificate-' . $certificateData['course_id'] . '-' . $certificateData['student_id'];
+            $nftName = 'Cert-' . $certificateData['course_id'] . '-' . $certificateData['student_id'];
             $serialNum = $certificateData['serial_number'];
 
             $certificateNft = Nft::where('name', 'Certificate')->first();
-            if (!$certificateNft) {
-                throw new Exception('Certificate NFT template not found in database');
-            }
-
-            $mph = $certificateNft->mph;
-            $imageUrl = $imageUrlOverride ?? $certificateNft->image_url;
+            $imageUrl = $imageUrlOverride ?? ($certificateNft?->image_url ?? '');
 
             $buildCommand = $this->buildWeb3Command('run/build-certificate-tx.mjs', [
                 $walletAddress,
                 $nftName,
                 $serialNum,
-                $mph,
                 $imageUrl,
                 $metadataJson
             ]);
@@ -219,7 +213,7 @@ class CertificateService
                         'transaction_id' => $submitResponseJSON['txId'],
                         'nft_name' => $nftName,
                         'serial_number' => $serialNum,
-                        'mph' => $mph
+                        'mph' => $responseJSON['mph'] ?? ''
                     ];
                 }
 
@@ -346,6 +340,30 @@ class CertificateService
                 'student_id' => $studentId,
                 'error' => $e->getMessage()
             ]);
+        }
+    }
+
+    /**
+     * Derive the certificate minting policy hash from the configured lock date.
+     *
+     * @return string|null  The policy hash hex string, or null on failure.
+     */
+    public function deriveCertificatePolicyId(): ?string
+    {
+        try {
+            $command = $this->buildWeb3Command('run/derive-certificate-mph.mjs');
+            $response = $this->runCommand($command);
+            $data = json_decode($response, true);
+
+            if (is_array($data) && ($data['status'] ?? null) === 200) {
+                return $data['mph'];
+            }
+
+            Log::error('Failed to derive certificate policy ID', ['response' => $response]);
+            return null;
+        } catch (Exception $e) {
+            Log::error('Exception deriving certificate policy ID', ['error' => $e->getMessage()]);
+            return null;
         }
     }
 
@@ -486,8 +504,8 @@ class CertificateService
             $courseHistory->certificate_tx_hash = $txHash;
         }
 
-        // Set certificate_minted_at if status is 'minted'
-        if ($status === 'minted') {
+        // Set certificate_minted_at if status is 'minted' or 'self_minted'
+        if ($status === 'minted' || $status === 'self_minted') {
             $courseHistory->certificate_minted_at = now();
         }
 
@@ -754,6 +772,7 @@ class CertificateService
                         'id'                 => 'cert-' . $history->id,
                         'course_history_id'  => $history->id,
                         'course_id'          => $history->course_id,
+                        'schedule_id'        => $history->course_schedule_id,
                         'course_name'        => $course->title,
                         'professor_name'     => $professorName,
                         'reward_type'        => 'certificate',
@@ -782,6 +801,7 @@ class CertificateService
                         'id'                 => 'token-' . $history->id,
                         'course_history_id'  => $history->id,
                         'course_id'          => $history->course_id,
+                        'schedule_id'        => $history->course_schedule_id,
                         'course_name'        => $course->title,
                         'professor_name'     => $professorName,
                         'reward_type'        => 'token',
@@ -840,7 +860,7 @@ class CertificateService
         $status = $history->certificate_status ?? 'eligible';
 
         return match ($status) {
-            'minted'  => 'minted',
+            'minted', 'self_minted' => 'minted',
             'minting' => 'minting',
             'pending' => 'pending',
             'failed'  => 'failed',
@@ -864,7 +884,7 @@ class CertificateService
         $status = $history->token_reward_status ?? 'eligible';
 
         return match ($status) {
-            'minted'  => 'minted',
+            'minted', 'self_minted' => 'minted',
             'minting' => 'minting',
             'pending' => 'pending',
             'failed'  => 'failed',
@@ -1036,7 +1056,7 @@ class CertificateService
             $explorerUrl = null;
 
             // Build explorer URL if certificate is minted
-            if ($certificateStatus === 'minted' && $courseHistory->certificate_tx_hash) {
+            if (in_array($certificateStatus, ['minted', 'self_minted']) && $courseHistory->certificate_tx_hash) {
                 $explorerUrl = config('services.cardano.explorer_url') . '/tx/' . $courseHistory->certificate_tx_hash;
             }
 
