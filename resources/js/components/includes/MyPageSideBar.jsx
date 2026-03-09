@@ -45,8 +45,8 @@ const MyPage = ({ window }) => {
             icon: <MenuBook />,
         },
         {
-            name: `${translatables.texts.badges}`,
-            link: routes["mypage.badges.index"],
+            name: `${translatables.texts.certificates}`,
+            link: routes["mypage.certificates.index"],
             roles: ['student', 'teacher'],
             active: component.startsWith('Portal/MyPage/Badges'),
             icon: <Badge />,

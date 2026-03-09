@@ -765,6 +765,8 @@ const Details = () => {
                                             onClick={() => {
                                                 if (schedules && schedules.length > 0) {
                                                     handleBuyWithAda(schedules[0].id)
+                                                } else {
+                                                    dispatch(actions.error({ message: translatables?.texts?.no_schedule ?? 'No schedule available for this course.' }))
                                                 }
                                             }}
                                             startIcon={purchaseLoading ? <CircularProgress size={20} color="inherit" /> : <AccountBalanceWalletIcon />}

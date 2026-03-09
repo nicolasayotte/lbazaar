@@ -40,6 +40,7 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
     const [walletBalance, setWalletBalance] = useState(undefined)
     const [walletVerify, setWalletVerify] = useState(false)
     const [changeAddr, setChangeAddr] = useState(undefined)
+    const [changeAddrBech32, setChangeAddrBech32] = useState(undefined)
     const [walletStakeAddr, setwalletStakeAddr] = useState(undefined)
     const [walletStakeKeyDisplay, setwalletStakeKeyDisplay] = useState(undefined)
     const [walletStakeAddrBech32, setWalletStakeAddrBech32] = useState(undefined)
@@ -48,12 +49,27 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
     const eventListenersRef = useRef({ accountChange: null, networkChange: null })
     const [walletDisconnected, setWalletDisconnected] = useState(false)
 
+    // Auto-reconnect previously connected wallet on mount
+    useEffect(() => {
+        const saved = localStorage.getItem('lbazaar_wallet')
+        if (saved && !whichWalletSelected) {
+            const walletConfigs = {
+                eternl: { name: 'eternl', src: EternlLogo, w: 25, h: 25 },
+                flint:  { name: 'flint',  src: FlintLogo,  w: 30, h: 30 },
+                nami:   { name: 'nami',   src: NamiLogo,   w: 25, h: 25 },
+            }
+            if (walletConfigs[saved] && window?.cardano?.[saved]) {
+                setWhichWalletSelected(walletConfigs[saved])
+            }
+        }
+    }, [])
+
     useEffect(() => {
         const checkWallet = async () => {
             if (await checkIfWalletFound()) {
                 if (await checkUserSignedIn()) {
                     setWalletIsEnabled(await enableWallet())
-                } 
+                }
             }
         }
         checkWallet()
@@ -81,6 +97,7 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
 
     const handleHeartbeatDisconnect = useCallback((errorKey) => {
         clearInterval(heartbeatRef.current)
+        localStorage.removeItem('lbazaar_wallet')
         setWhichWalletSelected(undefined)
         setWalletIsEnabled(false)
         onWalletAPI(undefined)
@@ -305,16 +322,19 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
             if (walletChoice === "eternl") {
                 const walletAPI = await window.cardano.eternl.enable()
                 if (!await checkNetwork(walletAPI)) return false
+                localStorage.setItem('lbazaar_wallet', walletChoice)
                 onWalletAPI(walletAPI)
                 return true
             } else if (walletChoice === "flint") {
                 const walletAPI = await window.cardano.flint.enable()
                 if (!await checkNetwork(walletAPI)) return false
+                localStorage.setItem('lbazaar_wallet', walletChoice)
                 onWalletAPI(walletAPI)
                 return true
             } else if (walletChoice === "nami") {
                 const walletAPI = await window.cardano.nami.enable()
                 if (!await checkNetwork(walletAPI)) return false
+                localStorage.setItem('lbazaar_wallet', walletChoice)
                 onWalletAPI(walletAPI)
                 return true
             } else {
@@ -342,6 +362,7 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
         .then(async response => {
             const respObj = await JSON.parse(response.data)
             setWalletBalance(Number(respObj.accountAmt) / 1000000)
+            setChangeAddrBech32(respObj.changeAddrBech32)
             setwalletStakeAddr(respObj.stakeKeyAddr)
             setWalletStakeAddrBech32(respObj.stakeAddrBech32)
             
@@ -380,8 +401,8 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                 await axios.post('/wallet/verify', {
                     signature: signature,
                     stake_key: key,
-                    addr: changeAddr,
-                    message: hexMessage,  
+                    addr: changeAddrBech32,
+                    message: hexMessage,
                     stake_addr: walletStakeAddrBech32
                 })
                 .then(async response => {
@@ -446,7 +467,7 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                         await axios.post('/wallet/verify-hw', {
                             walletSig: walletSig,
                             cborTx: respObj.cborTx,
-                            addr: changeAddr,
+                            addr: changeAddrBech32,
                             stakeAddr: walletStakeAddrBech32
                         })
                         .then(async response => {
@@ -493,6 +514,7 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
     const handleWalletSwitch = () => {
         cleanupEventListeners(walletAPI)
         clearInterval(heartbeatRef.current)
+        localStorage.removeItem('lbazaar_wallet')
         setWalletDisconnected(false)
         setWhichWalletSelected(undefined)
         setWalletIsEnabled(false)
