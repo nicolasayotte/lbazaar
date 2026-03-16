@@ -1,0 +1,44 @@
+{
+  "generated_at": "2026-03-16T01:08:20.906923195+00:00",
+  "total_contracts": 5,
+  "leaf_nodes": [
+    "le-bazaar-milestone-4",
+    "hygiene",
+    "payments",
+    "rewards",
+    "e2e"
+  ],
+  "execution_order": [
+    ["le-bazaar-milestone-4", "hygiene", "payments"],
+    ["rewards"],
+    ["e2e"]
+  ],
+  "issues": [
+    {
+      "severity": "warning",
+      "type": "missing_convergence_checks",
+      "message": "leaf contract 'le-bazaar-milestone-4' has no convergence_checks — root mission contract with empty mutable, expected",
+      "contracts": ["le-bazaar-milestone-4"]
+    },
+    {
+      "severity": "warning",
+      "type": "transitory_stale",
+      "message": "transitory contract 'e2e' has all convergence_checks passing — artifacts already exist (brownfield)",
+      "contracts": ["e2e"]
+    },
+    {
+      "severity": "warning",
+      "type": "transitory_stale",
+      "message": "transitory contract 'payments' has all convergence_checks passing — artifacts already exist (brownfield)",
+      "contracts": ["payments"]
+    },
+    {
+      "severity": "warning",
+      "type": "transitory_stale",
+      "message": "transitory contract 'rewards' has all convergence_checks passing — artifacts already exist (brownfield)",
+      "contracts": ["rewards"]
+    }
+  ],
+  "coupling_analysis": [],
+  "convergence_health": "skipped — no ownership-manifest.json found"
+}
