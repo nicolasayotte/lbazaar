@@ -22,13 +22,14 @@ import axios from 'axios'
 import RewardDetailDialog from './RewardDetailDialog'
 
 const STATUS_CONFIG = {
-    eligible:     { color: 'info',    label: 'Eligible' },
-    pending:      { color: 'warning', label: 'Pending' },
-    minting:      { color: 'warning', label: 'Minting' },
-    minted:       { color: 'success', label: 'Delivered' },
-    failed:       { color: 'error',   label: 'Failed' },
-    revoked:      { color: 'default', label: 'Revoked' },
-    not_eligible: { color: 'default', label: 'Not Eligible' },
+    eligible:        { color: 'info',    label: 'Eligible' },
+    pending:         { color: 'warning', label: 'Pending' },
+    minting:         { color: 'warning', label: 'Minting' },
+    minted:          { color: 'success', label: 'Delivered' },
+    failed:          { color: 'error',   label: 'Failed' },
+    revoked:         { color: 'default', label: 'Revoked' },
+    not_eligible:    { color: 'default', label: 'Not Eligible' },
+    clawback_flagged: { color: 'warning', label: 'Clawback Flagged' },
 }
 
 const DeliveryStatusChip = ({ status }) => {
@@ -196,11 +197,9 @@ const RewardsTable = ({ data, walletAPI }) => {
                 </TableCell>
                 <TableCell align="center">{formatDate(reward.delivery_date)}</TableCell>
                 <TableCell align="center">
-                    {walletAPI
+                    {(reward.wallet_type ?? reward.wallet_destination) === 'external'
                         ? (texts.wallet_external || 'External')
-                        : reward.wallet_destination === 'external'
-                            ? (texts.wallet_external || 'External')
-                            : (texts.wallet_custodial || 'Custodial')}
+                        : (texts.wallet_custodial || 'Custodial')}
                 </TableCell>
                 <TableCell align="center">
                     {inProgress && <CircularProgress size={20} />}
