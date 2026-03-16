@@ -75,36 +75,44 @@
       "course_histories.certificate_status ENUM includes self_minted (migration 2026_03_10_000001 applied)"
     ],
     "post_conditions": [
-      "F-05: Teachers enable/configure/disable NFT certificate reward per class; incomplete metadata rejected with field-level errors; config locked at student enrollment time (SC-E02-06)",
-      "F-06: Teachers enable/configure/disable token reward per class; invalid amounts rejected; config locked at student enrollment time",
-      "F-07: NFT and token rewards configured independently and delivered together in a single airdrop",
-      "F-10: Teachers/admins initiate batch or selective airdrop with fee estimate before confirmation; partial failures listed with retry; duplicate delivery prevented (SC-E02-02); platform wallet pays all minting fees; teacher wallet not required for airdrop",
-      "F-16: Refund triggers on-chain metadata update flagging NFT as revoked + platform revocation status (SC-E02-05); token reward flagged for clawback in course_histories",
-      "F-17: Students view all earned rewards with type, amount, delivery status (delivered/pending/failed/revoked), and wallet destination (custodial or external)",
-      "F-18: Students with CIP-30 wallet self-mint NFT cert or token reward paying ~1 ADA minting fee; fallback custodial mint available; self_minted status recorded in course_histories.certificate_status",
-      "F-19: Eligibility notification shown immediately on class completion; eligibility badge on completed class page; cleared after reward receipt"
+      "F-05: Teachers enable/configure/disable NFT certificate reward per class; required metadata fields are name, image (IPFS URL), description, course_id, instructor, and student_name — all are validated by certificate-metadata.mjs and CertificateService; the NFT is soul-bound (non-tradeable); submission of incomplete metadata returns HTTP 422 with an Inertia validation bag ($page.props.errors populated) with field-level error messages and the form remains open without page reload; once any student has enrolled the save action returns HTTP 422 with an error indicating the reward configuration cannot be changed after enrollment and form fields are disabled in the UI; CertificateService reads course_histories.enrolled_certificate_enabled and course_histories.enrolled_certificate_name (snapshot columns written at enrollment time) to build mint transactions — it never reads the live course config (SC-E02-06)",
+      "F-06: Teachers enable/configure/disable token reward per class; submission of an invalid token amount (zero or non-numeric) returns HTTP 422 with an Inertia validation bag ($page.props.errors populated) with a field-level error on the amount field and the form remains open; once any student has enrolled the save action returns HTTP 422 with an error indicating the reward configuration cannot be changed after enrollment and form fields are disabled in the UI; CertificateService reads course_histories.enrolled_token_reward_enabled and course_histories.enrolled_token_reward_amount (snapshot columns written at enrollment time) to build mint transactions — it never reads the live course config",
+      "F-07: NFT and token rewards are configured independently per class and are delivered together in a single on-chain transaction (one script call, one Blockfrost submission) containing both the NFT mint output and the token mint output; a failure in that single transaction counts as one retryable failure record for the student",
+      "F-10: Teachers/admins initiate batch or selective airdrop; AirdropFeeDialog renders an estimated fee in ADA before the teacher confirms; after confirmation, any per-student failures are listed in AirdropResultsDialog; AirdropResultsDialog provides a Retry Failed action that opens a new AirdropFeeDialog with a fresh fee estimate before re-confirmation, and the retry submission targets only the previously-failed student IDs; a new airdrop attempt is permitted only when course_histories.certificate_status is null or 'failed' — status values {delivered, minted, self_minted, pending} block re-delivery and this guard is enforced server-side before any minting transaction is built (SC-E02-02); platform wallet (OWNER_WALLET_ADDR) pays all minting fees; teacher wallet is never charged",
+      "F-16: On refund, RewardInvalidationService sets course_histories.certificate_status = 'revoked' (triggering an on-chain metadata update via revoke-certificate-tx.mjs) and course_histories.token_reward_status = 'clawback_flagged'; neither value is cleared or overwritten by subsequent airdrop, retry, or self-mint operations (SC-E02-05)",
+      "F-17: The RewardsTable component renders each earned reward row with: reward type (NFT certificate or token), amount where applicable, delivery status drawn from the set {delivered, pending, failed, revoked, clawback_flagged}, and wallet destination sourced from course_histories.wallet_type with values 'custodial' or 'external'",
+      "F-18: A student with a connected CIP-30 wallet may initiate self-mint; StudentMintController builds the transaction server-side via build-student-certificate-tx.mjs (NFT) or build-student-token-tx.mjs (token), returns the unsigned tx to the browser; student signs via CIP-30 signTx(tx, partial=true); server merges witness and submits via submit-signed-tx.mjs; on success course_histories.certificate_status is set to 'self_minted'; on failure (insufficient wallet funds, Blockfrost timeout, or user rejection) course_histories.certificate_status is set to 'failed' and the student may retry manually; no automatic fallback to custodial mint occurs",
+      "F-19: On class completion, CourseCompleteConfirmation renders both a reward eligibility notification and a reward eligibility badge in the same component, visible before the student dismisses the confirmation; these elements are absent once the reward reaches a terminal delivery status (delivered or self_minted)"
     ],
     "invariants": [
-      "Only students who have met the existing platform completion criteria are eligible for reward airdrop or self-mint (SC-E02-04)",
-      "NFT minting policy must support on-chain metadata updates to enable revocation flags — do not change the minting policy in a way that loses this capability (SC-E02-05)",
-      "Platform wallet (OWNER_WALLET_ADDR) pays all airdrop minting fees; teacher wallet is never charged for teacher-initiated airdrops",
-      "CIP-30 self-mint uses partial sign flow — student signs, server merges with owner witness and submits via Blockfrost (same pattern as ADA purchase)"
+      "Only students whose course_histories record satisfies the existing platform completion criteria are eligible for reward airdrop or self-mint (SC-E02-04); eligibility is evaluated server-side before any minting transaction is built",
+      "NFT minting policy must support on-chain metadata updates to enable revocation flags — minting-policy.mjs must not be changed in a way that removes the metadata update capability required by revoke-certificate-tx.mjs (SC-E02-05)",
+      "Platform wallet (OWNER_WALLET_ADDR) pays all airdrop minting fees; no code path charges the teacher's wallet for a teacher-initiated airdrop",
+      "CIP-30 self-mint uses the partial sign flow: browser calls signTx(tx, partial=true) which returns a TransactionWitnessSet; server merges the student witness with the owner witness and submits the merged transaction via submit-signed-tx.mjs — the full Transaction object is never sent to the browser for submission",
+      "NFT certificates are soul-bound (non-tradeable); no code path in the minting scripts may omit the soul-bound constraint from the minting policy or on-chain metadata"
     ]
   },
   "acceptance": [
-    "Teacher configures NFT certificate reward with required metadata; incomplete metadata rejected",
-    "Teacher configures token reward with valid amount; invalid amount rejected",
-    "Teacher initiates airdrop to all eligible students with fee estimate displayed before confirmation",
-    "Student self-mints NFT certificate via CIP-30 wallet paying ~1 ADA minting fee",
-    "Student rewards view shows all earned rewards with correct delivery status",
-    "Refund-triggered reward invalidation marks NFT revoked on-chain and in platform; token flagged for clawback",
-    "Student sees reward eligibility notification immediately on class completion"
+    "Teacher submits NFT certificate reward configuration with one or more required fields (name, image, description, course_id, instructor, student_name) missing; the server returns HTTP 422, the page remains open (no full reload), and $page.props.errors contains at least one field-level error message identifying the missing field",
+    "Teacher submits NFT certificate reward configuration after a student has enrolled; the server returns HTTP 422 with an error message indicating the reward configuration cannot be changed after enrollment, and the form fields are rendered as disabled",
+    "Teacher submits token reward configuration with an invalid amount (zero or non-numeric); the server returns HTTP 422, the page remains open, and $page.props.errors contains a field-level error on the amount field",
+    "Teacher initiates airdrop for a student whose course_histories.certificate_status is 'delivered'; the server rejects the request without building a minting transaction — the student does not appear in the fee estimate or airdrop submission",
+    "Teacher initiates airdrop; AirdropFeeDialog is rendered and displays a numeric ADA fee estimate before any minting transaction is submitted; after a partial failure AirdropResultsDialog displays the failed student records and a Retry Failed action; clicking Retry Failed opens a new AirdropFeeDialog with a fresh fee estimate before re-submission",
+    "Student with a connected CIP-30 wallet initiates self-mint; if the mint fails for any reason, course_histories.certificate_status is set to 'failed' and the student is presented with a manual retry action — no automatic custodial fallback occurs",
+    "RewardsTable renders each earned reward with a status value drawn from {delivered, pending, failed, revoked, clawback_flagged} and a wallet destination drawn from course_histories.wallet_type with values 'custodial' or 'external'",
+    "On refund, course_histories.certificate_status is set to 'revoked' and course_histories.token_reward_status is set to 'clawback_flagged'; these values persist and are not overwritten by subsequent airdrop or self-mint operations",
+    "CourseCompleteConfirmation renders both a reward eligibility notification and a reward eligibility badge on class completion; both elements are absent once the reward reaches status 'delivered' or 'self_minted'"
   ],
   "convergence_checks": [
     {
       "description": "CertificateService exists",
       "type": "glob_exists",
       "check": "app/Services/API/CertificateService.php"
+    },
+    {
+      "description": "RewardInvalidationService exists (F-16 revocation/clawback)",
+      "type": "glob_exists",
+      "check": "app/Services/API/RewardInvalidationService.php"
     },
     {
       "description": "StudentMintController exists (F-18 self-mint)",
@@ -117,9 +125,19 @@
       "check": "web3/run/build-certificate-tx.mjs"
     },
     {
-      "description": "build-student-certificate-tx.mjs exists (F-18 self-mint)",
+      "description": "revoke-certificate-tx.mjs exists (F-16 on-chain revocation)",
+      "type": "glob_exists",
+      "check": "web3/run/revoke-certificate-tx.mjs"
+    },
+    {
+      "description": "build-student-certificate-tx.mjs exists (F-18 self-mint NFT)",
       "type": "glob_exists",
       "check": "web3/run/build-student-certificate-tx.mjs"
+    },
+    {
+      "description": "build-student-token-tx.mjs exists (F-18 self-mint token)",
+      "type": "glob_exists",
+      "check": "web3/run/build-student-token-tx.mjs"
     },
     {
       "description": "build-token-reward-tx.mjs exists (F-10 token airdrop)",
@@ -137,19 +155,237 @@
       "check": "database/migrations/2026_02_28_000001_add_token_reward_fields.php"
     },
     {
+      "description": "revoked/clawback migration exists (F-16)",
+      "type": "glob_exists",
+      "check": "database/migrations/2026_02_28_000003_add_revoked_and_clawback_to_course_histories.php"
+    },
+    {
+      "description": "enrollment reward snapshot migration exists (F-05/F-06 config lock)",
+      "type": "glob_exists",
+      "check": "database/migrations/2026_02_28_000002_add_enrollment_reward_snapshot_to_course_histories.php"
+    },
+    {
       "description": "AirdropFeeDialog exists (F-10 fee estimate UI)",
       "type": "glob_exists",
       "check": "resources/js/pages/Portal/MyPage/ManageClass/components/AirdropFeeDialog.jsx"
     },
     {
-      "description": "CourseCompleteConfirmation exists (F-19 eligibility notification)",
+      "description": "AirdropResultsDialog exists (F-10 partial failure retry UI)",
+      "type": "glob_exists",
+      "check": "resources/js/pages/Portal/MyPage/ManageClass/components/AirdropResultsDialog.jsx"
+    },
+    {
+      "description": "RewardsTable exists (F-17 student rewards view)",
+      "type": "glob_exists",
+      "check": "resources/js/pages/Portal/MyPage/Badges/components/RewardsTable.jsx"
+    },
+    {
+      "description": "RewardDetailDialog exists (F-17 reward detail)",
+      "type": "glob_exists",
+      "check": "resources/js/pages/Portal/MyPage/Badges/components/RewardDetailDialog.jsx"
+    },
+    {
+      "description": "CourseCompleteConfirmation exists (F-19 eligibility notification + badge)",
       "type": "glob_exists",
       "check": "resources/js/pages/Portal/CourseCompleteConfirmation.jsx"
     },
     {
-      "description": "revoked/clawback migration exists (F-16)",
-      "type": "glob_exists",
-      "check": "database/migrations/2026_02_28_000003_add_revoked_and_clawback_to_course_histories.php"
+      "description": "F-05: certificate-metadata.mjs declares required field 'name'",
+      "type": "grep_match",
+      "file": "web3/common/certificate-metadata.mjs",
+      "pattern": "name"
+    },
+    {
+      "description": "F-05: certificate-metadata.mjs declares required field 'image'",
+      "type": "grep_match",
+      "file": "web3/common/certificate-metadata.mjs",
+      "pattern": "image"
+    },
+    {
+      "description": "F-05: certificate-metadata.mjs declares required field 'description'",
+      "type": "grep_match",
+      "file": "web3/common/certificate-metadata.mjs",
+      "pattern": "description"
+    },
+    {
+      "description": "F-05: certificate-metadata.mjs declares required field 'course_id'",
+      "type": "grep_match",
+      "file": "web3/common/certificate-metadata.mjs",
+      "pattern": "course_id"
+    },
+    {
+      "description": "F-05: certificate-metadata.mjs declares required field 'instructor'",
+      "type": "grep_match",
+      "file": "web3/common/certificate-metadata.mjs",
+      "pattern": "instructor"
+    },
+    {
+      "description": "F-05: certificate-metadata.mjs declares required field 'student_name'",
+      "type": "grep_match",
+      "file": "web3/common/certificate-metadata.mjs",
+      "pattern": "student_name"
+    },
+    {
+      "description": "F-05: soul-bound constraint present in minting-policy.mjs or certificate-metadata.mjs",
+      "type": "grep_match",
+      "file": "web3/common/minting-policy.mjs",
+      "pattern": "soul.bound|soulbound|non.tradeable|nontradeable"
+    },
+    {
+      "description": "F-05/F-06: CertificateService reads enrolled_certificate_enabled snapshot column (not live course config)",
+      "type": "grep_match",
+      "file": "app/Services/API/CertificateService.php",
+      "pattern": "enrolled_certificate_enabled"
+    },
+    {
+      "description": "F-06: CertificateService reads enrolled_token_reward_amount snapshot column (not live course config)",
+      "type": "grep_match",
+      "file": "app/Services/API/CertificateService.php",
+      "pattern": "enrolled_token_reward_amount"
+    },
+    {
+      "description": "F-05/F-06: config lock — CertificateService rejects post-enrollment edits (grep for enrollment guard phrase)",
+      "type": "grep_match",
+      "file": "app/Services/API/CertificateService.php",
+      "pattern": "cannot be changed after enrollment|locked|enrollment"
+    },
+    {
+      "description": "F-10: airdrop guard blocks delivery when certificate_status is delivered",
+      "type": "grep_match",
+      "file": "app/Services/API/CertificateService.php",
+      "pattern": "delivered|minted|self_minted|pending"
+    },
+    {
+      "description": "F-10: airdrop guard permits delivery only when certificate_status is null or failed",
+      "type": "grep_match",
+      "file": "app/Services/API/CertificateService.php",
+      "pattern": "failed|null"
+    },
+    {
+      "description": "F-16: RewardInvalidationService sets certificate_status to revoked",
+      "type": "grep_match",
+      "file": "app/Services/API/RewardInvalidationService.php",
+      "pattern": "revoked"
+    },
+    {
+      "description": "F-16: RewardInvalidationService sets token_reward_status to clawback_flagged",
+      "type": "grep_match",
+      "file": "app/Services/API/RewardInvalidationService.php",
+      "pattern": "clawback_flagged"
+    },
+    {
+      "description": "F-16: RewardInvalidationService calls revoke-certificate-tx script for on-chain update",
+      "type": "grep_match",
+      "file": "app/Services/API/RewardInvalidationService.php",
+      "pattern": "revoke-certificate-tx"
+    },
+    {
+      "description": "F-17: RewardsTable renders wallet_type column values",
+      "type": "grep_match",
+      "file": "resources/js/pages/Portal/MyPage/Badges/components/RewardsTable.jsx",
+      "pattern": "wallet_type"
+    },
+    {
+      "description": "F-17: RewardsTable renders custodial wallet destination label",
+      "type": "grep_match",
+      "file": "resources/js/pages/Portal/MyPage/Badges/components/RewardsTable.jsx",
+      "pattern": "custodial"
+    },
+    {
+      "description": "F-17: RewardsTable renders clawback_flagged status value",
+      "type": "grep_match",
+      "file": "resources/js/pages/Portal/MyPage/Badges/components/RewardsTable.jsx",
+      "pattern": "clawback_flagged"
+    },
+    {
+      "description": "F-17: RewardsTable renders revoked status value",
+      "type": "grep_match",
+      "file": "resources/js/pages/Portal/MyPage/Badges/components/RewardsTable.jsx",
+      "pattern": "revoked"
+    },
+    {
+      "description": "F-18: StudentMintController references build-student-certificate-tx.mjs",
+      "type": "grep_match",
+      "file": "app/Http/Controllers/Portal/StudentMintController.php",
+      "pattern": "build-student-certificate-tx"
+    },
+    {
+      "description": "F-18: StudentMintController references build-student-token-tx.mjs",
+      "type": "grep_match",
+      "file": "app/Http/Controllers/Portal/StudentMintController.php",
+      "pattern": "build-student-token-tx"
+    },
+    {
+      "description": "F-18: StudentMintController sets certificate_status to self_minted on success",
+      "type": "grep_match",
+      "file": "app/Http/Controllers/Portal/StudentMintController.php",
+      "pattern": "self_minted"
+    },
+    {
+      "description": "F-18: StudentMintController sets certificate_status to failed on mint failure",
+      "type": "grep_match",
+      "file": "app/Http/Controllers/Portal/StudentMintController.php",
+      "pattern": "failed"
+    },
+    {
+      "description": "F-18: No automatic custodial fallback in StudentMintController",
+      "type": "grep_absent",
+      "file": "app/Http/Controllers/Portal/StudentMintController.php",
+      "pattern": "custodial.*fallback|fallback.*custodial"
+    },
+    {
+      "description": "F-07: build-certificate-tx.mjs mints both NFT and token in a single transaction (references token mint output)",
+      "type": "grep_match",
+      "file": "web3/run/build-certificate-tx.mjs",
+      "pattern": "token|fungible"
+    },
+    {
+      "description": "F-10: AirdropFeeDialog renders a fee value before confirmation",
+      "type": "grep_match",
+      "file": "resources/js/pages/Portal/MyPage/ManageClass/components/AirdropFeeDialog.jsx",
+      "pattern": "fee"
+    },
+    {
+      "description": "F-10: AirdropResultsDialog references AirdropFeeDialog for retry flow (opens new fee estimate on retry)",
+      "type": "grep_match",
+      "file": "resources/js/pages/Portal/MyPage/ManageClass/components/AirdropResultsDialog.jsx",
+      "pattern": "AirdropFeeDialog"
+    },
+    {
+      "description": "F-19: CourseCompleteConfirmation renders an eligibility badge (grep for badge or eligibility)",
+      "type": "grep_match",
+      "file": "resources/js/pages/Portal/CourseCompleteConfirmation.jsx",
+      "pattern": "eligib|badge"
+    },
+    {
+      "description": "F-19: CourseCompleteConfirmation suppresses notification/badge at delivered or self_minted status",
+      "type": "grep_match",
+      "file": "resources/js/pages/Portal/CourseCompleteConfirmation.jsx",
+      "pattern": "self_minted|delivered"
+    },
+    {
+      "description": "F-16: revoke-certificate-tx.mjs calls submit or Blockfrost (on-chain submission present)",
+      "type": "grep_match",
+      "file": "web3/run/revoke-certificate-tx.mjs",
+      "pattern": "submit"
+    },
+    {
+      "description": "Security: no private key material in CertificateService HTTP responses",
+      "type": "grep_absent",
+      "file": "app/Services/API/CertificateService.php",
+      "pattern": "ROOT_KEY|OWNER_PKH|private_key|privateKey"
+    },
+    {
+      "description": "Security: no private key material in StudentMintController HTTP responses",
+      "type": "grep_absent",
+      "file": "app/Http/Controllers/Portal/StudentMintController.php",
+      "pattern": "ROOT_KEY|OWNER_PKH|private_key|privateKey"
+    },
+    {
+      "description": "Security: no private key material in RewardInvalidationService HTTP responses",
+      "type": "grep_absent",
+      "file": "app/Services/API/RewardInvalidationService.php",
+      "pattern": "ROOT_KEY|OWNER_PKH|private_key|privateKey"
     }
   ]
 }
