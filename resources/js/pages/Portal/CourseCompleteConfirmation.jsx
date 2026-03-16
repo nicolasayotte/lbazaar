@@ -13,6 +13,7 @@ import { Inertia } from "@inertiajs/inertia"
 import FormDialog from "../../components/common/FormDialog"
 import routes from "../../helpers/routes.helper"
 import axios from "axios"
+import WalletConnector from "../../components/cards/WalletConnector"
 
 const CourseCompleteConfirmation = () => {
 
@@ -55,6 +56,10 @@ const CourseCompleteConfirmation = () => {
         type: '',
     })
 
+    // CIP-30 wallet state
+    const [walletAPI, setWalletAPI] = useState(undefined)
+    const [walletStakeKeyDisplay, setWalletStakeKeyDisplay] = useState(undefined)
+
     // Self-mint state
     const [certMintState, setCertMintState] = useState('idle') // idle | minting | minted | failed
     const [tokenMintState, setTokenMintState] = useState('idle') // idle | minting | minted | failed
@@ -62,15 +67,85 @@ const CourseCompleteConfirmation = () => {
     const [tokenResult, setTokenResult] = useState(null)
     const [certError, setCertError] = useState(null)
     const [tokenError, setTokenError] = useState(null)
+    const [certMintStep, setCertMintStep] = useState(null)
+    const [tokenMintStep, setTokenMintStep] = useState(null)
 
     const handleSelfMint = async (type) => {
         const setMintState = type === 'certificate' ? setCertMintState : setTokenMintState
         const setResult    = type === 'certificate' ? setCertResult    : setTokenResult
         const setError     = type === 'certificate' ? setCertError     : setTokenError
+        const setMintStep  = type === 'certificate' ? setCertMintStep  : setTokenMintStep
 
         setMintState('minting')
         setError(null)
+        setMintStep(null)
 
+        // CIP-30 self-mint path: student wallet signs, server merges + submits
+        if (walletAPI) {
+            try {
+                // 1. Get wallet data
+                setMintStep('Building transaction...')
+                const changeAddr = await walletAPI.getChangeAddress()
+                const utxos = await walletAPI.getUtxos()
+
+                if (!utxos || utxos.length === 0) {
+                    throw new Error('No UTXOs available in your wallet. Please ensure you have funds.')
+                }
+
+                // 2. Backend builds tx + owner-signs it
+                const { data: buildResult } = await axios.post('/wallet/build-mint-tx', {
+                    type,
+                    course_id: course.id,
+                    schedule_id: schedule.id,
+                    changeAddr,
+                    utxos,
+                })
+
+                if (!buildResult.success) {
+                    throw new Error(buildResult.message || 'Failed to build transaction')
+                }
+
+                // 3. Student co-signs (partial = true, owner already signed)
+                setMintStep('Please sign in your wallet...')
+                const cborSig = await walletAPI.signTx(buildResult.cborTx, true)
+
+                // 4. Server merges witness sets and submits to blockchain
+                setMintStep('Submitting to blockchain...')
+                const { data: submitResult } = await axios.post('/wallet/submit-mint-tx', {
+                    type,
+                    course_id: course.id,
+                    schedule_id: schedule.id,
+                    cborSig,
+                    cborTx: buildResult.cborTx,
+                })
+
+                if (!submitResult.success) {
+                    throw new Error(submitResult.message || 'Failed to submit transaction')
+                }
+
+                setMintStep(null)
+                setMintState('minted')
+                setResult(submitResult)
+
+            } catch (err) {
+                setMintStep(null)
+                setMintState('failed')
+                // CIP-30 user declined (code 2 or 3)
+                if (err?.code === 2 || err?.code === 3 || err?.code === -3) {
+                    setError('Transaction signing was declined.')
+                } else {
+                    setError(
+                        err?.response?.data?.message
+                        || err?.message
+                        || translatables.error
+                        || 'Minting failed. Please try again.'
+                    )
+                }
+            }
+            return
+        }
+
+        // Custodial fallback: server mints on behalf of the student
         try {
             const url = getRoute('course.attend.self.mint', {
                 course_id: course.id,
@@ -79,10 +154,12 @@ const CourseCompleteConfirmation = () => {
 
             const response = await axios.post(url, { type })
 
+            setMintStep(null)
             setMintState('minted')
             setResult(response.data)
 
         } catch (err) {
+            setMintStep(null)
             setMintState('failed')
             const message = err.response?.data?.message
                 || translatables.error
@@ -181,7 +258,7 @@ const CourseCompleteConfirmation = () => {
                     <Box sx={{ p: 2, bgcolor: 'warning.light', borderRadius: 1, display: 'flex', alignItems: 'center', gap: 2 }}>
                         <CircularProgress size={20} />
                         <Typography variant="body2" color="warning.contrastText">
-                            {translatables.texts?.certificate_minting ?? 'Minting your certificate on the Cardano blockchain...'}
+                            {certMintStep ?? translatables.texts?.certificate_minting ?? 'Minting your certificate on the Cardano blockchain...'}
                         </Typography>
                     </Box>
                 )}
@@ -206,7 +283,7 @@ const CourseCompleteConfirmation = () => {
 
                 {displayState === 'idle' && (
                     <Box>
-                        {!has_external_wallet ? (
+                        {(!walletAPI && !has_external_wallet) ? (
                             <Alert severity="info">
                                 {translatables.texts?.no_wallet_self_mint
                                     ?? 'Connect an external wallet to self-mint your certificate. Your instructor can also airdrop it for you.'}
@@ -274,7 +351,7 @@ const CourseCompleteConfirmation = () => {
                     <Box sx={{ p: 2, bgcolor: 'warning.light', borderRadius: 1, display: 'flex', alignItems: 'center', gap: 2 }}>
                         <CircularProgress size={20} />
                         <Typography variant="body2" color="warning.contrastText">
-                            {translatables.texts?.token_minting ?? 'Minting your token reward on the Cardano blockchain...'}
+                            {tokenMintStep ?? translatables.texts?.token_minting ?? 'Minting your token reward on the Cardano blockchain...'}
                         </Typography>
                     </Box>
                 )}
@@ -299,7 +376,7 @@ const CourseCompleteConfirmation = () => {
 
                 {displayState === 'idle' && (
                     <Box>
-                        {!has_external_wallet ? (
+                        {(!walletAPI && !has_external_wallet) ? (
                             <Alert severity="info">
                                 {translatables.texts?.no_wallet_self_mint
                                     ?? 'Connect an external wallet to self-mint your token reward. Your instructor can also airdrop it for you.'}
@@ -377,9 +454,16 @@ const CourseCompleteConfirmation = () => {
                                 {/* Rewards section — certificate + token self-mint */}
                                 {hasAnyReward && (
                                     <Box mt={3} p={2} sx={{ border: 1, borderColor: 'divider', borderRadius: 1 }}>
-                                        <Typography variant="h6" gutterBottom>
-                                            {translatables.texts?.rewards_available ?? 'Rewards Available'}
-                                        </Typography>
+                                        <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} mb={1} spacing={1}>
+                                            <Typography variant="h6">
+                                                {translatables.texts?.rewards_available ?? 'Rewards Available'}
+                                            </Typography>
+                                            <WalletConnector
+                                                onStakeKeyHash={setWalletStakeKeyDisplay}
+                                                walletAPI={walletAPI}
+                                                onWalletAPI={setWalletAPI}
+                                            />
+                                        </Stack>
 
                                         {renderCertificateBlock()}
                                         {renderTokenBlock()}
