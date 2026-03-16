@@ -44,6 +44,7 @@
       "tests/Browser/guest/admin-login.spec.js",
       "tests/Browser/guest/forgot-password.spec.js",
       "tests/Browser/guest/inquiries.spec.js",
+      "tests/Browser/student/route-smoke.spec.js",
       "database/seeders/PlaywrightTestSeeder.php",
       "playwright.config.js"
     ],
@@ -102,6 +103,11 @@
       "description": "Admin navigation smoke test exists",
       "type": "glob_exists",
       "check": "tests/Browser/admin/navigation-smoke.spec.js"
+    },
+    {
+      "description": "Student route smoke test exists",
+      "type": "glob_exists",
+      "check": "tests/Browser/student/route-smoke.spec.js"
     },
     {
       "description": "CIP-30 wallet browser test exists",
