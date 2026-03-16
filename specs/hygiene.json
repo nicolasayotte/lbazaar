@@ -1,0 +1,88 @@
+{
+  "contract_id": "hygiene",
+  "title": "Platform Hygiene — Remove legacy points UI",
+  "description": "Epic E-03. Complete removal of all legacy points system UI from the frontend. Scope is strictly frontend: UI elements, navigation references, and routes/redirects. Backend (database tables, models, services, controllers, API response fields) is left intact for future cleanup. The platform is not yet live, so no user data migration is needed. Features: remove all points UI from all pages (F-11.1); remove points navigation links (F-11.2); redirect former points URLs to appropriate existing pages (F-11.3); remove points references from shared components (F-11.4); investigate and disable any background processes referencing points (F-11.5).",
+  "dag_dependencies": [],
+  "lifecycle": "transitory",
+  "bounded_context": {
+    "read_only": [
+      "app/**",
+      "database/**",
+      "docs/**"
+    ],
+    "mutable": [
+      "resources/js/components/includes/AdminNavbar.jsx",
+      "resources/js/components/includes/Navbar.jsx",
+      "resources/js/components/includes/MyPageSideBar.jsx",
+      "resources/js/layouts/MyPage.jsx",
+      "resources/js/pages/Portal/Users/View.jsx",
+      "resources/js/pages/Portal/CourseSchedules/components/StudentsTable.jsx",
+      "resources/js/pages/Portal/Exams/Create.jsx",
+      "resources/js/pages/Portal/Exams/Result.jsx",
+      "resources/js/pages/Portal/Registration/Teacher.jsx"
+    ],
+    "forbidden": [
+      ".env",
+      "*.secret*",
+      "storage/logs/**",
+      "web3/node_modules/**",
+      "app/Models/**",
+      "database/migrations/**"
+    ]
+  },
+  "design_by_contract": {
+    "pre_conditions": [
+      "Platform is not yet live — no user point balances exist that require migration or communication",
+      "Points-related backend code (models, services, DB schema, API controllers) exists and must not be touched"
+    ],
+    "post_conditions": [
+      "F-11.1: No UI element referencing points, point balances, point earning, or point redemption is visible to any actor on any screen",
+      "F-11.2: No navigation element in any sidebar, menu, or breadcrumb references points — includes MyPageSideBar.jsx and layout navigation",
+      "F-11.3: URLs previously associated with the points system redirect to appropriate existing pages; no points content rendered at those URLs",
+      "F-11.4: Shared components (Navbar, AdminNavbar, MyPageSideBar, user profiles, dashboards) contain no points-related content, badges, counters, or labels",
+      "F-11.5: Investigation of background processes (emails, notifications, scheduled jobs) referencing points is complete; any found are disabled within this milestone scope"
+    ],
+    "invariants": [
+      "Backend code (database tables, models, services, controllers, API response fields) for points must NOT be modified — frontend-only scope enforced by this contract's forbidden list",
+      "No user data migration is required — platform is not yet live; do not add any migration files"
+    ]
+  },
+  "acceptance": [
+    "Zero points-related UI elements visible on any page for any actor (Student, Teacher, Admin, Guest)",
+    "Zero points-related navigation links in any sidebar or menu",
+    "Former points URLs redirect to appropriate pages (no 404 or points content rendered)",
+    "Investigation of background processes completed and documented; any found are disabled"
+  ],
+  "convergence_checks": [
+    {
+      "description": "No 'point' string in AdminNavbar (F-11.4)",
+      "type": "grep_absent",
+      "check": "point::resources/js/components/includes/AdminNavbar.jsx"
+    },
+    {
+      "description": "No 'point' string in Navbar (F-11.4)",
+      "type": "grep_absent",
+      "check": "point::resources/js/components/includes/Navbar.jsx"
+    },
+    {
+      "description": "No 'point' string in MyPageSideBar (F-11.2)",
+      "type": "grep_absent",
+      "check": "point::resources/js/components/includes/MyPageSideBar.jsx"
+    },
+    {
+      "description": "No 'point' string in StudentsTable (F-11.1)",
+      "type": "grep_absent",
+      "check": "point::resources/js/pages/Portal/CourseSchedules/components/StudentsTable.jsx"
+    },
+    {
+      "description": "No 'point' string in Exams/Create (F-11.1)",
+      "type": "grep_absent",
+      "check": "point::resources/js/pages/Portal/Exams/Create.jsx"
+    },
+    {
+      "description": "No 'point' string in Exams/Result (F-11.1)",
+      "type": "grep_absent",
+      "check": "point::resources/js/pages/Portal/Exams/Result.jsx"
+    }
+  ]
+}

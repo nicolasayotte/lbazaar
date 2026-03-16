@@ -1,0 +1,55 @@
+{
+  "contract_id": "le-bazaar-milestone-4",
+  "title": "Le Bazaar Milestone 4",
+  "description": "Milestone 4 of the Le Bazaar Cardano e-learning platform (Catalyst F12-1200107). Delivers: (1) ADA-denominated class pricing with live JPY→ADA exchange rate conversion, ADA purchase via CIP-30 double-sign wallet flow with 10-block pessimistic finality, Stripe credit card purchase (Japan-compliant), parallel payment path presentation with graceful degradation, wallet flow verification, admin-initiated refunds with access revocation, Cardano network status indicator, and student purchase history; (2) Teacher configuration of NFT certificate and token rewards per class, teacher/admin-initiated airdrop with fee estimate, student self-mint via CIP-30 wallet, reward eligibility notifications, reward invalidation on refund (on-chain metadata + platform), and student My Rewards view; (3) Complete removal of all legacy points UI from the frontend (frontend-only scope). Brownfield adoption — existing Laravel 9 / React 18 / Inertia.js codebase with Cardano Helios web3 layer.",
+  "dag_dependencies": [],
+  "bounded_context": {
+    "read_only": [
+      "docs/**",
+      "web3/config/**",
+      "web3/contracts/**",
+      "app/Models/**",
+      "composer.json",
+      "package.json",
+      "specs/**"
+    ],
+    "mutable": [],
+    "forbidden": [
+      ".env",
+      "*.secret*",
+      "web3/config/preprod.json",
+      "storage/logs/**",
+      "web3/node_modules/**"
+    ]
+  },
+  "design_by_contract": {
+    "pre_conditions": [
+      "Laravel 9 / PHP 8.2 application with Inertia.js + React 18 is running (Sail)",
+      "MySQL database is accessible with current schema (migrations applied)",
+      "Blockfrost API key (preprod) is configured in .env for Cardano network access",
+      "Helios build toolchain (Node.js) is available in web3/ for script execution",
+      "Teachers can create classes priced in JPY (existing platform feature)",
+      "Student enrollment and completion tracking is operational (existing platform feature)"
+    ],
+    "post_conditions": [
+      "Students can purchase classes with ADA via CIP-30 wallet (pessimistic 10-block confirmation)",
+      "Students can purchase classes with credit card via Stripe (Japan-compliant)",
+      "Teachers can configure NFT certificate and/or token rewards per class",
+      "Teachers and admins can airdrop rewards to eligible completed students",
+      "Students can self-mint NFT certificates and token rewards via CIP-30 wallet",
+      "All legacy points UI is removed from the frontend",
+      "All supported CIP-30 wallets function for purchase and minting"
+    ],
+    "invariants": []
+  },
+  "acceptance": [
+    "Student completes end-to-end ADA purchase (connect wallet \u2192 quote \u2192 sign \u2192 10-block confirmation \u2192 access)",
+    "Student completes end-to-end Stripe credit card purchase",
+    "Teacher configures NFT certificate reward and initiates airdrop to eligible students",
+    "Student self-mints NFT certificate via CIP-30 wallet",
+    "Zero points-related UI elements visible on any page for any actor",
+    "All Playwright E2E tests pass for all four actor workflows",
+    "Product demo video demonstrates all 6 acceptance criteria from milestone-4.md"
+  ],
+  "lifecycle": "transitory"
+}

@@ -1,0 +1,163 @@
+{
+  "contract_id": "payments",
+  "title": "Payments & Wallet — ADA and Stripe class purchase flows",
+  "description": "Epic E-01. All payment-related features for M4: live ADA/JPY price conversion and display with 60s refresh and 5% drift alert (F-01); ADA purchase via CIP-30 double-sign flow, pessimistic 10-block confirmation, pending state display (F-02); Stripe credit card purchase Japan-compliant with immediate access on success (F-03); parallel payment path presentation with graceful degradation when either path is unavailable (F-04); wallet connection/disconnection, unsupported wallet, wrong network handling — all supported CIP-30 wallets (F-12); admin-initiated ADA and Stripe refunds with class access revocation and reward invalidation flag (F-13); Cardano network status indicator (healthy/degraded/unreachable) (F-14); student purchase history including pending, completed, and refunded transactions (F-15).",
+  "dag_dependencies": [],
+  "lifecycle": "transitory",
+  "bounded_context": {
+    "read_only": [
+      "web3/config/preprod.json",
+      "app/Models/**",
+      "docs/**",
+      "web3/common/minting-policy.mjs",
+      "web3/common/certificate-metadata.mjs"
+    ],
+    "mutable": [
+      "app/Services/API/CoursePurchaseService.php",
+      "app/Services/API/StripeService.php",
+      "app/Services/Portal/PurchaseHistoryService.php",
+      "app/Http/Controllers/API/CoursePaymentController.php",
+      "app/Http/Controllers/API/StripeController.php",
+      "app/Http/Controllers/API/CardanoController.php",
+      "app/Http/Controllers/API/PurchaseStatusController.php",
+      "app/Http/Controllers/Portal/CheckoutController.php",
+      "app/Http/Controllers/Portal/PurchaseHistoryController.php",
+      "app/Http/Controllers/Portal/Web3WalletController.php",
+      "app/Http/Controllers/Portal/WalletTransactionHistoryController.php",
+      "app/Http/Controllers/Admin/RefundController.php",
+      "app/Http/Controllers/Admin/WalletTransactionHistoryController.php",
+      "app/Http/Controllers/API/AdminRefundController.php",
+      "app/Http/Requests/StripeCheckoutRequest.php",
+      "app/Models/StripePayment.php",
+      "resources/js/pages/Portal/Course/Details.jsx",
+      "resources/js/pages/Portal/Checkout/Success.jsx",
+      "resources/js/pages/Portal/Checkout/Cancel.jsx",
+      "resources/js/pages/Portal/MyPage/PurchaseHistory/Index.jsx",
+      "resources/js/pages/Portal/MyPage/PurchaseHistory/components/PurchaseHistoryTable.jsx",
+      "resources/js/pages/Portal/MyPage/WalletHistory/Index.jsx",
+      "resources/js/pages/Portal/MyPage/WalletHistory/components/WalletHistoryTable.jsx",
+      "resources/js/pages/Admin/Refunds/Index.jsx",
+      "resources/js/pages/Admin/Refunds/components/RefundsTable.jsx",
+      "resources/js/pages/Admin/Refunds/components/RewardsWarningDialog.jsx",
+      "resources/js/pages/Admin/WalletHistory/Index.jsx",
+      "resources/js/pages/Admin/WalletHistory/components/WalletHistoryTable.jsx",
+      "web3/run/build-purchase-tx.mjs",
+      "web3/run/submit-purchase-tx.mjs",
+      "web3/run/submit-signed-tx.mjs",
+      "web3/run/build-refund-tx.mjs",
+      "web3/run/check-tx-confirmations.mjs",
+      "web3/run/check-network-health.mjs",
+      "web3/run/wallet-info.mjs",
+      "web3/run/wallet-verify.mjs",
+      "web3/common/get-custodial-address.mjs",
+      "web3/common/sign-tx.mjs",
+      "web3/common/network.mjs",
+      "web3/common/utils.mjs",
+      "database/migrations/2026_02_16_000002_add_payment_fields_to_course_histories.php",
+      "database/migrations/2026_02_17_000000_create_stripe_payments_table.php",
+      "database/migrations/2026_02_17_000001_add_price_jpy_comment_to_courses_and_applications.php",
+      "database/migrations/2026_02_17_210708_update_certificate_status_enum_values.php",
+      "database/migrations/2026_02_18_033218_add_composite_unique_to_nft_transactions_table.php",
+      "database/migrations/2026_02_18_035439_add_canceled_status_to_stripe_payments_table.php",
+      "database/migrations/2026_02_27_000002_add_refunded_status_and_rewards_flag_to_course_histories.php",
+      "tests/Browser/auth/ada-price-freshness.spec.js",
+      "tests/Browser/auth/ada-conversion-failure.spec.js",
+      "tests/Browser/auth/stripe-unavailable.spec.js",
+      "routes/web.php"
+    ],
+    "forbidden": [
+      ".env",
+      "*.secret*",
+      "web3/config/preprod.json",
+      "storage/logs/**",
+      "web3/node_modules/**"
+    ]
+  },
+  "design_by_contract": {
+    "pre_conditions": [
+      "Blockfrost API key (preprod) is configured in .env",
+      "web3/config/preprod.json contains current Conway-era protocol parameters (v10.0, epoch >=275)",
+      "Stripe API keys (STRIPE_KEY, STRIPE_SECRET) are configured in .env",
+      "ADA/JPY exchange rate setting exists in the settings table (ada-to-jpy key)",
+      "Teachers have set class prices in JPY (existing platform feature)",
+      "Student enrollment and class access granting are operational (existing platform feature)"
+    ],
+    "post_conditions": [
+      "F-01: Class pages display JPY price and live ADA equivalent; ADA refreshes every 60s; drift >5% alerts user; rate unavailability disables ADA path gracefully leaving Stripe functional",
+      "F-02: Students complete ADA purchase via CIP-30 double-sign flow; pending state shows X/10 confirmations; class access granted after exactly 10 confirmations; duplicate and concurrent payment attempts are blocked",
+      "F-03: Students complete Stripe checkout flow; class access granted immediately on successful charge; Japan-compliant Stripe account configuration",
+      "F-04: Both payment options presented in parallel on class detail page; either path degrades independently with explanation when unavailable",
+      "F-12: CIP-30 wallet connect/disconnect handled; unsupported wallets show clear error; wrong network blocks action; pending transactions continue monitored after wallet disconnect",
+      "F-13: Admin initiates Stripe and ADA refunds; class access revoked on confirmation; rewards flagged for invalidation in course_histories; Admin and Student notified",
+      "F-14: Cardano network status (healthy / degraded / unreachable) reflected in ADA payment UI",
+      "F-15: Students view purchase history with ADA (tx hash, X/10 status) and Stripe (receipt) entries including pending and refunded states"
+    ],
+    "invariants": [
+      "A student must not gain class access before ADA payment reaches 10 on-chain confirmations or before Stripe charge succeeds",
+      "A student must not submit a duplicate payment for a class they already own or have a pending payment for (enforced at DB layer via unique constraint)",
+      "ADA price quote must be invalidated after the configurable window (default 5 minutes); expired quotes cannot be submitted",
+      "CIP-30 signTx(tx, partial=true) returns TransactionWitnessSet; witness merge and Blockfrost submission MUST happen server-side — never via walletAPI.submitTx",
+      "Recipient addresses (teacher commission, admin fee) use custodial HD derivation via get-custodial-address.mjs, never the student's CIP-30 spending address"
+    ]
+  },
+  "acceptance": [
+    "Student completes end-to-end ADA purchase: connect CIP-30 wallet -> receive ADA price quote -> sign tx -> 10-block confirmation -> class access granted",
+    "Student completes end-to-end Stripe checkout: initiate -> complete Stripe flow -> immediate class access",
+    "Both payment options visible on class detail page; disabling one leaves the other fully functional",
+    "Admin initiates Stripe refund that revokes student class access and flags rewards",
+    "Student purchase history correctly shows ADA tx hash, Stripe receipt, pending confirmations, and refunded status",
+    "All supported CIP-30 wallets function for ADA purchase flow"
+  ],
+  "convergence_checks": [
+    {
+      "description": "CoursePurchaseService exists",
+      "type": "glob_exists",
+      "check": "app/Services/API/CoursePurchaseService.php"
+    },
+    {
+      "description": "StripeService exists",
+      "type": "glob_exists",
+      "check": "app/Services/API/StripeService.php"
+    },
+    {
+      "description": "build-purchase-tx.mjs exists",
+      "type": "glob_exists",
+      "check": "web3/run/build-purchase-tx.mjs"
+    },
+    {
+      "description": "submit-signed-tx.mjs exists (server-side witness merge)",
+      "type": "glob_exists",
+      "check": "web3/run/submit-signed-tx.mjs"
+    },
+    {
+      "description": "check-network-health.mjs exists (F-14 network status)",
+      "type": "glob_exists",
+      "check": "web3/run/check-network-health.mjs"
+    },
+    {
+      "description": "Stripe payments migration exists",
+      "type": "glob_exists",
+      "check": "database/migrations/2026_02_17_000000_create_stripe_payments_table.php"
+    },
+    {
+      "description": "Refund status migration exists (F-13/F-15)",
+      "type": "glob_exists",
+      "check": "database/migrations/2026_02_27_000002_add_refunded_status_and_rewards_flag_to_course_histories.php"
+    },
+    {
+      "description": "PurchaseHistory page exists (F-15)",
+      "type": "glob_exists",
+      "check": "resources/js/pages/Portal/MyPage/PurchaseHistory/Index.jsx"
+    },
+    {
+      "description": "Admin Refunds page exists (F-13)",
+      "type": "glob_exists",
+      "check": "resources/js/pages/Admin/Refunds/Index.jsx"
+    },
+    {
+      "description": "build-refund-tx.mjs exists (F-13 ADA refund)",
+      "type": "glob_exists",
+      "check": "web3/run/build-refund-tx.mjs"
+    }
+  ]
+}

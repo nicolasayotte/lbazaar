@@ -1,0 +1,153 @@
+{
+  "contract_id": "rewards",
+  "title": "Rewards — NFT certificates and token rewards for class completion",
+  "description": "Epic E-02. All reward-related features for M4: teacher configuration of NFT certificate rewards with metadata validation (F-05); teacher configuration of fungible token rewards with amount validation (F-06); combined NFT + token reward configuration (F-07); teacher/admin-initiated batch or selective airdrop with fee estimate, partial failure retry, and duplicate prevention — platform wallet pays all minting fees (F-10); reward invalidation on refund: NFT flagged revoked on-chain + platform, token flagged for clawback (F-16); student My Rewards view with delivery status and wallet destination (F-17); student self-mint of NFT cert or token reward via CIP-30 wallet paying ~1 ADA minting fee — fallback to custodial mint if no external wallet (F-18); reward eligibility notification on class completion (F-19). Depends on payments contract for CIP-30 wallet infrastructure (submit-signed-tx.mjs, sign-tx.mjs).",
+  "dag_dependencies": [
+    "payments"
+  ],
+  "lifecycle": "transitory",
+  "bounded_context": {
+    "read_only": [
+      "web3/config/preprod.json",
+      "app/Models/**",
+      "docs/**",
+      "web3/common/get-custodial-address.mjs",
+      "web3/common/sign-tx.mjs",
+      "web3/run/submit-signed-tx.mjs",
+      "web3/common/utils.mjs"
+    ],
+    "mutable": [
+      "app/Services/API/CertificateService.php",
+      "app/Http/Controllers/Portal/StudentMintController.php",
+      "app/Http/Controllers/Portal/CertificateController.php",
+      "app/Http/Controllers/API/CertificateController.php",
+      "app/Http/Controllers/API/TokenRewardController.php",
+      "app/Http/Controllers/Admin/CertificateController.php",
+      "app/Http/Controllers/Admin/ManageCertificateController.php",
+      "app/Http/Controllers/Admin/NftController.php",
+      "app/Http/Controllers/Portal/UserBadgeController.php",
+      "resources/js/pages/Portal/MyPage/ManageClass/Certificates.jsx",
+      "resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.jsx",
+      "resources/js/pages/Portal/MyPage/ManageClass/components/AirdropFeeDialog.jsx",
+      "resources/js/pages/Portal/MyPage/ManageClass/components/AirdropResultsDialog.jsx",
+      "resources/js/pages/Portal/MyPage/Badges/components/RewardsTable.jsx",
+      "resources/js/pages/Portal/MyPage/Badges/components/RewardDetailDialog.jsx",
+      "resources/js/pages/Portal/CourseCompleteConfirmation.jsx",
+      "resources/js/pages/Admin/Settings/Nft/Index.jsx",
+      "resources/js/pages/Admin/Settings/Nft/components/Dialogs.jsx",
+      "resources/js/pages/Admin/Settings/Nft/components/NftTable.jsx",
+      "web3/run/build-certificate-tx.mjs",
+      "web3/run/submit-certificate-tx.mjs",
+      "web3/run/build-student-certificate-tx.mjs",
+      "web3/run/build-student-token-tx.mjs",
+      "web3/run/build-token-reward-tx.mjs",
+      "web3/run/derive-certificate-mph.mjs",
+      "web3/common/minting-policy.mjs",
+      "web3/common/certificate-metadata.mjs",
+      "web3/common/get-minting-policy-hash.mjs",
+      "database/migrations/2026_02_16_000001_add_certificate_enabled_fields.php",
+      "database/migrations/2026_02_27_000001_add_certificate_metadata_to_courses.php",
+      "database/migrations/2026_02_28_000001_add_token_reward_fields.php",
+      "database/migrations/2026_02_28_000002_add_enrollment_reward_snapshot_to_course_histories.php",
+      "database/migrations/2026_02_28_000003_add_revoked_and_clawback_to_course_histories.php",
+      "database/migrations/2026_02_28_000004_add_certificate_image_url_to_courses.php",
+      "database/migrations/2026_02_28_000005_add_enrolled_certificate_image_url_to_course_histories.php",
+      "database/migrations/2026_02_28_000006_add_rewards_notification_sent_at_to_course_histories.php",
+      "database/migrations/2026_03_10_000001_add_self_minted_to_certificate_status_enum.php",
+      "tests/Browser/student/wallet-cip30.spec.js"
+    ],
+    "forbidden": [
+      ".env",
+      "*.secret*",
+      "web3/config/preprod.json",
+      "storage/logs/**",
+      "web3/node_modules/**"
+    ]
+  },
+  "design_by_contract": {
+    "pre_conditions": [
+      "payments contract is converged — CIP-30 wallet infrastructure (submit-signed-tx.mjs, sign-tx.mjs, get-custodial-address.mjs) is operational",
+      "Blockfrost API key (preprod) and platform wallet (OWNER_WALLET_ADDR, ROOT_KEY, OWNER_PKH) are configured in .env",
+      "web3/config/preprod.json contains current Conway-era protocol parameters",
+      "Student completion tracking is operational (existing platform feature)",
+      "course_histories.certificate_status ENUM includes self_minted (migration 2026_03_10_000001 applied)"
+    ],
+    "post_conditions": [
+      "F-05: Teachers enable/configure/disable NFT certificate reward per class; incomplete metadata rejected with field-level errors; config locked at student enrollment time (SC-E02-06)",
+      "F-06: Teachers enable/configure/disable token reward per class; invalid amounts rejected; config locked at student enrollment time",
+      "F-07: NFT and token rewards configured independently and delivered together in a single airdrop",
+      "F-10: Teachers/admins initiate batch or selective airdrop with fee estimate before confirmation; partial failures listed with retry; duplicate delivery prevented (SC-E02-02); platform wallet pays all minting fees; teacher wallet not required for airdrop",
+      "F-16: Refund triggers on-chain metadata update flagging NFT as revoked + platform revocation status (SC-E02-05); token reward flagged for clawback in course_histories",
+      "F-17: Students view all earned rewards with type, amount, delivery status (delivered/pending/failed/revoked), and wallet destination (custodial or external)",
+      "F-18: Students with CIP-30 wallet self-mint NFT cert or token reward paying ~1 ADA minting fee; fallback custodial mint available; self_minted status recorded in course_histories.certificate_status",
+      "F-19: Eligibility notification shown immediately on class completion; eligibility badge on completed class page; cleared after reward receipt"
+    ],
+    "invariants": [
+      "Only students who have met the existing platform completion criteria are eligible for reward airdrop or self-mint (SC-E02-04)",
+      "NFT minting policy must support on-chain metadata updates to enable revocation flags — do not change the minting policy in a way that loses this capability (SC-E02-05)",
+      "Platform wallet (OWNER_WALLET_ADDR) pays all airdrop minting fees; teacher wallet is never charged for teacher-initiated airdrops",
+      "CIP-30 self-mint uses partial sign flow — student signs, server merges with owner witness and submits via Blockfrost (same pattern as ADA purchase)"
+    ]
+  },
+  "acceptance": [
+    "Teacher configures NFT certificate reward with required metadata; incomplete metadata rejected",
+    "Teacher configures token reward with valid amount; invalid amount rejected",
+    "Teacher initiates airdrop to all eligible students with fee estimate displayed before confirmation",
+    "Student self-mints NFT certificate via CIP-30 wallet paying ~1 ADA minting fee",
+    "Student rewards view shows all earned rewards with correct delivery status",
+    "Refund-triggered reward invalidation marks NFT revoked on-chain and in platform; token flagged for clawback",
+    "Student sees reward eligibility notification immediately on class completion"
+  ],
+  "convergence_checks": [
+    {
+      "description": "CertificateService exists",
+      "type": "glob_exists",
+      "check": "app/Services/API/CertificateService.php"
+    },
+    {
+      "description": "StudentMintController exists (F-18 self-mint)",
+      "type": "glob_exists",
+      "check": "app/Http/Controllers/Portal/StudentMintController.php"
+    },
+    {
+      "description": "build-certificate-tx.mjs exists (F-10 airdrop)",
+      "type": "glob_exists",
+      "check": "web3/run/build-certificate-tx.mjs"
+    },
+    {
+      "description": "build-student-certificate-tx.mjs exists (F-18 self-mint)",
+      "type": "glob_exists",
+      "check": "web3/run/build-student-certificate-tx.mjs"
+    },
+    {
+      "description": "build-token-reward-tx.mjs exists (F-10 token airdrop)",
+      "type": "glob_exists",
+      "check": "web3/run/build-token-reward-tx.mjs"
+    },
+    {
+      "description": "self_minted migration exists (F-18 DB schema)",
+      "type": "glob_exists",
+      "check": "database/migrations/2026_03_10_000001_add_self_minted_to_certificate_status_enum.php"
+    },
+    {
+      "description": "token_reward_fields migration exists (F-06/F-10)",
+      "type": "glob_exists",
+      "check": "database/migrations/2026_02_28_000001_add_token_reward_fields.php"
+    },
+    {
+      "description": "AirdropFeeDialog exists (F-10 fee estimate UI)",
+      "type": "glob_exists",
+      "check": "resources/js/pages/Portal/MyPage/ManageClass/components/AirdropFeeDialog.jsx"
+    },
+    {
+      "description": "CourseCompleteConfirmation exists (F-19 eligibility notification)",
+      "type": "glob_exists",
+      "check": "resources/js/pages/Portal/CourseCompleteConfirmation.jsx"
+    },
+    {
+      "description": "revoked/clawback migration exists (F-16)",
+      "type": "glob_exists",
+      "check": "database/migrations/2026_02_28_000003_add_revoked_and_clawback_to_course_histories.php"
+    }
+  ]
+}

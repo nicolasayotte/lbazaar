@@ -1,0 +1,112 @@
+{
+  "contract_id": "e2e",
+  "title": "E2E Playwright Tests — All actor workflows",
+  "description": "E2E Playwright browser test coverage for all four actor workflows in Milestone 4. Guest (E-01): top page rendering, course browsing and filtering, course detail page, portal login, admin login, route protection, student and teacher registration, inquiries, language switching, forgot password, public route smoke test. Student (E-02): MyPage navigation, profile management, course history, purchase history, wallet history, certificates, badges and rewards, course attendance flow, course browsing as authenticated user, logout, student route smoke test. Teacher (E-03): class applications CRUD, manage classes dashboard with feedbacks/exams/schedules/certificates tabs, course CRUD, exam management, schedule management, teaching schedules overview, certificate roster and airdrop button, teacher route smoke test. Admin (E-04): profile, user management, inquiries, class applications, settings (categories, types, classifications, NFT, translations, general), wallet history, refunds, admin certificate roster, admin route smoke test. Tests use PlaywrightTestSeeder fixture data and stored session states for pre-authenticated actors.",
+  "dag_dependencies": [
+    "payments",
+    "rewards",
+    "hygiene"
+  ],
+  "lifecycle": "transitory",
+  "bounded_context": {
+    "read_only": [
+      "app/**",
+      "resources/js/**",
+      "routes/**",
+      "docs/**"
+    ],
+    "mutable": [
+      "tests/Browser/top-page.spec.js",
+      "tests/Browser/auth/login.spec.js",
+      "tests/Browser/auth/registration.spec.js",
+      "tests/Browser/auth/logout.spec.js",
+      "tests/Browser/auth/student-history.spec.js",
+      "tests/Browser/auth/student-courses.spec.js",
+      "tests/Browser/auth/student-profile.spec.js",
+      "tests/Browser/auth/student-mypage.spec.js",
+      "tests/Browser/auth/route-protection.spec.js",
+      "tests/Browser/course-browsing.spec.js",
+      "tests/Browser/teacher/manage-classes.spec.js",
+      "tests/Browser/teacher/route-smoke.spec.js",
+      "tests/Browser/teacher/class-applications.spec.js",
+      "tests/Browser/teacher/teaching-history.spec.js",
+      "tests/Browser/teacher/course-management.spec.js",
+      "tests/Browser/admin/navigation-smoke.spec.js",
+      "tests/Browser/admin/inquiries-applications.spec.js",
+      "tests/Browser/admin/settings-misc.spec.js",
+      "tests/Browser/admin/profile-users.spec.js",
+      "tests/Browser/admin/settings-crud.spec.js",
+      "tests/Browser/guest/course-detail-extra.spec.js",
+      "tests/Browser/guest/route-smoke.spec.js",
+      "tests/Browser/guest/language-switching.spec.js",
+      "tests/Browser/guest/route-protection.spec.js",
+      "tests/Browser/guest/registration-extra.spec.js",
+      "tests/Browser/guest/admin-login.spec.js",
+      "tests/Browser/guest/forgot-password.spec.js",
+      "tests/Browser/guest/inquiries.spec.js",
+      "database/seeders/PlaywrightTestSeeder.php",
+      "playwright.config.js"
+    ],
+    "forbidden": [
+      ".env",
+      "*.secret*",
+      "storage/logs/**",
+      "web3/node_modules/**"
+    ]
+  },
+  "design_by_contract": {
+    "pre_conditions": [
+      "Sail environment is running with seeded test database (sail up -d && sail artisan migrate --seed)",
+      "PlaywrightTestSeeder has been run (pw-student, pw-teacher, pw-admin users exist with correct fixture data)",
+      "Vite dev server or production build is available (npm run dev or built assets)",
+      "All M4 features (payments, rewards, hygiene contracts) are converged before E2E runs"
+    ],
+    "post_conditions": [
+      "Guest E2E: all public routes return non-500; course browsing and filtering works; login/registration/inquiries/forgot-password flows work; route protection enforced for unauthenticated and wrong-role users",
+      "Student E2E: all MyPage sections accessible via navigation; profile editable; course history, purchase history, wallet history, certificates, badges pages all load correctly; attendance flow renders",
+      "Teacher E2E: class applications CRUD works; manage class tabs (feedbacks, exams, schedules, certificates) all render; airdrop button visible on certificate roster; teaching schedules page loads",
+      "Admin E2E: profile and user management functional; inquiries and class applications manageable; all settings pages (categories, classifications, NFT, translations, general) render and accept CRUD; refunds and wallet history pages load; admin navigation smoke test passes"
+    ],
+    "invariants": [
+      "E2E tests must not depend on external services (Blockfrost, Stripe, Cardano network) — wallet and minting interactions are UI-only assertions",
+      "Tests must skip gracefully when expected seed data is absent (PlaywrightTestSeeder not run), never fail-hard on missing data",
+      "Auth setup fixtures (student/teacher/admin stored sessions) must be established before their respective test suites run",
+      "Destructive admin test actions (delete user, delete category) must only operate on test-created data, never on seeded fixture data"
+    ]
+  },
+  "acceptance": [
+    "Guest route smoke test: all public routes return status < 500",
+    "Student route smoke test: all student-accessible routes return status < 500",
+    "Teacher route smoke test: all teacher-accessible routes return status < 500",
+    "Admin route smoke test: all admin routes return status < 500",
+    "Full Playwright suite runs without test failures (graceful skips acceptable for absent seed data)",
+    "CIP-30 wallet browser tests (student/wallet-cip30.spec.js) pass for student self-mint flow"
+  ],
+  "convergence_checks": [
+    {
+      "description": "PlaywrightTestSeeder exists",
+      "type": "glob_exists",
+      "check": "database/seeders/PlaywrightTestSeeder.php"
+    },
+    {
+      "description": "Guest route smoke test exists",
+      "type": "glob_exists",
+      "check": "tests/Browser/guest/route-smoke.spec.js"
+    },
+    {
+      "description": "Teacher route smoke test exists",
+      "type": "glob_exists",
+      "check": "tests/Browser/teacher/route-smoke.spec.js"
+    },
+    {
+      "description": "Admin navigation smoke test exists",
+      "type": "glob_exists",
+      "check": "tests/Browser/admin/navigation-smoke.spec.js"
+    },
+    {
+      "description": "CIP-30 wallet browser test exists",
+      "type": "glob_exists",
+      "check": "tests/Browser/student/wallet-cip30.spec.js"
+    }
+  ]
+}
