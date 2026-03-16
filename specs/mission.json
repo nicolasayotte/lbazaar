@@ -38,18 +38,39 @@
       "Teachers and admins can airdrop rewards to eligible completed students",
       "Students can self-mint NFT certificates and token rewards via CIP-30 wallet",
       "All legacy points UI is removed from the frontend",
-      "All supported CIP-30 wallets function for purchase and minting"
+      "All supported CIP-30 wallets function for purchase and minting",
+      "Blockfrost API key, ROOT_KEY, OWNER_PKH, and custodial wallet derivation paths must not appear in any JSON error payload, Inertia flash message, or HTTP redirect parameter returned to the browser under any error or exception condition.",
+      "Error responses returned by the ADA purchase, Stripe purchase, airdrop, self-mint, and refund flows must contain no database schema names, file system paths, PHP class names, Node.js module paths, Blockfrost error codes, or transaction builder internals.",
+      "Node.js web3 scripts (transaction builders, minters, custodial address derivation) must return only transaction hex, UTxO data, or structured success/error JSON to stdout. ROOT_KEY, private derivation paths, and OWNER_PKH must not appear in any value written to stdout, stderr, or any log file accessible outside the container."
     ],
-    "invariants": []
+    "invariants": [
+      "Every state-mutating operation — ADA purchase initiation, Stripe purchase initiation, airdrop dispatch, self-mint request, refund with access revocation — must verify authenticated student or teacher/admin identity server-side before the operation begins, regardless of how the request originates.",
+      "Authorization must be re-evaluated at the point of each state-mutating operation: a student may only purchase, self-mint, or view rewards for their own enrollment records; a teacher may only configure, airdrop, or revoke rewards for classes they own; an admin may initiate refunds and airdrops for any class. Cross-actor access to another actor's records must be rejected at the service layer regardless of the request's origin.",
+      "All user-supplied or wallet-derived input values (wallet addresses, transaction hex, class identifiers, student identifiers) passed to web3 Node.js scripts via exec() must be validated against an allowlist of expected formats (bech32 address, hex string, integer identifier) server-side before exec() is called. Unvalidated input must never be interpolated into shell command strings.",
+      "BLOCKFROST_API_KEY, ROOT_KEY, OWNER_PKH, OWNER_WALLET_ADDR, and any custodial wallet derivation material must be loaded exclusively from environment variables or a designated secrets store. These values must not be hardcoded in source files, configuration files under version control, or any mutable path in the bounded context.",
+      "All values passed to the Stripe API (amount, currency, metadata, customer identifiers) must be server-side validated and type-coerced before API call construction. No raw user-supplied string may be used as a Stripe parameter without explicit type validation.",
+      "PHP exception stack traces, Node.js script stderr output, MySQL error messages, and Blockfrost raw error bodies must not be forwarded to any client-facing HTTP response or Inertia page prop. External error responses must contain only a user-safe message and a reference code.",
+      "The ADA purchase initiation endpoint, Stripe purchase initiation endpoint, airdrop dispatch endpoint, and self-mint endpoint must enforce per-authenticated-user rate limiting. Repeated requests exceeding a defined threshold within a rolling window must be rejected with a 429 response before any blockchain or payment operation is invoked.",
+      "Stripe webhook callbacks must have their signature verified against STRIPE_WEBHOOK_SECRET before any state change is applied. Webhooks that fail signature verification must be rejected with a 400 response and must not trigger class access grants, refund processing, or any other state mutation.",
+      "Admin refund operations must use an idempotency key to prevent double-refund on retry. If a refund for a given course_histories record is already in a refunded state, a subsequent refund request for the same record must be rejected without calling the Stripe API or building a Cardano refund transaction.",
+      "Every Cardano transaction built server-side must include an explicit TTL (time-to-live slot) set to at most current slot + 300 slots (~5 minutes) so that unsubmitted or abandoned transactions expire on-chain promptly. Transactions without a TTL, or with a TTL more than 300 slots from the current slot, must not be submitted.",
+      "UTxO selection for ADA purchase and airdrop transactions must use database-level locking (lockForUpdate) to prevent concurrent requests from selecting the same UTxO. A UTxO that is already reserved by an in-flight transaction must not be selected for a new transaction.",
+      "On-chain metadata attached to NFT certificates and token rewards must not exceed Cardano protocol limits: individual string fields must be at most 64 bytes, and total transaction metadata must not exceed 16KB. The Node.js web3 script must validate metadata against these limits before invoking the Helios transaction builder; metadata that would exceed the limits must cause the script to return a structured error to stdout without building a transaction."
+    ]
   },
   "acceptance": [
-    "Student completes end-to-end ADA purchase (connect wallet \u2192 quote \u2192 sign \u2192 10-block confirmation \u2192 access)",
+    "Student completes end-to-end ADA purchase (connect wallet → quote → sign → 10-block confirmation → access)",
     "Student completes end-to-end Stripe credit card purchase",
     "Teacher configures NFT certificate reward and initiates airdrop to eligible students",
     "Student self-mints NFT certificate via CIP-30 wallet",
     "Zero points-related UI elements visible on any page for any actor",
     "All Playwright E2E tests pass for all four actor workflows",
-    "Product demo video demonstrates all 6 acceptance criteria from milestone-4.md"
+    "Product demo video demonstrates all 6 acceptance criteria from milestone-4.md",
+    "When a Cardano transaction submission fails (e.g., Blockfrost rejection, insufficient UTxO), the error message returned to the student contains no API keys, wallet derivation material, ROOT_KEY value, or OWNER_PKH value.",
+    "An unauthenticated request to any ADA purchase, Stripe purchase, airdrop, self-mint, or refund endpoint receives a 401 or 302-to-login response and no state change occurs.",
+    "A student attempting to initiate an airdrop, trigger a refund, or modify reward configuration for any class receives a 403 response and no state change occurs. A teacher attempting to refund or airdrop for a class they do not own receives a 403 response and no state change occurs.",
+    "A malformed CIP-30 wallet address (non-bech32, wrong network prefix) submitted to the ADA purchase or self-mint endpoint is rejected with a 422 response before any web3 script is invoked, and the error message contains no internal system paths or script output.",
+    "A transaction built by the server for ADA purchase, airdrop, or self-mint has a TTL no greater than current slot + 300 slots at the time of building."
   ],
   "lifecycle": "transitory"
 }
