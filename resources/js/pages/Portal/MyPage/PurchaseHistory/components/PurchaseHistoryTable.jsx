@@ -16,6 +16,44 @@ import CreditCardIcon from "@mui/icons-material/CreditCard"
 import EmptyCard from "../../../../../components/common/EmptyCard"
 import { usePage } from "@inertiajs/inertia-react"
 import routes from "../../../../../helpers/routes.helper"
+import { useState, useEffect, useRef } from "react"
+import axios from "axios"
+
+/**
+ * Polls /api/purchases/{txHash}/status and renders the live X/N confirmation count
+ * for a single pending ADA transaction row.
+ */
+const AdaConfirmationCount = ({ txHash, requiredConfirmations, label }) => {
+    const [count, setCount] = useState(null)
+    const pollRef = useRef(null)
+
+    useEffect(() => {
+        if (!txHash) return
+        let active = true
+        const poll = async () => {
+            if (!active) return
+            try {
+                const res = await axios.get(`/api/purchases/${txHash}/status`)
+                if (!active || !res?.data?.success || !res?.data?.data) return
+                const { status, confirmations } = res.data.data
+                if (status === 'confirmed') {
+                    setCount(requiredConfirmations)
+                    clearInterval(pollRef.current)
+                } else if (status === 'pending') {
+                    setCount(confirmations ?? 0)
+                }
+            } catch (_) {}
+        }
+        poll()
+        pollRef.current = setInterval(poll, 15_000)
+        return () => { active = false; clearInterval(pollRef.current) }
+    }, [txHash, requiredConfirmations])
+
+    const current = count !== null ? count : '?'
+    return label
+        .replace(':current', current)
+        .replace(':required', requiredConfirmations)
+}
 
 const STATUS_COLORS = {
     confirmed: 'success',
@@ -142,9 +180,11 @@ const PurchaseHistoryTable = ({ data, requiredConfirmations = 10 }) => {
                                 />
                                 {row.type === 'ADA' && row.status === 'pending' && (
                                     <Typography variant="caption" display="block" color="text.secondary" sx={{ mt: 0.5 }}>
-                                        {translatables.texts.payment_confirmations
-                                            .replace(':current', '?')
-                                            .replace(':required', requiredConfirmations)}
+                                        <AdaConfirmationCount
+                                            txHash={row.tx_hash}
+                                            requiredConfirmations={requiredConfirmations}
+                                            label={translatables.texts.payment_confirmations}
+                                        />
                                     </Typography>
                                 )}
                             </TableCell>
