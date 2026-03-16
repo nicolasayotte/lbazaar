@@ -5,6 +5,7 @@ namespace App\Services\API;
 use App\Models\Course;
 use App\Models\CourseHistory;
 use App\Models\StripePayment;
+use App\Repositories\UserRepository;
 use App\Services\API\RewardInvalidationService;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -18,8 +19,10 @@ use Stripe\Exception\IdempotencyException;
 
 class StripeService
 {
-    public function __construct(private RewardInvalidationService $rewardInvalidationService)
-    {
+    public function __construct(
+        private RewardInvalidationService $rewardInvalidationService,
+        private UserRepository $userRepository,
+    ) {
         Stripe::setApiKey(config('services.stripe.secret'));
     }
 
@@ -508,6 +511,14 @@ class StripeService
                 'course_history_id' => $payment->course_history_id,
             ]);
 
+            // F-13: unconditional notifications to student and admin after refund completes
+            if ($payment->course_history_id) {
+                $ch = CourseHistory::find($payment->course_history_id);
+                if ($ch) {
+                    $this->dispatchRefundNotifications($ch, 'Stripe');
+                }
+            }
+
             return [
                 'success' => true,
                 'message' => 'Payment refunded successfully',
@@ -593,6 +604,48 @@ class StripeService
         } catch (\Exception $e) {
             Log::error('Chargeback handling failed', ['error' => $e->getMessage()]);
             return ['success' => false, 'message' => 'Chargeback handling failed'];
+        }
+    }
+
+    /**
+     * F-13: Dispatch refund notifications to both student and admin.
+     * Failures are caught and logged — never propagated.
+     */
+    private function dispatchRefundNotifications(CourseHistory $history, string $method): void
+    {
+        try {
+            DB::table('notifications')->insert([
+                'from_user_id' => null,
+                'to_user_id'   => $history->user_id,
+                'message'      => 'Your ' . $method . ' payment for course #' . $history->course_id . ' has been refunded and your enrollment has been cancelled.',
+                'is_read'      => false,
+                'created_at'   => now(),
+                'updated_at'   => now(),
+            ]);
+        } catch (\Throwable $e) {
+            Log::warning('StripeService: failed to notify student of refund', [
+                'course_history_id' => $history->id,
+                'error'             => $e->getMessage(),
+            ]);
+        }
+
+        try {
+            $admin = $this->userRepository->getAdmin();
+            if ($admin) {
+                DB::table('notifications')->insert([
+                    'from_user_id' => null,
+                    'to_user_id'   => $admin->id,
+                    'message'      => $method . ' refund processed for user #' . $history->user_id . ' on course #' . $history->course_id . ' (history #' . $history->id . '). Enrollment cancelled.',
+                    'is_read'      => false,
+                    'created_at'   => now(),
+                    'updated_at'   => now(),
+                ]);
+            }
+        } catch (\Throwable $e) {
+            Log::warning('StripeService: failed to notify admin of refund', [
+                'course_history_id' => $history->id,
+                'error'             => $e->getMessage(),
+            ]);
         }
     }
 }

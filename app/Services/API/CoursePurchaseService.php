@@ -487,6 +487,9 @@ class CoursePurchaseService
 
         Log::info('ADA payment refunded', ['id' => $history->id, 'txId' => $txId, 'amount' => $adaAmount]);
 
+        // F-13: unconditional notifications to student and admin after refund completes
+        $this->dispatchRefundNotifications($history, 'ADA');
+
         return ['success' => true, 'message' => 'ADA refund submitted.', 'data' => ['txId' => $txId, 'adaAmount' => $adaAmount]];
     }
 
@@ -558,6 +561,48 @@ class CoursePurchaseService
         }
 
         return null;
+    }
+
+    /**
+     * F-13: Dispatch refund notifications to both student and admin.
+     * Failures are caught and logged — never propagated.
+     */
+    private function dispatchRefundNotifications(CourseHistory $history, string $method): void
+    {
+        try {
+            DB::table('notifications')->insert([
+                'from_user_id' => null,
+                'to_user_id'   => $history->user_id,
+                'message'      => 'Your ' . $method . ' payment for course #' . $history->course_id . ' has been refunded and your enrollment has been cancelled.',
+                'is_read'      => false,
+                'created_at'   => now(),
+                'updated_at'   => now(),
+            ]);
+        } catch (\Throwable $e) {
+            Log::warning('CoursePurchaseService: failed to notify student of refund', [
+                'course_history_id' => $history->id,
+                'error'             => $e->getMessage(),
+            ]);
+        }
+
+        try {
+            $admin = $this->userRepository->getAdmin();
+            if ($admin) {
+                DB::table('notifications')->insert([
+                    'from_user_id' => null,
+                    'to_user_id'   => $admin->id,
+                    'message'      => $method . ' refund processed for user #' . $history->user_id . ' on course #' . $history->course_id . ' (history #' . $history->id . '). Enrollment cancelled.',
+                    'is_read'      => false,
+                    'created_at'   => now(),
+                    'updated_at'   => now(),
+                ]);
+            }
+        } catch (\Throwable $e) {
+            Log::warning('CoursePurchaseService: failed to notify admin of refund', [
+                'course_history_id' => $history->id,
+                'error'             => $e->getMessage(),
+            ]);
+        }
     }
 
 }
