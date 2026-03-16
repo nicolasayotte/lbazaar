@@ -18,6 +18,7 @@
     ],
     "mutable": [
       "app/Services/API/CertificateService.php",
+      "app/Services/API/RewardInvalidationService.php",
       "app/Http/Controllers/Portal/StudentMintController.php",
       "app/Http/Controllers/Portal/CertificateController.php",
       "app/Http/Controllers/API/CertificateController.php",
@@ -38,6 +39,7 @@
       "resources/js/pages/Admin/Settings/Nft/components/NftTable.jsx",
       "web3/run/build-certificate-tx.mjs",
       "web3/run/submit-certificate-tx.mjs",
+      "web3/run/revoke-certificate-tx.mjs",
       "web3/run/build-student-certificate-tx.mjs",
       "web3/run/build-student-token-tx.mjs",
       "web3/run/build-token-reward-tx.mjs",

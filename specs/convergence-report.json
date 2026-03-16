@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-03-16T01:35:00Z",
-  "commit": "22c8b88f759543ebc12726380b08860d73056b5a",
+  "generated_at": "2026-03-15T10:00:00Z",
+  "commit": "8c8cf64b93ad3f286075942223c2947fe7b0a43b",
   "contracts": [
     {
       "contract_id": "le-bazaar-milestone-4",
@@ -9,89 +9,8 @@
       "lifecycle": "transitory",
       "cache_valid": false,
       "fast_checks": [],
-      "agent_checks": { "notes": "Root mission contract with no mutable paths — trivially converged." },
+      "agent_checks": { "notes": "Root mission contract with no mutable paths — trivially converged. Verified via child contracts." },
       "owned_files": {}
-    },
-    {
-      "contract_id": "payments",
-      "spec_path": "specs/payments.json",
-      "convergence_status": "converged",
-      "lifecycle": "transitory",
-      "cache_valid": false,
-      "fast_checks": [
-        { "description": "CoursePurchaseService exists", "passed": true },
-        { "description": "StripeService exists", "passed": true },
-        { "description": "build-purchase-tx.mjs exists", "passed": true },
-        { "description": "submit-signed-tx.mjs exists", "passed": true },
-        { "description": "check-network-health.mjs exists", "passed": true },
-        { "description": "Stripe payments migration exists", "passed": true },
-        { "description": "Refund status migration exists", "passed": true },
-        { "description": "PurchaseHistory page exists", "passed": true },
-        { "description": "Admin Refunds page exists", "passed": true },
-        { "description": "build-refund-tx.mjs exists", "passed": true }
-      ],
-      "agent_checks": { "notes": "All post-conditions verified in prior converge run. No changes to payments files since commit 012aa79." },
-      "owned_files": {
-        "app/Services/API/CoursePurchaseService.php": "mutable",
-        "app/Services/API/StripeService.php": "mutable",
-        "web3/run/build-purchase-tx.mjs": "mutable",
-        "web3/run/submit-signed-tx.mjs": "mutable",
-        "web3/run/check-network-health.mjs": "mutable",
-        "web3/run/build-refund-tx.mjs": "mutable",
-        "resources/js/pages/Portal/Course/Details.jsx": "mutable",
-        "resources/js/pages/Portal/MyPage/PurchaseHistory/Index.jsx": "mutable",
-        "resources/js/pages/Admin/Refunds/Index.jsx": "mutable"
-      }
-    },
-    {
-      "contract_id": "hygiene",
-      "spec_path": "specs/hygiene.json",
-      "convergence_status": "converged",
-      "lifecycle": "transitory",
-      "cache_valid": false,
-      "fast_checks": [
-        { "description": "No legacy points nav link in AdminNavbar", "passed": true },
-        { "description": "No legacy points nav link in Navbar", "passed": true },
-        { "description": "No legacy points nav in MyPageSideBar", "passed": true },
-        { "description": "No legacy points UI in StudentsTable", "passed": true },
-        { "description": "No legacy reward points UI in Exams/Create", "passed": true },
-        { "description": "No legacy reward points UI in Exams/Result", "passed": true }
-      ],
-      "agent_checks": { "notes": "All F-11.1–F-11.4 converged. F-11.5: investigation complete, giveRewards() returns 0, no active notification. Backend dead code outside mutable scope." },
-      "owned_files": {
-        "resources/js/components/includes/AdminNavbar.jsx": "mutable",
-        "resources/js/components/includes/Navbar.jsx": "mutable",
-        "resources/js/components/includes/MyPageSideBar.jsx": "mutable",
-        "resources/js/layouts/MyPage.jsx": "mutable"
-      }
-    },
-    {
-      "contract_id": "rewards",
-      "spec_path": "specs/rewards.json",
-      "convergence_status": "converged",
-      "lifecycle": "transitory",
-      "cache_valid": false,
-      "fast_checks": [
-        { "description": "CertificateService exists", "passed": true },
-        { "description": "StudentMintController exists", "passed": true },
-        { "description": "build-certificate-tx.mjs exists", "passed": true },
-        { "description": "build-student-certificate-tx.mjs exists", "passed": true },
-        { "description": "build-token-reward-tx.mjs exists", "passed": true },
-        { "description": "self_minted migration exists", "passed": true },
-        { "description": "token_reward_fields migration exists", "passed": true },
-        { "description": "AirdropFeeDialog exists", "passed": true },
-        { "description": "CourseCompleteConfirmation exists", "passed": true },
-        { "description": "revoked/clawback migration exists", "passed": true }
-      ],
-      "agent_checks": { "notes": "F-18 gap closed: CourseCompleteConfirmation.jsx now uses CIP-30 build/sign/submit flow when walletAPI available. Idle-state guard fixed to use live walletAPI state." },
-      "owned_files": {
-        "app/Services/API/CertificateService.php": "mutable",
-        "app/Http/Controllers/Portal/StudentMintController.php": "mutable",
-        "resources/js/pages/Portal/CourseCompleteConfirmation.jsx": "mutable",
-        "resources/js/pages/Portal/MyPage/ManageClass/components/AirdropFeeDialog.jsx": "mutable",
-        "web3/run/build-certificate-tx.mjs": "mutable",
-        "web3/run/build-student-certificate-tx.mjs": "mutable"
-      }
     },
     {
       "contract_id": "e2e",
@@ -100,29 +19,190 @@
       "lifecycle": "transitory",
       "cache_valid": false,
       "fast_checks": [
-        { "description": "PlaywrightTestSeeder exists", "passed": true },
-        { "description": "Guest route smoke test exists", "passed": true },
-        { "description": "Teacher route smoke test exists", "passed": true },
-        { "description": "Admin navigation smoke test exists", "passed": true },
-        { "description": "Student route smoke test exists", "passed": true },
-        { "description": "CIP-30 wallet browser test exists", "passed": true }
+        { "description": "PlaywrightTestSeeder exists", "passed": true, "evidence": "file found" },
+        { "description": "Guest route smoke test exists", "passed": true, "evidence": "file found" },
+        { "description": "Teacher route smoke test exists", "passed": true, "evidence": "file found" },
+        { "description": "Admin navigation smoke test exists", "passed": true, "evidence": "file found" },
+        { "description": "Student route smoke test exists", "passed": true, "evidence": "file found" },
+        { "description": "CIP-30 wallet browser test exists", "passed": true, "evidence": "file found" }
       ],
-      "agent_checks": { "notes": "Student E2E gap closed: tests/Browser/student/route-smoke.spec.js created covering 7 MyPage routes with pre-authenticated session. Known 500s documented per teacher spec convention." },
+      "agent_checks": {
+        "post_conditions": [
+          { "id": "PC-1", "description": "Guest E2E: all public routes return non-500; course browsing and filtering works; login/registration/inquiries/forgot-password flows work; route protection enforced", "status": "converged", "evidence": "tests/Browser/guest/route-smoke.spec.js (9 routes); tests/Browser/course-browsing.spec.js; tests/Browser/auth/login.spec.js; tests/Browser/guest/inquiries.spec.js; tests/Browser/guest/forgot-password.spec.js; tests/Browser/auth/route-protection.spec.js" },
+          { "id": "PC-2", "description": "Student E2E: all MyPage sections accessible via navigation; profile editable; course history, purchase history, wallet history, certificates, badges pages load; attendance flow renders", "status": "converged", "evidence": "tests/Browser/auth/student-mypage.spec.js; tests/Browser/auth/student-profile.spec.js; tests/Browser/auth/student-history.spec.js; tests/Browser/auth/student-courses.spec.js" },
+          { "id": "PC-3", "description": "Teacher E2E: class applications CRUD works; manage class tabs render; airdrop button visible; teaching schedules page loads", "status": "converged", "evidence": "tests/Browser/teacher/class-applications.spec.js; tests/Browser/teacher/manage-classes.spec.js; tests/Browser/teacher/teaching-history.spec.js:72-84 (airdrop button)" },
+          { "id": "PC-4", "description": "Admin E2E: profile and user management functional; inquiries and class applications manageable; all settings pages render and accept CRUD; refunds and wallet history pages load; admin navigation smoke test passes", "status": "converged", "evidence": "tests/Browser/admin/profile-users.spec.js; tests/Browser/admin/inquiries-applications.spec.js; tests/Browser/admin/settings-crud.spec.js; tests/Browser/admin/settings-misc.spec.js; tests/Browser/admin/navigation-smoke.spec.js" }
+        ],
+        "invariants": [
+          { "description": "No external service dependencies in tests", "status": "passed", "evidence": "page.route() stubs all Blockfrost/Stripe endpoints in wallet-cip30.spec.js; zero real network calls" },
+          { "description": "Graceful skip when seed data absent", "status": "passed", "evidence": "test.skip() used consistently: course-browsing.spec.js:73, student-history.spec.js:41, teacher/manage-classes.spec.js:52" },
+          { "description": "Auth fixtures established before suites", "status": "passed", "evidence": "playwright.config.js:48-49 student/teacher/admin projects declare dependencies on setup scripts" },
+          { "description": "Destructive admin actions only on test-created data", "status": "passed", "evidence": "settings-crud.spec.js uses Date.now() / random slugs for all destructive CRUD; no operations on seeded fixture IDs" }
+        ],
+        "summary": "All 4 post-conditions converged. All invariants passed. 6/6 acceptance criteria satisfied."
+      },
       "owned_files": {
+        "tests/Browser/guest/route-smoke.spec.js": "mutable",
         "tests/Browser/student/route-smoke.spec.js": "mutable",
         "tests/Browser/student/wallet-cip30.spec.js": "mutable",
-        "tests/Browser/guest/route-smoke.spec.js": "mutable",
         "tests/Browser/teacher/route-smoke.spec.js": "mutable",
+        "database/seeders/PlaywrightTestSeeder.php": "mutable",
         "tests/Browser/admin/navigation-smoke.spec.js": "mutable",
-        "database/seeders/PlaywrightTestSeeder.php": "mutable"
+        "playwright.config.js": "mutable"
+      }
+    },
+    {
+      "contract_id": "hygiene",
+      "spec_path": "specs/hygiene.json",
+      "convergence_status": "partial",
+      "lifecycle": "transitory",
+      "cache_valid": false,
+      "fast_checks": [
+        { "description": "No legacy points nav link in AdminNavbar (F-11.4)", "passed": true, "evidence": "pattern correctly absent" },
+        { "description": "No legacy points nav link in Navbar (F-11.4)", "passed": true, "evidence": "pattern correctly absent" },
+        { "description": "No legacy points nav in MyPageSideBar (F-11.2)", "passed": true, "evidence": "pattern correctly absent" },
+        { "description": "No legacy points UI in StudentsTable (F-11.1)", "passed": true, "evidence": "pattern correctly absent" },
+        { "description": "No legacy points UI in Exams/Create (F-11.1)", "passed": true, "evidence": "pattern correctly absent" },
+        { "description": "No legacy points UI in Exams/Result (F-11.1)", "passed": true, "evidence": "pattern correctly absent" }
+      ],
+      "agent_checks": {
+        "post_conditions": [
+          { "id": "F-11.1", "description": "No UI element referencing points, point balances, point earning, or point redemption is visible to any actor on any screen", "status": "converged", "evidence": "UserPoints.jsx deleted entirely; exhaustive search for pointBalance, point_balance, earnPoints, redeemPoints, ポイント across all JSX/JS files — zero matches. Exam score 'points' fields exempted per contract." },
+          { "id": "F-11.2", "description": "No navigation element in any sidebar, menu, or breadcrumb references points", "status": "converged", "evidence": "Full reads of MyPageSideBar.jsx, AdminNavbar.jsx, Navbar.jsx — no points nav entries" },
+          { "id": "F-11.3", "description": "URLs previously associated with the points system redirect to appropriate existing pages; no points content rendered at those URLs", "status": "partial", "evidence": "No points routes in routes/web.php or routes/api.php — no points content rendered. No affirmative redirect declarations found. Former points paths return 404, not 301/302. Positive redirect claim unmet." },
+          { "id": "F-11.4", "description": "Shared components (Navbar, AdminNavbar, MyPageSideBar, user profiles, dashboards) contain no points-related content, badges, counters, or labels", "status": "converged", "evidence": "Full reads of AdminNavbar.jsx, Navbar.jsx, MyPageSideBar.jsx, MyPage.jsx, Users/View.jsx, StudentsTable.jsx — zero points references" },
+          { "id": "F-11.5", "description": "Investigation of background processes referencing points is complete; any found are disabled", "status": "converged", "evidence": "Exhaustive search: app/Console/Kernel.php (single job: purchases:timeout), Console/Commands (4 files), app/Mail (11 files), app/Notifications — zero points references. app/Jobs/ does not exist." }
+        ],
+        "invariants": [
+          { "description": "Backend code for points must NOT be modified", "status": "passed", "evidence": "Hygiene commit touched only resources/js/ files; no app/, database/ files modified" },
+          { "description": "No user data migration required", "status": "passed", "evidence": "No migration files added by hygiene work" }
+        ],
+        "summary": "F-11.3 partial: former points URLs return 404 rather than affirmative redirect. All other post-conditions converged."
+      },
+      "owned_files": {
+        "resources/js/components/includes/AdminNavbar.jsx": "mutable",
+        "resources/js/components/includes/Navbar.jsx": "mutable",
+        "resources/js/components/includes/MyPageSideBar.jsx": "mutable",
+        "resources/js/layouts/MyPage.jsx": "mutable",
+        "resources/js/pages/Portal/Users/View.jsx": "mutable",
+        "resources/js/pages/Portal/CourseSchedules/components/StudentsTable.jsx": "mutable",
+        "resources/js/pages/Portal/Exams/Create.jsx": "mutable",
+        "resources/js/pages/Portal/Exams/Result.jsx": "mutable",
+        "resources/js/pages/Portal/Registration/Teacher.jsx": "mutable"
+      }
+    },
+    {
+      "contract_id": "payments",
+      "spec_path": "specs/payments.json",
+      "convergence_status": "partial",
+      "lifecycle": "transitory",
+      "cache_valid": false,
+      "fast_checks": [
+        { "description": "CoursePurchaseService exists", "passed": true, "evidence": "file found" },
+        { "description": "StripeService exists", "passed": true, "evidence": "file found" },
+        { "description": "build-purchase-tx.mjs exists", "passed": true, "evidence": "file found" },
+        { "description": "submit-signed-tx.mjs exists", "passed": true, "evidence": "file found" },
+        { "description": "check-network-health.mjs exists", "passed": true, "evidence": "file found" },
+        { "description": "Stripe payments migration exists", "passed": true, "evidence": "file found" },
+        { "description": "Refund status migration exists", "passed": true, "evidence": "file found" },
+        { "description": "PurchaseHistory page exists", "passed": true, "evidence": "file found" },
+        { "description": "Admin Refunds page exists", "passed": true, "evidence": "file found" },
+        { "description": "build-refund-tx.mjs exists", "passed": true, "evidence": "file found" }
+      ],
+      "agent_checks": {
+        "post_conditions": [
+          { "id": "F-01", "description": "Class pages display JPY price and live ADA equivalent; ADA refreshes every 60s; drift >5% alerts user; rate unavailability disables ADA path gracefully", "status": "converged", "evidence": "Details.jsx:60-96 60s poll; :86-88 5% drift alert; :764 ADA button disabled independently; :626-631 dual price display" },
+          { "id": "F-02", "description": "ADA purchase via CIP-30 double-sign flow; pending shows X/10 confirmations; access granted after 10 confirmations; duplicate attempts blocked", "status": "converged", "evidence": "Details.jsx:209 signTx; :717-726 LinearProgress; CoursePurchaseService.php:330-346 10-conf gate; :197-206 lockForUpdate duplicate check" },
+          { "id": "F-03", "description": "Stripe checkout flow; class access granted immediately on successful charge; Japan-compliant", "status": "converged", "evidence": "StripeService.php:241-308 creates CourseHistory on payment_intent.succeeded; CourseController.php:158 null payment_status = booked immediately" },
+          { "id": "F-04", "description": "Both payment options presented in parallel; either path degrades independently", "status": "converged", "evidence": "Details.jsx:760-824 independent disabled conditions; captions shown per-path when unavailable" },
+          { "id": "F-12", "description": "CIP-30 wallet connect/disconnect handled; unsupported wallets show clear error; wrong network blocks; pending transactions monitored after disconnect", "status": "converged", "evidence": "WalletConnector.jsx:256-268 unsupported error; :305-316 wrong network; :115-137 heartbeat; Details.jsx:136-159 polling independent of walletAPI" },
+          { "id": "F-13", "description": "Admin initiates Stripe and ADA refunds; class access revoked; rewards flagged; Admin and Student notified", "status": "partial", "evidence": "Refund paths and revocation/flagging confirmed. Gap: RewardInvalidationService.php:76-83 notifications only fire when force=true and rewards exist. Base refund (no rewards) emits no notification to admin or student." },
+          { "id": "F-14", "description": "Cardano network status (healthy/degraded/unreachable) reflected in ADA payment UI", "status": "converged", "evidence": "CardanoController.php:12-18; Details.jsx:99-114 60s poll; :754 CardanoNetworkStatus component rendered" },
+          { "id": "F-15", "description": "Students view purchase history with ADA tx hash, X/10 status, Stripe receipt entries including pending and refunded states", "status": "partial", "evidence": "PurchaseHistoryTable.jsx:77-93 tx hash and receipt links; :26 refunded chip. Gap: :146 pending confirmation count hardcoded as '?' instead of live X/10 value." }
+        ],
+        "invariants": [
+          { "description": "No class access before 10 ADA confirmations or Stripe success", "status": "passed", "evidence": "CoursePurchaseService.php:330-346; Stripe only creates CourseHistory on payment_intent.succeeded" },
+          { "description": "No duplicate payment", "status": "passed", "evidence": "CoursePurchaseService.php:155-161 pre-check; :197-206 lockForUpdate re-check" },
+          { "description": "ADA quote invalidated after 5 min", "status": "passed", "evidence": "CoursePurchaseService.php:113-118 Cache TTL; :150-153 cache miss returns quoteExpired:true" },
+          { "description": "Witness merge server-side, never walletAPI.submitTx", "status": "passed", "evidence": "Details.jsx:209 only signTx browser-side; submit-purchase-tx.mjs:41-44 server-side merge" },
+          { "description": "Recipient addresses use custodial HD derivation", "status": "passed", "evidence": "CoursePurchaseService.php:531-561; build-purchase-tx.mjs:74-77 custodial addresses only" }
+        ],
+        "summary": "6/8 post-conditions converged, 2 partial. F-13 partial: refund notifications absent for base (no-rewards) refund path. F-15 partial: PurchaseHistoryTable.jsx:146 hardcodes '?/10' instead of live confirmation count."
+      },
+      "owned_files": {
+        "app/Services/API/CoursePurchaseService.php": "mutable",
+        "app/Services/API/StripeService.php": "mutable",
+        "web3/run/build-purchase-tx.mjs": "mutable",
+        "web3/run/submit-signed-tx.mjs": "mutable",
+        "web3/run/check-network-health.mjs": "mutable",
+        "resources/js/pages/Portal/Course/Details.jsx": "mutable",
+        "resources/js/pages/Portal/MyPage/PurchaseHistory/Index.jsx": "mutable",
+        "resources/js/pages/Admin/Refunds/Index.jsx": "mutable",
+        "web3/run/build-refund-tx.mjs": "mutable",
+        "routes/web.php": "mutable"
+      }
+    },
+    {
+      "contract_id": "rewards",
+      "spec_path": "specs/rewards.json",
+      "convergence_status": "drifted",
+      "lifecycle": "transitory",
+      "cache_valid": false,
+      "fast_checks": [
+        { "description": "CertificateService exists", "passed": true, "evidence": "file found" },
+        { "description": "StudentMintController exists (F-18 self-mint)", "passed": true, "evidence": "file found" },
+        { "description": "build-certificate-tx.mjs exists (F-10 airdrop)", "passed": true, "evidence": "file found" },
+        { "description": "build-student-certificate-tx.mjs exists (F-18 self-mint)", "passed": true, "evidence": "file found" },
+        { "description": "build-token-reward-tx.mjs exists (F-10 token airdrop)", "passed": true, "evidence": "file found" },
+        { "description": "self_minted migration exists (F-18 DB schema)", "passed": true, "evidence": "file found" },
+        { "description": "token_reward_fields migration exists (F-06/F-10)", "passed": true, "evidence": "file found" },
+        { "description": "AirdropFeeDialog exists (F-10 fee estimate UI)", "passed": true, "evidence": "file found" },
+        { "description": "CourseCompleteConfirmation exists (F-19 eligibility notification)", "passed": true, "evidence": "file found" },
+        { "description": "revoked/clawback migration exists (F-16)", "passed": true, "evidence": "file found" }
+      ],
+      "agent_checks": {
+        "post_conditions": [
+          { "id": "F-05", "description": "Teachers enable/configure/disable NFT certificate reward; incomplete metadata rejected; config locked at enrollment", "status": "partial", "evidence": "CourseRequest.php:42-45 certificate_name and certificate_description required_if. Enrollment lock via effectiveCertificateName(). Gap: certificate_image_url is nullable even when certificate_enabled — incomplete metadata (no image) passes validation." },
+          { "id": "F-06", "description": "Teachers enable/configure/disable token reward; invalid amounts rejected; config locked at enrollment", "status": "converged", "evidence": "CourseRequest.php:47 required_if|integer|min:1|max:1000000; effectiveTokenRewardAmount() used in StudentMintController.php:156,336" },
+          { "id": "F-07", "description": "NFT and token rewards configured independently and delivered together in a single airdrop", "status": "partial", "evidence": "Independent config confirmed. Gap: Certificates.jsx:79 posts to certificates-only endpoint. No combined NFT+token single-call airdrop. Token rewards require separate action." },
+          { "id": "F-10", "description": "Batch/selective airdrop with fee estimate before confirmation; partial failures listed with retry; duplicate prevention; platform wallet pays; teacher wallet not required", "status": "partial", "evidence": "AirdropFeeDialog.jsx fully implemented; AirdropResultsDialog lists partial failures; handleRetryFailed at Certificates.jsx:115-119; platform wallet pays. Gap 1: AirdropFeeDialog never imported/rendered in Certificates.jsx — confirmation dialog shows only count, no fee estimate. Gap 2: CertificateService.php:670 duplicate check has no lockForUpdate(), leaving TOCTOU race." },
+          { "id": "F-16", "description": "Refund triggers on-chain metadata update flagging NFT as revoked + platform revocation; token flagged for clawback in course_histories", "status": "drifted", "evidence": "Platform revocation: RewardInvalidationService.php:63 certificate_status='revoked', :69 token_reward_status='clawback_flagged'. Drift 1: No on-chain revocation script in web3/run/ — admin notification at line 140 says 'Manual on-chain action may be required'. Drift 2: RewardInvalidationService.php:47 certDelivered check only includes ['minted'] — 'self_minted' excluded, so CIP-30 self-minted certs are NOT revoked on refund." },
+          { "id": "F-17", "description": "Students view all earned rewards with type, amount, delivery status, and wallet destination", "status": "converged", "evidence": "CertificateService.php:724 getStudentRewards returns all fields; RewardsTable.jsx:24-32 STATUS_CONFIG covers all statuses; columns at :254-260" },
+          { "id": "F-18", "description": "Students with CIP-30 wallet self-mint NFT cert or token reward paying ~1 ADA; fallback custodial mint; self_minted status recorded", "status": "converged", "evidence": "RewardsTable.jsx:85-143 and CourseCompleteConfirmation.jsx:84-145 implement full CIP-30 flow. StudentMintController.php:403-408 server-side witness merge. Custodial fallback at RewardsTable.jsx:148-163. self_minted ENUM at migration 2026_03_10_000001:11-13. Status at StudentMintController.php:57-58." },
+          { "id": "F-19", "description": "Eligibility notification shown immediately on class completion; eligibility badge on completed class page; cleared after reward receipt", "status": "partial", "evidence": "CertificateService.php:405 dispatchCompletionNotificationIfEligible fires idempotently. CourseCompleteConfirmation.jsx:455-471 shows rewards block. Gap 1: No eligibility badge found on class attendance/course page (distinct from completion confirmation page). Gap 2: No frontend logic to clear badge display after reward receipt." }
+        ],
+        "invariants": [
+          { "description": "Only completed students eligible for airdrop/self-mint", "status": "passed", "evidence": "StudentMintController.php:37-48 whereNotNull('completed_at') before any mint" },
+          { "description": "Minting policy supports on-chain metadata updates for revocation", "status": "passed", "evidence": "web3/contracts/nft-minting-policy.hl unchanged; same parameterised policy used" },
+          { "description": "Platform wallet pays all airdrop fees; teacher wallet never charged", "status": "passed", "evidence": "CertificateService.php:182 runs build-certificate-tx.mjs server-side using OWNER_WALLET_ADDR" },
+          { "description": "CIP-30 self-mint uses partial sign flow", "status": "passed", "evidence": "build-student-certificate-tx.mjs:155 owner partial sign; RewardsTable.jsx:115 student signTx(cborTx, true); submit-signed-tx.mjs:19-26 reconstructs and submits" },
+          { "description": "Duplicate reward delivery prevented at data layer", "status": "violated", "evidence": "CertificateService.php:670 duplicate check is read-then-act with no lockForUpdate(). StudentMintController.php:101-109 status check also lacks DB lock. TOCTOU race possible for concurrent requests." }
+        ],
+        "summary": "F-16 drifted: no on-chain revocation script; self_minted certificates excluded from revocation path. F-07, F-10, F-05, F-19 partial. Duplicate-prevention invariant violated (missing lockForUpdate). F-06, F-17, F-18 converged."
+      },
+      "owned_files": {
+        "app/Services/API/CertificateService.php": "mutable",
+        "app/Http/Controllers/Portal/StudentMintController.php": "mutable",
+        "web3/run/build-certificate-tx.mjs": "mutable",
+        "web3/run/build-student-certificate-tx.mjs": "mutable",
+        "web3/run/build-token-reward-tx.mjs": "mutable",
+        "resources/js/pages/Portal/MyPage/ManageClass/Certificates.jsx": "mutable",
+        "resources/js/pages/Portal/MyPage/ManageClass/components/AirdropFeeDialog.jsx": "mutable",
+        "resources/js/pages/Portal/MyPage/Badges/components/RewardsTable.jsx": "mutable",
+        "resources/js/pages/Portal/CourseCompleteConfirmation.jsx": "mutable",
+        "database/migrations/2026_03_10_000001_add_self_minted_to_certificate_status_enum.php": "mutable"
       }
     }
   ],
   "summary": {
     "total_contracts": 5,
-    "converged": 5,
-    "partial": 0,
-    "drifted": 0,
-    "missing": 0
+    "leaf_contracts": 4,
+    "structural_skipped": 1,
+    "cache_hits": 0,
+    "converged": 1,
+    "partial": 2,
+    "drifted": 1,
+    "missing": 0,
+    "transitory_ready_for_promote_or_delete": 0
   }
 }
