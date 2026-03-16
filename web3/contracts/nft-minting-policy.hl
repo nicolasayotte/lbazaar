@@ -18,5 +18,7 @@ func main(_, ctx: ScriptContext) -> Bool {
     tx: Tx = ctx.tx;
 
     tx.is_signed_by(ownerPkh).trace("NFT_MP1: ") &&
-    (tx.time_range.start < lockTime).trace("NFT_MP2: ")
+    (tx.time_range.start < lockTime).trace("NFT_MP2: ") &&
+    // Prevent burning: all minted quantities under this policy must be non-negative
+    tx.minted.get_policy(SELF).all((_, qty: Int) -> { qty >= 0 }).trace("NFT_MP3: ")
 }

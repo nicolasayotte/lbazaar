@@ -67,6 +67,24 @@ export async function buildCertificateMetadata(inputData, assetName, imageUrl) {
     // Parse the populated template
     const metadata = JSON.parse(template);
 
+    // F-05: Apply instructor field rename and configurable fields post-template.
+    // The template uses 'teacher' inside 'course' — rename to 'instructor' per spec.
+    // The template uses a hardcoded description — override with inputData.description if provided.
+    const assetData = metadata[assetName];
+    if (assetData) {
+      // Rename course.teacher → course.instructor
+      if (assetData.course && assetData.course.teacher !== undefined) {
+        assetData.course.instructor = assetData.course.teacher;
+        delete assetData.course.teacher;
+      }
+      // Override hardcoded description with configurable value
+      if (inputData.description != null && inputData.description !== '') {
+        assetData.description = inputData.description;
+      }
+      // F-05 soul-bound: mark as non-transferable per CIP-0068 convention
+      assetData.non_transferable = true;
+    }
+
     return metadata;
   } catch (error) {
     throw new Error(`Failed to build certificate metadata: ${error.message}`);
