@@ -434,6 +434,18 @@ class CourseController extends Controller
 
     public function update($id, CourseRequest $request)
     {
+        $certificateFields = ['certificate_enabled', 'certificate_name', 'certificate_description', 'certificate_image_url'];
+        $hasCertificateChange = $request->hasAny($certificateFields);
+
+        if ($hasCertificateChange) {
+            $course = $this->courseRepository->findOrFail($id);
+            if (CourseHistory::where('course_id', $course->id)->exists()) {
+                return back()->withErrors([
+                    'certificate_enabled' => 'Reward configuration cannot be changed after enrollment.',
+                ]);
+            }
+        }
+
         $course = $this->courseRepository->update($id, $request);
 
         if (!is_null(@$request->get('course_package_id'))) {
