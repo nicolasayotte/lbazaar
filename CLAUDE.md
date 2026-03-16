@@ -66,5 +66,6 @@ Agents: `.claude/agents/planner.md`, `.claude/agents/builder.md`, `.claude/agent
 Read `docs/index.md` for full navigation. Before any task, read the relevant doc:
 - `docs/architecture.md` · `docs/patterns.md` · `docs/testing.md` · `docs/gotchas.md`
 - `docs/getting-started.md` · `docs/deployment.md` · `docs/integrations.md` · `docs/data-flows.md`
+- `docs/authentication.md` · `docs/api.md` · `docs/workflow.md` · `docs/certificate-minting-api.md`
 
 Only read what's relevant to your current task.
