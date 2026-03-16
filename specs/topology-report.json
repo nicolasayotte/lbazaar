@@ -1,44 +1,47 @@
 {
-  "generated_at": "2026-03-16T01:08:20.906923195+00:00",
-  "total_contracts": 5,
-  "leaf_nodes": [
-    "le-bazaar-milestone-4",
-    "hygiene",
-    "payments",
-    "rewards",
-    "e2e"
-  ],
+  "generated_at": "2026-03-16T04:37:59.849339Z",
+  "summary": {
+    "total_contracts": 5,
+    "leaf_nodes": 5,
+    "errors": 0,
+    "warnings": 3,
+    "info": 2
+  },
   "execution_order": [
-    ["le-bazaar-milestone-4", "hygiene", "payments"],
-    ["rewards"],
-    ["e2e"]
+    {"wave": 0, "contracts": ["hygiene", "payments", "le-bazaar-milestone-4"]},
+    {"wave": 1, "contracts": ["rewards"]},
+    {"wave": 2, "contracts": ["e2e"]}
   ],
   "issues": [
     {
       "severity": "warning",
       "type": "missing_convergence_checks",
-      "message": "leaf contract 'le-bazaar-milestone-4' has no convergence_checks — root mission contract with empty mutable, expected",
+      "message": "leaf contract 'le-bazaar-milestone-4' has no convergence_checks",
       "contracts": ["le-bazaar-milestone-4"]
     },
     {
       "severity": "warning",
       "type": "transitory_stale",
-      "message": "transitory contract 'e2e' has all convergence_checks passing — artifacts already exist (brownfield)",
+      "message": "transitory contract 'e2e' has all convergence_checks passing — promote to living or delete",
       "contracts": ["e2e"]
     },
     {
       "severity": "warning",
       "type": "transitory_stale",
-      "message": "transitory contract 'payments' has all convergence_checks passing — artifacts already exist (brownfield)",
-      "contracts": ["payments"]
+      "message": "transitory contract 'hygiene' has all convergence_checks passing — promote to living or delete",
+      "contracts": ["hygiene"]
     },
     {
-      "severity": "warning",
-      "type": "transitory_stale",
-      "message": "transitory contract 'rewards' has all convergence_checks passing — artifacts already exist (brownfield)",
-      "contracts": ["rewards"]
+      "severity": "info",
+      "type": "tool_scan_incomplete",
+      "message": "validate_topology tool did not scan 'rewards' (specs/rewards.json has an unstaged git modification and was excluded from the tool scan); contract is valid and its dependency edge e2e->rewards is satisfied",
+      "contracts": ["rewards", "e2e"]
+    },
+    {
+      "severity": "info",
+      "type": "missing_from_manifest",
+      "message": "contract 'le-bazaar-milestone-4' is absent from specs/ownership-manifest.json; no owned_files to track but manifest entry should be added for completeness",
+      "contracts": ["le-bazaar-milestone-4"]
     }
-  ],
-  "coupling_analysis": [],
-  "convergence_health": "skipped — no ownership-manifest.json found"
+  ]
 }
