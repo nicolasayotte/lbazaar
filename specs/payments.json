@@ -3,7 +3,7 @@
   "title": "Payments & Wallet — ADA and Stripe class purchase flows",
   "description": "Epic E-01. All payment-related features for M4: live ADA/JPY price conversion and display with 60s refresh and 5% drift alert (F-01); ADA purchase via CIP-30 double-sign flow, pessimistic 10-block confirmation, pending state display (F-02); Stripe credit card purchase Japan-compliant with immediate access on success (F-03); parallel payment path presentation with graceful degradation when either path is unavailable (F-04); wallet connection/disconnection, unsupported wallet, wrong network handling — all supported CIP-30 wallets (F-12); admin-initiated ADA and Stripe refunds with class access revocation and reward invalidation flag (F-13); Cardano network status indicator (healthy/degraded/unreachable) (F-14); student purchase history including pending, completed, and refunded transactions (F-15).",
   "dag_dependencies": [],
-  "lifecycle": "transitory",
+  "lifecycle": "living",
   "bounded_context": {
     "read_only": [
       "web3/config/preprod.json",

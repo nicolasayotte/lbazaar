@@ -5,7 +5,7 @@
   "dag_dependencies": [
     "payments"
   ],
-  "lifecycle": "transitory",
+  "lifecycle": "living",
   "bounded_context": {
     "read_only": [
       "web3/config/preprod.json",
