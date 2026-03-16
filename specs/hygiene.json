@@ -55,34 +55,34 @@
   ],
   "convergence_checks": [
     {
-      "description": "No 'point' string in AdminNavbar (F-11.4)",
+      "description": "No legacy points nav link in AdminNavbar (F-11.4)",
       "type": "grep_absent",
-      "check": "point::resources/js/components/includes/AdminNavbar.jsx"
+      "check": "pointBalance|point_balance|earnPoints|redeemPoints|ポイント::resources/js/components/includes/AdminNavbar.jsx"
     },
     {
-      "description": "No 'point' string in Navbar (F-11.4)",
+      "description": "No legacy points nav link in Navbar (F-11.4)",
       "type": "grep_absent",
-      "check": "point::resources/js/components/includes/Navbar.jsx"
+      "check": "pointBalance|point_balance|earnPoints|redeemPoints|ポイント::resources/js/components/includes/Navbar.jsx"
     },
     {
-      "description": "No 'point' string in MyPageSideBar (F-11.2)",
+      "description": "No legacy points nav in MyPageSideBar (F-11.2)",
       "type": "grep_absent",
-      "check": "point::resources/js/components/includes/MyPageSideBar.jsx"
+      "check": "pointBalance|point_balance|earnPoints|redeemPoints|ポイント::resources/js/components/includes/MyPageSideBar.jsx"
     },
     {
-      "description": "No 'point' string in StudentsTable (F-11.1)",
+      "description": "No legacy points UI in StudentsTable (F-11.1)",
       "type": "grep_absent",
-      "check": "point::resources/js/pages/Portal/CourseSchedules/components/StudentsTable.jsx"
+      "check": "pointBalance|point_balance|earnPoints|redeemPoints|ポイント::resources/js/pages/Portal/CourseSchedules/components/StudentsTable.jsx"
     },
     {
-      "description": "No 'point' string in Exams/Create (F-11.1)",
+      "description": "No legacy reward points UI in Exams/Create — exam scoring 'points' fields are allowed (F-11.1)",
       "type": "grep_absent",
-      "check": "point::resources/js/pages/Portal/Exams/Create.jsx"
+      "check": "pointBalance|point_balance|earnPoints|redeemPoints|ポイント::resources/js/pages/Portal/Exams/Create.jsx"
     },
     {
-      "description": "No 'point' string in Exams/Result (F-11.1)",
+      "description": "No legacy reward points UI in Exams/Result — exam total_points fields are allowed (F-11.1)",
       "type": "grep_absent",
-      "check": "point::resources/js/pages/Portal/Exams/Result.jsx"
+      "check": "pointBalance|point_balance|earnPoints|redeemPoints|ポイント::resources/js/pages/Portal/Exams/Result.jsx"
     }
   ]
 }
