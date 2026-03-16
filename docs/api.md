@@ -1,6 +1,6 @@
 # API Reference
 
-> **AI Context Summary**: REST API at `/api/*` defined in `routes/api.php`. Two auth tiers: public endpoints (login, categories, votes, webhook) and Sanctum-protected (`auth:sanctum` header required). Standard service response: `{ "success": bool, "message": string, "data": {} }` — controllers map to HTTP 200/400. Certificate endpoints additionally enforce teacher `professor_id` ownership. Stripe and Blockfrost webhooks are CSRF-exempt. Rate limit on payment-intent: `throttle:payment-intent`.
+> **AI Context Summary**: REST API at `/api/*` defined in `routes/api.php`. Two auth tiers: public endpoints (login, categories, votes, webhook) and Sanctum-protected (`auth:sanctum` header required). Standard service response: `{ "success": bool, "message": string, "data": {} }` — controllers map to HTTP 200/400. Key groups: teacher certificate endpoints (enforce `professor_id` ownership), admin certificate/refund routes (`admin/*`), token reward routes (`courses/{course}/token-reward`), and student CIP-30 self-mint (web routes under `/portal/`). Stripe and Blockfrost webhooks are CSRF-exempt. Rate limit on payment-intent: `throttle:payment-intent`.
 
 ## Base URL
 
@@ -37,6 +37,18 @@ See `docs/authentication.md` for full auth details.
 | GET | `/countries` | Public | Closure |
 | POST | `/votes/register` | Public | `API\VoteController@register` |
 | GET | `/courses/{course}/ada-price` | Public | `API\CourseController@getAdaPrice` |
+| GET | `/cardano/network-status` | Public | `API\CardanoController@networkStatus` |
+| GET | `/purchases/{txHash}/status` | `auth:sanctum` | `API\PurchaseStatusController@show` |
+| POST | `/certificates/courses/{course}/estimate-fee` | `auth:sanctum` | `API\CertificateController@estimateAirdropFee` |
+| PUT | `/courses/{course}/token-reward` | `auth:sanctum` | `API\TokenRewardController@updateConfig` |
+| POST | `/courses/{course}/token-reward/mint` | `auth:sanctum` | `API\TokenRewardController@mintAndAirdrop` |
+| POST | `/admin/refunds/stripe/{stripePaymentId}` | `auth:sanctum` | `API\AdminRefundController@refundStripe` |
+| POST | `/admin/refunds/ada/{courseHistoryId}` | `auth:sanctum` | `API\AdminRefundController@refundAda` |
+| POST | `/admin/certificates/courses/{course}/estimate-fee` | `auth:sanctum` | `Admin\CertificateController@estimateAirdropFee` |
+| GET | `/admin/certificates/courses/{course}/eligible-students` | `auth:sanctum` | `Admin\CertificateController@getEligibleStudents` |
+| POST | `/admin/certificates/courses/{course}/students/{student}/mint` | `auth:sanctum` | `Admin\CertificateController@mintSingleCertificate` |
+| POST | `/admin/certificates/courses/{course}/batch-mint` | `auth:sanctum` | `Admin\CertificateController@batchMintCertificates` |
+| GET | `/admin/certificates/courses/{course}/students/{student}/status` | `auth:sanctum` | `Admin\CertificateController@getCertificateStatus` |
 
 ## Endpoints
 
@@ -267,9 +279,104 @@ $response = $this->postJson('/api/certificates/mint-and-airdrop', [...]);
 $response->assertStatus(403);
 ```
 
+---
+
+### Token Rewards
+
+Teacher-only endpoints for managing fungible token rewards attached to courses.
+
+#### PUT /api/courses/{course}/token-reward
+
+Update token reward configuration for a course. Teacher must own the course.
+
+```json
+// Request
+{ "token_reward_enabled": true, "token_reward_amount": 10 }
+
+// Response 200
+{ "success": true, "message": "Token reward configuration updated." }
+```
+
+#### POST /api/courses/{course}/token-reward/mint
+
+Mint and airdrop token rewards to all eligible students (completed, not yet rewarded).
+
+```json
+// Response 200
+{ "success": true, "data": { "minted_count": 5, "failed_count": 0 } }
+```
+
+**Controller**: `app/Http/Controllers/API/TokenRewardController.php`
+
+---
+
+### Admin Refunds
+
+#### POST /api/admin/refunds/stripe/{stripePaymentId}
+
+Initiate a Stripe refund for a course purchase. Admin only.
+
+#### POST /api/admin/refunds/ada/{courseHistoryId}
+
+Initiate an ADA refund for a course purchase. Admin only.
+
+**Controller**: `app/Http/Controllers/API/AdminRefundController.php`
+
+---
+
+### Admin Certificates
+
+Mirror of teacher certificate endpoints but usable for any course, with fees paid from the platform wallet (`OWNER_WALLET_ADDR`). Admin only.
+
+Routes: `POST /api/admin/certificates/courses/{course}/...` — same structure as teacher routes under `/api/certificates/courses/{course}/...`.
+
+**Controller**: `app/Http/Controllers/Admin/CertificateController.php`
+
+---
+
+### Purchase Status
+
+#### GET /api/purchases/{txHash}/status
+
+Poll the status of an ADA course purchase by transaction hash. Returns confirmation state.
+
+```json
+// Response 200
+{ "success": true, "data": { "status": "confirmed", "course_id": 42 } }
+```
+
+**Controller**: `app/Http/Controllers/API/PurchaseStatusController.php`
+
+---
+
+### Cardano Network
+
+#### GET /api/cardano/network-status
+
+Public endpoint returning current Cardano network connectivity and epoch info from Blockfrost. Used by frontend to display wallet connection health.
+
+**Controller**: `app/Http/Controllers/API/CardanoController.php`
+
+---
+
+### Student Self-Mint (Web Routes)
+
+These are **portal web routes** (not `/api/*`), authenticated via session (`auth` middleware):
+
+| Method | Path | Controller |
+|--------|------|-----------|
+| POST | `/classes/{course_id}/attend/{schedule_id}/self-mint` | `Portal\StudentMintController@selfMint` |
+| POST | `/classes/{course_id}/attend/{schedule_id}/cip30/build-mint-tx` | `Portal\StudentMintController@buildMintTx` |
+| POST | `/classes/{course_id}/attend/{schedule_id}/cip30/submit-mint-tx` | `Portal\StudentMintController@submitMintTx` |
+
+`selfMint` handles server-side mint (custodial). `buildMintTx` / `submitMintTx` support CIP-30 wallet signing — returns an unsigned CBOR TX, student signs in-browser, then submits. See `docs/data-flows.md` for the CIP-30 flow.
+
+---
+
 ## Cross-References
 
 - Authentication: `docs/authentication.md`
 - Service response patterns: `docs/patterns.md`
 - Certificate blockchain flow: `docs/certificate-minting-api.md`
+- Student CIP-30 self-mint flow: `docs/data-flows.md`
 - Data flows: `docs/data-flows.md`

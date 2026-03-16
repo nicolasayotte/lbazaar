@@ -1,6 +1,6 @@
 # Data Flows
 
-> **AI Context Summary**: Critical data flows: (1) Certificate minting: Controller → CertificateService → PHP exec() → Node build-tx → submit-tx → Blockfrost → record DB. (2) Wallet connection: React CIP-30 → POST /api/user-wallet → wallet-verify.mjs → save to user_wallets. (3) Auth: Inertia form → AuthController → Auth::attempt() → session + Inertia render. All service responses: `['success' => bool, 'message' => string, 'data' => array]`.
+> **AI Context Summary**: Critical data flows: (1) Teacher certificate airdrop: Controller → CertificateService → PHP exec() → Node build-tx → submit-tx → Blockfrost → record DB. (2) Student CIP-30 self-mint: build-mint-tx (unsigned CBOR) → browser signTx(partial=true) → submit-signed-tx.mjs merges witness → Blockfrost → status=self_minted. (3) Wallet connection: React CIP-30 → POST /api/user-wallet → wallet-verify.mjs → save to user_wallets. (4) Auth: Inertia form → AuthController → Auth::attempt() → session. All service responses: `['success' => bool, 'message' => string, 'data' => array]`.
 
 ## Overview
 
@@ -851,6 +851,62 @@ Content-Type: application/json
 4. **Graceful ADA rate degradation**: If `ExchangeRateService` throws at page load,
    `ada_available=false` is passed to the view and the ADA button is disabled. The
    frontend polls every 60s and re-enables it if the rate recovers.
+
+## Flow 8: Student CIP-30 Self-Mint (Certificate or Token Reward)
+
+**Trigger**: Student clicks "Mint Certificate" or "Claim Token Reward" on their rewards page after course completion. Browser wallet (CIP-30) signs the transaction.
+
+```
+1. Student opens Rewards/Badges page (React)
+        ↓
+2. React calls POST /classes/{course_id}/attend/{schedule_id}/cip30/build-mint-tx
+   ├─ Validates: student completed course (CourseHistory.completed_at)
+   └─ Calls CertificateService or TokenRewardService to build CBOR TX
+      └─ exec() → web3/run/build-certificate-tx.mjs (or build-token-reward-tx.mjs)
+         Returns: { "cborTx": "84..." }  (unsigned TX)
+        ↓
+3. React receives unsigned CBOR TX
+   └─ Passes to CIP-30 wallet: api.signTx(cborTx, partial=true)
+      Returns: TransactionWitnessSet (not a full Transaction)
+        ↓
+4. React sends signed witness to server:
+   POST /classes/{course_id}/attend/{schedule_id}/cip30/submit-mint-tx
+   { "cborTx": "84...", "witnessSet": "a100..." }
+        ↓
+5. PHP StudentMintController@submitMintTx
+   └─ exec() → web3/run/submit-signed-tx.mjs
+      ├─ Merges witnessSet into the base TX
+      ├─ Submits merged TX to Blockfrost
+      └─ Returns: { "txHash": "abc123..." }
+        ↓
+6. PHP records result:
+   ├─ certificate_status = 'self_minted'
+   └─ token_reward_status = 'minted'
+        ↓
+7. Response to React:
+   { "success": true, "tx_hash": "...", "explorer_url": "..." }
+```
+
+### Code Locations
+
+| Step | File |
+|------|------|
+| Web routes | `routes/web.php:431-432` |
+| Controller (build/submit) | `app/Http/Controllers/Portal/StudentMintController.php` |
+| Certificate service | `app/Services/API/CertificateService.php` |
+| Token reward service | `app/Services/API/TokenRewardService.php` |
+| Build TX script | `web3/run/build-certificate-tx.mjs`, `web3/run/build-token-reward-tx.mjs` |
+| Submit signed TX | `web3/run/submit-signed-tx.mjs` |
+| React wallet connector | `resources/js/components/WalletConnector.jsx` |
+
+### Critical Notes
+
+- `signTx(tx, partial=true)` returns a `TransactionWitnessSet`, NOT a full `Transaction` — merging happens in `submit-signed-tx.mjs`
+- Student must have a CIP-30 wallet connected and on the correct Cardano network (gotcha #21)
+- If student has no CIP-30 wallet, fallback: server-side custodial mint via `POST /self-mint`
+- `self_minted` is a distinct certificate status (vs `airdropped` from teacher-initiated flow)
+
+---
 
 ## Cross-References
 
