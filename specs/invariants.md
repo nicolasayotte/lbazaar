@@ -7,4 +7,4 @@ These truths are inherited by ALL contracts in this tree.
 - Blockchain operations (transaction building, minting, submission) must execute server-side. Browser-side wallet interactions are limited to signing only (CIP-30 `signTx(tx, partial=true)` returns a `TransactionWitnessSet`; merge and submit happen server-side only).
 - Reward delivery failure must never affect a student's completion status.
 - Duplicate reward delivery (airdrop + self-mint, or double airdrop) to the same student for the same class must be prevented at the data layer.
-- No private key material (custodial wallet keys, platform ROOT_KEY, private derivation paths, OWNER_PKH) may be returned in any client-facing HTTP response or written to client-accessible log files.
+- No private key material (custodial wallet keys, platform ROOT_KEY, private derivation paths, OWNER_PKH) may appear in PHP exception stack traces, Node.js script stderr output, Laravel error responses, client-facing HTTP responses, or any audit trail record regardless of HTTP status code. Writing such material to client-accessible log files is prohibited.
