@@ -192,212 +192,177 @@
     {
       "description": "F-05: certificate-metadata.mjs declares required field 'name'",
       "type": "grep_match",
-      "file": "web3/common/certificate-metadata.mjs",
-      "pattern": "name"
+      "check": "name::web3/common/certificate-metadata.mjs"
     },
     {
       "description": "F-05: certificate-metadata.mjs declares required field 'image'",
       "type": "grep_match",
-      "file": "web3/common/certificate-metadata.mjs",
-      "pattern": "image"
+      "check": "image::web3/common/certificate-metadata.mjs"
     },
     {
       "description": "F-05: certificate-metadata.mjs declares required field 'description'",
       "type": "grep_match",
-      "file": "web3/common/certificate-metadata.mjs",
-      "pattern": "description"
+      "check": "description::web3/common/certificate-metadata.mjs"
     },
     {
       "description": "F-05: certificate-metadata.mjs declares required field 'course_id'",
       "type": "grep_match",
-      "file": "web3/common/certificate-metadata.mjs",
-      "pattern": "course_id"
+      "check": "course_id::web3/common/certificate-metadata.mjs"
     },
     {
       "description": "F-05: certificate-metadata.mjs declares required field 'instructor'",
       "type": "grep_match",
-      "file": "web3/common/certificate-metadata.mjs",
-      "pattern": "instructor"
+      "check": "instructor::web3/common/certificate-metadata.mjs"
     },
     {
       "description": "F-05: certificate-metadata.mjs declares required field 'student_name'",
       "type": "grep_match",
-      "file": "web3/common/certificate-metadata.mjs",
-      "pattern": "student_name"
+      "check": "student_name::web3/common/certificate-metadata.mjs"
     },
     {
       "description": "F-05: soul-bound constraint present in minting-policy.mjs",
       "type": "grep_match",
-      "file": "web3/common/minting-policy.mjs",
-      "pattern": "soul.bound|soulbound|non.tradeable|nontradeable|non_fungible"
+      "check": "soul.bound|soulbound|non.tradeable|nontradeable|non_fungible::web3/common/minting-policy.mjs"
     },
     {
       "description": "F-05: soul-bound constraint present in certificate-metadata.mjs",
       "type": "grep_match",
-      "file": "web3/common/certificate-metadata.mjs",
-      "pattern": "soul.bound|soulbound|non.tradeable|nontradeable|non_fungible"
+      "check": "soul.bound|soulbound|non.tradeable|nontradeable|non_fungible::web3/common/certificate-metadata.mjs"
     },
     {
       "description": "F-05/F-06: CertificateService reads enrolled_certificate_enabled snapshot column (not live course config)",
       "type": "grep_match",
-      "file": "app/Services/API/CertificateService.php",
-      "pattern": "enrolled_certificate_enabled"
+      "check": "enrolled_certificate_enabled::app/Services/API/CertificateService.php"
     },
     {
       "description": "F-06: CertificateService reads enrolled_token_reward_amount snapshot column (not live course config)",
       "type": "grep_match",
-      "file": "app/Services/API/CertificateService.php",
-      "pattern": "enrolled_token_reward_amount"
+      "check": "enrolled_token_reward_amount::app/Services/API/CertificateService.php"
     },
     {
       "description": "F-05/F-06: config lock — CertificateService rejects post-enrollment edits",
       "type": "grep_match",
-      "file": "app/Services/API/CertificateService.php",
-      "pattern": "cannot be changed after enrollment|locked|enrollment"
+      "check": "cannot be changed after enrollment|locked|enrollment::app/Services/API/CertificateService.php"
     },
     {
       "description": "F-10: airdrop guard references blocking status values {delivered, self_minted, pending}",
       "type": "grep_match",
-      "file": "app/Services/API/CertificateService.php",
-      "pattern": "delivered|self_minted|pending"
+      "check": "delivered|self_minted|pending::app/Services/API/CertificateService.php"
     },
     {
       "description": "F-10: airdrop guard permits delivery when certificate_status is null or failed",
       "type": "grep_match",
-      "file": "app/Services/API/CertificateService.php",
-      "pattern": "failed|null"
+      "check": "failed|null::app/Services/API/CertificateService.php"
     },
     {
       "description": "F-16: RewardInvalidationService sets certificate_status to revoked",
       "type": "grep_match",
-      "file": "app/Services/API/RewardInvalidationService.php",
-      "pattern": "revoked"
+      "check": "revoked::app/Services/API/RewardInvalidationService.php"
     },
     {
       "description": "F-16: RewardInvalidationService sets token_reward_status to clawback_flagged",
       "type": "grep_match",
-      "file": "app/Services/API/RewardInvalidationService.php",
-      "pattern": "clawback_flagged"
+      "check": "clawback_flagged::app/Services/API/RewardInvalidationService.php"
     },
     {
       "description": "F-16: RewardInvalidationService calls revoke-certificate-tx script for on-chain update",
       "type": "grep_match",
-      "file": "app/Services/API/RewardInvalidationService.php",
-      "pattern": "revoke-certificate-tx"
+      "check": "revoke-certificate-tx::app/Services/API/RewardInvalidationService.php"
     },
     {
       "description": "F-17: RewardsTable renders wallet_type column values",
       "type": "grep_match",
-      "file": "resources/js/pages/Portal/MyPage/Badges/components/RewardsTable.jsx",
-      "pattern": "wallet_type"
+      "check": "wallet_type::resources/js/pages/Portal/MyPage/Badges/components/RewardsTable.jsx"
     },
     {
       "description": "F-17: RewardsTable renders custodial wallet destination label",
       "type": "grep_match",
-      "file": "resources/js/pages/Portal/MyPage/Badges/components/RewardsTable.jsx",
-      "pattern": "custodial"
+      "check": "custodial::resources/js/pages/Portal/MyPage/Badges/components/RewardsTable.jsx"
     },
     {
       "description": "F-17: RewardsTable renders clawback_flagged status value",
       "type": "grep_match",
-      "file": "resources/js/pages/Portal/MyPage/Badges/components/RewardsTable.jsx",
-      "pattern": "clawback_flagged"
+      "check": "clawback_flagged::resources/js/pages/Portal/MyPage/Badges/components/RewardsTable.jsx"
     },
     {
       "description": "F-17: RewardsTable renders revoked status value",
       "type": "grep_match",
-      "file": "resources/js/pages/Portal/MyPage/Badges/components/RewardsTable.jsx",
-      "pattern": "revoked"
+      "check": "revoked::resources/js/pages/Portal/MyPage/Badges/components/RewardsTable.jsx"
     },
     {
       "description": "F-18: StudentMintController references build-student-certificate-tx.mjs",
       "type": "grep_match",
-      "file": "app/Http/Controllers/Portal/StudentMintController.php",
-      "pattern": "build-student-certificate-tx"
+      "check": "build-student-certificate-tx::app/Http/Controllers/Portal/StudentMintController.php"
     },
     {
       "description": "F-18: StudentMintController references build-student-token-tx.mjs",
       "type": "grep_match",
-      "file": "app/Http/Controllers/Portal/StudentMintController.php",
-      "pattern": "build-student-token-tx"
+      "check": "build-student-token-tx::app/Http/Controllers/Portal/StudentMintController.php"
     },
     {
       "description": "F-18: StudentMintController sets certificate_status to self_minted on success",
       "type": "grep_match",
-      "file": "app/Http/Controllers/Portal/StudentMintController.php",
-      "pattern": "self_minted"
+      "check": "self_minted::app/Http/Controllers/Portal/StudentMintController.php"
     },
     {
       "description": "F-18: StudentMintController sets certificate_status to failed on mint failure",
       "type": "grep_match",
-      "file": "app/Http/Controllers/Portal/StudentMintController.php",
-      "pattern": "failed"
+      "check": "failed::app/Http/Controllers/Portal/StudentMintController.php"
     },
     {
       "description": "F-18: No automatic custodial fallback in StudentMintController",
       "type": "grep_absent",
-      "file": "app/Http/Controllers/Portal/StudentMintController.php",
-      "pattern": "custodial.*fallback|fallback.*custodial"
+      "check": "custodial.*fallback|fallback.*custodial::app/Http/Controllers/Portal/StudentMintController.php"
     },
     {
       "description": "F-07: build-certificate-tx.mjs mints both NFT and token in a single transaction (references token mint output)",
       "type": "grep_match",
-      "file": "web3/run/build-certificate-tx.mjs",
-      "pattern": "token|fungible"
+      "check": "token|fungible::web3/run/build-certificate-tx.mjs"
     },
     {
       "description": "F-10: AirdropFeeDialog renders a fee value before confirmation",
       "type": "grep_match",
-      "file": "resources/js/pages/Portal/MyPage/ManageClass/components/AirdropFeeDialog.jsx",
-      "pattern": "fee"
+      "check": "fee::resources/js/pages/Portal/MyPage/ManageClass/components/AirdropFeeDialog.jsx"
     },
     {
       "description": "F-10: AirdropResultsDialog references AirdropFeeDialog for retry flow",
       "type": "grep_match",
-      "file": "resources/js/pages/Portal/MyPage/ManageClass/components/AirdropResultsDialog.jsx",
-      "pattern": "AirdropFeeDialog"
+      "check": "AirdropFeeDialog::resources/js/pages/Portal/MyPage/ManageClass/components/AirdropResultsDialog.jsx"
     },
     {
       "description": "F-19: CourseCompleteConfirmation defines hasEligibilityBadge computed boolean",
       "type": "grep_match",
-      "file": "resources/js/pages/Portal/CourseCompleteConfirmation.jsx",
-      "pattern": "hasEligibilityBadge"
+      "check": "hasEligibilityBadge::resources/js/pages/Portal/CourseCompleteConfirmation.jsx"
     },
     {
       "description": "F-19: CourseCompleteConfirmation uses isAlreadyMinted to determine terminal reward status",
       "type": "grep_match",
-      "file": "resources/js/pages/Portal/CourseCompleteConfirmation.jsx",
-      "pattern": "isAlreadyMinted"
+      "check": "isAlreadyMinted::resources/js/pages/Portal/CourseCompleteConfirmation.jsx"
     },
     {
       "description": "F-19: CourseCompleteConfirmation defines certPending and tokenPending booleans",
       "type": "grep_match",
-      "file": "resources/js/pages/Portal/CourseCompleteConfirmation.jsx",
-      "pattern": "certPending|tokenPending"
+      "check": "certPending|tokenPending::resources/js/pages/Portal/CourseCompleteConfirmation.jsx"
     },
     {
       "description": "F-16: revoke-certificate-tx.mjs calls submit or Blockfrost (on-chain submission present)",
       "type": "grep_match",
-      "file": "web3/run/revoke-certificate-tx.mjs",
-      "pattern": "submit"
+      "check": "submit::web3/run/revoke-certificate-tx.mjs"
     },
     {
       "description": "Security: no private key material in CertificateService HTTP responses",
       "type": "grep_absent",
-      "file": "app/Services/API/CertificateService.php",
-      "pattern": "ROOT_KEY|OWNER_PKH|private_key|privateKey"
+      "check": "ROOT_KEY|OWNER_PKH|private_key|privateKey::app/Services/API/CertificateService.php"
     },
     {
       "description": "Security: no private key material in StudentMintController HTTP responses",
       "type": "grep_absent",
-      "file": "app/Http/Controllers/Portal/StudentMintController.php",
-      "pattern": "ROOT_KEY|OWNER_PKH|private_key|privateKey"
+      "check": "ROOT_KEY|OWNER_PKH|private_key|privateKey::app/Http/Controllers/Portal/StudentMintController.php"
     },
     {
       "description": "Security: no private key material in RewardInvalidationService HTTP responses",
       "type": "grep_absent",
-      "file": "app/Services/API/RewardInvalidationService.php",
-      "pattern": "ROOT_KEY|OWNER_PKH|private_key|privateKey"
+      "check": "ROOT_KEY|OWNER_PKH|private_key|privateKey::app/Services/API/RewardInvalidationService.php"
     }
   ]
 }

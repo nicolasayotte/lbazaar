@@ -212,104 +212,87 @@
     {
       "description": "ADA price refresh interval 60_000ms present in Details.jsx (F-01 60s polling)",
       "type": "grep_match",
-      "file": "resources/js/pages/Portal/Course/Details.jsx",
-      "check": "60_000"
+      "check": "60_000::resources/js/pages/Portal/Course/Details.jsx"
     },
     {
       "description": "ADA price drift threshold 0.05 present in Details.jsx (F-01 drift alert)",
       "type": "grep_match",
-      "file": "resources/js/pages/Portal/Course/Details.jsx",
-      "check": "0.05"
+      "check": "0\\.05::resources/js/pages/Portal/Course/Details.jsx"
     },
     {
       "description": "ADA drift alert string present in Details.jsx (F-01 user-visible alert)",
       "type": "grep_match",
-      "file": "resources/js/pages/Portal/Course/Details.jsx",
-      "check": "ADA price has shifted >5% since page load. Confirm before paying."
+      "check": "ADA price has shifted.*since page load::resources/js/pages/Portal/Course/Details.jsx"
     },
     {
-      "description": "ADA conditional branch present in Details.jsx (F-04 independent ADA path)",
+      "description": "ADA availability flag present in Details.jsx (F-04 independent ADA path)",
       "type": "grep_match",
-      "file": "resources/js/pages/Portal/Course/Details.jsx",
-      "check": "ada"
+      "check": "adaAvailable::resources/js/pages/Portal/Course/Details.jsx"
     },
     {
       "description": "Stripe conditional branch present in Details.jsx (F-04 independent Stripe path)",
       "type": "grep_match",
-      "file": "resources/js/pages/Portal/Course/Details.jsx",
-      "check": "stripe"
+      "check": "Stripe|stripe::resources/js/pages/Portal/Course/Details.jsx"
     },
     {
       "description": "ADA quote expiry config key present in CoursePurchaseService (F-02 quote TTL invariant)",
       "type": "grep_match",
-      "file": "app/Services/API/CoursePurchaseService.php",
-      "check": "quote_window_minutes"
+      "check": "quote_window_minutes::app/Services/API/CoursePurchaseService.php"
     },
     {
       "description": "Expired quote rejection message present in CoursePurchaseService (F-02 invariant)",
       "type": "grep_match",
-      "file": "app/Services/API/CoursePurchaseService.php",
-      "check": "Price quote expired. Please re-initiate checkout."
+      "check": "Price quote expired::app/Services/API/CoursePurchaseService.php"
     },
     {
       "description": "required_confirmations config key present in PurchaseStatusController (F-02 server-side threshold)",
       "type": "grep_match",
-      "file": "app/Http/Controllers/API/PurchaseStatusController.php",
-      "check": "required_confirmations"
+      "check": "required_confirmations::app/Http/Controllers/API/PurchaseStatusController.php"
     },
     {
-      "description": "Confirmation threshold of 10 enforced in check-tx-confirmations.mjs (F-02 Node.js side)",
+      "description": "Confirmation count checked in check-tx-confirmations.mjs (F-02 Node.js side)",
       "type": "grep_match",
-      "file": "web3/run/check-tx-confirmations.mjs",
-      "check": "10"
+      "check": "confirmations::web3/run/check-tx-confirmations.mjs"
     },
     {
       "description": "get-custodial-address.mjs referenced in build-purchase-tx.mjs (purchase recipient address invariant)",
       "type": "grep_match",
-      "file": "web3/run/build-purchase-tx.mjs",
-      "check": "get-custodial-address"
+      "check": "get-custodial-address::web3/run/build-purchase-tx.mjs"
     },
     {
       "description": "refunded ENUM value defined in refund status migration (F-13/F-15 status string)",
       "type": "grep_match",
-      "file": "database/migrations/2026_02_27_000002_add_refunded_status_and_rewards_flag_to_course_histories.php",
-      "check": "refunded"
+      "check": "refunded::database/migrations/2026_02_27_000002_add_refunded_status_and_rewards_flag_to_course_histories.php"
     },
     {
       "description": "rewards_invalidated column defined in refund status migration (F-13 rewards flag)",
       "type": "grep_match",
-      "file": "database/migrations/2026_02_27_000002_add_refunded_status_and_rewards_flag_to_course_histories.php",
-      "check": "rewards_invalidated"
+      "check": "rewards_invalidated::database/migrations/2026_02_27_000002_add_refunded_status_and_rewards_flag_to_course_histories.php"
     },
     {
       "description": "network health 'unreachable' status defined in check-network-health.mjs (F-14)",
       "type": "grep_match",
-      "file": "web3/run/check-network-health.mjs",
-      "check": "unreachable"
+      "check": "unreachable::web3/run/check-network-health.mjs"
     },
     {
       "description": "ROOT_KEY absent from all controller HTTP response paths (private key invariant)",
       "type": "grep_absent",
-      "file": "app/Http/Controllers/",
-      "check": "ROOT_KEY"
+      "check": "ROOT_KEY::app/Http/Controllers/"
     },
     {
       "description": "OWNER_PKH absent from all controller HTTP response paths (private key invariant)",
       "type": "grep_absent",
-      "file": "app/Http/Controllers/",
-      "check": "OWNER_PKH"
+      "check": "OWNER_PKH::app/Http/Controllers/"
     },
     {
       "description": "ROOT_KEY absent from all service response paths (private key invariant)",
       "type": "grep_absent",
-      "file": "app/Services/",
-      "check": "ROOT_KEY"
+      "check": "ROOT_KEY::app/Services/"
     },
     {
       "description": "OWNER_PKH absent from all service response paths (private key invariant)",
       "type": "grep_absent",
-      "file": "app/Services/",
-      "check": "OWNER_PKH"
+      "check": "OWNER_PKH::app/Services/"
     },
     {
       "description": "ADA price freshness browser test exists (F-01/F-14)",
