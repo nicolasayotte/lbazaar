@@ -12,6 +12,7 @@ use App\Services\API\TokenRewardService;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\JsonResponse;
 
 class TokenRewardController extends Controller
 {
@@ -26,9 +27,22 @@ class TokenRewardController extends Controller
     /**
      * Update the token reward configuration for a course.
      * PUT /api/courses/{course}/token-reward
+     *
+     * F-06: Reject config changes if any student is already enrolled.
      */
-    public function updateConfig(UpdateTokenRewardRequest $request, Course $course): \Illuminate\Http\JsonResponse
+    public function updateConfig(UpdateTokenRewardRequest $request, Course $course): JsonResponse
     {
+        // F-06 enrollment config lock: reject if students are enrolled
+        if (CourseHistory::where('course_id', $course->id)->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors'  => [
+                    'token_reward_enabled' => 'Reward configuration cannot be changed after enrollment.',
+                ],
+            ], 422);
+        }
+
         $result = $this->tokenRewardService->updateTokenRewardConfig(
             $course,
             (bool) $request->input('token_reward_enabled'),
