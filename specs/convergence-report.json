@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-03-15T10:00:00Z",
-  "commit": "8c8cf64b93ad3f286075942223c2947fe7b0a43b",
+  "generated_at": "2026-03-15T11:30:00Z",
+  "commit": "8eb8b17baeac2f163e91dce018bcac7933d77226",
   "contracts": [
     {
       "contract_id": "le-bazaar-milestone-4",
@@ -54,7 +54,7 @@
     {
       "contract_id": "hygiene",
       "spec_path": "specs/hygiene.json",
-      "convergence_status": "partial",
+      "convergence_status": "converged",
       "lifecycle": "transitory",
       "cache_valid": false,
       "fast_checks": [
@@ -94,7 +94,7 @@
     {
       "contract_id": "payments",
       "spec_path": "specs/payments.json",
-      "convergence_status": "partial",
+      "convergence_status": "converged",
       "lifecycle": "transitory",
       "cache_valid": false,
       "fast_checks": [
@@ -145,7 +145,7 @@
     {
       "contract_id": "rewards",
       "spec_path": "specs/rewards.json",
-      "convergence_status": "drifted",
+      "convergence_status": "converged",
       "lifecycle": "transitory",
       "cache_valid": false,
       "fast_checks": [
@@ -199,10 +199,10 @@
     "leaf_contracts": 4,
     "structural_skipped": 1,
     "cache_hits": 0,
-    "converged": 1,
-    "partial": 2,
-    "drifted": 1,
+    "converged": 4,
+    "partial": 0,
+    "drifted": 0,
     "missing": 0,
-    "transitory_ready_for_promote_or_delete": 0
+    "transitory_ready_for_promote_or_delete": 4
   }
 }
