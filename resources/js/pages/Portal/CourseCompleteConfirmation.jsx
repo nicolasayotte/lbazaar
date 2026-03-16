@@ -405,6 +405,11 @@ const CourseCompleteConfirmation = () => {
 
     const hasAnyReward = rewardsCert || rewardsToken
 
+    // F-19: compute whether any reward is still pending delivery (eligible/pending/minting)
+    const certPending   = rewardsCert  && !isAlreadyMinted(certStatusFromServer)  && certMintState  !== 'minted'
+    const tokenPending  = rewardsToken && !isAlreadyMinted(tokenStatusFromServer) && tokenMintState !== 'minted'
+    const hasEligibilityBadge = !!(certPending || tokenPending)
+
     return (
         <Box sx={{ minHeight: '80.75vh' }}>
             <Container>
@@ -453,11 +458,22 @@ const CourseCompleteConfirmation = () => {
 
                                 {/* Rewards section — certificate + token self-mint */}
                                 {hasAnyReward && (
-                                    <Box mt={3} p={2} sx={{ border: 1, borderColor: 'divider', borderRadius: 1 }}>
+                                    <Box mt={3} p={2} sx={{ border: 1, borderColor: hasEligibilityBadge ? 'warning.main' : 'divider', borderRadius: 1 }}>
                                         <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} mb={1} spacing={1}>
-                                            <Typography variant="h6">
-                                                {translatables.texts?.rewards_available ?? 'Rewards Available'}
-                                            </Typography>
+                                            <Stack direction="row" alignItems="center" spacing={1}>
+                                                <Typography variant="h6">
+                                                    {translatables.texts?.rewards_available ?? 'Rewards Available'}
+                                                </Typography>
+                                                {/* F-19: eligibility badge — visible when rewards are pending; hidden once all delivered */}
+                                                {hasEligibilityBadge && (
+                                                    <Chip
+                                                        label={translatables.texts?.rewards_eligible_badge ?? 'Rewards Ready'}
+                                                        color="warning"
+                                                        size="small"
+                                                        sx={{ fontWeight: 'bold' }}
+                                                    />
+                                                )}
+                                            </Stack>
                                             <WalletConnector
                                                 onStakeKeyHash={setWalletStakeKeyDisplay}
                                                 walletAPI={walletAPI}

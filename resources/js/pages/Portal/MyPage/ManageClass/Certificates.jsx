@@ -5,10 +5,6 @@ import {
     Box,
     Button,
     CircularProgress,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
     Grid,
     Stack,
     Tooltip,
@@ -18,6 +14,7 @@ import { useState } from 'react'
 import axios from 'axios'
 import CertificateTable from './components/CertificateTable'
 import AirdropResultsDialog from './components/AirdropResultsDialog'
+import AirdropFeeDialog from './components/AirdropFeeDialog'
 
 const Certificates = () => {
     const {
@@ -36,8 +33,10 @@ const Certificates = () => {
     // Airdrop process state
     const [airdropping, setAirdropping] = useState(false)
 
-    // Confirm dialog state
-    const [confirmOpen, setConfirmOpen] = useState(false)
+    // Fee estimate dialog state
+    const [feeDialogOpen, setFeeDialogOpen] = useState(false)
+    const [feeLoading, setFeeLoading] = useState(false)
+    const [feeData, setFeeData] = useState(null)
 
     // Results dialog state
     const [resultsDialogOpen, setResultsDialogOpen] = useState(false)
@@ -66,13 +65,34 @@ const Certificates = () => {
         )
     }
 
-    const handleAirdropClick = () => {
+    const handleAirdropClick = async () => {
         if (selectedStudentIds.length === 0) return
-        setConfirmOpen(true)
+        setFeeData(null)
+        setFeeDialogOpen(true)
+        setFeeLoading(true)
+        try {
+            const response = await axios.post(
+                `/api/certificates/courses/${course.id}/estimate-fee`,
+                { student_ids: selectedStudentIds, wallet_balance_lovelace: 0 }
+            )
+            const data = response.data?.data ?? response.data
+            setFeeData(data)
+        } catch (err) {
+            console.error('Fee estimate failed:', err)
+            // Show dialog with null feeData — Confirm button is disabled until data loads
+        } finally {
+            setFeeLoading(false)
+        }
+    }
+
+    const handleFeeDialogClose = () => {
+        setFeeDialogOpen(false)
+        setFeeData(null)
     }
 
     const handleConfirmAirdrop = async () => {
-        setConfirmOpen(false)
+        setFeeDialogOpen(false)
+        setFeeData(null)
         setAirdropping(true)
 
         try {
@@ -115,7 +135,20 @@ const Certificates = () => {
     const handleRetryFailed = (failedIds) => {
         setResultsDialogOpen(false)
         setSelectedStudentIds(failedIds)
-        setConfirmOpen(true)
+        // Re-open the fee dialog so the teacher sees the estimate before retrying
+        setFeeData(null)
+        setFeeDialogOpen(true)
+        setFeeLoading(true)
+        axios.post(
+            `/api/certificates/courses/${course.id}/estimate-fee`,
+            { student_ids: failedIds, wallet_balance_lovelace: 0 }
+        ).then((response) => {
+            setFeeData(response.data?.data ?? response.data)
+        }).catch((err) => {
+            console.error('Fee estimate failed on retry:', err)
+        }).finally(() => {
+            setFeeLoading(false)
+        })
     }
 
     const noSelection = selectedStudentIds.length === 0
@@ -221,27 +254,16 @@ const Certificates = () => {
                 </Box>
             )}
 
-            {/* Confirm dialog */}
-            <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)} maxWidth="sm" fullWidth>
-                <DialogTitle>
-                    {translatables?.texts?.confirm_airdrop_title ?? 'Confirm Airdrop'}
-                </DialogTitle>
-                <DialogContent>
-                    <Typography>
-                        {(translatables?.texts?.confirm_airdrop_body ??
-                            'Mint and airdrop certificates to {count} selected student(s)?')
-                            .replace('{count}', selectedStudentIds.length)}
-                    </Typography>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setConfirmOpen(false)}>
-                        {translatables?.texts?.cancel ?? 'Cancel'}
-                    </Button>
-                    <Button variant="contained" color="success" onClick={handleConfirmAirdrop}>
-                        {translatables?.texts?.confirm ?? 'Confirm'}
-                    </Button>
-                </DialogActions>
-            </Dialog>
+            {/* Fee estimate + confirm dialog */}
+            <AirdropFeeDialog
+                open={feeDialogOpen}
+                loading={feeLoading}
+                feeData={feeData}
+                totalEligibleCount={eligibleStudents.length}
+                onConfirm={handleConfirmAirdrop}
+                onClose={handleFeeDialogClose}
+                translatables={translatables}
+            />
 
             {/* Results dialog */}
             <AirdropResultsDialog
