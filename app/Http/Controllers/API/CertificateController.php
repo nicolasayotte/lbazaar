@@ -145,11 +145,14 @@ class CertificateController extends Controller
                         $scheduleId
                     );
 
-                    // Optionally mint token reward when enabled
+                    // F-07: Token reward is now included in the combined certificate tx when both are enabled.
+                    // Only mint token separately if certificate tx did not already include it.
                     $tokenSuccess = null;
                     $tokenReason  = null;
 
-                    if ($this->tokenRewardService && !empty($course->token_reward_enabled)) {
+                    $tokenAlreadyIncluded = $result['token_included'] ?? false;
+
+                    if ($this->tokenRewardService && !empty($course->token_reward_enabled) && !$tokenAlreadyIncluded) {
                         try {
                             $tokenResult  = $this->tokenRewardService->mintAndAirdropTokenReward($course, $student);
                             $tokenSuccess = $tokenResult['success'];
@@ -158,6 +161,9 @@ class CertificateController extends Controller
                             $tokenSuccess = false;
                             $tokenReason  = 'Token reward failed: ' . $e->getMessage();
                         }
+                    } elseif ($tokenAlreadyIncluded) {
+                        $tokenSuccess = true;
+                        $tokenReason  = 'Token reward included in certificate transaction.';
                     }
 
                     $studentSuccess = $result['success'];

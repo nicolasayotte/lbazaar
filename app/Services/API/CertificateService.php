@@ -9,6 +9,7 @@ use App\Models\UserExam;
 use App\Models\UserWallet;
 use App\Models\Nft;
 use App\Models\NftTransactions;
+use App\Services\API\TokenRewardService;
 use App\Traits\Web3CommandTrait;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -39,6 +40,10 @@ class CertificateService
             $errors['certificate_name'] = 'Certificate name is required when certificate reward is enabled.';
         }
 
+        if (empty($course->certificate_description)) {
+            $errors['certificate_description'] = 'Certificate description is required when certificate reward is enabled.';
+        }
+
         // certificate_image_url is required at mint time
         $certificateNft = Nft::where('name', 'Certificate')->first();
         $hasDefaultImage = $certificateNft && !empty($certificateNft->image_url);
@@ -66,7 +71,7 @@ class CertificateService
 
                 $row = $query->lockForUpdate()->first();
 
-                if ($row && in_array($row->certificate_status, ['minted', 'self_minted', 'minting'], true)) {
+                if ($row && in_array($row->certificate_status, ['minted', 'self_minted', 'minting', 'pending', 'revoked'], true)) {
                     return ['claimed' => true, 'prior_status' => $row->certificate_status];
                 }
 
@@ -98,8 +103,24 @@ class CertificateService
             // Create certificate metadata
             $certificateData = $this->createCertificateMetadata($course, $student, $certNameOverride, $certDescriptionOverride);
 
-            // Mint the certificate NFT
-            $mintResult = $this->mintCertificateNFT($certificateData, $walletAddress, $certImageUrlOverride);
+            // F-07: If token reward is also enabled, resolve token args to mint both in one tx.
+            // Use enrollment-time snapshot when history record is available.
+            $tokenName     = null;
+            $tokenQuantity = null;
+            $effectiveTokenEnabled = $history !== null
+                ? $history->effectiveTokenRewardEnabled()
+                : !empty($course->token_reward_enabled);
+            $effectiveTokenAmount = $history !== null
+                ? $history->effectiveTokenRewardAmount()
+                : ($course->token_reward_amount ?? null);
+            $tokenEnabled  = $effectiveTokenEnabled && !empty($effectiveTokenAmount);
+            if ($tokenEnabled) {
+                $tokenName     = 'Token-' . $course->id;
+                $tokenQuantity = (int) $effectiveTokenAmount;
+            }
+
+            // Mint the certificate NFT (and optionally token reward in same tx via F-07)
+            $mintResult = $this->mintCertificateNFT($certificateData, $walletAddress, $certImageUrlOverride, $tokenName, $tokenQuantity);
 
             if (!$mintResult['success']) {
                 // Roll back the 'minting' sentinel so the row is available for retry.
@@ -129,15 +150,37 @@ class CertificateService
                 $mintResult['transaction_id']
             );
 
+            // F-07: If token reward was included in this transaction, update its status too.
+            if ($tokenEnabled && ($mintResult['token_included'] ?? false)) {
+                try {
+                    /** @var TokenRewardService $tokenRewardService */
+                    $tokenRewardService = app(TokenRewardService::class);
+                    $tokenRewardService->updateTokenRewardStatus(
+                        $course->id,
+                        $student->id,
+                        'minted',
+                        $scheduleId,
+                        $mintResult['transaction_id']
+                    );
+                } catch (Exception $tokenEx) {
+                    Log::error('CertificateService: failed to update token reward status after combined mint', [
+                        'course_id'  => $course->id,
+                        'student_id' => $student->id,
+                        'error'      => $tokenEx->getMessage(),
+                    ]);
+                }
+            }
+
             // Send notification email (optional)
             $this->sendCertificateNotification($student, $course, $mintResult);
 
             return [
-                'success' => true,
-                'message' => 'Certificate minted and airdropped successfully',
+                'success'        => true,
+                'message'        => 'Certificate minted and airdropped successfully',
                 'transaction_id' => $mintResult['transaction_id'],
                 'wallet_address' => $walletAddress,
-                'nft_metadata' => $certificateData
+                'nft_metadata'   => $certificateData,
+                'token_included' => $tokenEnabled && ($mintResult['token_included'] ?? false),
             ];
 
         } catch (Exception $e) {
@@ -224,9 +267,11 @@ class CertificateService
      * @param array $certificateData
      * @param string $walletAddress
      * @param string|null $imageUrlOverride  Override image URL from enrollment-time snapshot.
+     * @param string|null $tokenName         Optional: fungible token name to mint in same tx (F-07).
+     * @param int|null $tokenQuantity        Optional: quantity of fungible tokens to mint (F-07).
      * @return array
      */
-    protected function mintCertificateNFT($certificateData, $walletAddress, ?string $imageUrlOverride = null)
+    protected function mintCertificateNFT($certificateData, $walletAddress, ?string $imageUrlOverride = null, ?string $tokenName = null, ?int $tokenQuantity = null)
     {
         try {
             $metadataJson = json_encode($certificateData);
@@ -242,13 +287,22 @@ class CertificateService
             $certificateNft = Nft::where('name', 'Certificate')->first();
             $imageUrl = $imageUrlOverride ?? ($certificateNft?->image_url ?? '');
 
-            $buildCommand = $this->buildWeb3Command('run/build-certificate-tx.mjs', [
+            // F-07: Build args — append optional token reward args when provided
+            $buildArgs = [
                 $walletAddress,
                 $nftName,
                 $serialNum,
                 $imageUrl,
-                $metadataJson
-            ]);
+                $metadataJson,
+            ];
+
+            $includeToken = $tokenName !== null && $tokenQuantity !== null && $tokenQuantity > 0;
+            if ($includeToken) {
+                $buildArgs[] = $tokenName;
+                $buildArgs[] = (string) $tokenQuantity;
+            }
+
+            $buildCommand = $this->buildWeb3Command('run/build-certificate-tx.mjs', $buildArgs);
 
             $response = $this->runCommand($buildCommand);
             $responseJSON = json_decode($response, true);
@@ -272,11 +326,14 @@ class CertificateService
 
                 if (is_array($submitResponseJSON) && ($submitResponseJSON['status'] ?? null) === 200) {
                     return [
-                        'success' => true,
+                        'success'        => true,
                         'transaction_id' => $submitResponseJSON['txId'],
-                        'nft_name' => $nftName,
-                        'serial_number' => $serialNum,
-                        'mph' => $responseJSON['mph'] ?? ''
+                        'nft_name'       => $nftName,
+                        'serial_number'  => $serialNum,
+                        'mph'            => $responseJSON['mph'] ?? '',
+                        'token_included' => $includeToken,
+                        'token_name'     => $includeToken ? $tokenName : null,
+                        'token_quantity' => $includeToken ? $tokenQuantity : null,
                     ];
                 }
 
@@ -1037,6 +1094,7 @@ class CertificateService
                         'delivery_date'      => $history->certificate_minted_at?->toISOString(),
                         'delivery_status'    => $certStatus,
                         'wallet_destination' => $walletDestination,
+                        'wallet_type'        => $walletDestination,
                         'tx_hash'            => $certTxHash,
                         'explorer_url'       => $explorerUrl,
                         'nft_metadata'       => $nftMetadata,
@@ -1066,6 +1124,7 @@ class CertificateService
                         'delivery_date'      => $history->token_reward_minted_at?->toISOString(),
                         'delivery_status'    => $tokenStatus,
                         'wallet_destination' => $walletDestination,
+                        'wallet_type'        => $walletDestination,
                         'tx_hash'            => $tokenTxHash,
                         'explorer_url'       => $tokenExplorerUrl,
                         'nft_metadata'       => null,
@@ -1141,11 +1200,12 @@ class CertificateService
         $status = $history->token_reward_status ?? 'eligible';
 
         return match ($status) {
-            'minted', 'self_minted' => 'minted',
-            'minting' => 'minting',
-            'pending' => 'pending',
-            'failed'  => 'failed',
-            default   => 'eligible',
+            'minted', 'self_minted'  => 'minted',
+            'minting'                => 'minting',
+            'pending'                => 'pending',
+            'failed'                 => 'failed',
+            'clawback_flagged'       => 'clawback_flagged',
+            default                  => 'eligible',
         };
     }
 

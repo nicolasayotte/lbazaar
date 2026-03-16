@@ -22,9 +22,14 @@ const network = process.env.NETWORK || 'preprod';
 const optimize = false;
 
 /**
- * Main function to build certificate minting transaction
- * Usage: node build-certificate-tx.mjs recipientAddress nftName serialNum imageUrl metadata
- * @params {string, string, string, string, string}
+ * Main function to build certificate minting transaction.
+ * Optionally includes a fungible token reward in the same transaction (F-07).
+ *
+ * Usage: node build-certificate-tx.mjs recipientAddress nftName serialNum imageUrl metadata [tokenName tokenQuantity]
+ *
+ * When tokenName and tokenQuantity are provided, the fungible token reward is
+ * minted and sent to the same recipient in the same on-chain transaction.
+ *
  * @output {string} JSON response with transaction details
  */
 const main = async () => {
@@ -35,6 +40,9 @@ const main = async () => {
     const serialNum = args[4];
     const imageUrl = args[5];
     const metadataJson = args[6];
+    // Optional token reward args (F-07)
+    const tokenName     = args[7] || null;
+    const tokenQuantity = args[8] ? BigInt(args[8]) : null;
 
     const ownerPkh = process.env.OWNER_PKH;
     const lockDate = process.env.CERTIFICATE_LOCK_DATE;
@@ -48,6 +56,8 @@ const main = async () => {
     if (!lockDate) {
       throw new Error('CERTIFICATE_LOCK_DATE env var required');
     }
+
+    const includeToken = tokenName !== null && tokenQuantity !== null && tokenQuantity > 0n;
 
     // Parse metadata
     const metadata = JSON.parse(metadataJson);
@@ -90,7 +100,9 @@ const main = async () => {
 
     const utxoCborHexes = await fetchUtxos(ownerWalletAddr);
     const walletUtxos = utxoCborHexes.map((u) => TxInput.fromFullCbor(hexToBytes(u)));
-    const minUTXOVal = new Value(minAda + maxTxFee + minChangeAmt);
+    // When also sending token reward, budget for the extra output's min ADA
+    const extraOutputs = includeToken ? 1n : 0n;
+    const minUTXOVal = new Value(minAda * (2n + extraOutputs) + maxTxFee + minChangeAmt);
     const utxos = CoinSelection.selectLargestFirst(walletUtxos, minUTXOVal);
 
     if (utxos.length === 0) {
@@ -109,13 +121,17 @@ const main = async () => {
     // Create the certificate mint redeemer
     const nftRedeemer = new nftMintingProgram.types.Redeemer.Mint()._toUplcData();
 
-    // Create the certificate tokens
+    // Build token list: certificate tokens + optional fungible token reward
     const nftTokens = [
       [textToBytes(certificateTokenNameRef), BigInt(1)],
       [textToBytes(certificateTokenName), BigInt(1)],
     ];
 
-    // Add the mint to the tx
+    if (includeToken) {
+      nftTokens.push([textToBytes(tokenName), tokenQuantity]);
+    }
+
+    // Add the mint to the tx (single mintTokens call with all tokens under same policy)
     tx.mintTokens(nftTokenMPH, nftTokens, nftRedeemer);
 
     // Send the certificate NFT to the recipient
@@ -133,6 +149,17 @@ const main = async () => {
         new Value(minAda, new Assets([[nftTokenMPH, new Map([[textToBytes(certificateTokenNameRef), BigInt(1)]])]]))
       ),
     );
+
+    // F-07: If token reward is included, send it to the same recipient in this transaction
+    if (includeToken) {
+      const tokenBytes = textToBytes(tokenName);
+      tx.addOutput(
+        new TxOutput(
+          recipientAddr,
+          new Value(minAda, new Assets([[nftTokenMPH, new Map([[tokenBytes, tokenQuantity]])]]))
+        ),
+      );
+    }
 
     // Set validity interval
     tx.validFrom(before);
@@ -166,7 +193,10 @@ const main = async () => {
       serialNum: serialNum,
       mph: nftTokenMPH.hex,
       recipientAddress: recipientAddress,
-      metadata: metadata
+      metadata: metadata,
+      tokenIncluded: includeToken,
+      tokenName: includeToken ? tokenName : null,
+      tokenQuantity: includeToken ? tokenQuantity.toString() : null,
     };
 
     console.error('build-certificate-tx: success');
