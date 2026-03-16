@@ -44,7 +44,7 @@ class RewardInvalidationService
         $certStatus        = $history->certificate_status;
         $tokenStatus       = $history->token_reward_status;
 
-        $certDelivered  = in_array($certStatus, ['minted'], true);
+        $certDelivered  = in_array($certStatus, ['minted', 'self_minted'], true);
         $tokenDelivered = in_array($tokenStatus, ['minted', 'minting'], true);
 
         // F-16.4: no rewards delivered = nothing to do

@@ -101,6 +101,18 @@ class CertificateController extends Controller
                 ], 403);
             }
 
+            // F-05: Validate certificate metadata completeness before minting
+            if (!empty($course->certificate_enabled)) {
+                $configErrors = $this->certificateService->validateCertificateConfig($course);
+                if ($configErrors !== null) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Certificate configuration is incomplete.',
+                        'errors'  => $configErrors,
+                    ], 422);
+                }
+            }
+
             // Get eligible students who completed the course successfully
             $eligibleStudents = $this->getEligibleStudentsForMinting($courseId, $scheduleId);
 

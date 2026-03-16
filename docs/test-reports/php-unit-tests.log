@@ -1,3 +1,10 @@
+Certificate Service Notification (Tests\Unit\Services\API\CertificateServiceNotification)
+ [x] Dispatches notification when certificate enabled
+ [x] Dispatches notification when token enabled
+ [x] Dispatches notification when both enabled
+ [x] Does not dispatch when no rewards
+ [x] Idempotent no duplicate when already notified
+
 Certificate Service (Tests\Unit\Services\API\CertificateService)
  [x] Mint and airdrop certificate with linked wallet
  [x] Mint and airdrop certificate with custodial wallet

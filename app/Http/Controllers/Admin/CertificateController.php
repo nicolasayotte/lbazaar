@@ -9,6 +9,7 @@ use App\Http\Requests\AdminGetCertificateStatusRequest;
 use App\Http\Requests\AdminGetEligibleStudentsRequest;
 use App\Http\Requests\AdminMintSingleCertificateRequest;
 use App\Models\Course;
+use App\Models\CourseHistory;
 use App\Models\User;
 use App\Services\API\CertificateService;
 use App\Services\API\TokenRewardService;
@@ -183,6 +184,35 @@ class CertificateController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to retrieve certificate status: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Revoke a self-minted certificate for a given course history.
+     *
+     * Gap 4b workaround: RewardInvalidationService only covers 'minted' status;
+     * this endpoint handles 'self_minted' revocation so admins can manually trigger
+     * revocation when a refund involves a self-minted certificate.
+     *
+     * Route: POST /admin/certificates/course-histories/{courseHistory}/revoke-self-minted
+     */
+    public function revokeSelfMintedCertificate(CourseHistory $courseHistory): \Illuminate\Http\JsonResponse
+    {
+        try {
+            $result = $this->certificateService->revokeSelfMintedCertificate($courseHistory->id);
+
+            return response()->json($result, $result['success'] ? 200 : 400);
+
+        } catch (Exception $e) {
+            Log::error('Admin: failed to revoke self-minted certificate', [
+                'course_history_id' => $courseHistory->id,
+                'error'             => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to revoke self-minted certificate: ' . $e->getMessage(),
             ], 500);
         }
     }

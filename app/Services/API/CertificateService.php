@@ -21,17 +21,72 @@ class CertificateService
     private const DEFAULT_ADMIN_USER_ID = 1;
 
     /**
-     * Mint and airdrop certificate NFT to a student
+     * Validate that the course has complete NFT certificate metadata before minting.
+     * Satisfies F-05: incomplete metadata must be rejected with field-level detail.
      *
      * @param Course $course
-     * @param User $student
-     * @param int|null $scheduleId
-     * @param CourseHistory|null $history  When provided, enrollment-time snapshot values override course defaults.
-     * @return array
+     * @return array|null  null when valid; associative array of field => message when invalid.
      */
+    public function validateCertificateConfig(Course $course): ?array
+    {
+        if (empty($course->certificate_enabled)) {
+            return ['certificate_enabled' => 'Certificate reward is not enabled for this course.'];
+        }
+
+        $errors = [];
+
+        if (empty($course->certificate_name)) {
+            $errors['certificate_name'] = 'Certificate name is required when certificate reward is enabled.';
+        }
+
+        // certificate_image_url is required at mint time
+        $certificateNft = Nft::where('name', 'Certificate')->first();
+        $hasDefaultImage = $certificateNft && !empty($certificateNft->image_url);
+
+        if (empty($course->certificate_image_url) && !$hasDefaultImage) {
+            $errors['certificate_image_url'] = 'Certificate image URL is required when certificate reward is enabled and no platform default image is configured.';
+        }
+
+        return empty($errors) ? null : $errors;
+    }
+
     public function mintAndAirdropCertificate(Course $course, User $student, $scheduleId = null, ?CourseHistory $history = null)
     {
         try {
+            // Duplicate-delivery guard: lock the course history row inside a transaction
+            // to prevent concurrent airdrop calls both passing the eligibility check.
+            // Returns ['claimed' => bool, 'prior_status' => string|null].
+            $guardResult = DB::transaction(function () use ($course, $student, $scheduleId) {
+                $query = CourseHistory::where('course_id', $course->id)
+                    ->where('user_id', $student->id);
+
+                if ($scheduleId !== null) {
+                    $query->where('course_schedule_id', $scheduleId);
+                }
+
+                $row = $query->lockForUpdate()->first();
+
+                if ($row && in_array($row->certificate_status, ['minted', 'self_minted', 'minting'], true)) {
+                    return ['claimed' => true, 'prior_status' => $row->certificate_status];
+                }
+
+                // Claim the slot under lock before the transaction releases,
+                // so a concurrent caller sees 'minting' and treats it as taken.
+                $priorStatus = $row ? $row->certificate_status : null;
+                if ($row) {
+                    $row->update(['certificate_status' => 'minting']);
+                }
+
+                return ['claimed' => false, 'prior_status' => $priorStatus];
+            });
+
+            if ($guardResult['claimed']) {
+                return [
+                    'success' => false,
+                    'message' => 'Certificate already minted for this student.',
+                ];
+            }
+
             // Determine wallet address for airdrop
             $walletAddress = $this->getStudentWalletAddress($student);
 
@@ -45,8 +100,16 @@ class CertificateService
 
             // Mint the certificate NFT
             $mintResult = $this->mintCertificateNFT($certificateData, $walletAddress, $certImageUrlOverride);
-            
+
             if (!$mintResult['success']) {
+                // Roll back the 'minting' sentinel so the row is available for retry.
+                $rollbackQuery = CourseHistory::where('course_id', $course->id)
+                    ->where('user_id', $student->id);
+                if ($scheduleId !== null) {
+                    $rollbackQuery->where('course_schedule_id', $scheduleId);
+                }
+                $rollbackQuery->update(['certificate_status' => $guardResult['prior_status']]);
+
                 return [
                     'success' => false,
                     'message' => 'Failed to mint certificate NFT: ' . $mintResult['message'],
@@ -709,6 +772,200 @@ class CertificateService
             return [
                 'success' => false,
                 'message' => 'Failed to retrieve certificate status: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Perform on-chain metadata revocation for a minted or self-minted certificate.
+     *
+     * Calls `web3/run/revoke-certificate-tx.mjs` which:
+     *   1. Loads the nft-minting-policy with OWNER_PKH + LOCK_DATE.
+     *   2. Verifies the compiled policy hash matches the stored policyId.
+     *   3. Builds a tx with updated CIP-25 metadata (revoked: true, revoked_at: <ts>).
+     *   4. Burns the reference (100) token if the lock date has not passed.
+     *   5. Signs with the owner key and submits to Blockfrost.
+     *
+     * Failure is logged and returned — it must NOT abort the DB-level revocation.
+     *
+     * @param string $txHash        Original minting transaction hash (for logging/reference).
+     * @param int    $studentId
+     * @param int    $courseId
+     * @param string $nftName       E.g. 'Cert-5-12'
+     * @param string $serialNum     Timestamp-based serial number used at mint time.
+     * @param string $policyId      Hex policy ID of the minting policy.
+     * @param int    $courseHistoryId
+     * @return array{success: bool, txHash?: string, message: string}
+     */
+    public function revokeCertificateOnChain(
+        string $txHash,
+        int    $studentId,
+        int    $courseId,
+        string $nftName,
+        string $serialNum,
+        string $policyId,
+        int    $courseHistoryId
+    ): array {
+        try {
+            $revokeCommand = $this->buildWeb3Command('run/revoke-certificate-tx.mjs', [
+                $nftName,
+                $serialNum,
+                $policyId,
+                (string) $courseHistoryId,
+            ]);
+
+            $response     = $this->runCommand($revokeCommand);
+            $responseJSON = json_decode($response, true);
+
+            if (is_array($responseJSON) && ($responseJSON['status'] ?? null) === 200) {
+                Log::info('Certificate revoked on-chain', [
+                    'course_history_id' => $courseHistoryId,
+                    'student_id'        => $studentId,
+                    'course_id'         => $courseId,
+                    'revoke_tx_hash'    => $responseJSON['txHash'],
+                    'original_tx_hash'  => $txHash,
+                ]);
+
+                return [
+                    'success' => true,
+                    'txHash'  => $responseJSON['txHash'],
+                    'message' => 'On-chain revocation transaction submitted.',
+                ];
+            }
+
+            $errorMsg = $responseJSON['error'] ?? 'Unknown error from revoke-certificate-tx.mjs';
+            Log::error('On-chain certificate revocation failed', [
+                'course_history_id' => $courseHistoryId,
+                'student_id'        => $studentId,
+                'error'             => $errorMsg,
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'On-chain revocation failed: ' . $errorMsg,
+            ];
+
+        } catch (\Throwable $e) {
+            Log::error('Exception during on-chain certificate revocation', [
+                'course_history_id' => $courseHistoryId,
+                'error'             => $e->getMessage(),
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'On-chain revocation exception: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Revoke a self-minted certificate when a refund occurs.
+     *
+     * Gap 4b: RewardInvalidationService only revokes 'minted' status — not 'self_minted'.
+     * This method handles the self_minted case. It can be called from any controller
+     * that handles refund-adjacent operations (e.g., admin certificate revocation).
+     *
+     * Sequence:
+     *   1. Lock DB row, validate status, update to 'revoked'.
+     *   2. Attempt on-chain revocation (failure is non-fatal — logged, not thrown).
+     *   3. Notify student.
+     *
+     * Never throws — failure is logged and returned.
+     *
+     * @param int $courseHistoryId
+     * @return array{success: bool, message: string}
+     */
+    public function revokeSelfMintedCertificate(int $courseHistoryId): array
+    {
+        try {
+            $dbResult = DB::transaction(function () use ($courseHistoryId) {
+                $history = CourseHistory::lockForUpdate()->findOrFail($courseHistoryId);
+
+                if ($history->certificate_status !== 'self_minted') {
+                    return [
+                        'success' => false,
+                        'message' => "Certificate status is '{$history->certificate_status}'; only 'self_minted' certificates can be revoked via this method.",
+                        'history' => null,
+                    ];
+                }
+
+                if ($history->rewards_invalidated_at !== null) {
+                    return [
+                        'success' => true,
+                        'message' => 'Certificate already invalidated.',
+                        'history' => null,
+                    ];
+                }
+
+                $history->update([
+                    'certificate_status'     => 'revoked',
+                    'rewards_invalidated_at' => now(),
+                ]);
+
+                return [
+                    'success' => true,
+                    'message' => 'Self-minted certificate revoked successfully.',
+                    'history' => $history,
+                ];
+            });
+
+            if (!$dbResult['success'] || $dbResult['history'] === null) {
+                return ['success' => $dbResult['success'], 'message' => $dbResult['message']];
+            }
+
+            $history = $dbResult['history'];
+
+            // Attempt on-chain revocation — failure is non-fatal
+            if ($history->certificate_tx_hash && $history->certificate_policy_id ?? false) {
+                $nftName   = 'Cert-' . $history->course_id . '-' . $history->user_id;
+                $serialNum = $history->certificate_serial_number ?? '';
+
+                if ($serialNum) {
+                    $this->revokeCertificateOnChain(
+                        $history->certificate_tx_hash,
+                        $history->user_id,
+                        $history->course_id,
+                        $nftName,
+                        $serialNum,
+                        $history->certificate_policy_id,
+                        $history->id
+                    );
+                }
+            }
+
+            // Notify student
+            try {
+                DB::table('notifications')->insert([
+                    'from_user_id' => null,
+                    'to_user_id'   => $history->user_id,
+                    'message'      => 'Your self-minted certificate for course #' . $history->course_id . ' has been revoked due to a refund.',
+                    'is_read'      => false,
+                    'created_at'   => now(),
+                    'updated_at'   => now(),
+                ]);
+            } catch (\Throwable $e) {
+                Log::warning('CertificateService: failed to notify student of self-minted certificate revocation', [
+                    'course_history_id' => $history->id,
+                    'user_id'           => $history->user_id,
+                    'error'             => $e->getMessage(),
+                ]);
+            }
+
+            return [
+                'success' => true,
+                'message' => 'Self-minted certificate revoked successfully.',
+                'data'    => ['course_history_id' => $courseHistoryId],
+            ];
+
+        } catch (\Throwable $e) {
+            Log::error('CertificateService: failed to revoke self-minted certificate', [
+                'course_history_id' => $courseHistoryId,
+                'error'             => $e->getMessage(),
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'Failed to revoke self-minted certificate: ' . $e->getMessage(),
             ];
         }
     }
