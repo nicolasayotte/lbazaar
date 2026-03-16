@@ -125,6 +125,9 @@ class StudentMintController extends Controller
                 'message'     => $result['message'],
             ]);
 
+            $courseHistory->certificate_status = 'failed';
+            $courseHistory->save();
+
             return response()->json([
                 'success' => false,
                 'message' => $result['message'],
@@ -185,6 +188,9 @@ class StudentMintController extends Controller
                 'schedule_id' => $scheduleId,
                 'message'     => $result['message'],
             ]);
+
+            $courseHistory->token_reward_status = 'failed';
+            $courseHistory->save();
 
             return response()->json([
                 'success' => false,
@@ -413,6 +419,14 @@ class StudentMintController extends Controller
                 'student_id' => $student->id,
                 'error'      => $e->getMessage(),
             ]);
+
+            if ($type === 'certificate') {
+                $courseHistory->certificate_status = 'failed';
+            } else {
+                $courseHistory->token_reward_status = 'failed';
+            }
+            $courseHistory->save();
+
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
 
@@ -421,6 +435,14 @@ class StudentMintController extends Controller
         if (!is_array($json) || ($json['status'] ?? 0) !== 200) {
             $error = $json['error'] ?? 'Submission failed';
             Log::warning('submit-mint-tx rejected', ['error' => $error]);
+
+            if ($type === 'certificate') {
+                $courseHistory->certificate_status = 'failed';
+            } else {
+                $courseHistory->token_reward_status = 'failed';
+            }
+            $courseHistory->save();
+
             return response()->json(['success' => false, 'message' => $error], 500);
         }
 
