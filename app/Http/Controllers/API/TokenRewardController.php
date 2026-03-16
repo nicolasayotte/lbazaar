@@ -104,7 +104,7 @@ class TokenRewardController extends Controller
                         'success'        => false,
                         'transaction_id' => null,
                         'wallet_address' => null,
-                        'message'        => 'Failed to mint token reward: ' . $e->getMessage(),
+                        'message'        => 'Failed to mint token reward. Please try again.',
                     ];
 
                     Log::error('Token reward minting failed for student', [
@@ -137,7 +137,7 @@ class TokenRewardController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred while minting token rewards: ' . $e->getMessage(),
+                'message' => 'An error occurred while minting token rewards. Please try again.',
             ], 500);
         }
     }

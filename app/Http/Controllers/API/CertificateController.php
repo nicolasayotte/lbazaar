@@ -237,7 +237,7 @@ class CertificateController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred while processing certificate minting: ' . $e->getMessage()
+                'message' => 'An error occurred while processing certificate minting. Please try again.'
             ], 500);
         }
     }
@@ -538,7 +538,7 @@ class CertificateController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Batch minting failed: ' . $e->getMessage()
+                'message' => 'Batch minting failed. Please try again.'
             ], 500);
         }
     }
