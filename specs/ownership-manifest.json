@@ -1,22 +1,20 @@
 {
-  "generated_at": "2026-03-16T12:44:09.254806270+00:00",
+  "generated_at": "2026-03-16T15:16:33.175867556+00:00",
   "contracts": {
-    "payments": {
+    "hygiene": {
       "spec_path": "",
       "last_verified_commit": "8eb8b17baeac2f163e91dce018bcac7933d77226",
       "mutable_patterns": [],
       "owned_files": {
-        "resources/js/pages/Portal/MyPage/PurchaseHistory/components/PurchaseHistoryTable.jsx": "mutable",
-        "resources/js/pages/Portal/MyPage/PurchaseHistory/Index.jsx": "mutable",
-        "web3/run/check-network-health.mjs": "mutable",
-        "routes/web.php": "mutable",
-        "app/Services/API/StripeService.php": "mutable",
-        "web3/run/build-purchase-tx.mjs": "mutable",
-        "web3/run/submit-signed-tx.mjs": "mutable",
-        "app/Services/API/CoursePurchaseService.php": "mutable",
-        "resources/js/pages/Portal/Course/Details.jsx": "mutable",
-        "web3/run/build-refund-tx.mjs": "mutable",
-        "resources/js/pages/Admin/Refunds/Index.jsx": "mutable"
+        "resources/js/layouts/MyPage.jsx": "mutable",
+        "resources/js/components/includes/Navbar.jsx": "mutable",
+        "resources/js/components/includes/MyPageSideBar.jsx": "mutable",
+        "resources/js/pages/Portal/Users/View.jsx": "mutable",
+        "resources/js/pages/Portal/CourseSchedules/components/StudentsTable.jsx": "mutable",
+        "resources/js/pages/Portal/Exams/Create.jsx": "mutable",
+        "resources/js/components/includes/AdminNavbar.jsx": "mutable",
+        "resources/js/pages/Portal/Registration/Teacher.jsx": "mutable",
+        "resources/js/pages/Portal/Exams/Result.jsx": "mutable"
       }
     },
     "rewards": {
@@ -24,50 +22,76 @@
       "last_verified_commit": "8eb8b17baeac2f163e91dce018bcac7933d77226",
       "mutable_patterns": [],
       "owned_files": {
-        "web3/run/build-certificate-tx.mjs": "mutable",
-        "database/migrations/2026_03_10_000001_add_self_minted_to_certificate_status_enum.php": "mutable",
-        "app/Services/API/CertificateService.php": "mutable",
-        "web3/run/revoke-certificate-tx.mjs": "mutable",
-        "resources/js/pages/Portal/MyPage/ManageClass/components/AirdropFeeDialog.jsx": "mutable",
-        "app/Http/Controllers/API/CertificateController.php": "mutable",
-        "resources/js/pages/Portal/MyPage/Badges/components/RewardsTable.jsx": "mutable",
         "web3/run/build-student-certificate-tx.mjs": "mutable",
-        "web3/run/build-token-reward-tx.mjs": "mutable",
+        "app/Http/Controllers/API/CertificateController.php": "mutable",
         "app/Http/Controllers/Portal/StudentMintController.php": "mutable",
         "resources/js/pages/Portal/MyPage/ManageClass/Certificates.jsx": "mutable",
         "app/Http/Controllers/Admin/CertificateController.php": "mutable",
+        "app/Services/API/RewardInvalidationService.php": "mutable",
         "resources/js/pages/Portal/CourseCompleteConfirmation.jsx": "mutable",
-        "app/Services/API/RewardInvalidationService.php": "mutable"
+        "web3/run/build-token-reward-tx.mjs": "mutable",
+        "resources/js/pages/Portal/MyPage/Badges/components/RewardsTable.jsx": "mutable",
+        "web3/run/revoke-certificate-tx.mjs": "mutable",
+        "web3/run/build-certificate-tx.mjs": "mutable",
+        "database/migrations/2026_03_10_000001_add_self_minted_to_certificate_status_enum.php": "mutable",
+        "resources/js/pages/Portal/MyPage/ManageClass/components/AirdropFeeDialog.jsx": "mutable",
+        "app/Services/API/CertificateService.php": "mutable"
       }
     },
-    "e2e": {
-      "spec_path": "",
-      "last_verified_commit": "c30713359cd36df9eba217c5a59a1343399e7a70",
-      "mutable_patterns": [],
-      "owned_files": {
-        "database/seeders/PlaywrightTestSeeder.php": "mutable",
-        "tests/Browser/student/wallet-cip30.spec.js": "mutable",
-        "tests/Browser/guest/route-smoke.spec.js": "mutable",
-        "tests/Browser/teacher/route-smoke.spec.js": "mutable",
-        "playwright.config.js": "mutable",
-        "tests/Browser/admin/navigation-smoke.spec.js": "mutable",
-        "tests/Browser/student/route-smoke.spec.js": "mutable"
-      }
-    },
-    "hygiene": {
+    "payments": {
       "spec_path": "",
       "last_verified_commit": "8eb8b17baeac2f163e91dce018bcac7933d77226",
       "mutable_patterns": [],
       "owned_files": {
-        "resources/js/components/includes/MyPageSideBar.jsx": "mutable",
-        "resources/js/pages/Portal/Users/View.jsx": "mutable",
-        "resources/js/pages/Portal/Exams/Create.jsx": "mutable",
-        "resources/js/layouts/MyPage.jsx": "mutable",
-        "resources/js/pages/Portal/CourseSchedules/components/StudentsTable.jsx": "mutable",
-        "resources/js/components/includes/AdminNavbar.jsx": "mutable",
-        "resources/js/components/includes/Navbar.jsx": "mutable",
-        "resources/js/pages/Portal/Registration/Teacher.jsx": "mutable",
-        "resources/js/pages/Portal/Exams/Result.jsx": "mutable"
+        "web3/run/submit-signed-tx.mjs": "mutable",
+        "resources/js/pages/Admin/Refunds/Index.jsx": "mutable",
+        "routes/web.php": "mutable",
+        "web3/run/check-network-health.mjs": "mutable",
+        "app/Services/API/CoursePurchaseService.php": "mutable",
+        "resources/js/pages/Portal/Course/Details.jsx": "mutable",
+        "resources/js/pages/Portal/MyPage/PurchaseHistory/components/PurchaseHistoryTable.jsx": "mutable",
+        "web3/run/build-refund-tx.mjs": "mutable",
+        "web3/run/build-purchase-tx.mjs": "mutable",
+        "resources/js/pages/Portal/MyPage/PurchaseHistory/Index.jsx": "mutable",
+        "app/Services/API/StripeService.php": "mutable"
+      }
+    },
+    "e2e": {
+      "spec_path": "",
+      "last_verified_commit": "7010783da962ad2a0cfc60f6cbe822b716a5f140",
+      "mutable_patterns": [],
+      "owned_files": {
+        "tests/Browser/auth/route-protection.spec.js": "mutable",
+        "tests/Browser/guest/inquiries.spec.js": "mutable",
+        "tests/Browser/auth/student-profile.spec.js": "mutable",
+        "tests/Browser/student/route-smoke.spec.js": "mutable",
+        "tests/Browser/admin/navigation-smoke.spec.js": "mutable",
+        "tests/Browser/auth/student-courses.spec.js": "mutable",
+        "tests/Browser/teacher/class-applications.spec.js": "mutable",
+        "tests/Browser/guest/language-switching.spec.js": "mutable",
+        "tests/Browser/teacher/teaching-history.spec.js": "mutable",
+        "tests/Browser/auth/student-history.spec.js": "mutable",
+        "tests/Browser/guest/course-detail-extra.spec.js": "mutable",
+        "tests/Browser/teacher/course-management.spec.js": "mutable",
+        "tests/Browser/auth/logout.spec.js": "mutable",
+        "tests/Browser/guest/admin-login.spec.js": "mutable",
+        "tests/Browser/teacher/route-smoke.spec.js": "mutable",
+        "database/seeders/PlaywrightTestSeeder.php": "mutable",
+        "playwright.config.js": "mutable",
+        "tests/Browser/guest/forgot-password.spec.js": "mutable",
+        "tests/Browser/auth/student-mypage.spec.js": "mutable",
+        "tests/Browser/course-browsing.spec.js": "mutable",
+        "tests/Browser/guest/registration-extra.spec.js": "mutable",
+        "tests/Browser/teacher/manage-classes.spec.js": "mutable",
+        "tests/Browser/admin/inquiries-applications.spec.js": "mutable",
+        "tests/Browser/admin/settings-crud.spec.js": "mutable",
+        "tests/Browser/top-page.spec.js": "mutable",
+        "tests/Browser/admin/settings-misc.spec.js": "mutable",
+        "tests/Browser/auth/login.spec.js": "mutable",
+        "tests/Browser/auth/registration.spec.js": "mutable",
+        "tests/Browser/guest/route-smoke.spec.js": "mutable",
+        "tests/Browser/guest/route-protection.spec.js": "mutable",
+        "tests/Browser/admin/profile-users.spec.js": "mutable"
       }
     }
   }
