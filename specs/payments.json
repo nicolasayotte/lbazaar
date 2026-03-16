@@ -90,7 +90,7 @@
       "F-03: Students complete the Stripe checkout flow initiated by StripeService; class access is granted immediately upon a successful Stripe charge event with no confirmation wait",
       "F-04: Both ADA and Stripe payment options are rendered in parallel on Details.jsx with independent conditional branches for each path; degradation of either path (ADA unavailable or Stripe unavailable) renders only that path's error state while the other path remains interactive",
       "F-12: CIP-30 wallet connection and disconnection are handled by Web3WalletController; wallets not in the supported list show a clear error message; a wallet on the wrong Cardano network blocks the ADA payment action and shows an explanation; confirmation count for a pending ADA purchase is resumable on page return — PurchaseStatusController serves the current X/10 count on demand, with no background polling job required",
-      "F-13: Admin initiates Stripe refunds via AdminRefundController and ADA refunds via AdminRefundController calling build-refund-tx.mjs; on refund confirmation the student's class access is revoked and the course_histories record transitions to refunded status; the rewards_invalidated flag is set to true in course_histories; the refund is visible to admin in the payment dashboard (Admin/WalletHistory); KNOWN GAP: student notification via the Notification model (app/Models/Notification.php) is not yet wired in AdminRefundController or RefundController and must be implemented to fully satisfy F-13",
+      "F-13: Admin initiates Stripe refunds via AdminRefundController and ADA refunds via AdminRefundController calling build-refund-tx.mjs; ADA refund outputs are returned to the student's original sending address derived from the purchase UTXO (not a custodial address); on refund confirmation the student's class access is revoked and the course_histories record transitions to refunded status; the rewards_invalidated flag is set to true in course_histories; the refund is visible to admin in the payment dashboard (Admin/WalletHistory); KNOWN GAP: student notification via the Notification model (app/Models/Notification.php) is not yet wired in AdminRefundController or RefundController and must be implemented to fully satisfy F-13",
       "F-14: check-network-health.mjs returns one of three statuses (healthy, degraded, unreachable); the ADA payment UI in Details.jsx reflects the current network status and disables or warns on degraded/unreachable",
       "F-15: PurchaseHistoryService surfaces each student's purchase records including: ADA purchases with tx_hash and live X/10 confirmation count for pending entries served by PurchaseStatusController; Stripe purchases with receipt reference; and refunded entries with refunded status — all rendered in PurchaseHistoryTable.jsx"
     ],
@@ -99,7 +99,7 @@
       "A student must not submit a duplicate payment for a class they already own or have a pending payment for (enforced at DB layer via unique constraint in the nft_transactions table)",
       "ADA price quote must be invalidated after the window configured by services.cardano.quote_window_minutes (default 5 minutes); CoursePurchaseService rejects submission of an expired quote with the message 'Price quote expired. Please re-initiate checkout.'",
       "For platform-initiated transactions (purchases, refunds), transaction building and Blockfrost submission happen server-side only: build-purchase-tx.mjs / build-refund-tx.mjs build the transaction, the student signs via CIP-30 signTx(tx, partial=true) returning a TransactionWitnessSet, and submit-signed-tx.mjs merges the witness and submits to Blockfrost. Student self-mint (F-18, rewards contract) is a separate flow and is not governed by this contract.",
-      "Recipient addresses (teacher commission, admin fee) use custodial HD derivation via get-custodial-address.mjs, never the student's CIP-30 spending address",
+      "Recipient addresses for purchase outputs (teacher commission, admin fee) use custodial HD derivation via get-custodial-address.mjs, never the student's CIP-30 spending address. ADA refund outputs are exempt: the refund is returned to the student's original sending address from the purchase UTXO, not a custodial address.",
       "No private key material (ROOT_KEY, OWNER_PKH) may appear in any HTTP response produced by controllers in app/Http/Controllers/ or services in app/Services/"
     ]
   },
@@ -228,13 +228,13 @@
       "check": "ADA price has shifted >5% since page load. Confirm before paying."
     },
     {
-      "description": "ADA and Stripe independent conditional branches both present in Details.jsx (F-04 parallel paths)",
+      "description": "ADA conditional branch present in Details.jsx (F-04 independent ADA path)",
       "type": "grep_match",
       "file": "resources/js/pages/Portal/Course/Details.jsx",
       "check": "ada"
     },
     {
-      "description": "Stripe conditional branch present in Details.jsx (F-04 independent degradation)",
+      "description": "Stripe conditional branch present in Details.jsx (F-04 independent Stripe path)",
       "type": "grep_match",
       "file": "resources/js/pages/Portal/Course/Details.jsx",
       "check": "stripe"
@@ -264,13 +264,19 @@
       "check": "10"
     },
     {
-      "description": "get-custodial-address.mjs referenced in build-purchase-tx.mjs (recipient address invariant)",
+      "description": "get-custodial-address.mjs referenced in build-purchase-tx.mjs (purchase recipient address invariant)",
       "type": "grep_match",
       "file": "web3/run/build-purchase-tx.mjs",
       "check": "get-custodial-address"
     },
     {
-      "description": "rewards_invalidated column referenced in refund migration (F-13 rewards flag)",
+      "description": "refunded ENUM value defined in refund status migration (F-13/F-15 status string)",
+      "type": "grep_match",
+      "file": "database/migrations/2026_02_27_000002_add_refunded_status_and_rewards_flag_to_course_histories.php",
+      "check": "refunded"
+    },
+    {
+      "description": "rewards_invalidated column defined in refund status migration (F-13 rewards flag)",
       "type": "grep_match",
       "file": "database/migrations/2026_02_27_000002_add_refunded_status_and_rewards_flag_to_course_histories.php",
       "check": "rewards_invalidated"
