@@ -3,6 +3,12 @@ import fs from 'fs/promises';
 
 const optimize = false;
 
+// F-05: Certificate NFTs are soul-bound (non-tradeable/non-transferable).
+// The on-chain enforcement is in web3/contracts/nft-minting-policy.hl.
+// This flag documents the constraint at the JS wrapper layer and must remain true.
+// See also: certificate-metadata.mjs which sets non_transferable = true in CIP-25 metadata.
+export const SOUL_BOUND = true;
+
 /**
  * Calculates the minting policy hash for certificate NFTs
  * @returns {Promise<string>} The minting policy hash
