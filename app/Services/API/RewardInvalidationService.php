@@ -10,10 +10,12 @@ use Illuminate\Support\Facades\Log;
 class RewardInvalidationService
 {
     protected UserRepository $userRepository;
+    protected CertificateService $certificateService;
 
-    public function __construct(UserRepository $userRepository)
+    public function __construct(UserRepository $userRepository, CertificateService $certificateService)
     {
-        $this->userRepository = $userRepository;
+        $this->userRepository     = $userRepository;
+        $this->certificateService = $certificateService;
     }
 
     /**
@@ -41,8 +43,8 @@ class RewardInvalidationService
         $tokenFlagged       = false;
 
         // Determine which rewards exist and need action
-        $certStatus        = $history->certificate_status;
-        $tokenStatus       = $history->token_reward_status;
+        $certStatus  = $history->certificate_status;
+        $tokenStatus = $history->token_reward_status;
 
         $certDelivered  = in_array($certStatus, ['minted', 'self_minted'], true);
         $tokenDelivered = in_array($tokenStatus, ['minted', 'minting'], true);
@@ -71,6 +73,32 @@ class RewardInvalidationService
         }
 
         $history->update($updates);
+
+        // F-16: On-chain revocation — non-fatal, failure is logged but never rollbacks the DB update.
+        // The DB status already reflects the intent; admin can retry on-chain separately if needed.
+        if ($certificateRevoked && $history->certificate_tx_hash && !empty($history->certificate_policy_id)) {
+            $nftName   = 'Cert-' . $history->course_id . '-' . $history->user_id;
+            $serialNum = $history->certificate_serial_number ?? '';
+
+            if ($serialNum) {
+                try {
+                    $this->certificateService->revokeCertificateOnChain(
+                        $history->certificate_tx_hash,
+                        $history->user_id,
+                        $history->course_id,
+                        $nftName,
+                        $serialNum,
+                        $history->certificate_policy_id,
+                        $history->id
+                    );
+                } catch (\Throwable $e) {
+                    Log::error('RewardInvalidationService: on-chain revocation failed (DB already updated)', [
+                        'course_history_id' => $history->id,
+                        'error'             => $e->getMessage(),
+                    ]);
+                }
+            }
+        }
 
         // Send notifications — failures are caught and logged, never propagated
         if ($certificateRevoked) {
@@ -121,7 +149,7 @@ class RewardInvalidationService
     }
 
     /**
-     * Notify the admin that a certificate has been revoked and requires manual on-chain action.
+     * Notify the admin that a certificate has been revoked.
      */
     protected function notifyAdminCertificateRevoked(CourseHistory $history): void
     {
@@ -137,7 +165,7 @@ class RewardInvalidationService
             DB::table('notifications')->insert([
                 'from_user_id' => null,
                 'to_user_id'   => $admin->id,
-                'message'      => 'Certificate revoked for user #' . $history->user_id . ' on course #' . $history->course_id . ' (history #' . $history->id . '). Manual on-chain action may be required.',
+                'message'      => 'Certificate revoked for user #' . $history->user_id . ' on course #' . $history->course_id . ' (history #' . $history->id . '). On-chain revocation has been automatically attempted.',
                 'is_read'      => false,
                 'created_at'   => now(),
                 'updated_at'   => now(),
