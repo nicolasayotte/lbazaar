@@ -29,6 +29,7 @@
       "app/Http/Controllers/API/AdminRefundController.php",
       "app/Http/Requests/StripeCheckoutRequest.php",
       "app/Models/StripePayment.php",
+      "app/Models/Notification.php",
       "resources/js/pages/Portal/Course/Details.jsx",
       "resources/js/pages/Portal/Checkout/Success.jsx",
       "resources/js/pages/Portal/Checkout/Cancel.jsx",
@@ -78,35 +79,39 @@
       "Blockfrost API key (preprod) is configured in .env",
       "web3/config/preprod.json contains current Conway-era protocol parameters (v10.0, epoch >=275)",
       "Stripe API keys (STRIPE_KEY, STRIPE_SECRET) are configured in .env",
+      "Stripe account is configured for Japan: currency set to JPY and domestic payment methods enabled (operator setup prerequisite; not verifiable from source code)",
       "ADA/JPY exchange rate setting exists in the settings table (ada-to-jpy key)",
       "Teachers have set class prices in JPY (existing platform feature)",
       "Student enrollment and class access granting are operational (existing platform feature)"
     ],
     "post_conditions": [
-      "F-01: Class pages display JPY price and live ADA equivalent; ADA refreshes every 60s; drift >5% alerts user; rate unavailability disables ADA path gracefully leaving Stripe functional",
-      "F-02: Students complete ADA purchase via CIP-30 double-sign flow; pending state shows X/10 confirmations; class access granted after exactly 10 confirmations; duplicate and concurrent payment attempts are blocked",
-      "F-03: Students complete Stripe checkout flow; class access granted immediately on successful charge; Japan-compliant Stripe account configuration",
-      "F-04: Both payment options presented in parallel on class detail page; either path degrades independently with explanation when unavailable",
-      "F-12: CIP-30 wallet connect/disconnect handled; unsupported wallets show clear error; wrong network blocks action; pending transactions continue monitored after wallet disconnect",
-      "F-13: Admin initiates Stripe and ADA refunds; class access revoked on confirmation; rewards flagged for invalidation in course_histories; Admin and Student notified",
-      "F-14: Cardano network status (healthy / degraded / unreachable) reflected in ADA payment UI",
-      "F-15: Students view purchase history with ADA (tx hash, X/10 status) and Stripe (receipt) entries including pending and refunded states"
+      "F-01: Details.jsx displays the JPY price and a live ADA equivalent computed from the ada-to-jpy rate; the ADA price refreshes automatically every 60 seconds via setInterval(poll, 60_000); when the refreshed ADA price deviates more than 5% from the quoted price (drift > 0.05), the driftWarning state is set, a visible alert 'ADA price has shifted >5% since page load. Confirm before paying.' is shown, and the ADA payment path is disabled until the student re-initiates; when the ADA/JPY rate is unavailable, the ADA payment path is hidden or disabled with an explanation message and the Stripe payment path remains fully functional",
+      "F-02: Students complete ADA purchase via CIP-30 double-sign flow (platform signs first, student signs second via signTx(tx, partial=true)); the pending state UI in Details.jsx displays the live confirmation count as X/10 via PurchaseStatusController, which evaluates the threshold via config('services.cardano.required_confirmations', 10); class access is granted by CoursePurchaseService after exactly 10 on-chain confirmations polled by check-tx-confirmations.mjs; duplicate payment attempts for a class the student already owns or has a pending payment for are rejected at the DB layer via unique constraint in database/migrations/2026_02_18_033218_add_composite_unique_to_nft_transactions_table.php",
+      "F-03: Students complete the Stripe checkout flow initiated by StripeService; class access is granted immediately upon a successful Stripe charge event with no confirmation wait",
+      "F-04: Both ADA and Stripe payment options are rendered in parallel on Details.jsx with independent conditional branches for each path; degradation of either path (ADA unavailable or Stripe unavailable) renders only that path's error state while the other path remains interactive",
+      "F-12: CIP-30 wallet connection and disconnection are handled by Web3WalletController; wallets not in the supported list show a clear error message; a wallet on the wrong Cardano network blocks the ADA payment action and shows an explanation; confirmation count for a pending ADA purchase is resumable on page return — PurchaseStatusController serves the current X/10 count on demand, with no background polling job required",
+      "F-13: Admin initiates Stripe refunds via AdminRefundController and ADA refunds via AdminRefundController calling build-refund-tx.mjs; on refund confirmation the student's class access is revoked and the course_histories record transitions to refunded status; the rewards_invalidated flag is set to true in course_histories; the refund is visible to admin in the payment dashboard (Admin/WalletHistory); KNOWN GAP: student notification via the Notification model (app/Models/Notification.php) is not yet wired in AdminRefundController or RefundController and must be implemented to fully satisfy F-13",
+      "F-14: check-network-health.mjs returns one of three statuses (healthy, degraded, unreachable); the ADA payment UI in Details.jsx reflects the current network status and disables or warns on degraded/unreachable",
+      "F-15: PurchaseHistoryService surfaces each student's purchase records including: ADA purchases with tx_hash and live X/10 confirmation count for pending entries served by PurchaseStatusController; Stripe purchases with receipt reference; and refunded entries with refunded status — all rendered in PurchaseHistoryTable.jsx"
     ],
     "invariants": [
-      "A student must not gain class access before ADA payment reaches 10 on-chain confirmations or before Stripe charge succeeds",
-      "A student must not submit a duplicate payment for a class they already own or have a pending payment for (enforced at DB layer via unique constraint)",
-      "ADA price quote must be invalidated after the configurable window (default 5 minutes); expired quotes cannot be submitted",
-      "CIP-30 signTx(tx, partial=true) returns TransactionWitnessSet; witness merge and Blockfrost submission MUST happen server-side — never via walletAPI.submitTx",
-      "Recipient addresses (teacher commission, admin fee) use custodial HD derivation via get-custodial-address.mjs, never the student's CIP-30 spending address"
+      "A student must not gain class access before ADA payment reaches 10 on-chain confirmations (required_confirmations config key) or before Stripe charge succeeds",
+      "A student must not submit a duplicate payment for a class they already own or have a pending payment for (enforced at DB layer via unique constraint in the nft_transactions table)",
+      "ADA price quote must be invalidated after the window configured by services.cardano.quote_window_minutes (default 5 minutes); CoursePurchaseService rejects submission of an expired quote with the message 'Price quote expired. Please re-initiate checkout.'",
+      "For platform-initiated transactions (purchases, refunds), transaction building and Blockfrost submission happen server-side only: build-purchase-tx.mjs / build-refund-tx.mjs build the transaction, the student signs via CIP-30 signTx(tx, partial=true) returning a TransactionWitnessSet, and submit-signed-tx.mjs merges the witness and submits to Blockfrost. Student self-mint (F-18, rewards contract) is a separate flow and is not governed by this contract.",
+      "Recipient addresses (teacher commission, admin fee) use custodial HD derivation via get-custodial-address.mjs, never the student's CIP-30 spending address",
+      "No private key material (ROOT_KEY, OWNER_PKH) may appear in any HTTP response produced by controllers in app/Http/Controllers/ or services in app/Services/"
     ]
   },
   "acceptance": [
-    "Student completes end-to-end ADA purchase: connect CIP-30 wallet -> receive ADA price quote -> sign tx -> 10-block confirmation -> class access granted",
-    "Student completes end-to-end Stripe checkout: initiate -> complete Stripe flow -> immediate class access",
-    "Both payment options visible on class detail page; disabling one leaves the other fully functional",
-    "Admin initiates Stripe refund that revokes student class access and flags rewards",
-    "Student purchase history correctly shows ADA tx hash, Stripe receipt, pending confirmations, and refunded status",
-    "All supported CIP-30 wallets function for ADA purchase flow"
+    "Student completes end-to-end ADA purchase: connect CIP-30 wallet -> CoursePurchaseService issues ADA price quote -> student signs tx via CIP-30 signTx(tx, partial=true) -> submit-signed-tx.mjs submits to Blockfrost -> check-tx-confirmations.mjs polls until 10 confirmations -> CoursePurchaseService grants class access and course_histories record transitions to confirmed status",
+    "Student completes end-to-end Stripe checkout: initiate Stripe session via StripeService -> complete Stripe payment flow -> StripeService receives successful charge event -> class access granted immediately with course_histories record in completed status",
+    "Both ADA and Stripe payment options rendered in parallel on Details.jsx; disabling the ADA path (e.g. network unreachable) leaves the Stripe path fully interactive; disabling the Stripe path leaves the ADA path fully interactive",
+    "Admin initiates ADA refund: AdminRefundController calls build-refund-tx.mjs -> refund transaction confirmed on-chain -> course_histories record transitions to refunded status with rewards_invalidated flag set to true -> student class access revoked",
+    "Admin initiates Stripe refund: AdminRefundController calls StripeService refund -> Stripe charge reversed -> course_histories record transitions to refunded status with rewards_invalidated flag set to true -> student class access revoked",
+    "Student purchase history (PurchaseHistoryTable.jsx) displays: ADA purchase entries with tx_hash and X/10 confirmation count for pending entries; Stripe purchase entries with receipt reference; refunded entries with refunded status label",
+    "All supported CIP-30 wallets complete the ADA purchase flow; an unsupported wallet triggers a visible error message; a wallet on the wrong Cardano network blocks submission and shows a network mismatch message",
+    "When ADA price drift exceeds 5% between quote and re-check, Details.jsx shows the alert 'ADA price has shifted >5% since page load. Confirm before paying.' and disables the ADA payment path"
   ],
   "convergence_checks": [
     {
@@ -120,9 +125,29 @@
       "check": "app/Services/API/StripeService.php"
     },
     {
+      "description": "PurchaseHistoryService exists (F-15)",
+      "type": "glob_exists",
+      "check": "app/Services/Portal/PurchaseHistoryService.php"
+    },
+    {
+      "description": "PurchaseStatusController exists (F-02/F-12/F-15 on-demand confirmation count)",
+      "type": "glob_exists",
+      "check": "app/Http/Controllers/API/PurchaseStatusController.php"
+    },
+    {
+      "description": "Notification model exists (F-13 known gap — student notification stub)",
+      "type": "glob_exists",
+      "check": "app/Models/Notification.php"
+    },
+    {
       "description": "build-purchase-tx.mjs exists",
       "type": "glob_exists",
       "check": "web3/run/build-purchase-tx.mjs"
+    },
+    {
+      "description": "submit-purchase-tx.mjs exists",
+      "type": "glob_exists",
+      "check": "web3/run/submit-purchase-tx.mjs"
     },
     {
       "description": "submit-signed-tx.mjs exists (server-side witness merge)",
@@ -130,9 +155,24 @@
       "check": "web3/run/submit-signed-tx.mjs"
     },
     {
+      "description": "check-tx-confirmations.mjs exists (F-02/F-15 confirmation polling)",
+      "type": "glob_exists",
+      "check": "web3/run/check-tx-confirmations.mjs"
+    },
+    {
       "description": "check-network-health.mjs exists (F-14 network status)",
       "type": "glob_exists",
       "check": "web3/run/check-network-health.mjs"
+    },
+    {
+      "description": "build-refund-tx.mjs exists (F-13 ADA refund)",
+      "type": "glob_exists",
+      "check": "web3/run/build-refund-tx.mjs"
+    },
+    {
+      "description": "AdminRefundController exists (F-13)",
+      "type": "glob_exists",
+      "check": "app/Http/Controllers/API/AdminRefundController.php"
     },
     {
       "description": "Stripe payments migration exists",
@@ -140,7 +180,12 @@
       "check": "database/migrations/2026_02_17_000000_create_stripe_payments_table.php"
     },
     {
-      "description": "Refund status migration exists (F-13/F-15)",
+      "description": "Composite unique constraint migration exists (F-02 duplicate payment guard)",
+      "type": "glob_exists",
+      "check": "database/migrations/2026_02_18_033218_add_composite_unique_to_nft_transactions_table.php"
+    },
+    {
+      "description": "Refund status and rewards_invalidated flag migration exists (F-13/F-15)",
       "type": "glob_exists",
       "check": "database/migrations/2026_02_27_000002_add_refunded_status_and_rewards_flag_to_course_histories.php"
     },
@@ -150,14 +195,130 @@
       "check": "resources/js/pages/Portal/MyPage/PurchaseHistory/Index.jsx"
     },
     {
+      "description": "PurchaseHistoryTable component exists (F-15)",
+      "type": "glob_exists",
+      "check": "resources/js/pages/Portal/MyPage/PurchaseHistory/components/PurchaseHistoryTable.jsx"
+    },
+    {
       "description": "Admin Refunds page exists (F-13)",
       "type": "glob_exists",
       "check": "resources/js/pages/Admin/Refunds/Index.jsx"
     },
     {
-      "description": "build-refund-tx.mjs exists (F-13 ADA refund)",
+      "description": "RewardsWarningDialog exists (F-13 rewards invalidation warning on refund)",
       "type": "glob_exists",
-      "check": "web3/run/build-refund-tx.mjs"
+      "check": "resources/js/pages/Admin/Refunds/components/RewardsWarningDialog.jsx"
+    },
+    {
+      "description": "ADA price refresh interval 60_000ms present in Details.jsx (F-01 60s polling)",
+      "type": "grep_match",
+      "file": "resources/js/pages/Portal/Course/Details.jsx",
+      "check": "60_000"
+    },
+    {
+      "description": "ADA price drift threshold 0.05 present in Details.jsx (F-01 drift alert)",
+      "type": "grep_match",
+      "file": "resources/js/pages/Portal/Course/Details.jsx",
+      "check": "0.05"
+    },
+    {
+      "description": "ADA drift alert string present in Details.jsx (F-01 user-visible alert)",
+      "type": "grep_match",
+      "file": "resources/js/pages/Portal/Course/Details.jsx",
+      "check": "ADA price has shifted >5% since page load. Confirm before paying."
+    },
+    {
+      "description": "ADA and Stripe independent conditional branches both present in Details.jsx (F-04 parallel paths)",
+      "type": "grep_match",
+      "file": "resources/js/pages/Portal/Course/Details.jsx",
+      "check": "ada"
+    },
+    {
+      "description": "Stripe conditional branch present in Details.jsx (F-04 independent degradation)",
+      "type": "grep_match",
+      "file": "resources/js/pages/Portal/Course/Details.jsx",
+      "check": "stripe"
+    },
+    {
+      "description": "ADA quote expiry config key present in CoursePurchaseService (F-02 quote TTL invariant)",
+      "type": "grep_match",
+      "file": "app/Services/API/CoursePurchaseService.php",
+      "check": "quote_window_minutes"
+    },
+    {
+      "description": "Expired quote rejection message present in CoursePurchaseService (F-02 invariant)",
+      "type": "grep_match",
+      "file": "app/Services/API/CoursePurchaseService.php",
+      "check": "Price quote expired. Please re-initiate checkout."
+    },
+    {
+      "description": "required_confirmations config key present in PurchaseStatusController (F-02 server-side threshold)",
+      "type": "grep_match",
+      "file": "app/Http/Controllers/API/PurchaseStatusController.php",
+      "check": "required_confirmations"
+    },
+    {
+      "description": "Confirmation threshold of 10 enforced in check-tx-confirmations.mjs (F-02 Node.js side)",
+      "type": "grep_match",
+      "file": "web3/run/check-tx-confirmations.mjs",
+      "check": "10"
+    },
+    {
+      "description": "get-custodial-address.mjs referenced in build-purchase-tx.mjs (recipient address invariant)",
+      "type": "grep_match",
+      "file": "web3/run/build-purchase-tx.mjs",
+      "check": "get-custodial-address"
+    },
+    {
+      "description": "rewards_invalidated column referenced in refund migration (F-13 rewards flag)",
+      "type": "grep_match",
+      "file": "database/migrations/2026_02_27_000002_add_refunded_status_and_rewards_flag_to_course_histories.php",
+      "check": "rewards_invalidated"
+    },
+    {
+      "description": "network health 'unreachable' status defined in check-network-health.mjs (F-14)",
+      "type": "grep_match",
+      "file": "web3/run/check-network-health.mjs",
+      "check": "unreachable"
+    },
+    {
+      "description": "ROOT_KEY absent from all controller HTTP response paths (private key invariant)",
+      "type": "grep_absent",
+      "file": "app/Http/Controllers/",
+      "check": "ROOT_KEY"
+    },
+    {
+      "description": "OWNER_PKH absent from all controller HTTP response paths (private key invariant)",
+      "type": "grep_absent",
+      "file": "app/Http/Controllers/",
+      "check": "OWNER_PKH"
+    },
+    {
+      "description": "ROOT_KEY absent from all service response paths (private key invariant)",
+      "type": "grep_absent",
+      "file": "app/Services/",
+      "check": "ROOT_KEY"
+    },
+    {
+      "description": "OWNER_PKH absent from all service response paths (private key invariant)",
+      "type": "grep_absent",
+      "file": "app/Services/",
+      "check": "OWNER_PKH"
+    },
+    {
+      "description": "ADA price freshness browser test exists (F-01/F-14)",
+      "type": "glob_exists",
+      "check": "tests/Browser/auth/ada-price-freshness.spec.js"
+    },
+    {
+      "description": "ADA conversion failure browser test exists (F-01 degraded path)",
+      "type": "glob_exists",
+      "check": "tests/Browser/auth/ada-conversion-failure.spec.js"
+    },
+    {
+      "description": "Stripe unavailable browser test exists (F-04 degraded path)",
+      "type": "glob_exists",
+      "check": "tests/Browser/auth/stripe-unavailable.spec.js"
     }
   ]
 }
