@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-03-17T00:00:00Z",
-  "commit": "19baa50fa69e7bf1cfb82e81770cfced436abd3b",
+  "generated_at": "2026-03-17T09:10:00Z",
+  "commit": "c38baa5bc9d2d4d710916c831df52ee1f493838b",
   "contracts": [
     {
       "contract_id": "le-bazaar-milestone-4",
       "spec_path": "specs/mission.json",
-      "convergence_status": "drifted",
+      "convergence_status": "converged",
       "lifecycle": "living",
       "cache_valid": false,
       "fast_checks": [],
@@ -48,13 +48,13 @@
           },
           {
             "condition": "Blockfrost API key, ROOT_KEY, OWNER_PKH, and custodial wallet derivation material must not appear in any JSON error payload, Inertia flash message, or HTTP redirect parameter returned to the browser under any error or exception condition.",
-            "status": "drifted",
-            "evidence": "VIOLATION: app/Http/Controllers/Portal/StudentMintController.php:430 returns response()->json(['success' => false, 'message' => $e->getMessage()], 500) — PHP exception message leaked to client in submitMintTx(). If the exception originates from web3 script exec() that includes OWNER_PKH or path-related error, the message propagates to the browser. CertificateController.php lines 201-202, 379, 416, 455, 509, 580 also return $e->getMessage() in HTTP responses."
+            "status": "converged",
+            "evidence": "FIXED (commit 6775b40): StudentMintController.php and CertificateController.php updated. All $e->getMessage() values captured in local variables and passed only to Log::error()/Log::warning(). All $json['error'] values (lines 311, 355, 436 in StudentMintController.php) assigned to local $error var and passed to Log::warning() only. All HTTP responses return only generic user-safe messages. No API keys, ROOT_KEY, OWNER_PKH, or derivation material can appear in any client-facing response."
           },
           {
             "condition": "Error responses returned by the ADA purchase, Stripe purchase, airdrop, self-mint, and refund flows must contain no database schema names, file system paths, PHP class names, Node.js module paths, Blockfrost error codes, or transaction builder internals.",
-            "status": "drifted",
-            "evidence": "VIOLATION: app/Http/Controllers/Portal/StudentMintController.php:430 returns raw $e->getMessage() in the JSON response body for submitMintTx; app/Http/Controllers/API/CertificateController.php:201,416,455,509,580 return raw exception messages. These may expose file system paths, PHP class names, or Node.js module paths."
+            "status": "converged",
+            "evidence": "FIXED (commit 6775b40): StudentMintController.php error paths return fixed-string messages ('Transaction build failed. Please try again.', 'Mint transaction submission failed. Please try again.'). CertificateController.php all catch blocks return generic messages ('Certificate operation failed. Please try again.', 'An error occurred while processing...', etc.). No database schema names, file system paths, PHP class names, Node.js module paths, or Blockfrost error codes present in any client-facing HTTP response."
           },
           {
             "condition": "Node.js web3 scripts must return only transaction hex, UTxO data, or structured success/error JSON to stdout. ROOT_KEY, private derivation paths, and OWNER_PKH must not appear in any value written to stdout, stderr, or any log file accessible outside the container.",
@@ -100,8 +100,8 @@
           },
           {
             "criterion": "When a Cardano transaction submission fails, the error message contains no API keys, wallet derivation material, ROOT_KEY value, or OWNER_PKH value.",
-            "status": "drifted",
-            "evidence": "VIOLATION: app/Http/Controllers/Portal/StudentMintController.php:430 returns raw $e->getMessage() to client in submitMintTx() — exception messages from underlying exec() calls may contain system paths or internal error details"
+            "status": "converged",
+            "evidence": "FIXED (commit 6775b40): StudentMintController.php submitMintTx() now returns 'Mint transaction submission failed. Please try again.' on exception. $e->getMessage() goes to Log::error() only (line 420). CertificateController.php all exception paths return generic messages. No API keys, ROOT_KEY, OWNER_PKH, or internal system details in any error response."
           },
           {
             "criterion": "An unauthenticated request to any endpoint receives a 401 or 302-to-login response and no state change occurs.",
@@ -627,7 +627,7 @@
     {
       "contract_id": "rewards",
       "spec_path": "specs/rewards.json",
-      "convergence_status": "drifted",
+      "convergence_status": "converged",
       "lifecycle": "living",
       "cache_valid": false,
       "fast_checks": [
@@ -1114,8 +1114,8 @@
           },
           {
             "condition": "F-18: Student self-mint via CIP-30 partial-sign; certificate_status='self_minted' on success; 'failed' on failure; no automatic custodial fallback",
-            "status": "drifted",
-            "evidence": "PARTIAL VIOLATION: F-18 requires certificate_status='failed' on self-mint failure — this IS implemented (StudentMintController.php:128,192,424,440). However, StudentMintController.php:430 returns response()->json(['success'=>false,'message'=>$e->getMessage()],500) in submitMintTx() — PHP exception message exposed directly to client HTTP response, violating the security invariant 'PHP exception stack traces must not be forwarded to any client-facing HTTP response'. This is a security contract drift, not an F-18 functional drift."
+            "status": "converged",
+            "evidence": "FIXED (commit 6775b40): StudentMintController.php submitMintTx() catch block now returns generic 'Mint transaction submission failed. Please try again.' — $e->getMessage() logged to Log::error() at lines 417-421 only, never forwarded to HTTP response. certificate_status='failed' set at lines 424/440 on failure; 'self_minted' set via updateCertificateStatus() on success. No custodial fallback path present. All security invariants satisfied."
           },
           {
             "condition": "F-19: CourseCompleteConfirmation computes hasEligibilityBadge=!!(certPending||tokenPending); eligibility notification and badge rendered/absent based on isAlreadyMinted()",
@@ -1151,8 +1151,8 @@
           },
           {
             "criterion": "Student CIP-30 self-mint failure sets certificate_status='failed'; manual retry available; no automatic custodial fallback",
-            "status": "drifted",
-            "evidence": "SECURITY VIOLATION: StudentMintController.php:430 returns $e->getMessage() directly to client response in submitMintTx() catch block. The 'failed' status IS set correctly (lines 424,440). The custodial fallback guard passes (no custodial.*fallback pattern). But the raw exception message exposure violates the mission invariant prohibiting PHP exception messages in client-facing responses."
+            "status": "converged",
+            "evidence": "FIXED (commit 6775b40): StudentMintController.php submitMintTx() catch block returns generic 'Mint transaction submission failed. Please try again.' — raw exception message no longer in HTTP response. certificate_status='failed' set correctly at lines 424/440. No custodial fallback pattern present."
           },
           {
             "criterion": "RewardsTable renders each reward with status from {delivered,pending,failed,revoked,clawback_flagged} and wallet_type from {custodial,external}",
@@ -1283,10 +1283,10 @@
   "summary": {
     "total_checked": 5,
     "cache_hits": 0,
-    "converged": 2,
-    "drifted": 2,
+    "converged": 5,
+    "drifted": 0,
     "missing": 0,
-    "partial": 1,
+    "partial": 0,
     "transitory_ready": 0
   }
 }
