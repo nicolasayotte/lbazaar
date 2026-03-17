@@ -158,8 +158,13 @@ class CertificateController extends Controller
                             $tokenSuccess = $tokenResult['success'];
                             $tokenReason  = $tokenResult['message'] ?? null;
                         } catch (Exception $e) {
+                            Log::error('Token reward failed during airdrop', [
+                                'course_id' => $courseId,
+                                'student_id' => $student->id,
+                                'error' => $e->getMessage()
+                            ]);
                             $tokenSuccess = false;
-                            $tokenReason  = 'Token reward failed: ' . $e->getMessage();
+                            $tokenReason  = 'Token reward failed.';
                         }
                     } elseif ($tokenAlreadyIncluded) {
                         $tokenSuccess = true;
@@ -198,8 +203,8 @@ class CertificateController extends Controller
                         'token_success'       => null,
                         'transaction_id'      => null,
                         'wallet_address'      => null,
-                        'message'             => 'Failed to mint certificate: ' . $e->getMessage(),
-                        'reason'              => 'Failed to mint certificate: ' . $e->getMessage(),
+                        'message'             => 'Certificate operation failed.',
+                        'reason'              => 'Certificate operation failed.',
                     ];
 
                     Log::error('Certificate minting failed for student ' . $student->id, [
@@ -376,7 +381,7 @@ class CertificateController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred while fetching course completion summary: ' . $e->getMessage()
+                'message' => 'An error occurred while fetching course completion summary. Please try again.'
             ], 500);
         }
     }
@@ -413,7 +418,7 @@ class CertificateController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to retrieve eligible students: ' . $e->getMessage()
+                'message' => 'Failed to retrieve eligible students. Please try again.'
             ], 500);
         }
     }
@@ -452,7 +457,7 @@ class CertificateController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to mint certificate: ' . $e->getMessage()
+                'message' => 'Certificate operation failed. Please try again.'
             ], 500);
         }
     }
@@ -506,7 +511,7 @@ class CertificateController extends Controller
                         'student_id' => $studentId,
                         'student_name' => null,
                         'success' => false,
-                        'message' => 'Failed to mint certificate: ' . $e->getMessage(),
+                        'message' => 'Certificate operation failed.',
                         'transaction_id' => null,
                     ];
 
@@ -577,7 +582,7 @@ class CertificateController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to retrieve certificate status: ' . $e->getMessage()
+                'message' => 'Failed to retrieve certificate status. Please try again.'
             ], 500);
         }
     }

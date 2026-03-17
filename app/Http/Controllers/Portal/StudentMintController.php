@@ -310,7 +310,7 @@ class StudentMintController extends Controller
         if (!is_array($json) || ($json['status'] ?? 0) !== 200) {
             $error = $json['error'] ?? 'Unknown error';
             Log::warning('build-mint-tx certificate failed', ['error' => $error, 'raw_response' => substr($response ?? '', 0, 500)]);
-            return response()->json(['success' => false, 'message' => $error], 500);
+            return response()->json(['success' => false, 'message' => 'Transaction build failed. Please try again.'], 500);
         }
 
         // Don't mark pending here — status only changes after student signs + submits
@@ -354,7 +354,7 @@ class StudentMintController extends Controller
         if (!is_array($json) || ($json['status'] ?? 0) !== 200) {
             $error = $json['error'] ?? 'Unknown error';
             Log::warning('build-mint-tx token failed', ['error' => $error]);
-            return response()->json(['success' => false, 'message' => $error], 500);
+            return response()->json(['success' => false, 'message' => 'Transaction build failed. Please try again.'], 500);
         }
 
         // Don't mark pending here — status only changes after student signs + submits
@@ -427,7 +427,7 @@ class StudentMintController extends Controller
             }
             $courseHistory->save();
 
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+            return response()->json(['success' => false, 'message' => 'Mint transaction submission failed. Please try again.'], 500);
         }
 
         $json = json_decode($response, true);
@@ -443,7 +443,7 @@ class StudentMintController extends Controller
             }
             $courseHistory->save();
 
-            return response()->json(['success' => false, 'message' => $error], 500);
+            return response()->json(['success' => false, 'message' => 'Mint transaction submission failed. Please try again.'], 500);
         }
 
         $txHash = $json['txId'];
