@@ -72,5 +72,5 @@
     "A malformed CIP-30 wallet address (non-bech32, wrong network prefix) submitted to the ADA purchase or self-mint endpoint is rejected with a 422 response before any web3 script is invoked, and the error message contains no internal system paths or script output.",
     "A transaction built by the server for ADA purchase, airdrop, or self-mint has a TTL no greater than current slot + 300 slots at the time of building."
   ],
-  "lifecycle": "transitory"
+  "lifecycle": "living"
 }

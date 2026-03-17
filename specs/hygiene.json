@@ -3,7 +3,7 @@
   "title": "Platform Hygiene — Remove legacy points UI",
   "description": "Epic E-03. Complete removal of all legacy points system UI from the frontend. Scope is strictly frontend: UI elements, navigation references, and routes/redirects. Backend (database tables, models, services, controllers, API response fields) is left intact for future cleanup. The platform is not yet live, so no user data migration is needed. Features: remove all points UI from all pages (F-11.1); remove points navigation links (F-11.2); redirect former points URLs to appropriate existing pages (F-11.3); remove points references from shared components (F-11.4); investigate and disable any background processes referencing points (F-11.5).",
   "dag_dependencies": [],
-  "lifecycle": "transitory",
+  "lifecycle": "living",
   "bounded_context": {
     "read_only": [
       "app/**",
@@ -19,7 +19,8 @@
       "resources/js/pages/Portal/CourseSchedules/components/StudentsTable.jsx",
       "resources/js/pages/Portal/Exams/Create.jsx",
       "resources/js/pages/Portal/Exams/Result.jsx",
-      "resources/js/pages/Portal/Registration/Teacher.jsx"
+      "resources/js/pages/Portal/Registration/Teacher.jsx",
+      "routes/web.php"
     ],
     "forbidden": [
       ".env",

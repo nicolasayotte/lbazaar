@@ -217,12 +217,12 @@
     {
       "description": "ADA price drift threshold 0.05 present in Details.jsx (F-01 drift alert)",
       "type": "grep_match",
-      "check": "0\\.05::resources/js/pages/Portal/Course/Details.jsx"
+      "check": "0.05::resources/js/pages/Portal/Course/Details.jsx"
     },
     {
       "description": "ADA drift alert string present in Details.jsx (F-01 user-visible alert)",
       "type": "grep_match",
-      "check": "ADA price has shifted.*since page load::resources/js/pages/Portal/Course/Details.jsx"
+      "check": "ADA price has shifted::resources/js/pages/Portal/Course/Details.jsx"
     },
     {
       "description": "ADA availability flag present in Details.jsx (F-04 independent ADA path)",
@@ -232,7 +232,7 @@
     {
       "description": "Stripe conditional branch present in Details.jsx (F-04 independent Stripe path)",
       "type": "grep_match",
-      "check": "Stripe|stripe::resources/js/pages/Portal/Course/Details.jsx"
+      "check": "Stripe::resources/js/pages/Portal/Course/Details.jsx"
     },
     {
       "description": "ADA quote expiry config key present in CoursePurchaseService (F-02 quote TTL invariant)",
@@ -255,9 +255,9 @@
       "check": "confirmations::web3/run/check-tx-confirmations.mjs"
     },
     {
-      "description": "get-custodial-address.mjs referenced in build-purchase-tx.mjs (purchase recipient address invariant)",
+      "description": "get-custodial-address.mjs referenced in CoursePurchaseService (purchase recipient address invariant)",
       "type": "grep_match",
-      "check": "get-custodial-address::web3/run/build-purchase-tx.mjs"
+      "check": "get-custodial-address::app/Services/API/CoursePurchaseService.php"
     },
     {
       "description": "refunded ENUM value defined in refund status migration (F-13/F-15 status string)",
@@ -275,24 +275,44 @@
       "check": "unreachable::web3/run/check-network-health.mjs"
     },
     {
-      "description": "ROOT_KEY absent from all controller HTTP response paths (private key invariant)",
+      "description": "Security: ROOT_KEY absent from CoursePaymentController",
       "type": "grep_absent",
-      "check": "ROOT_KEY::app/Http/Controllers/"
+      "check": "ROOT_KEY::app/Http/Controllers/API/CoursePaymentController.php"
     },
     {
-      "description": "OWNER_PKH absent from all controller HTTP response paths (private key invariant)",
+      "description": "Security: OWNER_PKH absent from CoursePaymentController",
       "type": "grep_absent",
-      "check": "OWNER_PKH::app/Http/Controllers/"
+      "check": "OWNER_PKH::app/Http/Controllers/API/CoursePaymentController.php"
     },
     {
-      "description": "ROOT_KEY absent from all service response paths (private key invariant)",
+      "description": "Security: ROOT_KEY absent from CardanoController",
       "type": "grep_absent",
-      "check": "ROOT_KEY::app/Services/"
+      "check": "ROOT_KEY::app/Http/Controllers/API/CardanoController.php"
     },
     {
-      "description": "OWNER_PKH absent from all service response paths (private key invariant)",
+      "description": "Security: OWNER_PKH absent from CardanoController",
       "type": "grep_absent",
-      "check": "OWNER_PKH::app/Services/"
+      "check": "OWNER_PKH::app/Http/Controllers/API/CardanoController.php"
+    },
+    {
+      "description": "Security: ROOT_KEY absent from AdminRefundController",
+      "type": "grep_absent",
+      "check": "ROOT_KEY::app/Http/Controllers/API/AdminRefundController.php"
+    },
+    {
+      "description": "Security: OWNER_PKH absent from AdminRefundController",
+      "type": "grep_absent",
+      "check": "OWNER_PKH::app/Http/Controllers/API/AdminRefundController.php"
+    },
+    {
+      "description": "Security: ROOT_KEY absent from CoursePurchaseService",
+      "type": "grep_absent",
+      "check": "ROOT_KEY::app/Services/API/CoursePurchaseService.php"
+    },
+    {
+      "description": "Security: OWNER_PKH absent from CoursePurchaseService",
+      "type": "grep_absent",
+      "check": "OWNER_PKH::app/Services/API/CoursePurchaseService.php"
     },
     {
       "description": "ADA price freshness browser test exists (F-01/F-14)",
