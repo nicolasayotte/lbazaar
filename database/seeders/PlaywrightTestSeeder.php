@@ -19,6 +19,7 @@ use App\Models\Status;
 use App\Models\User;
 use App\Models\UserCertification;
 use App\Models\UserEducation;
+use App\Models\Nft;
 use App\Models\UserWallet;
 use App\Models\UserWorkHistory;
 use Illuminate\Database\Seeder;
@@ -238,9 +239,33 @@ class PlaywrightTestSeeder extends Seeder
                 $item2->update(['correct_choice_id' => $choice2a->id]);
             }
 
-            // ── Enroll pw-student in schedule (ongoing — for attend tests) ──
+            // ── Enroll pw-student in upcoming schedule ──
             CourseHistory::firstOrCreate(
                 ['user_id' => $student->id, 'course_schedule_id' => $schedule->id],
+                [
+                    'course_id' => $course->id,
+                    'completed_at' => null,
+                    'is_cancelled' => false,
+                ]
+            );
+
+            // ── Ongoing schedule (for attend tests — F-08.x) ──────────
+            // Uses max_participant=99 as a stable identifier to avoid colliding
+            // with the upcoming (100) and completed (100) schedules.
+            $ongoingStart = now()->subDay()->startOfDay()->toDateTimeString();
+            $ongoingEnd   = now()->addWeek()->endOfDay()->toDateTimeString();
+
+            $ongoingSchedule = CourseSchedule::updateOrCreate(
+                ['course_id' => $course->id, 'max_participant' => 99],
+                [
+                    'user_id' => $teacher->id,
+                    'start_datetime' => $ongoingStart,
+                    'end_datetime' => $ongoingEnd,
+                ]
+            );
+
+            CourseHistory::firstOrCreate(
+                ['user_id' => $student->id, 'course_schedule_id' => $ongoingSchedule->id],
                 [
                     'course_id' => $course->id,
                     'completed_at' => null,
@@ -259,12 +284,16 @@ class PlaywrightTestSeeder extends Seeder
                 ]
             );
 
-            CourseHistory::firstOrCreate(
+            CourseHistory::updateOrCreate(
                 ['user_id' => $student->id, 'course_schedule_id' => $completedSchedule->id],
                 [
                     'course_id' => $course->id,
                     'completed_at' => '2024-06-15 17:00:00',
                     'is_cancelled' => false,
+                    'enrolled_certificate_enabled' => true,
+                    'enrolled_certificate_name' => $course->certificate_name,
+                    'enrolled_certificate_description' => $course->certificate_description,
+                    'certificate_status' => 'eligible',
                 ]
             );
 
@@ -295,6 +324,34 @@ class PlaywrightTestSeeder extends Seeder
                     'description' => 'Teaching programming courses',
                 ]
             );
+
+            // ── Seeded NFT (for F-08.2b/c edit/delete tests) ─────────
+            Nft::firstOrCreate(
+                ['name' => 'E2E-Seeded-NFT'],
+                [
+                    'mph' => 'e2e_test_placeholder_mph',
+                    'image_url' => 'QmE2ETestCID',
+                    'points' => 0,
+                    'for_sale' => 0,
+                ]
+            );
+
+            // ── Available application (for F-03.3 create-course test) ─
+            $availableApplication = CourseApplication::firstOrCreate(
+                ['professor_id' => $teacher->id, 'title' => 'PW Available Application'],
+                [
+                    'course_type_id' => $generalType->id,
+                    'description' => 'Approved application kept available for course-creation tests',
+                    'price' => 4000,
+                    'points_earned' => 0,
+                    'max_participant' => 50,
+                    'is_live' => false,
+                    'approved_at' => now(),
+                    'length' => '01:00:00',
+                    'lecture_frequency' => 'weekly',
+                ]
+            );
+            $availableApplication->categories()->syncWithoutDetaching([$category->id]);
         });
     }
 
