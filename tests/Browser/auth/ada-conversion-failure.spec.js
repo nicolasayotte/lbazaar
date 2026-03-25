@@ -9,26 +9,49 @@ import { STORAGE_STATE } from '../helpers/test-users.js';
  * These tests verify correct UI behaviour when the ADA/JPY exchange rate
  * is unavailable (price_in_ada === null).
  *
- * Prerequisites:
- *   1. Set ADA_FAILURE_MODE=true in the environment
- *   2. Run: sail artisan db:seed --class=PlaywrightExchangeRateFailureSeeder
- *      (deletes ada-to-jpy Setting and flushes cache)
- *   3. The application must have at least one General-type course with a JPY
- *      price in the database.
- *
- * The suite self-skips when ADA_FAILURE_MODE is not set to 'true'.
+ * Uses Playwright route interception to simulate ADA unavailability
+ * by patching Inertia response props — no special env vars needed.
  */
-
-// Guard: skip entire suite unless ADA_FAILURE_MODE=true is set
-const ADA_FAILURE_MODE = process.env.ADA_FAILURE_MODE === 'true';
 
 test.use({ storageState: STORAGE_STATE.student });
 
-test.describe('ADA conversion unavailable (TS-01.08 through TS-01.11)', () => {
-    test.beforeEach(async ({}, testInfo) => {
-        if (!ADA_FAILURE_MODE) {
-            testInfo.skip(true, 'ADA_FAILURE_MODE is not set. Run PlaywrightExchangeRateFailureSeeder and set ADA_FAILURE_MODE=true to enable.');
+/**
+ * Intercept Inertia responses and patch props to simulate ADA unavailability.
+ */
+async function interceptAdaUnavailable(page) {
+    await page.route('**/*', async (route) => {
+        const response = await route.fetch();
+        const contentType = response.headers()['content-type'] || '';
+        const isInertia = response.headers()['x-inertia'] === 'true'
+            || contentType.includes('application/json');
+
+        if (isInertia && route.request().headers()['x-inertia']) {
+            try {
+                const json = await response.json();
+                if (json.props) {
+                    json.props.ada_available = false;
+                    if (json.props.course) json.props.course.price_in_ada = null;
+                    if (json.props.courses?.data) {
+                        json.props.courses.data.forEach(c => { c.price_in_ada = null; });
+                    }
+                }
+                await route.fulfill({
+                    status: response.status(),
+                    headers: response.headers(),
+                    body: JSON.stringify(json),
+                });
+            } catch {
+                await route.fulfill({ response });
+            }
+        } else {
+            await route.fulfill({ response });
         }
+    });
+}
+
+test.describe('ADA conversion unavailable (TS-01.08 through TS-01.11)', () => {
+    test.beforeEach(async ({ page }) => {
+        await interceptAdaUnavailable(page);
     });
 
     // -------------------------------------------------------------------------

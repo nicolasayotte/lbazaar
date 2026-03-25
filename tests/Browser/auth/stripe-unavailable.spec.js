@@ -6,24 +6,45 @@ import { STORAGE_STATE } from '../helpers/test-users.js';
 /**
  * TS-04.06 / TS-04.07 — Stripe Unavailable
  *
- * Prerequisites:
- * 1. Set STRIPE_SECRET= (empty) in .env
- * 2. Set STRIPE_UNAVAILABLE_MODE=true in the Playwright environment
- *
- * Self-skipping: this test does nothing unless STRIPE_UNAVAILABLE_MODE=true,
- * so it is safe to include in the normal test suite.
+ * Uses Playwright route interception to simulate Stripe unavailability
+ * by patching Inertia response props — no special env vars needed.
  */
-
-// Guard: skip entire suite unless STRIPE_UNAVAILABLE_MODE=true is set
-const STRIPE_UNAVAILABLE_MODE = process.env.STRIPE_UNAVAILABLE_MODE === 'true';
 
 test.use({ storageState: STORAGE_STATE.student });
 
-test.describe('Stripe unavailable (TS-04.06 / TS-04.07)', () => {
-    test.beforeEach(async ({}, testInfo) => {
-        if (!STRIPE_UNAVAILABLE_MODE) {
-            testInfo.skip(true, 'STRIPE_UNAVAILABLE_MODE is not set. Set STRIPE_SECRET= (empty) in .env and STRIPE_UNAVAILABLE_MODE=true to enable.');
+/**
+ * Intercept Inertia responses and patch props to simulate Stripe unavailability.
+ */
+async function interceptStripeUnavailable(page) {
+    await page.route('**/*', async (route) => {
+        const response = await route.fetch();
+        const contentType = response.headers()['content-type'] || '';
+        const isInertia = response.headers()['x-inertia'] === 'true'
+            || contentType.includes('application/json');
+
+        if (isInertia && route.request().headers()['x-inertia']) {
+            try {
+                const json = await response.json();
+                if (json.props) {
+                    json.props.stripe_available = false;
+                }
+                await route.fulfill({
+                    status: response.status(),
+                    headers: response.headers(),
+                    body: JSON.stringify(json),
+                });
+            } catch {
+                await route.fulfill({ response });
+            }
+        } else {
+            await route.fulfill({ response });
         }
+    });
+}
+
+test.describe('Stripe unavailable (TS-04.06 / TS-04.07)', () => {
+    test.beforeEach(async ({ page }) => {
+        await interceptStripeUnavailable(page);
     });
 
     // -------------------------------------------------------------------------
