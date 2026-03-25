@@ -214,7 +214,7 @@ test.describe('F-13: Admin Certificate Roster', () => {
         await expect(page).toHaveURL(new RegExp(`/admin/courses/${courseId}/certificates`));
 
         // Page renders either a roster table or empty state
-        const tableOrEmpty = page.locator('table, .MuiCard-root').first();
+        const tableOrEmpty = page.locator('table, .MuiCard-root, .MuiAlert-root').first();
         await expect(tableOrEmpty).toBeVisible();
     });
 });

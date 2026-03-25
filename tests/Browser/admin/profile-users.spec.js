@@ -222,12 +222,12 @@ test.describe('F-02: User Management', () => {
     });
 
     test('F-02.6: user status can be toggled', async ({ page }) => {
-        await page.goto('/admin/users?keyword=' + encodeURIComponent('E2E Test'));
+        await page.goto('/admin/users?keyword=' + encodeURIComponent('Playwright'));
         await waitForApp(page);
 
         const rows = page.locator('table tbody tr');
         const rowCount = await rows.count();
-        test.skip(rowCount === 0, 'No E2E Test users found — run F-02.4 first');
+        test.skip(rowCount === 0, 'No Playwright users found in seed data');
 
         const firstRow = rows.first();
         const statusCellBefore = firstRow.locator('td:nth-child(4)');

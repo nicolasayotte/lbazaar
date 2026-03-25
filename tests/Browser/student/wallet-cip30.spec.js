@@ -111,8 +111,8 @@ test.describe('CIP-30 Wallet (mock Eternl)', () => {
             })
         })
 
-        // Intercept self-mint status update (called after CIP-30 submit)
-        await page.route('**/self-mint', async (route) => {
+        // Intercept submit-mint-tx (server merges witnesses and submits to chain)
+        await page.route('**/wallet/submit-mint-tx', async (route) => {
             await route.fulfill({
                 status: 200,
                 contentType: 'application/json',

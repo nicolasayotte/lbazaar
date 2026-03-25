@@ -48,15 +48,16 @@ test.describe('F-03.4: Course detail schedule info', () => {
         await viewMoreLink.click();
         await waitForInertiaNavigation(page);
 
-        const scheduleSection = page.getByRole('heading', { name: /schedule/i });
-        const hasSectionHeading = await scheduleSection.count() > 0;
+        // CourseScheduleList renders Paper cards with date info — no heading element
+        const scheduleContent = page.locator('.MuiPaper-root').filter({ has: page.locator('svg') });
+        const hasSchedules = await scheduleContent.count() > 0;
 
-        if (!hasSectionHeading) {
-            test.skip(true, 'No schedule section found — no schedules seeded');
+        if (!hasSchedules) {
+            test.skip(true, 'No schedule content found on detail page');
             return;
         }
 
-        await expect(scheduleSection.first()).toBeVisible();
+        await expect(scheduleContent.first()).toBeVisible();
     });
 });
 
