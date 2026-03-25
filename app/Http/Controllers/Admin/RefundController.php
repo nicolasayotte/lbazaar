@@ -70,13 +70,13 @@ class RefundController extends Controller
                 'student_email'     => $h->user->email ?? '',
                 'course_name'       => $h->course->title ?? '',
                 'amount'            => number_format((float) $h->payment_ada_amount, 2) . ' ADA',
-                'payment_date'      => $h->created_at?->format('Y-m-d') ?? '',
+                'payment_date'      => $h->getRawOriginal('created_at') ? \Carbon\Carbon::parse($h->getRawOriginal('created_at'))->format('Y-m-d') : '',
                 'has_rewards'       => in_array($h->certificate_status, ['minted', 'self_minted'])
                     || $h->token_reward_minted_at !== null,
             ]);
         }
 
-        $allRows = $stripeRows->merge($adaRows)->sortByDesc('payment_date')->values();
+        $allRows = collect($stripeRows->all())->merge($adaRows->all())->sortByDesc('payment_date')->values();
         $pageItems = $allRows->slice(($page - 1) * $perPage, $perPage)->values();
 
         $purchases = new LengthAwarePaginator(
