@@ -69,3 +69,23 @@ Read `docs/index.md` for full navigation. Before any task, read the relevant doc
 - `docs/authentication.md` · `docs/api.md` · `docs/workflow.md` · `docs/certificate-minting-api.md`
 
 Only read what's relevant to your current task.
+
+<!-- cbad-settings-start -->
+## CBAD
+
+**Forest**: "Le Bazaar Milestone 4" — 4 contracts total, 2 leaf contracts (`payments`, `hygiene`).
+**Contract tree**: `payments` (leaf) · `hygiene` (leaf) · `rewards` (deps: payments) · `e2e` (deps: payments, rewards, hygiene).
+
+**Primary entry points:**
+- `/cbad:building-contracts` — shape the spec tree (initialize, decompose, refine contracts)
+- `/cbad:converging-contracts` — implement what specs define (execute, verify, loop until green)
+
+**Directories:**
+- `specs/` — versioned contract tree; source of truth; never modified during execution
+- `.cbad/` — ephemeral runtime state (gitignored); holds execution state and borrow leases
+
+**Rules:**
+- Always start from leaf contracts (`payments`, `hygiene`) — dependents build on top.
+- Execution state lives in `.cbad/`; do not commit it.
+- Topology is valid (0 errors, 2 warnings) — warnings do not block execution.
+<!-- cbad-settings-end -->
