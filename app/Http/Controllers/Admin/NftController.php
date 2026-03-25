@@ -37,9 +37,18 @@ class NftController extends Controller
     public function store(NftFormRequest $request)
     {
         // Store NFT minting policy hash in the nft table
-        $cmd = '(cd ../web3/;node ./run/get-mph.mjs) 2>> ../storage/logs/web3.log';  
+        $web3Dir = base_path('web3');
+        $logPath = storage_path('logs/web3.log');
+        $cmd = sprintf('(cd %s; node ./run/get-mph.mjs) 2>> %s', escapeshellarg($web3Dir), escapeshellarg($logPath));
         $response = exec($cmd);
         $responseJSON = json_decode($response, false);
+
+        if ($responseJSON === null || !isset($responseJSON->mph)) {
+            $errorCode = $responseJSON->error ?? 'script_error';
+            logger()->error('get-mph.mjs failed', ['response' => $response]);
+            return back()->withErrors(['mph' => __('Failed to retrieve minting policy hash. Check web3 configuration.')]);
+        }
+
         $request['mph'] = $responseJSON->mph;
         $request->merge(['points' => $request->input('points', 0)]);
 
