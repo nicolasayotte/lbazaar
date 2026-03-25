@@ -61,13 +61,61 @@ test.describe('F-07: Student Badges Page', () => {
 
 // ---------------------------------------------------------------------------
 // F-08: Course Attendance Flow
+//
+// Discovers course/schedule IDs dynamically from the course detail page
+// instead of hardcoding IDs. The seeder creates an "ongoing" schedule
+// for PW Test Course with an enrolled student.
 // ---------------------------------------------------------------------------
 test.describe('F-08: Course Attendance Flow', () => {
 
+    /** @type {string|null} */
+    let courseId = null;
+    /** @type {string|null} */
+    let scheduleId = null;
+
+    test.beforeAll(async ({ browser }) => {
+        const context = await browser.newContext({ storageState: STORAGE_STATE.student });
+        const page = await context.newPage();
+
+        try {
+            // Navigate to course listing
+            await page.goto('/classes');
+            await waitForApp(page);
+
+            // Iterate course cards to find one with an attend link (ongoing + booked)
+            const courseLinks = page.locator('.MuiCard-root a[href*="/classes/"]');
+            const count = await courseLinks.count();
+
+            for (let i = 0; i < Math.min(count, 10); i++) {
+                const href = await courseLinks.nth(i).getAttribute('href');
+                if (!href || !href.match(/\/classes\/\d+$/)) continue;
+
+                await page.goto(href);
+                await waitForApp(page);
+
+                // CourseScheduleList renders <Link href="/classes/{id}/attend/{id}">
+                const attendLink = page.locator('a[href*="/attend/"]').first();
+                if (await attendLink.count() > 0) {
+                    const attendHref = await attendLink.getAttribute('href');
+                    const m = attendHref?.match(/\/classes\/(\d+)\/attend\/(\d+)/);
+                    if (m) {
+                        courseId = m[1];
+                        scheduleId = m[2];
+                        break;
+                    }
+                }
+            }
+        } finally {
+            await context.close();
+        }
+    });
+
     test('F-08.1: attend page loads and shows stepper for a booked schedule', async ({ page }) => {
-        const response = await page.goto('/classes/1/attend/1');
+        test.skip(!courseId || !scheduleId, 'No ongoing booked schedule found in seed data');
+
+        const response = await page.goto(`/classes/${courseId}/attend/${scheduleId}`);
         const status = response.status();
-        test.skip(status === 404, 'No booked schedule with course_id=1 schedule_id=1 in seed data');
+        test.skip(status === 404, 'Attend page not found for discovered IDs');
         expect(status).toBeLessThan(500);
         await waitForApp(page);
 
@@ -75,9 +123,11 @@ test.describe('F-08: Course Attendance Flow', () => {
     });
 
     test('F-08.2: watch page renders for a video/live class', async ({ page }) => {
-        const response = await page.goto('/classes/1/attend/1/watch');
+        test.skip(!courseId || !scheduleId, 'No ongoing booked schedule found in seed data');
+
+        const response = await page.goto(`/classes/${courseId}/attend/${scheduleId}/watch`);
         const status = response.status();
-        test.skip(status === 404, 'No watch page for course_id=1 schedule_id=1 in seed data');
+        test.skip(status === 404, 'Watch page not found for discovered IDs');
         expect(status).toBeLessThan(500);
         await waitForApp(page);
 
@@ -85,17 +135,32 @@ test.describe('F-08: Course Attendance Flow', () => {
     });
 
     test('F-08.3: exam page renders if accessible', async ({ page }) => {
-        const response = await page.goto('/classes/1/attend/1/exams/1');
+        test.skip(!courseId || !scheduleId, 'No ongoing booked schedule found in seed data');
+
+        // Discover exam ID from the attend page
+        await page.goto(`/classes/${courseId}/attend/${scheduleId}`);
+        await waitForApp(page);
+
+        const examLink = page.locator('a[href*="/exams/"]').first();
+        if (await examLink.count() === 0) {
+            test.skip(true, 'No exam link found on attend page');
+            return;
+        }
+
+        const examHref = await examLink.getAttribute('href');
+        const response = await page.goto(examHref);
         const status = response.status();
-        test.skip(status === 404, 'No exam with id=1 for schedule_id=1 in seed data');
+        test.skip(status === 404 || status === 401, 'Exam page not accessible');
         expect(status).toBeLessThan(500);
         await waitForApp(page);
     });
 
     test('F-08.4: feedback page renders if accessible', async ({ page }) => {
-        const response = await page.goto('/classes/1/attend/1/feedback');
+        test.skip(!courseId || !scheduleId, 'No ongoing booked schedule found in seed data');
+
+        const response = await page.goto(`/classes/${courseId}/attend/${scheduleId}/feedback`);
         const status = response.status();
-        test.skip(status === 404, 'No feedback page for schedule_id=1 in seed data');
+        test.skip(status === 404, 'Feedback page not found for discovered IDs');
         expect(status).toBeLessThan(500);
         await waitForApp(page);
     });
