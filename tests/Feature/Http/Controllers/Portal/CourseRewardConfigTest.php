@@ -17,9 +17,11 @@ class CourseRewardConfigTest extends TestCase
     {
         parent::setUp();
 
-        $this->createRoles(['teacher', 'student']);
-        $this->teacher = $this->createTestUser();
-        $this->teacher->attachRole('teacher');
+        $this->retryOnDisconnect(function () {
+            $this->createRoles(['teacher', 'student']);
+            $this->teacher = $this->createTestUser();
+            $this->teacher->attachRole('teacher');
+        });
     }
 
     /**

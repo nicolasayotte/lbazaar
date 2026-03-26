@@ -3,6 +3,7 @@
 namespace Tests\Unit\Services\API;
 
 use Tests\TestCase;
+use App\Services\API\CertificateService;
 use App\Services\API\RewardInvalidationService;
 use App\Models\Course;
 use App\Models\CourseHistory;
@@ -59,7 +60,10 @@ class RewardInvalidationServiceTest extends TestCase
             ->andReturn($this->admin)
             ->byDefault();
 
-        $this->service = new RewardInvalidationService($this->userRepository);
+        $certificateService = Mockery::mock(CertificateService::class);
+        $certificateService->shouldReceive('revokeCertificateOnChain')->andReturn([])->byDefault();
+
+        $this->service = new RewardInvalidationService($this->userRepository, $certificateService);
     }
 
     // -------------------------------------------------------------------------
