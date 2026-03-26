@@ -95,6 +95,24 @@ Route::prefix('/stripe')
     ->group(function () { ... });
 ```
 
+### Token Expiration & Rotation
+
+Sanctum tokens have two expiration layers:
+- **Sliding window**: 8-hour inactivity timeout (set in `config/sanctum.php`)
+- **Hard deadline**: 24-hour absolute lifetime (set at `createToken()` call)
+
+Available token management endpoints:
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| `POST` | `/api/auth/login` | Issue new token (email + password) |
+| `POST` | `/api/auth/refresh` | Revoke current token, issue new one |
+| `DELETE` | `/api/auth/logout` | Revoke current token |
+
+Expired tokens are pruned daily via `sanctum:prune-expired`.
+
+See **[Sanctum Token Expiration](./sanctum-token-expiration.md)** for the full guide on expiration mechanics, rotation patterns, and client-side implementation.
+
 ## 3. Authorization — RBAC (Laratrust 7.1)
 
 ### Roles

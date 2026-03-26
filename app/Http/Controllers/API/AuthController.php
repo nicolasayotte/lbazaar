@@ -50,7 +50,11 @@ class AuthController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => getTranslation('success.user.login'),
-                'token' => $user->createToken("API TOKEN")->plainTextToken
+                'token' => $user->createToken(
+                    'admin-api-' . now()->format('Ymd-His'),
+                    ['*'],
+                    now()->addDay()
+                )->plainTextToken
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -58,5 +62,30 @@ class AuthController extends Controller
                 'message' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Token revoked',
+        ]);
+    }
+
+    public function refresh(Request $request)
+    {
+        $user = $request->user();
+        $user->currentAccessToken()->delete();
+
+        return response()->json([
+            'status' => true,
+            'token' => $user->createToken(
+                'admin-api-' . now()->format('Ymd-His'),
+                ['*'],
+                now()->addDay()
+            )->plainTextToken,
+        ]);
     }
 }

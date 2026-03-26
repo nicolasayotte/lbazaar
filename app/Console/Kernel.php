@@ -17,6 +17,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command('purchases:timeout')->everyFifteenMinutes();
+        $schedule->command('sanctum:prune-expired')->daily();
     }
 
     /**
