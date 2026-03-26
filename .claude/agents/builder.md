@@ -81,3 +81,4 @@ When generating code: keep functions pure and isolate side effects at system bou
 - Data flows: `docs/data-flows.md` (for features spanning Client→Service→Blockchain)
 - API contracts: `docs/api.md` (for API-related tasks)
 - Authentication: `docs/authentication.md` (for auth-related tasks)
+- Integrations: `docs/integrations.md` (for Stripe, Blockfrost, CoinGecko, S3 tasks)

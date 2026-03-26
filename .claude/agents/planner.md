@@ -85,5 +85,6 @@ When specifying test requirements, note these conventions so builder doesn't rei
 - Gotchas: `docs/gotchas.md`
 - API endpoints: `docs/api.md` (for API-related tasks)
 - Authentication: `docs/authentication.md` (for auth-related tasks)
+- Integrations: `docs/integrations.md` (for Stripe, Blockfrost, CoinGecko, S3 tasks)
 - Testing conventions: `docs/testing.md` (for complex test requirements)
 - Agent workflow: `docs/workflow.md` (for multi-part feature decomposition)

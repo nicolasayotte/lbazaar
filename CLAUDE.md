@@ -26,6 +26,7 @@ sail artisan migrate          # Run migrations
 sail composer test            # PHP tests (parallel, 8 workers — full suite)
 sail test --filter=TestClass  # PHP tests (serial — single test/class)
 cd web3 && npm test           # Web3 tests
+npm run test:browser          # Playwright E2E browser tests
 ./test-prod.sh full-test      # Local production testing (REQUIRED before deploy)
 ```
 

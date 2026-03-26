@@ -430,6 +430,62 @@ test.skip(true, 'Known app bug — NFT form missing required "points" field (Nft
 
 **After form POST** — Use `waitForInertiaNavigation(page)` (not just `waitForApp`) to ensure Inertia has fully re-rendered with server validation errors before asserting on error messages.
 
+#### Advanced Playwright Patterns
+
+**Route interception for external API simulation** — Instead of env-var guards or special seeders, intercept and patch Inertia responses in-test to simulate failure states (e.g., ADA unavailable, Stripe down). No environment setup required:
+
+```javascript
+async function interceptAdaUnavailable(page) {
+    await page.route('**/*', async (route) => {
+        const response = await route.fetch();
+        const isInertia = response.headers()['x-inertia'] === 'true';
+        if (isInertia && route.request().headers()['x-inertia']) {
+            const json = await response.json();
+            if (json.props) {
+                json.props.ada_available = false;
+                if (json.props.course) json.props.course.price_in_ada = null;
+            }
+            await route.fulfill({ status: response.status(), headers: response.headers(), body: JSON.stringify(json) });
+        } else {
+            await route.continue();
+        }
+    });
+}
+```
+
+**Clock API for time-dependent tests** — Use `page.clock.install()` + `page.clock.tick()` to test polling intervals and time-based UI updates without real waiting. Install before navigation so `setInterval` uses the fake timer:
+
+```javascript
+test('ADA price updates in-place', async ({ page }) => {
+    await page.clock.install(); // before goto — setInterval uses fake clock
+    const courseUrl = await navigateToFirstCourse(page);
+    const initialPrice = await page.locator('[data-testid="ada-price"]').textContent();
+
+    // Intercept the poll request and return a different price
+    await page.route('**/api/courses/*/ada-price', route =>
+        route.fulfill({ body: JSON.stringify({ price_in_ada: 999.99 }) })
+    );
+
+    await page.clock.tick(65_000); // advance 65s to trigger the 60s poll
+    await expect(page.locator('[data-testid="ada-price"]')).not.toHaveText(initialPrice);
+});
+```
+
+**Dynamic ID discovery** — Navigate to listing pages and extract IDs dynamically instead of hardcoding. Prevents brittleness when seed data changes:
+
+```javascript
+async function navigateToFirstCourse(page) {
+    await page.goto('/classes');
+    await waitForApp(page);
+    const link = page.locator('.MuiCard-root a[href*="/classes/"]').first();
+    if (await link.count() === 0) return null;
+    const href = await link.getAttribute('href');
+    await page.goto(href);
+    await waitForInertiaNavigation(page);
+    return href;
+}
+```
+
 ### All Fast-Pipeline Tests
 
 Run the backend, frontend, and browser tests in one command:

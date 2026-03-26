@@ -30,6 +30,8 @@ New to Le Bazaar? Start here:
 | **[Local Production Testing](./LOCAL_PROD_TESTING.md)** | Test prod build locally with `./test-prod.sh` | Before deploying to production |
 | **[E2E Test Status](./e2e-test-status.md)** | Playwright test coverage map (115 scenarios) | Checking E2E test coverage or adding new tests |
 | **[Dependency Audit](./dependency-audit-2026-02.md)** | Feb 2026 audit: critical/high/medium upgrade risks | Planning dependency upgrades |
+| **[Sanctum Token Expiration](./sanctum-token-expiration.md)** | Token lifecycle, rotation, pruning | Configuring API token security |
+| **[Secrets Manager Migration](./secrets-manager-migration.md)** | ROOT_KEY & secrets in AWS Secrets Manager | Moving secrets off .env files |
 
 ## Documentation by Role
 
@@ -106,8 +108,9 @@ Focus on:
 
 **Test Commands**:
 ```bash
-sail test                    # Backend tests
+sail composer test           # Backend tests (parallel, 8 workers)
 cd web3 && npm test         # Web3 tests
+npm run test:browser        # Playwright E2E browser tests
 ./test-prod.sh full-test    # Production build test
 ```
 
