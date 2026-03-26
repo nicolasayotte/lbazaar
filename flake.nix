@@ -27,6 +27,7 @@
           [ php82WithXml ]
           ++ (with pkgs; [
             php82Packages.composer
+            nodejs_22
             docker
           ]);
 

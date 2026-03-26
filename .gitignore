@@ -28,4 +28,5 @@ yarn-error.log
 /blob-report/
 /playwright/.cache/
 tmp/
+tmp*
 tests/Browser/fixtures/*.json
