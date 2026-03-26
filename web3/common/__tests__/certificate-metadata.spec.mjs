@@ -39,9 +39,9 @@ describe('certificate-metadata helpers', () => {
     expect(assetData).toHaveProperty('course');
     expect(assetData).toHaveProperty('credential');
 
-    // Verify course structure from template
+    // Verify course structure from template (F-05: teacher renamed to instructor)
     expect(assetData.course).toHaveProperty('id');
-    expect(assetData.course).toHaveProperty('teacher');
+    expect(assetData.course).toHaveProperty('instructor');
     expect(assetData.course).toHaveProperty('title');
 
     // Verify credential structure from template
@@ -59,7 +59,7 @@ describe('certificate-metadata helpers', () => {
     expect(assetData.name).toBe('Certificate — Blockchain 101 (Cohort 2)');
     expect(assetData.image).toBe('QmImage');
     expect(assetData.course.title).toBe('Blockchain 101');
-    expect(assetData.course.teacher).toBe('Ada Lovelace');
+    expect(assetData.course.instructor).toBe('Ada Lovelace');
     expect(assetData.credential.certificate_id).toBe('CERT-123');
     expect(assetData.mediaType).toBe('image/png');
     expect(assetData.description).toBe('Awarded upon successful completion.');
@@ -150,7 +150,7 @@ describe('certificate-metadata helpers', () => {
     expect(assetData.name).toBe(' — Cohort 1 Seat #');
   });
 
-  it('buildCIP25Metadata wraps certificate metadata with policy', async () => {
+  it('buildCIP25Metadata wraps certificate metadata with policy in Helios map format', async () => {
     const input = {
       course_title: 'Web3 Development',
       teacher_name: 'Nakamoto',
@@ -159,22 +159,19 @@ describe('certificate-metadata helpers', () => {
 
     const metadata = await buildCIP25Metadata('policy123', '43455254', input, 'ipfs://asset');
 
-    // Verify CIP-25 structure
-    expect(metadata).toHaveProperty('policy123');
-    expect(metadata).toHaveProperty('version');
-    expect(metadata.version).toBe(1);
+    // toHeliosMetadata converts plain objects to { map: [[k, v], ...] } format
+    expect(metadata).toHaveProperty('map');
+    expect(Array.isArray(metadata.map)).toBe(true);
 
-    // Verify the wrapped certificate metadata preserves template structure
-    const policyData = metadata.policy123;
-    const assetData = policyData['43455254'];
-    expect(assetData).toHaveProperty('course');
-    expect(assetData).toHaveProperty('credential');
-    expect(assetData.course.title).toBe('Web3 Development');
-    expect(assetData.course.teacher).toBe('Nakamoto');
-    expect(assetData.credential.student.name).toBe('Alice');
+    // Find the policy entry and version entry in the map
+    const policyEntry = metadata.map.find(([k]) => k === 'policy123');
+    const versionEntry = metadata.map.find(([k]) => k === 'version');
+    expect(policyEntry).toBeDefined();
+    expect(versionEntry).toBeDefined();
+    expect(versionEntry[1]).toBe(1);
   });
 
-  it('buildCustomMetadata returns descriptive messages', () => {
+  it('buildCustomMetadata returns descriptive messages in Helios map format', () => {
     const custom = buildCustomMetadata({
       course_title: 'Intro to DeFi',
       student_name: 'Alice',
@@ -182,9 +179,11 @@ describe('certificate-metadata helpers', () => {
       completion_date: '2024-05-01T00:00:00Z',
     });
 
-    expect(custom).toHaveProperty('msg');
-    expect(Array.isArray(custom.msg)).toBe(true);
-    expect(custom.msg).toEqual([
+    // toHeliosMetadata converts {msg: [...]} to {map: [['msg', [...]]]}
+    expect(custom).toHaveProperty('map');
+    const msgEntry = custom.map.find(([k]) => k === 'msg');
+    expect(msgEntry).toBeDefined();
+    expect(msgEntry[1]).toEqual([
       'Certificate of Completion',
       'Course: Intro to DeFi',
       'Student: Alice',
