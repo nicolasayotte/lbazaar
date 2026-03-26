@@ -511,16 +511,9 @@ git push --force  # ⚠️ NEVER on main branch
 
 ### Secrets Management
 
-**Never commit**:
-- `ROOT_KEY` (Cardano wallet private key)
-- `BLOCKFROST_API_KEY`
-- `DB_PASSWORD`
-- `AWS_SECRET_ACCESS_KEY`
+**Never commit**: `ROOT_KEY`, `BLOCKFROST_API_KEY`, `DB_PASSWORD`, `AWS_SECRET_ACCESS_KEY`, `STRIPE_SECRET`, `APP_KEY`.
 
-**Use**:
-- Environment variables
-- AWS Secrets Manager (recommended for production)
-- `.env` files (never committed)
+For the full migration guide from `.env` files to AWS Secrets Manager (including ROOT_KEY handling, IAM policies, Docker integration, and rollback procedures), see **[Secrets Manager Migration](./secrets-manager-migration.md)**.
 
 ### SSH Keys
 
