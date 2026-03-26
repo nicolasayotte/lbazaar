@@ -41,6 +41,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::post('/auth/login', [AuthController::class, 'authenticate']);
 
+Route::middleware('auth:sanctum')->group(function () {
+    Route::delete('/auth/logout', [AuthController::class, 'logout']);
+    Route::post('/auth/refresh', [AuthController::class, 'refresh']);
+});
+
 Route::prefix('/applications')->name('applications.')->group(function() {
     Route::post('/teachers/create', [UserController::class, 'create'])->name('teachers.create');
     Route::post('/class/create', [CourseApplicationController::class, 'create'])->name('class.create');
@@ -68,7 +73,9 @@ Route::get('/countries',  function (Request $request) {
 Route::post('/votes/register', [VoteController::class, 'register'])->name('votes.register');
 
 // Blockfrost Webhooks
-Route::post('/webhook/blockfrost/purchase', [CoursePaymentController::class, 'handlePurchaseWebhook'])->name('webhook.purchase');
+Route::post('/webhook/blockfrost/purchase', [CoursePaymentController::class, 'handlePurchaseWebhook'])
+    ->middleware('throttle:webhook')
+    ->name('webhook.purchase');
 
 // Stripe payment routes (authenticated)
 Route::prefix('/stripe')->middleware(['auth:sanctum'])->name('stripe.')->group(function() {
@@ -78,7 +85,9 @@ Route::prefix('/stripe')->middleware(['auth:sanctum'])->name('stripe.')->group(f
 });
 
 // Stripe webhook (no auth, CSRF exempt, signature verified in controller)
-Route::post('/stripe/webhook', [StripeController::class, 'webhook'])->name('stripe.webhook');
+Route::post('/stripe/webhook', [StripeController::class, 'webhook'])
+    ->middleware('throttle:webhook')
+    ->name('stripe.webhook');
 
 // Public course price endpoints
 Route::get('/courses/{course}/ada-price', [\App\Http\Controllers\API\CourseController::class, 'getAdaPrice'])
