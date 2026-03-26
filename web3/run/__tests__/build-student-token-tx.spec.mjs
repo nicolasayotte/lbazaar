@@ -1,8 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
+const flushPromises = () => new Promise(r => setTimeout(r, 0));
+
 // Mock Helios library
 const mockMintRedeemer = { _toUplcData: vi.fn(() => 'mock-redeemer-data') };
-const MockMintClass = vi.fn(() => mockMintRedeemer);
+const MockMintClass = vi.fn(function() { return mockMintRedeemer; });
 
 const mockProgram = {
   parameters: {},
@@ -72,7 +74,7 @@ vi.mock('@hyperionbt/helios', () => ({
   Program: { new: mockProgramNew },
   PubKeyHash: mockPubKeyHash,
   textToBytes: vi.fn((text) => new TextEncoder().encode(text)),
-  Tx: vi.fn(() => mockTx),
+  Tx: vi.fn(function() { return mockTx; }),
   TxInput: mockTxInput,
   TxOutput: mockTxOutput,
   Value: mockValue,
@@ -160,6 +162,7 @@ describe('build-student-token-tx.mjs', () => {
       const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       await import('../build-student-token-tx.mjs?t=' + Date.now());
+      await flushPromises();
 
       expect(mockStdoutWrite).toHaveBeenCalled();
       const response = JSON.parse(mockStdoutWrite.mock.calls[0][0]);
@@ -186,6 +189,7 @@ describe('build-student-token-tx.mjs', () => {
       const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       await import('../build-student-token-tx.mjs?t=' + Date.now());
+      await flushPromises();
 
       expect(mockStdoutWrite).toHaveBeenCalled();
       const response = JSON.parse(mockStdoutWrite.mock.calls[0][0]);
@@ -217,6 +221,7 @@ describe('build-student-token-tx.mjs', () => {
       const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       await import('../build-student-token-tx.mjs?t=' + Date.now());
+      await flushPromises();
 
       expect(mockStdoutWrite).toHaveBeenCalled();
       const response = JSON.parse(mockStdoutWrite.mock.calls[0][0]);
@@ -249,6 +254,7 @@ describe('build-student-token-tx.mjs', () => {
       const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       await import('../build-student-token-tx.mjs?t=' + Date.now());
+      await flushPromises();
 
       expect(mockStdoutWrite).toHaveBeenCalled();
       const response = JSON.parse(mockStdoutWrite.mock.calls[0][0]);
@@ -278,6 +284,7 @@ describe('build-student-token-tx.mjs', () => {
       const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       await import('../build-student-token-tx.mjs?t=' + Date.now());
+      await flushPromises();
 
       expect(mockTx.addMetadata).toHaveBeenCalledTimes(1);
       const [label, metadata] = mockTx.addMetadata.mock.calls[0];
@@ -307,6 +314,7 @@ describe('build-student-token-tx.mjs', () => {
       const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       await import('../build-student-token-tx.mjs?t=' + Date.now());
+      await flushPromises();
 
       const [, metadata] = mockTx.addMetadata.mock.calls[0];
       expect(metadata.msg).toContain('Course: Participation-Badge');
@@ -333,6 +341,7 @@ describe('build-student-token-tx.mjs', () => {
       const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       await import('../build-student-token-tx.mjs?t=' + Date.now());
+      await flushPromises();
 
       expect(mockTx.addOutput).toHaveBeenCalledTimes(1);
       // The TxOutput constructor receives student address as first arg
@@ -363,6 +372,7 @@ describe('build-student-token-tx.mjs', () => {
       const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       await import('../build-student-token-tx.mjs?t=' + Date.now());
+      await flushPromises();
 
       expect(mockPubKeyHash.fromHex).toHaveBeenCalledWith('owner-pkh-test');
       expect(mockTx.addSigner).toHaveBeenCalledWith('pkh:owner-pkh-test');
@@ -389,6 +399,7 @@ describe('build-student-token-tx.mjs', () => {
       const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       await import('../build-student-token-tx.mjs?t=' + Date.now());
+      await flushPromises();
 
       expect(mockAddress.fromBech32).toHaveBeenCalledWith('addr_test1student');
       expect(mockAddress.fromHex).not.toHaveBeenCalled();
@@ -413,6 +424,7 @@ describe('build-student-token-tx.mjs', () => {
       const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       await import('../build-student-token-tx.mjs?t=' + Date.now());
+      await flushPromises();
 
       expect(mockAddress.fromHex).toHaveBeenCalledWith('01deadbeef1234567890abcdef');
       expect(mockAddress.fromBech32).not.toHaveBeenCalled();

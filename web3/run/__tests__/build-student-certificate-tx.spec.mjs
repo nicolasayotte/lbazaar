@@ -1,15 +1,19 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
+const flushPromises = () => new Promise(r => setTimeout(r, 0));
+
 let importCounter = 0;
-const freshImport = () =>
-  import('../build-student-certificate-tx.mjs?t=' + ++importCounter);
+const freshImport = async () => {
+  await import('../build-student-certificate-tx.mjs?t=' + ++importCounter);
+  await flushPromises();
+};
 
 // Mock Helios library
 const mockMintInstance = {
   _toUplcData: vi.fn(() => 'mock-redeemer-data'),
 };
 
-const mockMintConstructor = vi.fn(() => mockMintInstance);
+const mockMintConstructor = vi.fn(function() { return mockMintInstance; });
 
 const mockProgram = {
   parameters: {},
@@ -85,7 +89,7 @@ vi.mock('@hyperionbt/helios', () => ({
   Program: { new: mockProgram_new },
   PubKeyHash: mockPubKeyHash,
   textToBytes: vi.fn((str) => Buffer.from(str, 'utf-8')),
-  Tx: vi.fn(() => mockTx),
+  Tx: vi.fn(function() { return mockTx; }),
   TxInput: mockTxInput,
   TxOutput: mockTxOutput,
   Value: mockValue,
@@ -164,7 +168,7 @@ describe('build-student-certificate-tx.mjs', () => {
     mockTx.toCbor.mockReturnValue(new Uint8Array([0x84]));
 
     mockMintInstance._toUplcData.mockReturnValue('mock-redeemer-data');
-    mockMintConstructor.mockReturnValue(mockMintInstance);
+    mockMintConstructor.mockImplementation(function() { return mockMintInstance; });
     mockProgram.compile.mockReturnValue({ mintingPolicyHash: { hex: 'mock-mph-hex' } });
     mockProgram_new.mockReturnValue(mockProgram);
 

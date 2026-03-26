@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
+const flushPromises = () => new Promise(r => setTimeout(r, 0));
+
 // Mock Helios library
 const mockTx = {
   addInputs: vi.fn().mockReturnThis(),
@@ -66,7 +68,7 @@ vi.mock('@hyperionbt/helios', () => ({
   Value: mockValue,
   TxInput: mockTxInput,
   TxOutput: mockTxOutput,
-  Tx: vi.fn(() => mockTx),
+  Tx: vi.fn(function() { return mockTx; }),
 }));
 
 const mockSignTx = vi.fn((tx) => ({
@@ -142,7 +144,8 @@ describe('build-purchase-tx.mjs', () => {
       const mockStdoutWrite = vi.spyOn(process.stdout, 'write').mockImplementation(() => true);
       const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-      const module = await import('../build-purchase-tx.mjs?t=' + Date.now());
+      await import('../build-purchase-tx.mjs?t=' + Date.now());
+      await flushPromises();
 
       expect(mockStdoutWrite).toHaveBeenCalled();
       const output = mockStdoutWrite.mock.calls[0][0];
@@ -175,6 +178,7 @@ describe('build-purchase-tx.mjs', () => {
       const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       await import('../build-purchase-tx.mjs?t=' + Date.now());
+      await flushPromises();
 
       const output = mockStdoutWrite.mock.calls[0][0];
       const response = JSON.parse(output);
@@ -207,6 +211,7 @@ describe('build-purchase-tx.mjs', () => {
       const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       await import('../build-purchase-tx.mjs?t=' + Date.now());
+      await flushPromises();
 
       // Verify addOutput was called twice (once for teacher, once for admin)
       expect(mockTx.addOutput).toHaveBeenCalledTimes(2);
@@ -232,6 +237,7 @@ describe('build-purchase-tx.mjs', () => {
       const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       await import('../build-purchase-tx.mjs?t=' + Date.now());
+      await flushPromises();
 
       // Verify TxOutput constructor calls
       expect(mockTxOutput).toHaveBeenCalledTimes(2);
@@ -272,6 +278,7 @@ describe('build-purchase-tx.mjs', () => {
       const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       await import('../build-purchase-tx.mjs?t=' + Date.now());
+      await flushPromises();
 
       expect(mockStdoutWrite).toHaveBeenCalled();
       const output = mockStdoutWrite.mock.calls[0][0];
@@ -306,6 +313,7 @@ describe('build-purchase-tx.mjs', () => {
       const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       await import('../build-purchase-tx.mjs?t=' + Date.now());
+      await flushPromises();
 
       expect(mockStdoutWrite).toHaveBeenCalled();
       const output = mockStdoutWrite.mock.calls[0][0];
@@ -337,6 +345,7 @@ describe('build-purchase-tx.mjs', () => {
       const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       await import('../build-purchase-tx.mjs?t=' + Date.now());
+      await flushPromises();
 
       expect(mockStdoutWrite).toHaveBeenCalled();
       const output = mockStdoutWrite.mock.calls[0][0];
@@ -372,6 +381,7 @@ describe('build-purchase-tx.mjs', () => {
       const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       await import('../build-purchase-tx.mjs?t=' + Date.now());
+      await flushPromises();
 
       // Verify metadata was added
       expect(mockTx.addMetadata).toHaveBeenCalledTimes(1);
@@ -407,6 +417,7 @@ describe('build-purchase-tx.mjs', () => {
       const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       await import('../build-purchase-tx.mjs?t=' + Date.now());
+      await flushPromises();
 
       // Should return an error response due to stake key mismatch
       expect(mockStdoutWrite).toHaveBeenCalled();
@@ -443,6 +454,7 @@ describe('build-purchase-tx.mjs', () => {
       const { config } = await import('@hyperionbt/helios');
 
       await import('../build-purchase-tx.mjs?t=' + Date.now());
+      await flushPromises();
 
       expect(config.IS_TESTNET).toBe(true);
 
@@ -469,6 +481,7 @@ describe('build-purchase-tx.mjs', () => {
       const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       await import('../build-purchase-tx.mjs?t=' + Date.now());
+      await flushPromises();
 
       // Verify addSigner was called twice
       expect(mockTx.addSigner).toHaveBeenCalledTimes(2);

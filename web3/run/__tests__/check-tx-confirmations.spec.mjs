@@ -1,12 +1,16 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
+const flushPromises = () => new Promise(r => setTimeout(r, 0));
+
 const mockTxs = vi.fn();
 const mockBlocksLatest = vi.fn();
 
-const mockBlockFrostAPI = vi.fn(() => ({
-  txs: mockTxs,
-  blocksLatest: mockBlocksLatest,
-}));
+const mockBlockFrostAPI = vi.fn(function() {
+  return {
+    txs: mockTxs,
+    blocksLatest: mockBlocksLatest,
+  };
+});
 
 vi.mock('@blockfrost/blockfrost-js', () => ({
   BlockFrostAPI: mockBlockFrostAPI,
@@ -47,6 +51,7 @@ describe('check-tx-confirmations.mjs', () => {
       process.argv = ['node', 'check-tx-confirmations.mjs'];
 
       await import('../check-tx-confirmations.mjs?t=' + Date.now());
+      await flushPromises();
 
       // The script writes the error response then calls process.exit(1).
       // Because process.exit is mocked as a no-op, execution continues into
@@ -71,6 +76,7 @@ describe('check-tx-confirmations.mjs', () => {
       process.argv = ['node', 'check-tx-confirmations.mjs', txId];
 
       await import('../check-tx-confirmations.mjs?t=' + Date.now());
+      await flushPromises();
 
       expect(mockStdoutWrite).toHaveBeenCalledTimes(1);
       const output = mockStdoutWrite.mock.calls[0][0];
@@ -94,6 +100,7 @@ describe('check-tx-confirmations.mjs', () => {
       process.argv = ['node', 'check-tx-confirmations.mjs', txId];
 
       await import('../check-tx-confirmations.mjs?t=' + Date.now());
+      await flushPromises();
 
       const output = mockStdoutWrite.mock.calls[0][0];
       const response = JSON.parse(output);
@@ -116,6 +123,7 @@ describe('check-tx-confirmations.mjs', () => {
       process.argv = ['node', 'check-tx-confirmations.mjs', txId];
 
       await import('../check-tx-confirmations.mjs?t=' + Date.now());
+      await flushPromises();
 
       // The 404 branch calls process.exit(1) which is mocked as a no-op, so execution
       // falls through to the generic 500 handler which also writes to stdout.
@@ -140,6 +148,7 @@ describe('check-tx-confirmations.mjs', () => {
       process.argv = ['node', 'check-tx-confirmations.mjs', txId];
 
       await import('../check-tx-confirmations.mjs?t=' + Date.now());
+      await flushPromises();
 
       expect(mockStdoutWrite).toHaveBeenCalledTimes(1);
       const output = mockStdoutWrite.mock.calls[0][0];
@@ -158,6 +167,7 @@ describe('check-tx-confirmations.mjs', () => {
       process.argv = ['node', 'check-tx-confirmations.mjs', txId];
 
       await import('../check-tx-confirmations.mjs?t=' + Date.now());
+      await flushPromises();
 
       const output = mockStdoutWrite.mock.calls[0][0];
       const response = JSON.parse(output);
@@ -179,6 +189,7 @@ describe('check-tx-confirmations.mjs', () => {
       process.argv = ['node', 'check-tx-confirmations.mjs', txId];
 
       await import('../check-tx-confirmations.mjs?t=' + Date.now());
+      await flushPromises();
 
       expect(mockBlockFrostAPI).toHaveBeenCalledWith({ projectId: 'my-project-key' });
     });
