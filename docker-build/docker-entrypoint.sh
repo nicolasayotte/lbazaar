@@ -5,4 +5,4 @@ if [ "${USE_SECRETS_MANAGER:-false}" = "true" ]; then
   /opt/inject-secrets.sh
 fi
 
-exec /entrypoint.sh "$@"
+exec /opt/docker/bin/entrypoint.sh "$@"

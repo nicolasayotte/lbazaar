@@ -357,11 +357,31 @@ The only paths the Docker containers depend on are:
 | `/var/log/app/` | Laravel logs | `/app/storage/logs` |
 | `/var/log/nginx/` | Nginx logs | `/var/log/nginx` |
 
+### EC2 Setup (one-time)
+
+```bash
+# Add ubuntu to docker group (avoids needing sudo for docker commands)
+sudo usermod -aG docker ubuntu
+# Log out and back in for group change to take effect
+
+# Clone repo (owned by ubuntu, not root)
+git clone git@github.com:lebazaarweb2/groundfloor.git ~/lbazaar
+
+# Set remote to SSH (deploy key auth, no PATs)
+cd ~/lbazaar
+git remote set-url origin git@github.com:lebazaarweb2/groundfloor.git
+
+# Create required host directories
+sudo mkdir -p /var/.secrets /var/log/app /var/log/nginx
+sudo chown ubuntu:ubuntu /var/log/app
+```
+
 ### Prerequisites
 
 - Your IP must be whitelisted for SSH access (ask Admin)
 - The appropriate PEM key file (ask Admin)
 - EC2 instances use **SSH deploy keys** for GitHub repo access (no PATs needed)
+- `ubuntu` user must be in the `docker` group (see setup above)
 
 ### Staging
 
@@ -369,17 +389,9 @@ The only paths the Docker containers depend on are:
 # SSH in
 ssh -i test-lebazaar-key.pem <user>@<staging_ip>
 
-# Deploy — from the repo's docker-build/ directory (any location)
+# Deploy
 cd ~/lbazaar/docker-build
-sudo su
-export DOCKER_BUILDKIT=0
-git checkout staging && git pull
 ./staging.sh
-
-# Post-deploy: install web3 deps inside container
-docker container ls
-docker exec -it <container_id> /bin/bash
-cd ./web3 && npm install
 ```
 
 **URL**: https://stage.l-e-bazaar.com/
@@ -390,10 +402,8 @@ cd ./web3 && npm install
 # SSH in
 ssh -i prod-lebazaar.pem <user>@<prod_ip>
 
-# Deploy — from the repo's docker-build/ directory (any location)
+# Deploy
 cd ~/lbazaar/docker-build
-sudo su
-export DOCKER_BUILDKIT=0
 ./production.sh -v patch   # or -v minor / -v major
 ```
 
