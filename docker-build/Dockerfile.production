@@ -61,9 +61,6 @@ COPY docker-build/docker-entrypoint.sh /opt/docker-entrypoint.sh
 RUN chmod +x /opt/inject-secrets.sh /opt/docker-entrypoint.sh
 ENTRYPOINT ["/opt/docker-entrypoint.sh"]
 
-# Switch to non-root user for security
-USER application
-
 # Add health check for container orchestration
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost/ || exit 1

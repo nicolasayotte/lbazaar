@@ -7,6 +7,14 @@ set -e
 COMPOSE_FILE="docker-compose.local-prod.yml"
 COMPOSE="docker compose -f $COMPOSE_FILE"
 
+# Stop Sail dev environment if running (avoids port 8080 conflict)
+stop_sail_if_running() {
+    if docker compose ps --status running 2>/dev/null | grep -q 'sail'; then
+        echo -e "${YELLOW}Stopping Sail dev environment (port conflict)...${NC}"
+        docker compose down
+    fi
+}
+
 # Colors
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -52,6 +60,7 @@ USAGE
 
 case "$1" in
     start)
+        stop_sail_if_running
         echo -e "${GREEN}Building and starting production environment...${NC}"
         $COMPOSE up --build -d
         echo ""
@@ -149,6 +158,8 @@ case "$1" in
         echo -e "${GREEN}Le Bazaar - Full Pre-Deployment Test${NC}"
         echo -e "${GREEN}========================================${NC}"
         echo ""
+
+        stop_sail_if_running
 
         echo -e "${YELLOW}[1/$STEP_TOTAL] Building production image...${NC}"
         $COMPOSE build

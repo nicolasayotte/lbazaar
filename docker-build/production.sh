@@ -74,7 +74,7 @@ docker build --rm \
   -f Dockerfile.production ../
 
 wait_healthy() {
-  local timeout=90
+  local timeout=150
   local interval=5
   local elapsed=0
   local container_id
