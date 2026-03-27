@@ -34,7 +34,7 @@ class CourseApplicationFactory extends Factory
         return [
             'title'              => fake()->sentence(),
             'description'        => fake()->paragraphs(4, true),
-            'price'              => fake()->randomElement([1000, 3000, 5000, 8000, 10000, 15000, 20000, 25000, 30000]),
+            'price'              => fake()->randomElement([5, 6, 7, 8, 9, 10, 11, 12]),
             'points_earned'      => 0,
             'approved_at'        => null,
             'denied_at'          => null,

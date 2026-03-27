@@ -141,7 +141,7 @@ class PlaywrightTestSeeder extends Seeder
                 [
                     'course_type_id' => $generalType->id,
                     'description' => 'A pending course application for Playwright tests',
-                    'price' => 3000,
+                    'price' => 5,
                     'points_earned' => 0,
                     'max_participant' => 50,
                     'is_live' => false,
@@ -158,7 +158,7 @@ class PlaywrightTestSeeder extends Seeder
                 [
                     'course_type_id' => $generalType->id,
                     'description' => 'A test course for Playwright end-to-end tests',
-                    'price' => 5000,
+                    'price' => 8,
                     'points_earned' => 0,
                     'max_participant' => 100,
                     'is_live' => false,
@@ -342,7 +342,7 @@ class PlaywrightTestSeeder extends Seeder
                 [
                     'course_type_id' => $generalType->id,
                     'description' => 'Approved application kept available for course-creation tests',
-                    'price' => 4000,
+                    'price' => 7,
                     'points_earned' => 0,
                     'max_participant' => 50,
                     'is_live' => false,

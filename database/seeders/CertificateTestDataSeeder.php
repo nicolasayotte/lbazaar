@@ -146,7 +146,7 @@ class CertificateTestDataSeeder extends Seeder
                 [
                     'course_type_id'   => $generalType->id,
                     'description'      => 'Learn the fundamentals of the Cardano blockchain ecosystem, smart contracts, and native tokens.',
-                    'price'            => 5000,
+                    'price'            => 8,
 
                     'max_participant'  => 50,
                     'is_live'          => false,

@@ -26,7 +26,7 @@ class CourseFactory extends Factory
             'video_path'      => 'https://www.youtube.com/embed/'.\Database\Factories\CourseApplicationFactory::YOUTUBE_CODES[fake()->numberBetween(0, count(\Database\Factories\CourseApplicationFactory::YOUTUBE_CODES)-1)],
             'zoom_link'       => fake()->url(),
             'is_live'         => fake()->boolean(),
-            'price'           => fake()->randomElement([0, 1000, 3000, 5000, 8000, 10000, 15000, 20000, 25000, 30000]),
+            'price'           => fake()->randomElement([0, 5, 6, 7, 8, 9, 10, 11, 12]),
             'points_earned'   => fake()->randomFloat(2, 0, 100),
             'professor_id'    => null,
             'course_application_id' => null,
