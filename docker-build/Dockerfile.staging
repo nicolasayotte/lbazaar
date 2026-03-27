@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # Build Node dependencies
-FROM node:lts-alpine3.16@sha256:1eabdb1aa3f6e68558c08501572731db560d10c2194a67d3417103b0a9868693 as nodeBuild
+FROM node:lts-alpine3.16@sha256:1eabdb1aa3f6e68558c08501572731db560d10c2194a67d3417103b0a9868693 AS nodebuild
 WORKDIR /app
 
 # Copy package files and install dependencies (cached layer)
@@ -46,8 +46,8 @@ RUN su application -s /bin/sh -c 'composer install --no-dev --no-interaction --o
 COPY --chown=application:application ./ ./
 
 # Copy built assets from nodeBuild stage
-COPY --from=nodeBuild --chown=application:application /app/public/build ./public/build
-COPY --from=nodeBuild --chown=application:application /app/web3/node_modules ./web3/node_modules
+COPY --from=nodebuild --chown=application:application /app/public/build ./public/build
+COPY --from=nodebuild --chown=application:application /app/web3/node_modules ./web3/node_modules
 
 # Run post-autoload optimization
 RUN su application -s /bin/sh -c 'composer dump-autoload --optimize'
@@ -60,6 +60,7 @@ COPY docker-build/inject-secrets.sh /opt/inject-secrets.sh
 COPY docker-build/docker-entrypoint.sh /opt/docker-entrypoint.sh
 RUN chmod +x /opt/inject-secrets.sh /opt/docker-entrypoint.sh
 ENTRYPOINT ["/opt/docker-entrypoint.sh"]
+CMD ["supervisord"]
 
 # Add health check for container orchestration
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
