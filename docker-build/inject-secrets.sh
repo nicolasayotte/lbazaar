@@ -12,5 +12,6 @@ aws secretsmanager get-secret-value \
   --query SecretString \
   --output text \
   | jq -r 'to_entries[] | "\(.key)=\(.value)"' >> /app/.env
-chmod 600 /app/.env
+chown application:application /app/.env
+chmod 640 /app/.env
 echo "[secrets] Done"
