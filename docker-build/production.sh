@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-git checkout staging && git pull && git checkout release && git merge --no-ff develop
+git checkout release && git pull
 
 VERSION=""
 

@@ -42,7 +42,7 @@ async function main(mnemonic) {
         ROOT_KEY: rootKeyHex,
         ROOT_KEY_FULL: rootKeyFullHex,
         OWNER_PKH: paymentHash.hex,
-        ADDRESS: enterpriseAddr,
+        OWNER_WALLET_ADDR: enterpriseAddr,
     }
 }
 main().then((res) => Object.entries(res).forEach(([key, val]) => console.log(`${key}=${val}`)))
