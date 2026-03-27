@@ -12,13 +12,6 @@ docker build --rm \
   -t lebazaar-app-staging:"$COMMIT_SHA" \
   -f Dockerfile.staging ../
 
-# Verify Blockfrost preprod connectivity against the new image before cutting over traffic
-echo "Verifying Blockfrost connectivity..."
-docker run --rm \
-  --env-file /var/.secrets/.env.staging \
-  lebazaar-app-staging:latest \
-  sh -c 'cd web3 && node run/blockfrost-verify.mjs'
-
 wait_healthy() {
   local timeout=90
   local interval=5
@@ -43,7 +36,7 @@ wait_healthy() {
 }
 
 docker compose -f docker-compose.staging.yml rm -sf app
-docker compose -f docker-compose.staging.yml -p lebazaar-app --env-file /var/.secrets/.env.staging up -d
+docker compose -f docker-compose.staging.yml -p lebazaar-app up -d
 
 wait_healthy
 

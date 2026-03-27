@@ -343,6 +343,73 @@ NETWORK=mainnet node run/blockfrost-verify.mjs
 sail mysql -h production-db-host -u lbazaar_user -p
 ```
 
+## Server Access & Manual Deployment
+
+> **Legacy note**: The repo was originally named `groundfloor` (GitHub: `lebazaarweb2/groundfloor`). Previous deploys cloned it to `/var/www/groundfloor/` as root. Current setup: repo lives at `~/lbazaar` owned by `ubuntu` user.
+
+### Host filesystem requirements
+
+The only paths the Docker containers depend on are:
+
+| Host path | Purpose | Mount target |
+|-----------|---------|--------------|
+| `/var/.secrets/.env.production` (or `.env.staging`) | Environment file | `/app/.env.base` (read-only) |
+| `/var/log/app/` | Laravel logs | `/app/storage/logs` |
+| `/var/log/nginx/` | Nginx logs | `/var/log/nginx` |
+
+### Prerequisites
+
+- Your IP must be whitelisted for SSH access (ask Admin)
+- The appropriate PEM key file (ask Admin)
+- EC2 instances use **SSH deploy keys** for GitHub repo access (no PATs needed)
+
+### Staging
+
+```bash
+# SSH in
+ssh -i test-lebazaar-key.pem <user>@<staging_ip>
+
+# Deploy — from the repo's docker-build/ directory (any location)
+cd ~/lbazaar/docker-build
+sudo su
+export DOCKER_BUILDKIT=0
+git checkout staging && git pull
+./staging.sh
+
+# Post-deploy: install web3 deps inside container
+docker container ls
+docker exec -it <container_id> /bin/bash
+cd ./web3 && npm install
+```
+
+**URL**: https://stage.l-e-bazaar.com/
+
+### Production
+
+```bash
+# SSH in
+ssh -i prod-lebazaar.pem <user>@<prod_ip>
+
+# Deploy — from the repo's docker-build/ directory (any location)
+cd ~/lbazaar/docker-build
+sudo su
+export DOCKER_BUILDKIT=0
+./production.sh -v patch   # or -v minor / -v major
+```
+
+**URL**: https://l-e-bazaar.com/
+
+### Accessing Logs on EC2
+
+```bash
+# Logs are mounted to the host — no need to exec into the container
+tail -f /var/log/app/laravel.log
+tail -f /var/log/app/web3.log
+
+# If you need a shell inside the container
+docker compose -f docker-compose.production.yml -p lebazaar-app exec app sh
+```
+
 ## Database Migration Timing
 
 ### Safe to Run Immediately
@@ -464,7 +531,7 @@ jobs:
         run: |
           # SSH into production server
           ssh production-server << 'EOF'
-            cd /var/www/lbazaar
+            cd ~/lbazaar
             git pull origin main
             php artisan migrate --force
             composer install --no-dev

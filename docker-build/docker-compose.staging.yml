@@ -5,11 +5,14 @@ services:
             - 80:80
             - 443:443
         volumes:
-            - /var/.secrets/.env.staging:/app/.env:ro
+            - /var/.secrets/.env.staging:/app/.env.base:ro
             - ./nginx/vhost.conf:/opt/docker/etc/nginx/vhost.conf:ro
             - /var/log/app:/app/storage/logs
             - /var/log/nginx/:/var/log/nginx
         environment:
+            USE_SECRETS_MANAGER: "true"
+            SECRETS_MANAGER_NAME: "lebazaar/staging"
+            AWS_REGION: "ap-northeast-1"
             LOG_STDOUT: '/var/log/nginx/access.log'
             LOG_STDERR: '/var/log/nginx/error.log'
         restart: unless-stopped

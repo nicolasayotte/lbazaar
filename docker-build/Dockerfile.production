@@ -35,8 +35,8 @@ RUN docker-php-ext-install \
 WORKDIR /app
 ENV WEB_DOCUMENT_ROOT=/app/public
 
-# Install Node.js for web3 runtime
-RUN apk add --no-cache nodejs npm
+# Install Node.js for web3 runtime, plus AWS CLI and jq for secrets injection
+RUN apk add --no-cache nodejs npm aws-cli jq
 
 # Copy dependency manifests first for better layer caching
 COPY --chown=application:application composer.json composer.lock ./
@@ -54,6 +54,12 @@ RUN su application -s /bin/sh -c 'composer dump-autoload --optimize'
 
 # Ensure runtime-writable dirs have correct ownership
 RUN chown -R application:application storage bootstrap/cache
+
+# Copy secrets injection scripts
+COPY docker-build/inject-secrets.sh /opt/inject-secrets.sh
+COPY docker-build/docker-entrypoint.sh /opt/docker-entrypoint.sh
+RUN chmod +x /opt/inject-secrets.sh /opt/docker-entrypoint.sh
+ENTRYPOINT ["/opt/docker-entrypoint.sh"]
 
 # Switch to non-root user for security
 USER application
