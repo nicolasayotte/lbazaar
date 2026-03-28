@@ -774,7 +774,7 @@ const Details = () => {
                                         >
                                             {purchaseLoading
                                                 ? translatables.texts.processing
-                                                : `${translatables.texts.buy_with_ada} - ${formatDualPrice(parseJpy(course.price), currentAdaPrice)}`
+                                                : `${translatables.texts.buy_with_ada || 'Buy with ADA'} - ${formatDualPrice(parseJpy(course.price), currentAdaPrice)}`
                                             }
                                         </Button>
                                         {driftWarning && (
@@ -838,7 +838,7 @@ const Details = () => {
                                     startIcon={<AccountBalanceWalletIcon />}
                                     sx={{ py: 1.5 }}
                                 >
-                                    {`${translatables.texts.buy_with_ada} - ${formatDualPrice(parseJpy(course.price), currentAdaPrice)}`}
+                                    {`${translatables.texts.buy_with_ada || 'Buy with ADA'} - ${formatDualPrice(parseJpy(course.price), currentAdaPrice)}`}
                                 </Button>
                                 <Button
                                     variant="outlined"
