@@ -16,12 +16,12 @@ export default defineConfig({
     server: {
         host: '0.0.0.0',
         hmr: {
-            host: 'localhost',
+            host: 'lbazaar.test',
         },
         watch: {
             // Tell Vite to ignore watching the vendor and node_modules directories
             ignored: ['**/vendor/**', '**/node_modules/**'],
         },
-        port: 5173
+        port: 5175
     },
 });
