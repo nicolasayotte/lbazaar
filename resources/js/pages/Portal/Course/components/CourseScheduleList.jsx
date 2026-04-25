@@ -3,6 +3,7 @@ import { CalendarMonth } from "@mui/icons-material"
 import { Box, Button, Grid, Paper, Stack, Typography } from "@mui/material"
 import EmptyCard from "../../../../components/common/EmptyCard"
 import { getRoute } from "../../../../helpers/routes.helper"
+import { formatDualPrice, formatJpy, parseJpy } from "../../../../helpers/currency.helper"
 
 const CourseScheduleList = ({ data, handleOnBook, handleOnCancelBook }) => {
 
@@ -63,7 +64,11 @@ const CourseScheduleList = ({ data, handleOnBook, handleOnCancelBook }) => {
 
                 var bookBtnText;
                 if (row.course.course_type.type == 'General') {
-                    bookBtnText = `${translatables.texts.book_class} ${row.course.price} ₳`
+                    const jpy = parseJpy(row.course.price)
+                    const priceText = row.course.price_in_ada
+                        ? formatDualPrice(jpy, row.course.price_in_ada)
+                        : formatJpy(jpy)
+                    bookBtnText = `${translatables.texts.book_class} ${priceText}`
                 } else if (row.course.course_type.type == 'Free') {
                     bookBtnText = `${translatables.texts.book_class} Free`
                 } else if (row.course.course_type.type == 'Special') {
