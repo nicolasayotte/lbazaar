@@ -49,6 +49,7 @@ class HandleInertiaRequests extends Middleware
                 'error'   => fn () => @$request->session()->get('error')
             ],
             'cardano_network_id' => (int) config('services.cardano.network_id', 0),
+            'stripe_key' => fn () => config('services.stripe.key'),
         ]);
     }
 }

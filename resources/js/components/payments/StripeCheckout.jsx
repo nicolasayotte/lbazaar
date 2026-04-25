@@ -1,10 +1,9 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { usePage } from '@inertiajs/inertia-react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { Box, Button, CircularProgress, Typography, Alert } from '@mui/material';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
-
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 const CheckoutForm = ({ course, onSuccess, onCancel, translatables }) => {
     const stripe = useStripe();
@@ -83,6 +82,17 @@ const CheckoutForm = ({ course, onSuccess, onCancel, translatables }) => {
 };
 
 const StripeCheckout = ({ clientSecret, course, onSuccess, onCancel, translatables }) => {
+    const stripeKey = usePage().props.stripe_key;
+    const stripePromise = useMemo(() => (stripeKey ? loadStripe(stripeKey) : null), [stripeKey]);
+
+    if (!stripeKey) {
+        return (
+            <Alert severity="error">
+                Payment unavailable: Stripe publishable key is not configured.
+            </Alert>
+        );
+    }
+
     if (!clientSecret) {
         return (
             <Box sx={{ p: 3, textAlign: 'center' }}>

@@ -21,6 +21,10 @@ vi.mock('@stripe/react-stripe-js', () => ({
     useElements: () => mockElements,
 }));
 
+vi.mock('@inertiajs/inertia-react', () => ({
+    usePage: () => ({ props: { stripe_key: 'pk_test_mock' } }),
+}));
+
 import StripeCheckout from './StripeCheckout';
 
 describe('StripeCheckout', () => {

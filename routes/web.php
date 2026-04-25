@@ -49,6 +49,20 @@ use Illuminate\Support\Facades\Route;
 */
 
 
+# Health check (used by deployment smoke test and uptime monitors)
+Route::get('/health', function () {
+    try {
+        \DB::connection()->getPdo();
+    } catch (\Throwable $e) {
+        return response()->json(['status' => 'error', 'database' => 'unreachable'], 503);
+    }
+    return response()->json([
+        'status' => 'ok',
+        'database' => 'connected',
+        'timestamp' => now()->toIso8601String(),
+    ]);
+});
+
 # Top Page
 Route::get('/', [TopPageController::class, 'index'])->name('top');
 
