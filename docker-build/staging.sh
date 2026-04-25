@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
+cd "$(dirname "$0")"
+
 git checkout staging && git pull
 
 COMMIT_SHA=$(git rev-parse --short HEAD)
