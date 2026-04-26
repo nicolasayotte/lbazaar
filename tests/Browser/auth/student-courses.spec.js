@@ -74,19 +74,23 @@ test.describe('F-08: Course Attendance Flow', () => {
     let scheduleId = null;
 
     test.beforeAll(async ({ browser }) => {
+        // Iterating multiple course detail pages over Vite hot-reload can exceed
+        // the default 30 s hook timeout under load — give it room.
+        test.setTimeout(60_000);
+
         const context = await browser.newContext({ storageState: STORAGE_STATE.student });
         const page = await context.newPage();
 
         try {
-            // Navigate to course listing
-            await page.goto('/classes');
+            // Search the listing for the seeder-created "PW Test Course" — the
+            // only course the test student is enrolled in with an ongoing schedule.
+            await page.goto('/classes?search_text=' + encodeURIComponent('PW Test Course'));
             await waitForApp(page);
 
-            // Iterate course cards to find one with an attend link (ongoing + booked)
             const courseLinks = page.locator('.MuiCard-root a[href*="/classes/"]');
             const count = await courseLinks.count();
 
-            for (let i = 0; i < Math.min(count, 10); i++) {
+            for (let i = 0; i < Math.min(count, 5); i++) {
                 const href = await courseLinks.nth(i).getAttribute('href');
                 if (!href || !href.match(/\/classes\/\d+$/)) continue;
 
