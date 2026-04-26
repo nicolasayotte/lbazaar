@@ -630,7 +630,8 @@ const Details = () => {
             'Free': { type: translatables.texts.price, value: translatables.texts.free }
         }
 
-        classInfos.push(dynamicInfos[course.course_type.name])
+        const dynamicInfo = dynamicInfos[course.course_type.name]
+        if (dynamicInfo) classInfos.push(dynamicInfo)
 
         return (
             <Grid container spacing={2} sx={{ mb: 2 }}>

@@ -109,6 +109,13 @@ class ProductionSeeder extends Seeder
                 'type'     => 'number',
                 'category' => 'general',
                 'value'    => 75
+            ],
+            [
+                'name'     => 'Ada to Points',
+                'slug'     => 'ada-to-points',
+                'type'     => 'number',
+                'category' => 'general',
+                'value'    => 10
             ]
         ]);
     }

@@ -285,8 +285,8 @@ test.describe('Course Browsing - ADA Price on Detail Page (TS-01.02, TS-01.04)',
         await viewMoreLink.click();
         await waitForInertiaNavigation(page);
 
-        await expect(page.getByText(/¥[0-9]/)).toBeVisible();
-        await expect(page.getByText(/~₳/)).toBeVisible();
+        await expect(page.getByText(/¥[0-9]/).first()).toBeVisible();
+        await expect(page.getByText(/~₳/).first()).toBeVisible();
     });
 });
 

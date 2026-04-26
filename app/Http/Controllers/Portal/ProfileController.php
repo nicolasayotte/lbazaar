@@ -31,7 +31,7 @@ class ProfileController extends Controller
 
         return Inertia::render('Portal/MyPage/Profile/Index', [
             'countries' => $countries,
-            'ada_to_points' =>  $ada_to_points->value,
+            'ada_to_points' => $ada_to_points?->value,
             'nfts' => $nfts,
             'network' => $network,
             'title' => getTranslation('texts.mypage').' | '.getTranslation('texts.profile')
