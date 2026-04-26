@@ -21,6 +21,15 @@ export class LoginPage {
     async goto() {
         await this.page.goto(this.loginUrl);
         await waitForApp(this.page);
+        // Wait for React to fully hydrate the submit button — without this, the
+        // very first click can fall through to a native HTML form POST against
+        // the GET-only login URL (405) before Inertia's onClick handler binds.
+        await this.page.waitForFunction(() => {
+            const btn = document.querySelector('button[type="submit"]');
+            if (!btn) return false;
+            const fiberKey = Object.keys(btn).find((k) => k.startsWith('__reactProps$'));
+            return !!(fiberKey && btn[fiberKey]?.onClick);
+        }, { timeout: 10000 });
     }
 
     /**
