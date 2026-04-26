@@ -222,51 +222,60 @@ test.describe('F-02: User Management', () => {
     });
 
     test('F-02.6: user status can be toggled', async ({ page }) => {
-        await page.goto('/admin/users?keyword=' + encodeURIComponent('Playwright'));
+        // Target the throwaway "E2E Test" users created by F-02.4 — toggling
+        // is_enabled on the seeded "Playwright" fixture users (admin, teacher,
+        // student) breaks every subsequent login that depends on them.
+        const keyword = 'E2E Test';
+        await page.goto('/admin/users?keyword=' + encodeURIComponent(keyword));
         await waitForApp(page);
 
         const rows = page.locator('table tbody tr');
         const rowCount = await rows.count();
-        test.skip(rowCount === 0, 'No Playwright users found in seed data');
+        test.skip(rowCount === 0, `No "${keyword}" users found — F-02.4 must seed one first`);
 
         const firstRow = rows.first();
         const statusCellBefore = firstRow.locator('td:nth-child(4)');
         const statusBefore = await statusCellBefore.innerText();
 
-        const actionsCell = firstRow.locator('td:nth-child(6)');
-        const buttons = actionsCell.locator('button');
-        // Try clicking the disable button (typically 3rd button for active users)
-        // or enable button (2nd) — click whichever is enabled
-        const buttonCount = await buttons.count();
-        let clicked = false;
-        for (let i = 1; i < buttonCount; i++) {
-            const btn = buttons.nth(i);
-            if (await btn.isEnabled()) {
-                await btn.click();
-                clicked = true;
-                break;
+        const toggleStatus = async () => {
+            await page.goto('/admin/users?keyword=' + encodeURIComponent(keyword));
+            await waitForApp(page);
+            const actionsCell = page.locator('table tbody tr').first().locator('td:nth-child(6)');
+            const buttons = actionsCell.locator('button');
+            const buttonCount = await buttons.count();
+            for (let i = 1; i < buttonCount; i++) {
+                const btn = buttons.nth(i);
+                if (await btn.isEnabled()) {
+                    await btn.click();
+                    const dialog = page.locator('[role="dialog"]');
+                    await expect(dialog).toBeVisible({ timeout: 3000 });
+                    const responsePromise = page.waitForResponse(resp =>
+                        resp.url().includes('/admin/users') &&
+                        resp.url().includes('/status/') &&
+                        resp.request().method() === 'POST'
+                    );
+                    await dialog.getByRole('button').last().click();
+                    await responsePromise;
+                    await waitForInertiaNavigation(page);
+                    return true;
+                }
             }
-        }
+            return false;
+        };
+
+        const clicked = await toggleStatus();
         test.skip(!clicked, 'No enabled status toggle button found');
 
-        const dialog = page.locator('[role="dialog"]');
-        await expect(dialog).toBeVisible({ timeout: 3000 });
-
-        const statusResponsePromise = page.waitForResponse(resp =>
-            resp.url().includes('/admin/users') &&
-            resp.url().includes('/status/') &&
-            resp.request().method() === 'POST'
-        );
-        await dialog.getByRole('button').last().click();
-        await statusResponsePromise;
-        await waitForInertiaNavigation(page);
-
-        await page.goto('/admin/users?keyword=' + encodeURIComponent('E2E Test'));
+        await page.goto('/admin/users?keyword=' + encodeURIComponent(keyword));
         await waitForApp(page);
 
         const updatedRow = page.locator('table tbody tr').first();
         const statusCellAfter = updatedRow.locator('td:nth-child(4)');
         const statusAfter = await statusCellAfter.innerText();
         expect(statusAfter.toLowerCase()).not.toBe(statusBefore.toLowerCase());
+
+        // Restore the original status so the toggled user does not poison
+        // subsequent runs of this suite (or other concurrent tests).
+        await toggleStatus();
     });
 });
