@@ -23,177 +23,12 @@
  ✓ resources/js/components/cards/WalletConnector.test.jsx > F-12.3: CIP-30 event listener registration > 1. Registers accountChange and networkChange listeners on connect
  ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > UI Rendering > renders the page heading
  ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > UI Rendering > renders the certificate table
- × resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > UI Rendering > renders the wallet connector
-   → Unable to find an element by: [data-testid="wallet-connector"]
-
-Ignored nodes: comments, script, style
-[36m<body>[39m
-  [36m<div>[39m
-    [36m<div[39m
-      [33mclass[39m=[32m"MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-1ieer4h-MuiGrid-root"[39m
-    [36m>[39m
-      [36m<div[39m
-        [33mclass[39m=[32m"MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-auto css-lvo4zz-MuiGrid-root"[39m
-      [36m>[39m
-        [36m<h5[39m
-          [33mclass[39m=[32m"MuiTypography-root MuiTypography-h5 css-ag7rrr-MuiTypography-root"[39m
-        [36m>[39m
-          [0mCompletion Certificates[0m
-        [36m</h5>[39m
-      [36m</div>[39m
-      [36m<div[39m
-        [33mclass[39m=[32m"MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-auto css-lvo4zz-MuiGrid-root"[39m
-      [36m>[39m
-        [36m<div[39m
-          [33mclass[39m=[32m"css-6bkps5-MuiStack-root"[39m
-        [36m>[39m
-          [36m<button[39m
-            [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeSmall MuiButton-outlinedSizeSmall MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeSmall MuiButton-outlinedSizeSmall css-1k23hlb-MuiButtonBase-root-MuiButton-root"[39m
-            [33mtabindex[39m=[32m"0"[39m
-            [33mtype[39m=[32m"button"[39m
-          [36m>[39m
-            [0mSelect All Eligible[0m
-            [36m<span[39m
-              [33mclass[39m=[32m"MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"[39m
-            [36m/>[39m
-          [36m</button>[39m
-          [36m<button[39m
-            [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall Mui-disabled MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall css-1knaqv7-MuiButtonBase-root-MuiButton-root"[39m
-            [33mdisabled[39m=[32m""[39m
-            [33mtabindex[39m=[32m"-1"[39m
-            [33mtype[39m=[32m"button"[39m
-          [36m>[39m
-            [0mClear[0m
-          [36m</button>[39m
-          [36m<span[39m
-            [33maria-label[39m=[32m"Select students to airdrop"[39m
-            [33mclass[39m=[32m""[39m
-            [33mdata-mui-internal-clone-element[39m=[32m"true"[39m
-          [36m>[39m
-            [36m<button[39m
-              [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedSuccess MuiButton-sizeMedium MuiButton-containedSizeMedium Mui-disabled MuiButton-root MuiButton-contained MuiButton-containedSuccess MuiButton-sizeMedium MuiButton-containedSizeMedium css-ke5b6m-MuiButtonBase-root-MuiButton-root"[39m
-              [33mdisabled[39m=[32m""[39m
-              [33mtabindex[39m=[32m"-1"[39m
-              [33mtype[39m=[32m"button"[39m
-            [36m>[39m
-              [0mAirdrop[0m
-            [36m</button>[39m
-          [36m</span>[39m
-        [36m</div>[39m
-      [36m</div>[39m
-    [36m</div>[39m
-    [36m<div[39m
-      [33mclass[39m=[32m"MuiBox-root css-0"[39m
-    [36m>[39m
-      [36m<div[39m
-        [33mdata-testid[39m=[32m"certificate-table"[39m
-      [36m>[39m
-        [36m<div[39m
-          [33mdata-testid[39m=[32m"student-1"[39m
-        [36m>[39m
-          [0mAlice Smith[0m
-          [36m<input[39m
-            [33mdata-testid[39m=[32m"checkbox-1"[39m
-            [33mtype[39m=[32m"checkbox"[39m
-          [36m/>[39m
-        [36m</div>[39m
-        [36m<div[39m
-          [33mdata-testid[39m=[32m"student-2"[39m
-        [36m>[39m
-          [0mBob Johnson[0m
-        [36m</div>[39m
-      [36m</div>[39m
-    [36m</div>[39m
-  [36m</div>[39m
-[36m</body>[39m
  ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > UI Rendering > shows select all eligible button when eligible students exist
  ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > UI Rendering > shows airdrop button
  ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Selection > selects all eligible students when select-all is clicked
  ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Selection > clears selection when clear button is clicked
- ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Airdrop flow > airdrop button is disabled when no wallet connected
- × resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Airdrop flow > opens fee dialog when airdrop button clicked with wallet + selection
-   → Unable to find an element by: [data-testid="mock-connect-wallet"]
-
-Ignored nodes: comments, script, style
-[36m<body>[39m
-  [36m<div>[39m
-    [36m<div[39m
-      [33mclass[39m=[32m"MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-1ieer4h-MuiGrid-root"[39m
-    [36m>[39m
-      [36m<div[39m
-        [33mclass[39m=[32m"MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-auto css-lvo4zz-MuiGrid-root"[39m
-      [36m>[39m
-        [36m<h5[39m
-          [33mclass[39m=[32m"MuiTypography-root MuiTypography-h5 css-ag7rrr-MuiTypography-root"[39m
-        [36m>[39m
-          [0mCompletion Certificates[0m
-        [36m</h5>[39m
-      [36m</div>[39m
-      [36m<div[39m
-        [33mclass[39m=[32m"MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-auto css-lvo4zz-MuiGrid-root"[39m
-      [36m>[39m
-        [36m<div[39m
-          [33mclass[39m=[32m"css-6bkps5-MuiStack-root"[39m
-        [36m>[39m
-          [36m<button[39m
-            [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeSmall MuiButton-outlinedSizeSmall MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeSmall MuiButton-outlinedSizeSmall css-1k23hlb-MuiButtonBase-root-MuiButton-root"[39m
-            [33mtabindex[39m=[32m"0"[39m
-            [33mtype[39m=[32m"button"[39m
-          [36m>[39m
-            [0mSelect All Eligible[0m
-            [36m<span[39m
-              [33mclass[39m=[32m"MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"[39m
-            [36m/>[39m
-          [36m</button>[39m
-          [36m<button[39m
-            [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall Mui-disabled MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall css-1knaqv7-MuiButtonBase-root-MuiButton-root"[39m
-            [33mdisabled[39m=[32m""[39m
-            [33mtabindex[39m=[32m"-1"[39m
-            [33mtype[39m=[32m"button"[39m
-          [36m>[39m
-            [0mClear[0m
-          [36m</button>[39m
-          [36m<span[39m
-            [33maria-label[39m=[32m"Select students to airdrop"[39m
-            [33mclass[39m=[32m""[39m
-            [33mdata-mui-internal-clone-element[39m=[32m"true"[39m
-          [36m>[39m
-            [36m<button[39m
-              [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedSuccess MuiButton-sizeMedium MuiButton-containedSizeMedium Mui-disabled MuiButton-root MuiButton-contained MuiButton-containedSuccess MuiButton-sizeMedium MuiButton-containedSizeMedium css-ke5b6m-MuiButtonBase-root-MuiButton-root"[39m
-              [33mdisabled[39m=[32m""[39m
-              [33mtabindex[39m=[32m"-1"[39m
-              [33mtype[39m=[32m"button"[39m
-            [36m>[39m
-              [0mAirdrop[0m
-            [36m</button>[39m
-          [36m</span>[39m
-        [36m</div>[39m
-      [36m</div>[39m
-    [36m</div>[39m
-    [36m<div[39m
-      [33mclass[39m=[32m"MuiBox-root css-0"[39m
-    [36m>[39m
-      [36m<div[39m
-        [33mdata-testid[39m=[32m"certificate-table"[39m
-      [36m>[39m
-        [36m<div[39m
-          [33mdata-testid[39m=[32m"student-1"[39m
-        [36m>[39m
-          [0mAlice Smith[0m
-          [36m<input[39m
-            [33mdata-testid[39m=[32m"checkbox-1"[39m
-            [33mtype[39m=[32m"checkbox"[39m
-          [36m/>[39m
-        [36m</div>[39m
-        [36m<div[39m
-          [33mdata-testid[39m=[32m"student-2"[39m
-        [36m>[39m
-          [0mBob Johnson[0m
-        [36m</div>[39m
-      [36m</div>[39m
-    [36m</div>[39m
-  [36m</div>[39m
-[36m</body>[39m
+ ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Airdrop flow > airdrop button is disabled when no students selected
+ ✓ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Airdrop flow > posts fee estimate request when airdrop clicked with selection
  ✓ resources/js/components/payments/StripeCheckout.test.jsx > StripeCheckout > Loading State > renders loading state when clientSecret is null
  ✓ resources/js/components/payments/StripeCheckout.test.jsx > StripeCheckout > Loading State > renders loading text with default value when translatables not provided
  ✓ resources/js/components/payments/StripeCheckout.test.jsx > StripeCheckout > Payment Form Rendering > renders payment form when clientSecret is provided
@@ -207,22 +42,16 @@ Ignored nodes: comments, script, style
  ✓ resources/js/components/payments/StripeCheckout.test.jsx > StripeCheckout > Payment Submission > calls stripe.confirmPayment with correct parameters
  ✓ resources/js/components/payments/StripeCheckout.test.jsx > StripeCheckout > Payment Submission > does not submit if stripe is not loaded
  ✓ resources/js/components/cards/WalletConnector.test.jsx > F-12.3: CIP-30 event listener registration > 3. networkChange with matching network ID causes no disconnect
+ ✓ resources/js/components/cards/WalletConnector.test.jsx > F-12.3: CIP-30 event listener registration > 4. networkChange with wrong network ID triggers disconnect
  ✓ resources/js/components/payments/StripeCheckout.test.jsx > StripeCheckout > Error Handling > displays error message when payment fails
  ✓ resources/js/components/payments/StripeCheckout.test.jsx > StripeCheckout > Error Handling > re-enables submit button after payment failure
- ✓ resources/js/components/cards/WalletConnector.test.jsx > F-12.3: CIP-30 event listener registration > 4. networkChange with wrong network ID triggers disconnect
  ✓ resources/js/components/cards/WalletConnector.test.jsx > F-12.3: CIP-30 event listener registration > 5. accountChange success: re-fetches address and wallet info
+ ✓ resources/js/components/cards/WalletConnector.test.jsx > F-12.3: CIP-30 event listener registration > 6. accountChange error: triggers disconnect
  ✓ resources/js/components/payments/StripeCheckout.test.jsx > StripeCheckout > Error Handling > clears previous error message on new submission
  ✓ resources/js/components/payments/StripeCheckout.test.jsx > StripeCheckout > Processing State > disables cancel button while processing
  ✓ resources/js/components/payments/StripeCheckout.test.jsx > StripeCheckout > Processing State > shows CircularProgress icon while processing
- ✓ resources/js/components/cards/WalletConnector.test.jsx > F-12.3: CIP-30 event listener registration > 6. accountChange error: triggers disconnect
  ✓ resources/js/components/cards/WalletConnector.test.jsx > F-12.3: CIP-30 event listener registration > 7. Cleanup on unmount: calls experimental.off for both listeners
  ✓ resources/js/components/cards/WalletConnector.test.jsx > F-12.3: CIP-30 event listener registration > 8. Cleanup on wallet switch: calls experimental.off
- ✓ resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx > Create > Certificate Toggle Rendering > should render certificate toggle switch
- ✓ resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx > Create > Certificate Toggle Rendering > should have toggle unchecked by default
- ✓ resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx > Create > Certificate Toggle State Changes > should change state when toggle is clicked
- ✓ resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx > Create > Certificate Toggle State Changes > should call setData with true when unchecked toggle is clicked
- ✓ resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx > Create > Certificate Description Text > should hide description text when toggle is disabled
- ✓ resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx > Create > Form Submission > should include certificate_enabled in form submission
 stderr | resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx > Create > Certificate Toggle Rendering > should render certificate toggle switch
 Warning: Received `true` for a non-boolean attribute `select`.
 
@@ -539,6 +368,12 @@ Instead, Autocomplete expects an input element.
 
 Make sure you have customized the input component correctly.
 
+ ✓ resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx > Create > Certificate Toggle Rendering > should render certificate toggle switch
+ ✓ resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx > Create > Certificate Toggle Rendering > should have toggle unchecked by default
+ ✓ resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx > Create > Certificate Toggle State Changes > should change state when toggle is clicked
+ ✓ resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx > Create > Certificate Toggle State Changes > should call setData with true when unchecked toggle is clicked
+ ✓ resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx > Create > Certificate Description Text > should hide description text when toggle is disabled
+ ✓ resources/js/pages/Portal/MyPage/ClassApplications/Create.test.jsx > Create > Form Submission > should include certificate_enabled in form submission
  ✓ resources/js/pages/Portal/Course/Details.test.jsx > Details — ADA price display when price_in_ada is set (Task 01) > renders JPY price when price_in_ada is present (TS-01.05)
  ✓ resources/js/pages/Portal/Course/Details.test.jsx > Details — ADA price display when price_in_ada is set (Task 01) > renders ADA equivalent price when price_in_ada is present (TS-01.06)
  ✓ resources/js/pages/Portal/Course/Details.test.jsx > Details — ADA conversion unavailable (Task 03, TS-01.08 through TS-01.11) > TS-01.08: JPY price is visible when ADA conversion is unavailable
@@ -590,204 +425,8 @@ Make sure you have customized the input component correctly.
  ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Transaction Link > shows explorer link for delivered students with tx hash
  ✓ resources/js/pages/Portal/MyPage/ManageClass/components/CertificateTable.test.jsx > CertificateTable > Transaction Link > shows truncated hash when no explorerUrl
 
-⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
-
- FAIL  resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > UI Rendering > renders the wallet connector
-TestingLibraryElementError: Unable to find an element by: [data-testid="wallet-connector"]
-
-Ignored nodes: comments, script, style
-[36m<body>[39m
-  [36m<div>[39m
-    [36m<div[39m
-      [33mclass[39m=[32m"MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-1ieer4h-MuiGrid-root"[39m
-    [36m>[39m
-      [36m<div[39m
-        [33mclass[39m=[32m"MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-auto css-lvo4zz-MuiGrid-root"[39m
-      [36m>[39m
-        [36m<h5[39m
-          [33mclass[39m=[32m"MuiTypography-root MuiTypography-h5 css-ag7rrr-MuiTypography-root"[39m
-        [36m>[39m
-          [0mCompletion Certificates[0m
-        [36m</h5>[39m
-      [36m</div>[39m
-      [36m<div[39m
-        [33mclass[39m=[32m"MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-auto css-lvo4zz-MuiGrid-root"[39m
-      [36m>[39m
-        [36m<div[39m
-          [33mclass[39m=[32m"css-6bkps5-MuiStack-root"[39m
-        [36m>[39m
-          [36m<button[39m
-            [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeSmall MuiButton-outlinedSizeSmall MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeSmall MuiButton-outlinedSizeSmall css-1k23hlb-MuiButtonBase-root-MuiButton-root"[39m
-            [33mtabindex[39m=[32m"0"[39m
-            [33mtype[39m=[32m"button"[39m
-          [36m>[39m
-            [0mSelect All Eligible[0m
-            [36m<span[39m
-              [33mclass[39m=[32m"MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"[39m
-            [36m/>[39m
-          [36m</button>[39m
-          [36m<button[39m
-            [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall Mui-disabled MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall css-1knaqv7-MuiButtonBase-root-MuiButton-root"[39m
-            [33mdisabled[39m=[32m""[39m
-            [33mtabindex[39m=[32m"-1"[39m
-            [33mtype[39m=[32m"button"[39m
-          [36m>[39m
-            [0mClear[0m
-          [36m</button>[39m
-          [36m<span[39m
-            [33maria-label[39m=[32m"Select students to airdrop"[39m
-            [33mclass[39m=[32m""[39m
-            [33mdata-mui-internal-clone-element[39m=[32m"true"[39m
-          [36m>[39m
-            [36m<button[39m
-              [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedSuccess MuiButton-sizeMedium MuiButton-containedSizeMedium Mui-disabled MuiButton-root MuiButton-contained MuiButton-containedSuccess MuiButton-sizeMedium MuiButton-containedSizeMedium css-ke5b6m-MuiButtonBase-root-MuiButton-root"[39m
-              [33mdisabled[39m=[32m""[39m
-              [33mtabindex[39m=[32m"-1"[39m
-              [33mtype[39m=[32m"button"[39m
-            [36m>[39m
-              [0mAirdrop[0m
-            [36m</button>[39m
-          [36m</span>[39m
-        [36m</div>[39m
-      [36m</div>[39m
-    [36m</div>[39m
-    [36m<div[39m
-      [33mclass[39m=[32m"MuiBox-root css-0"[39m
-    [36m>[39m
-      [36m<div[39m
-        [33mdata-testid[39m=[32m"certificate-table"[39m
-      [36m>[39m
-        [36m<div[39m
-          [33mdata-testid[39m=[32m"student-1"[39m
-        [36m>[39m
-          [0mAlice Smith[0m
-          [36m<input[39m
-            [33mdata-testid[39m=[32m"checkbox-1"[39m
-            [33mtype[39m=[32m"checkbox"[39m
-          [36m/>[39m
-        [36m</div>[39m
-        [36m<div[39m
-          [33mdata-testid[39m=[32m"student-2"[39m
-        [36m>[39m
-          [0mBob Johnson[0m
-        [36m</div>[39m
-      [36m</div>[39m
-    [36m</div>[39m
-  [36m</div>[39m
-[36m</body>[39m
- ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
- ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
- ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
- ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
- ❯ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx:171:27
-    169|         it('renders the wallet connector', () => {
-    170|             renderWithStore(<Certificates />);
-    171|             expect(screen.getByTestId('wallet-connector')).toBeInTheDo…
-       |                           ^
-    172|         });
-    173| 
-
-⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
-
- FAIL  resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx > Certificates > Airdrop flow > opens fee dialog when airdrop button clicked with wallet + selection
-TestingLibraryElementError: Unable to find an element by: [data-testid="mock-connect-wallet"]
-
-Ignored nodes: comments, script, style
-[36m<body>[39m
-  [36m<div>[39m
-    [36m<div[39m
-      [33mclass[39m=[32m"MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-1ieer4h-MuiGrid-root"[39m
-    [36m>[39m
-      [36m<div[39m
-        [33mclass[39m=[32m"MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-auto css-lvo4zz-MuiGrid-root"[39m
-      [36m>[39m
-        [36m<h5[39m
-          [33mclass[39m=[32m"MuiTypography-root MuiTypography-h5 css-ag7rrr-MuiTypography-root"[39m
-        [36m>[39m
-          [0mCompletion Certificates[0m
-        [36m</h5>[39m
-      [36m</div>[39m
-      [36m<div[39m
-        [33mclass[39m=[32m"MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-auto css-lvo4zz-MuiGrid-root"[39m
-      [36m>[39m
-        [36m<div[39m
-          [33mclass[39m=[32m"css-6bkps5-MuiStack-root"[39m
-        [36m>[39m
-          [36m<button[39m
-            [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeSmall MuiButton-outlinedSizeSmall MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeSmall MuiButton-outlinedSizeSmall css-1k23hlb-MuiButtonBase-root-MuiButton-root"[39m
-            [33mtabindex[39m=[32m"0"[39m
-            [33mtype[39m=[32m"button"[39m
-          [36m>[39m
-            [0mSelect All Eligible[0m
-            [36m<span[39m
-              [33mclass[39m=[32m"MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"[39m
-            [36m/>[39m
-          [36m</button>[39m
-          [36m<button[39m
-            [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall Mui-disabled MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall css-1knaqv7-MuiButtonBase-root-MuiButton-root"[39m
-            [33mdisabled[39m=[32m""[39m
-            [33mtabindex[39m=[32m"-1"[39m
-            [33mtype[39m=[32m"button"[39m
-          [36m>[39m
-            [0mClear[0m
-          [36m</button>[39m
-          [36m<span[39m
-            [33maria-label[39m=[32m"Select students to airdrop"[39m
-            [33mclass[39m=[32m""[39m
-            [33mdata-mui-internal-clone-element[39m=[32m"true"[39m
-          [36m>[39m
-            [36m<button[39m
-              [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedSuccess MuiButton-sizeMedium MuiButton-containedSizeMedium Mui-disabled MuiButton-root MuiButton-contained MuiButton-containedSuccess MuiButton-sizeMedium MuiButton-containedSizeMedium css-ke5b6m-MuiButtonBase-root-MuiButton-root"[39m
-              [33mdisabled[39m=[32m""[39m
-              [33mtabindex[39m=[32m"-1"[39m
-              [33mtype[39m=[32m"button"[39m
-            [36m>[39m
-              [0mAirdrop[0m
-            [36m</button>[39m
-          [36m</span>[39m
-        [36m</div>[39m
-      [36m</div>[39m
-    [36m</div>[39m
-    [36m<div[39m
-      [33mclass[39m=[32m"MuiBox-root css-0"[39m
-    [36m>[39m
-      [36m<div[39m
-        [33mdata-testid[39m=[32m"certificate-table"[39m
-      [36m>[39m
-        [36m<div[39m
-          [33mdata-testid[39m=[32m"student-1"[39m
-        [36m>[39m
-          [0mAlice Smith[0m
-          [36m<input[39m
-            [33mdata-testid[39m=[32m"checkbox-1"[39m
-            [33mtype[39m=[32m"checkbox"[39m
-          [36m/>[39m
-        [36m</div>[39m
-        [36m<div[39m
-          [33mdata-testid[39m=[32m"student-2"[39m
-        [36m>[39m
-          [0mBob Johnson[0m
-        [36m</div>[39m
-      [36m</div>[39m
-    [36m</div>[39m
-  [36m</div>[39m
-[36m</body>[39m
- ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
- ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
- ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
- ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
- ❯ resources/js/pages/Portal/MyPage/ManageClass/Certificates.test.jsx:217:36
-    215| 
-    216|             // Connect wallet
-    217|             fireEvent.click(screen.getByTestId('mock-connect-wallet'));
-       |                                    ^
-    218| 
-    219|             // Select a student
-
-⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
-
- Test Files  1 failed | 8 passed (9)
-      Tests  2 failed | 106 passed (108)
-   Start at  16:24:15
-   Duration  7.47s (transform 788ms, setup 883ms, collect 16.75s, tests 4.85s, environment 4.71s, prepare 2.57s)
+ Test Files  9 passed (9)
+      Tests  107 passed (107)
+   Start at  19:24:11
+   Duration  7.48s (transform 675ms, setup 786ms, collect 17.44s, tests 5.45s, environment 4.54s, prepare 2.64s)
 
