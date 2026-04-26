@@ -18,40 +18,73 @@ test.use({ storageState: STORAGE_STATE.student });
 /**
  * Intercept Inertia responses and patch props to simulate ADA unavailability.
  */
+/**
+ * Patch Inertia props to simulate ADA unavailability.
+ */
+function patchInertiaProps(props) {
+    props.ada_available = false;
+    if (props.course) props.course.price_in_ada = null;
+    if (props.courses?.data) {
+        props.courses.data.forEach(c => { c.price_in_ada = null; });
+    }
+}
+
 async function interceptAdaUnavailable(page) {
     await page.route('**/*', async (route) => {
         const response = await route.fetch();
         const contentType = response.headers()['content-type'] || '';
-        const isInertia = response.headers()['x-inertia'] === 'true'
-            || contentType.includes('application/json');
+        const headers = { ...response.headers() };
+        delete headers['content-length'];
 
-        if (isInertia && route.request().headers()['x-inertia']) {
+        // XHR Inertia navigation: JSON response with x-inertia request header
+        if (route.request().headers()['x-inertia'] && contentType.includes('application/json')) {
             try {
                 const json = await response.json();
-                if (json.props) {
-                    json.props.ada_available = false;
-                    if (json.props.course) json.props.course.price_in_ada = null;
-                    if (json.props.courses?.data) {
-                        json.props.courses.data.forEach(c => { c.price_in_ada = null; });
-                    }
-                }
-                await route.fulfill({
-                    status: response.status(),
-                    headers: response.headers(),
-                    body: JSON.stringify(json),
-                });
+                if (json.props) patchInertiaProps(json.props);
+                await route.fulfill({ status: response.status(), headers, body: JSON.stringify(json) });
             } catch {
                 await route.fulfill({ response });
             }
-        } else {
-            await route.fulfill({ response });
+            return;
         }
+
+        // Initial full-page HTML load: patch data-page attribute embedded in the HTML
+        if (contentType.includes('text/html')) {
+            try {
+                const html = await response.text();
+                const patched = html.replace(
+                    /(<div[^>]+id="app"[^>]+data-page=")([^"]+)(")/,
+                    (_match, pre, encoded, post) => {
+                        try {
+                            // data-page value is HTML-entity-encoded JSON
+                            const decoded = encoded.replace(/&quot;/g, '"').replace(/&#039;/g, "'").replace(/&amp;/g, '&');
+                            const pageData = JSON.parse(decoded);
+                            if (pageData.props) patchInertiaProps(pageData.props);
+                            const reencoded = JSON.stringify(pageData).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+                            return `${pre}${reencoded}${post}`;
+                        } catch {
+                            return _match;
+                        }
+                    }
+                );
+                await route.fulfill({ status: response.status(), headers, body: patched });
+            } catch {
+                await route.fulfill({ response });
+            }
+            return;
+        }
+
+        await route.fulfill({ response });
     });
 }
 
 test.describe('ADA conversion unavailable (TS-01.08 through TS-01.11)', () => {
     test.beforeEach(async ({ page }) => {
         await interceptAdaUnavailable(page);
+    });
+
+    test.afterEach(async ({ page }) => {
+        await page.unrouteAll({ behavior: 'ignoreErrors' });
     });
 
     // -------------------------------------------------------------------------
