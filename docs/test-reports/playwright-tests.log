@@ -1,1013 +1,255 @@
 
 Running 216 tests using 2 workers
 
-  ✓    1 [teacher-setup] › tests/Browser/auth/teacher.setup.js:6:6 › authenticate as teacher (3.3s)
-  ✓    2 [admin-setup] › tests/Browser/auth/admin.setup.js:6:6 › authenticate as admin (3.4s)
-  ✓    4 [unauthenticated] › tests/Browser/course-browsing.spec.js:10:9 › Course Browsing - Filter Panel Structure › search text input is visible (3.6s)
-  ✓    3 [student-setup] › tests/Browser/auth/student.setup.js:6:6 › authenticate as student (4.0s)
-  ✓    5 [unauthenticated] › tests/Browser/course-browsing.spec.js:18:9 › Course Browsing - Filter Panel Structure › type filter select is present (3.1s)
-  ✓    6 [unauthenticated] › tests/Browser/course-browsing.spec.js:28:9 › Course Browsing - Filter Panel Structure › language filter select is present (2.1s)
-  ✓    7 [unauthenticated] › tests/Browser/course-browsing.spec.js:36:9 › Course Browsing - Filter Panel Structure › professor/teacher filter select is present (2.5s)
-  ✓    8 [unauthenticated] › tests/Browser/course-browsing.spec.js:44:9 › Course Browsing - Filter Panel Structure › submit/filter button is present (2.7s)
-  ✓    9 [unauthenticated] › tests/Browser/course-browsing.spec.js:55:9 › Course Browsing - Course Card Structure › course cards exist or empty state is shown (3.1s)
-  ✓   10 [unauthenticated] › tests/Browser/course-browsing.spec.js:65:9 › Course Browsing - Course Card Structure › each course card has a title element (h6) (3.0s)
-  ✓   11 [unauthenticated] › tests/Browser/course-browsing.spec.js:83:9 › Course Browsing - Course Card Structure › each course card shows professor attribution ("By ..." text) (4.9s)
-  ✓   12 [unauthenticated] › tests/Browser/course-browsing.spec.js:100:9 › Course Browsing - Course Card Structure › each course card has a MUI chip for course type (5.3s)
-  ✓   13 [unauthenticated] › tests/Browser/course-browsing.spec.js:117:9 › Course Browsing - Course Card Structure › each course card has a link to /classes/{id} (4.6s)
-  ✘   14 [unauthenticated] › tests/Browser/course-browsing.spec.js:137:9 › Course Browsing - Filtering › typing search text and submitting adds search_text to URL (5.9s)
-  ✓   15 [unauthenticated] › tests/Browser/course-browsing.spec.js:151:9 › Course Browsing - Filtering › searching for nonexistent text shows empty state message (5.0s)
-  ✘   16 [unauthenticated] › tests/Browser/course-browsing.spec.js:190:9 › Course Browsing - Course Detail Page › clicking view-more on a course card navigates to /classes/{id} (6.4s)
-  ✘   17 [unauthenticated] › tests/Browser/course-browsing.spec.js:161:9 › Course Browsing - Filtering › changing type filter adds type_id to URL (6.2s)
-  ✓   18 [unauthenticated] › tests/Browser/course-browsing.spec.js:212:9 › Course Browsing - Course Detail Page › detail page shows course title in h4 (5.2s)
-  ✓   20 [unauthenticated] › tests/Browser/course-browsing.spec.js:255:9 › Course Browsing - ADA Price on Listing Page (TS-01.01, TS-01.03) › listing page shows dual JPY+ADA price on paid General course card (5.5s)
-  ✘   21 [unauthenticated] › tests/Browser/course-browsing.spec.js:272:9 › Course Browsing - ADA Price on Detail Page (TS-01.02, TS-01.04) › detail page for General course shows JPY and ADA (~₳) price (4.8s)
-  ✓   22 [unauthenticated] › tests/Browser/course-browsing.spec.js:294:9 › Course Browsing - Pagination › pagination component is visible when more than 5 courses exist (4.1s)
-  ✓   23 [unauthenticated] › tests/Browser/course-browsing.spec.js:311:9 › Course Browsing - Pagination › clicking page 2 adds page=2 to URL (6.4s)
-  ✘   19 [unauthenticated] › tests/Browser/course-browsing.spec.js:234:9 › Course Browsing - Course Detail Page › detail page can be accessed directly by URL /classes/1 (30.2s)
-  ✓   24 [unauthenticated] › tests/Browser/top-page.spec.js:6:9 › Top Page › loads the top page with welcome title (4.0s)
-  ✓   25 [unauthenticated] › tests/Browser/top-page.spec.js:25:9 › Login Page › renders the portal login form (2.7s)
-  ✓   27 [unauthenticated] › tests/Browser/top-page.spec.js:34:9 › Login Page › has a submit button (2.6s)
-  ✓   26 [unauthenticated] › tests/Browser/top-page.spec.js:12:9 › Top Page › displays navigation elements (4.6s)
-  ✓   28 [guest] › tests/Browser/guest/admin-login.spec.js:11:9 › F-05.1: Admin login page renders form elements › renders email input (3.0s)
-  ✓   29 [guest] › tests/Browser/guest/admin-login.spec.js:17:9 › F-05.1: Admin login page renders form elements › renders password input (2.9s)
-  ✓   30 [guest] › tests/Browser/guest/admin-login.spec.js:23:9 › F-05.1: Admin login page renders form elements › renders submit button (2.2s)
-  ✓   31 [guest] › tests/Browser/guest/admin-login.spec.js:34:9 › F-05.2: Successful admin login › valid admin credentials redirect away from /admin/login (3.3s)
-  ✓   32 [guest] › tests/Browser/guest/admin-login.spec.js:47:9 › F-05.3: Invalid admin credentials › wrong credentials show error and stay on /admin/login (4.0s)
-  ✓   33 [guest] › tests/Browser/guest/course-detail-extra.spec.js:7:9 › F-01.3: Top page featured content › home page loads and shows course cards or handles empty state (3.7s)
-  ✓   35 [guest] › tests/Browser/guest/course-detail-extra.spec.js:66:9 › F-03.5: Nonexistent course returns 404 › /classes/999999 returns 404, not 500 (579ms)
-  ✓   36 [guest] › tests/Browser/guest/course-detail-extra.spec.js:72:9 › F-03.5: Nonexistent course returns 404 › /classes/999999 shows a not-found message or page, not a crash (595ms)
-  ✓   34 [guest] › tests/Browser/guest/course-detail-extra.spec.js:36:9 › F-03.4: Course detail schedule info › course detail page shows schedule section or skips if none (4.8s)
-  ✓   37 [guest] › tests/Browser/guest/forgot-password.spec.js:9:9 › F-10.1: Forgot password page renders form › renders email input (2.9s)
-  ✓   38 [guest] › tests/Browser/guest/forgot-password.spec.js:15:9 › F-10.1: Forgot password page renders form › renders submit button (3.7s)
-  ✓   40 [guest] › tests/Browser/guest/forgot-password.spec.js:39:9 › F-10.3: Unregistered email shows error › submitting unregistered email shows email field error (3.8s)
-  ✓   41 [guest] › tests/Browser/guest/inquiries.spec.js:9:9 › F-08.1: Inquiries page renders the contact form › contact form shows name input (4.5s)
-  ✘   39 [guest] › tests/Browser/guest/forgot-password.spec.js:26:9 › F-10.2: Valid email shows success › submitting registered email shows success toast (13.7s)
-  ✓   42 [guest] › tests/Browser/guest/inquiries.spec.js:15:9 › F-08.1: Inquiries page renders the contact form › contact form shows email input (3.9s)
-  ✓   43 [guest] › tests/Browser/guest/inquiries.spec.js:27:9 › F-08.1: Inquiries page renders the contact form › contact form shows message textarea (4.6s)
-  ✓   44 [guest] › tests/Browser/guest/inquiries.spec.js:21:9 › F-08.1: Inquiries page renders the contact form › contact form shows subject input (3.6s)
-  ✓   45 [guest] › tests/Browser/guest/inquiries.spec.js:34:9 › F-08.1: Inquiries page renders the contact form › contact form has a submit button (4.2s)
-  ✓   46 [guest] › tests/Browser/guest/inquiries.spec.js:45:9 › F-08.2: Submitting valid inquiry shows success › fills form fields dynamically and submits — success alert appears (6.3s)
-  ✓   47 [guest] › tests/Browser/guest/inquiries.spec.js:85:9 › F-08.3: Empty inquiry shows validation errors › empty form submission shows MUI error state (4.7s)
-  ✓   48 [guest] › tests/Browser/guest/language-switching.spec.js:7:9 › F-09.1: Language switch changes page content › switching to English shows English content (3.1s)
-  ✓   49 [guest] › tests/Browser/guest/language-switching.spec.js:14:9 › F-09.1: Language switch changes page content › switching to Japanese shows Japanese content (3.6s)
-  ✓   51 [guest] › tests/Browser/guest/registration-extra.spec.js:10:9 › F-07.1: Registration index role selection › renders student and teacher registration links (1.8s)
-  ✓   50 [guest] › tests/Browser/guest/language-switching.spec.js:21:9 › F-09.1: Language switch changes page content › language toggle links present in navbar (4.0s)
-  ✓   53 [guest] › tests/Browser/guest/registration-extra.spec.js:38:9 › F-07.5: Teacher registration form fields › renders all required inputs (2.2s)
-  ✓   52 [guest] › tests/Browser/guest/registration-extra.spec.js:20:9 › F-07.4: Duplicate email validation › registering with existing email shows error (3.5s)
-  ✓   54 [guest] › tests/Browser/guest/registration-extra.spec.js:50:9 › F-07.5: Teacher registration form fields › renders submit button (2.2s)
-  ✓   55 [guest] › tests/Browser/guest/registration-extra.spec.js:59:9 › F-07.6: Successful teacher registration › valid teacher form redirects to /register/teacher/success (3.7s)
-  ✓   56 [guest] › tests/Browser/guest/route-protection.spec.js:9:9 › F-06.2: Admin route protection (unauthenticated) › visiting /admin/profile without auth redirects to /admin/login (1.7s)
-  ✓   57 [guest] › tests/Browser/guest/route-smoke.spec.js:19:13 › F-11.1: Public guest routes return non-500 › Home page (/) returns non-500 (2.0s)
-  ✓   58 [guest] › tests/Browser/guest/route-smoke.spec.js:19:13 › F-11.1: Public guest routes return non-500 › Course listing (/classes) returns non-500 (3.4s)
-  ✓   59 [guest] › tests/Browser/guest/route-smoke.spec.js:19:13 › F-11.1: Public guest routes return non-500 › Inquiries form (/inquiries) returns non-500 (2.8s)
-  ✓   60 [guest] › tests/Browser/guest/route-smoke.spec.js:19:13 › F-11.1: Public guest routes return non-500 › Registration index (/register) returns non-500 (1.4s)
-  ✓   61 [guest] › tests/Browser/guest/route-smoke.spec.js:19:13 › F-11.1: Public guest routes return non-500 › Student registration (/register/student) returns non-500 (1.5s)
-  ✓   62 [guest] › tests/Browser/guest/route-smoke.spec.js:19:13 › F-11.1: Public guest routes return non-500 › Teacher registration (/register/teacher) returns non-500 (1.7s)
-  ✓   63 [guest] › tests/Browser/guest/route-smoke.spec.js:19:13 › F-11.1: Public guest routes return non-500 › Portal login (/portal/login) returns non-500 (1.9s)
-  ✓   64 [guest] › tests/Browser/guest/route-smoke.spec.js:19:13 › F-11.1: Public guest routes return non-500 › Admin login (/admin/login) returns non-500 (1.8s)
-  ✓   65 [guest] › tests/Browser/guest/route-smoke.spec.js:19:13 › F-11.1: Public guest routes return non-500 › Forgot password (/forgot-password) returns non-500 (1.6s)
-  ✘   66 [student] › tests/Browser/auth/ada-conversion-failure.spec.js:60:9 › ADA conversion unavailable (TS-01.08 through TS-01.11) › TS-01.08: JPY price is visible on the course listing page (4.7s)
-  ✘   67 [student] › tests/Browser/auth/ada-conversion-failure.spec.js:72:9 › ADA conversion unavailable (TS-01.08 through TS-01.11) › TS-01.09: ADA equivalent price is NOT shown on the course listing page (10.3s)
-  ✘   68 [student] › tests/Browser/auth/ada-conversion-failure.spec.js:85:9 › ADA conversion unavailable (TS-01.08 through TS-01.11) › TS-01.10 and TS-01.11: ADA button is disabled, CC button is enabled on General course detail (30.1s)
-  ✘   69 [student] › tests/Browser/auth/ada-price-freshness.spec.js:41:9 › TS-01.06: ADA price live refresh › ADA price updates in-place when market rate changes (30.1s)
-  ✓   71 [student] › tests/Browser/auth/login.spec.js:13:9 › Login page rendering › renders email input (1.3s)
-  ✓   72 [student] › tests/Browser/auth/login.spec.js:20:9 › Login page rendering › renders password input (1.0s)
-  ✓   73 [student] › tests/Browser/auth/login.spec.js:27:9 › Login page rendering › renders submit button (995ms)
-  ✓   74 [student] › tests/Browser/auth/login.spec.js:34:9 › Login page rendering › has forgot-password link (1.1s)
-  ✓   75 [student] › tests/Browser/auth/login.spec.js:42:9 › Login page rendering › has register link (890ms)
-  ✓   76 [student] › tests/Browser/auth/login.spec.js:57:9 › Successful login › student login -> URL changes away from /portal/login (1.8s)
-  ✓   77 [student] › tests/Browser/auth/login.spec.js:65:9 › Successful login › teacher login -> URL changes away from /portal/login (1.7s)
-  ✓   78 [student] › tests/Browser/auth/login.spec.js:80:9 › Authenticated access › authenticated user can navigate to /mypage/profile without redirect (1.3s)
-  ✓   79 [student] › tests/Browser/auth/login.spec.js:94:9 › Login failures › invalid credentials -> error message visible (1.5s)
-  ✓   80 [student] › tests/Browser/auth/login.spec.js:107:9 › Login failures › empty email -> validation error visible (1.0s)
-  ✓   81 [student] › tests/Browser/auth/login.spec.js:133:9 › Route protection › unauthenticated GET /mypage -> redirected to /portal/login (824ms)
-  ✓   82 [student] › tests/Browser/auth/logout.spec.js:20:5 › logged-in user can logout (3.9s)
-  ✓   83 [student] › tests/Browser/auth/logout.spec.js:42:5 › after logout, /mypage redirects to login (4.5s)
-  ✓   84 [student] › tests/Browser/auth/registration.spec.js:14:9 › Registration form rendering › renders first_name input (945ms)
-  ✓   85 [student] › tests/Browser/auth/registration.spec.js:21:9 › Registration form rendering › renders last_name input (712ms)
-  ✘   70 [student] › tests/Browser/auth/ada-price-freshness.spec.js:95:9 › TS-01.07: ADA price drift warning › warning text appears when ADA rate drifts beyond 5% threshold (30.1s)
-  ✓   86 [student] › tests/Browser/auth/registration.spec.js:28:9 › Registration form rendering › renders country_id as native <select> (selectOption compatible) (871ms)
-  ✓   87 [student] › tests/Browser/auth/registration.spec.js:44:9 › Registration form rendering › renders password input (889ms)
-  ✓   89 [student] › tests/Browser/auth/registration.spec.js:51:9 › Registration form rendering › renders password_confirmation input (781ms)
-  ✓   88 [student] › tests/Browser/auth/registration.spec.js:37:9 › Registration form rendering › renders email input (906ms)
-  ✓   91 [student] › tests/Browser/auth/registration.spec.js:91:9 › Validation errors › password mismatch -> error message visible (3.0s)
-  ✓   92 [student] › tests/Browser/auth/registration.spec.js:112:9 › Validation errors › submitting empty form -> validation errors visible (911ms)
-  ✓   93 [student] › tests/Browser/auth/route-protection.spec.js:10:9 › F-06.3: Admin route protection (authenticated non-admin) › student visiting /admin/profile is redirected away from admin (1.1s)
-  ✓   94 [student] › tests/Browser/auth/route-protection.spec.js:19:9 › F-06.4: Teacher route protection (authenticated non-teacher) › student visiting /mypage/class-application is redirected away (1.1s)
-  ✘   90 [student] › tests/Browser/auth/registration.spec.js:65:9 › Successful registration › fills form with unique email, submits -> redirected to /email/verify (8.3s)
-  ✓   96 [student] › tests/Browser/auth/student-courses.spec.js:13:9 › F-06: Student Certificates Page › F-06.1: page loads without server error (904ms)
-  ✓   97 [student] › tests/Browser/auth/student-courses.spec.js:20:9 › F-06: Student Certificates Page › F-06.2: displays rewards table or empty-state card (843ms)
-  ✓   98 [student] › tests/Browser/auth/student-courses.spec.js:43:9 › F-07: Student Badges Page › F-07.1: page loads without server error (870ms)
-  ✓   99 [student] › tests/Browser/auth/student-courses.spec.js:50:9 › F-07: Student Badges Page › F-07.2: displays badges/rewards or empty-state card (781ms)
-  ✓  100 [student] › tests/Browser/auth/student-courses.spec.js:175:9 › F-09: Course Browsing as Authenticated Student › F-09.1: /classes listing displays filter panel and course cards when authenticated (1.2s)
-  ✘   95 [student] › tests/Browser/auth/stripe-unavailable.spec.js:54:9 › Stripe unavailable (TS-04.06 / TS-04.07) › TS-04.06/07: CC button disabled and ADA button present when Stripe unavailable (30.1s)
-  ✘  101 [student] › tests/Browser/auth/student-courses.spec.js:187:9 › F-09: Course Browsing as Authenticated Student › F-09.2: course detail page shows booking/purchase actions for authenticated student (30.1s)
-  ✘  102 [student] › tests/Browser/auth/student-courses.spec.js:113:9 › F-08: Course Attendance Flow › F-08.1: attend page loads and shows stepper for a booked schedule (0ms)
-  -  104 [student] › tests/Browser/auth/student-courses.spec.js:125:9 › F-08: Course Attendance Flow › F-08.2: watch page renders for a video/live class
-  ✓  105 [student] › tests/Browser/auth/student-history.spec.js:13:9 › F-03: Course History › F-03.1: page loads without errors (2.6s)
-  ✓  106 [student] › tests/Browser/auth/student-history.spec.js:20:9 › F-03: Course History › F-03.2: displays records or empty-state message (2.6s)
-  ✘  103 [student] › tests/Browser/auth/student-courses.spec.js:137:9 › F-08: Course Attendance Flow › F-08.3: exam page renders if accessible (0ms)
-  -  108 [student] › tests/Browser/auth/student-courses.spec.js:158:9 › F-08: Course Attendance Flow › F-08.4: feedback page renders if accessible
-  ✓  107 [student] › tests/Browser/auth/student-history.spec.js:35:9 › F-03: Course History › F-03.3: records show class name and status indicator (2.3s)
-  ✓  109 [student] › tests/Browser/auth/student-history.spec.js:66:9 › F-04: Purchase History › F-04.2: displays records or empty-state message (1.8s)
-  ✓  110 [student] › tests/Browser/auth/student-history.spec.js:59:9 › F-04: Purchase History › F-04.1: page loads without errors (2.2s)
-  ✓  111 [student] › tests/Browser/auth/student-history.spec.js:93:9 › F-05: Wallet History › F-05.1: page loads without errors (2.0s)
-  ✓  112 [student] › tests/Browser/auth/student-history.spec.js:100:9 › F-05: Wallet History › F-05.2: displays records or empty-state message (2.0s)
-  ✓  113 [student] › tests/Browser/auth/student-mypage.spec.js:9:9 › F-01: MyPage Navigation › F-01.1: /mypage redirects authenticated student to /mypage/profile (2.2s)
-  ✘  115 [student] › tests/Browser/auth/student-mypage.spec.js:25:9 › F-01: MyPage Navigation › F-01.3: Profile page loads at /mypage/profile (1.7s)
-  ✓  116 [student] › tests/Browser/auth/student-mypage.spec.js:32:9 › F-01: MyPage Navigation › F-01.3: Class History page loads at /mypage/class-history (2.0s)
-  ✘  114 [student] › tests/Browser/auth/student-mypage.spec.js:15:9 › F-01: MyPage Navigation › F-01.2: MyPage sidebar shows all student navigation sections (7.2s)
-  ✓  117 [student] › tests/Browser/auth/student-mypage.spec.js:39:9 › F-01: MyPage Navigation › F-01.3: Purchase History page loads at /mypage/purchase-history (1.6s)
-  ✘  118 [student] › tests/Browser/auth/student-mypage.spec.js:55:9 › F-11: Student Route Smoke Tests › /mypage/profile renders without server error (1.7s)
-  ✓  119 [student] › tests/Browser/auth/student-mypage.spec.js:46:9 › F-01: MyPage Navigation › F-01.3: Badges page loads at /mypage/badges (1.9s)
-  ✓  120 [student] › tests/Browser/auth/student-mypage.spec.js:69:9 › F-11: Student Route Smoke Tests › /mypage/purchase-history renders without server error (1.5s)
-  ✓  121 [student] › tests/Browser/auth/student-mypage.spec.js:62:9 › F-11: Student Route Smoke Tests › /mypage/class-history renders without server error (1.7s)
-  ✓  122 [student] › tests/Browser/auth/student-mypage.spec.js:76:9 › F-11: Student Route Smoke Tests › /mypage/wallet-history renders without server error (1.2s)
-  ✓  123 [student] › tests/Browser/auth/student-mypage.spec.js:83:9 › F-11: Student Route Smoke Tests › /mypage/certificates renders without server error (1.3s)
-  ✓  124 [student] › tests/Browser/auth/student-mypage.spec.js:90:9 › F-11: Student Route Smoke Tests › /mypage/badges renders without server error (1.2s)
-  ✓  125 [student] › tests/Browser/auth/student-mypage.spec.js:97:9 › F-11: Student Route Smoke Tests › /classes renders without server error (2.1s)
-  ✘  127 [student] › tests/Browser/auth/student-profile.spec.js:10:9 › F-02: Profile Management › F-02.1: profile page loads with pre-populated fields (6.1s)
-  ✘  126 [student] › tests/Browser/auth/student-mypage.spec.js:104:9 › F-11: Student Route Smoke Tests › /classes/1 returns non-500 response (404 acceptable if course absent) (30.0s)
-  ✘  129 [student] › tests/Browser/auth/student-profile.spec.js:66:9 › F-02: Profile Management › F-02.3: password change section visible with current/new/confirm fields (5.8s)
-  ✘  128 [student] › tests/Browser/auth/student-profile.spec.js:28:9 › F-02: Profile Management › F-02.2: editing first name and submitting shows success toast and persists on reload (30.1s)
-  ✘  131 [student] › tests/Browser/student/route-smoke.spec.js:22:13 › F-08: Route Smoke Test — Student › MyPage profile returns non-500 (807ms)
-  ✓  132 [student] › tests/Browser/student/route-smoke.spec.js:22:13 › F-08: Route Smoke Test — Student › Purchase history returns non-500 (613ms)
-  ✓  133 [student] › tests/Browser/student/route-smoke.spec.js:22:13 › F-08: Route Smoke Test — Student › Certificates returns non-500 (621ms)
-  ✓  134 [student] › tests/Browser/student/route-smoke.spec.js:22:13 › F-08: Route Smoke Test — Student › Badges returns non-500 (633ms)
-  ✓  135 [student] › tests/Browser/student/route-smoke.spec.js:22:13 › F-08: Route Smoke Test — Student › Course listing returns non-500 (1.1s)
-  ✘  130 [student] › tests/Browser/auth/student-profile.spec.js:83:9 › F-02: Profile Management › F-02.4: mismatched password confirmation shows validation error (30.2s)
-  ✘  136 [student] › tests/Browser/student/wallet-cip30.spec.js:57:9 › CIP-30 Wallet (mock Eternl) › connect wallet — shows balance and stake key (30.1s)
-  ✓  138 [student] › tests/Browser/student/wallet-cip30.spec.js:102:9 › CIP-30 Wallet (mock Eternl) › mint reward via CIP-30 — double-signed certificate (1.2s)
-  ✓  139 [teacher] › tests/Browser/teacher/class-applications.spec.js:10:9 › F-01: Class Applications › F-01.1: class applications list page loads without errors (1.3s)
-  ✓  140 [teacher] › tests/Browser/teacher/class-applications.spec.js:29:9 › F-01: Class Applications › F-01.2: create class application form renders required fields (1.1s)
-  ✓  141 [teacher] › tests/Browser/teacher/class-applications.spec.js:45:9 › F-01: Class Applications › F-01.3: submitting a valid class application succeeds (2.6s)
-  ✓  142 [teacher] › tests/Browser/teacher/class-applications.spec.js:104:9 › F-01: Class Applications › F-01.4: submitting incomplete application shows validation errors (1.0s)
-  ✓  143 [teacher] › tests/Browser/teacher/class-applications.spec.js:126:9 › F-01: Class Applications › F-01.5: class application detail page renders (1.1s)
-  ✓  144 [teacher] › tests/Browser/teacher/course-management.spec.js:61:9 › F-03: Course CRUD › F-03.1: edit course page renders for owned class (1.4s)
-  ✓  145 [teacher] › tests/Browser/teacher/course-management.spec.js:74:9 › F-03: Course CRUD › F-03.2: updating course description succeeds (4.8s)
+  ✓    1 [admin-setup] › tests/Browser/auth/admin.setup.js:6:6 › authenticate as admin (982ms)
+  ✓    2 [teacher-setup] › tests/Browser/auth/teacher.setup.js:6:6 › authenticate as teacher (1.2s)
+  ✓    3 [student-setup] › tests/Browser/auth/student.setup.js:6:6 › authenticate as student (1.1s)
+  ✓    4 [unauthenticated] › tests/Browser/course-browsing.spec.js:10:9 › Course Browsing - Filter Panel Structure › search text input is visible (994ms)
+  ✓    5 [unauthenticated] › tests/Browser/course-browsing.spec.js:28:9 › Course Browsing - Filter Panel Structure › language filter select is present (757ms)
+  ✓    7 [unauthenticated] › tests/Browser/course-browsing.spec.js:36:9 › Course Browsing - Filter Panel Structure › professor/teacher filter select is present (794ms)
+  ✓    6 [unauthenticated] › tests/Browser/course-browsing.spec.js:18:9 › Course Browsing - Filter Panel Structure › type filter select is present (1.1s)
+  ✓    8 [unauthenticated] › tests/Browser/course-browsing.spec.js:44:9 › Course Browsing - Filter Panel Structure › submit/filter button is present (964ms)
+  ✓    9 [unauthenticated] › tests/Browser/course-browsing.spec.js:55:9 › Course Browsing - Course Card Structure › course cards exist or empty state is shown (987ms)
+  ✓   10 [unauthenticated] › tests/Browser/course-browsing.spec.js:65:9 › Course Browsing - Course Card Structure › each course card has a title element (h6) (944ms)
+  ✓   11 [unauthenticated] › tests/Browser/course-browsing.spec.js:83:9 › Course Browsing - Course Card Structure › each course card shows professor attribution ("By ..." text) (1.0s)
+  ✓   12 [unauthenticated] › tests/Browser/course-browsing.spec.js:100:9 › Course Browsing - Course Card Structure › each course card has a MUI chip for course type (985ms)
+  ✓   13 [unauthenticated] › tests/Browser/course-browsing.spec.js:117:9 › Course Browsing - Course Card Structure › each course card has a link to /classes/{id} (1.0s)
+  ✓   15 [unauthenticated] › tests/Browser/course-browsing.spec.js:151:9 › Course Browsing - Filtering › searching for nonexistent text shows empty state message (709ms)
+  ✓   14 [unauthenticated] › tests/Browser/course-browsing.spec.js:137:9 › Course Browsing - Filtering › typing search text and submitting adds search_text to URL (1.8s)
+  ✓   16 [unauthenticated] › tests/Browser/course-browsing.spec.js:161:9 › Course Browsing - Filtering › changing type filter adds type_id to URL (1.8s)
+  ✓   17 [unauthenticated] › tests/Browser/course-browsing.spec.js:190:9 › Course Browsing - Course Detail Page › clicking view-more on a course card navigates to /classes/{id} (2.1s)
+  ✓   19 [unauthenticated] › tests/Browser/course-browsing.spec.js:234:9 › Course Browsing - Course Detail Page › detail page can be accessed directly by URL /classes/1 (541ms)
+  ✓   18 [unauthenticated] › tests/Browser/course-browsing.spec.js:212:9 › Course Browsing - Course Detail Page › detail page shows course title in h4 (1.9s)
+  ✓   20 [unauthenticated] › tests/Browser/course-browsing.spec.js:255:9 › Course Browsing - ADA Price on Listing Page (TS-01.01, TS-01.03) › listing page shows dual JPY+ADA price on paid General course card (985ms)
+  ✓   22 [unauthenticated] › tests/Browser/course-browsing.spec.js:294:9 › Course Browsing - Pagination › pagination component is visible when more than 5 courses exist (925ms)
+  ✓   21 [unauthenticated] › tests/Browser/course-browsing.spec.js:272:9 › Course Browsing - ADA Price on Detail Page (TS-01.02, TS-01.04) › detail page for General course shows JPY and ADA (~₳) price (1.8s)
+  ✓   24 [unauthenticated] › tests/Browser/top-page.spec.js:6:9 › Top Page › loads the top page with welcome title (792ms)
+  ✓   23 [unauthenticated] › tests/Browser/course-browsing.spec.js:311:9 › Course Browsing - Pagination › clicking page 2 adds page=2 to URL (1.1s)
+  ✓   26 [unauthenticated] › tests/Browser/top-page.spec.js:25:9 › Login Page › renders the portal login form (526ms)
+  ✓   25 [unauthenticated] › tests/Browser/top-page.spec.js:12:9 › Top Page › displays navigation elements (895ms)
+  ✓   27 [unauthenticated] › tests/Browser/top-page.spec.js:34:9 › Login Page › has a submit button (525ms)
+  ✓   28 [guest] › tests/Browser/guest/admin-login.spec.js:11:9 › F-05.1: Admin login page renders form elements › renders email input (573ms)
+  ✓   29 [guest] › tests/Browser/guest/admin-login.spec.js:17:9 › F-05.1: Admin login page renders form elements › renders password input (544ms)
+  ✓   30 [guest] › tests/Browser/guest/admin-login.spec.js:23:9 › F-05.1: Admin login page renders form elements › renders submit button (505ms)
+  ✓   31 [guest] › tests/Browser/guest/admin-login.spec.js:34:9 › F-05.2: Successful admin login › valid admin credentials redirect away from /admin/login (841ms)
+  ✓   33 [guest] › tests/Browser/guest/course-detail-extra.spec.js:7:9 › F-01.3: Top page featured content › home page loads and shows course cards or handles empty state (855ms)
+  ✓   32 [guest] › tests/Browser/guest/admin-login.spec.js:47:9 › F-05.3: Invalid admin credentials › wrong credentials show error and stay on /admin/login (1.5s)
+  ✓   35 [guest] › tests/Browser/guest/course-detail-extra.spec.js:66:9 › F-03.5: Nonexistent course returns 404 › /classes/999999 returns 404, not 500 (182ms)
+  ✓   36 [guest] › tests/Browser/guest/course-detail-extra.spec.js:72:9 › F-03.5: Nonexistent course returns 404 › /classes/999999 shows a not-found message or page, not a crash (120ms)
+  ✓   37 [guest] › tests/Browser/guest/forgot-password.spec.js:9:9 › F-10.1: Forgot password page renders form › renders email input (539ms)
+  ✓   38 [guest] › tests/Browser/guest/forgot-password.spec.js:15:9 › F-10.1: Forgot password page renders form › renders submit button (471ms)
+  ✓   34 [guest] › tests/Browser/guest/course-detail-extra.spec.js:36:9 › F-03.4: Course detail schedule info › course detail page shows schedule section or skips if none (2.0s)
+  ✓   39 [guest] › tests/Browser/guest/forgot-password.spec.js:26:9 › F-10.2: Valid email shows success › submitting registered email shows success toast (876ms)
+  ✓   41 [guest] › tests/Browser/guest/inquiries.spec.js:9:9 › F-08.1: Inquiries page renders the contact form › contact form shows name input (624ms)
+  ✓   42 [guest] › tests/Browser/guest/inquiries.spec.js:15:9 › F-08.1: Inquiries page renders the contact form › contact form shows email input (560ms)
+  ✓   40 [guest] › tests/Browser/guest/forgot-password.spec.js:39:9 › F-10.3: Unregistered email shows error › submitting unregistered email shows email field error (1.6s)
+  ✓   43 [guest] › tests/Browser/guest/inquiries.spec.js:21:9 › F-08.1: Inquiries page renders the contact form › contact form shows subject input (613ms)
+  ✓   44 [guest] › tests/Browser/guest/inquiries.spec.js:27:9 › F-08.1: Inquiries page renders the contact form › contact form shows message textarea (625ms)
+  ✓   45 [guest] › tests/Browser/guest/inquiries.spec.js:34:9 › F-08.1: Inquiries page renders the contact form › contact form has a submit button (888ms)
+  ✓   46 [guest] › tests/Browser/guest/inquiries.spec.js:45:9 › F-08.2: Submitting valid inquiry shows success › fills form fields dynamically and submits — success alert appears (1.6s)
+  ✓   47 [guest] › tests/Browser/guest/inquiries.spec.js:85:9 › F-08.3: Empty inquiry shows validation errors › empty form submission shows MUI error state (1.7s)
+  ✓   48 [guest] › tests/Browser/guest/language-switching.spec.js:7:9 › F-09.1: Language switch changes page content › switching to English shows English content (738ms)
+  ✓   49 [guest] › tests/Browser/guest/language-switching.spec.js:14:9 › F-09.1: Language switch changes page content › switching to Japanese shows Japanese content (850ms)
+  ✓   50 [guest] › tests/Browser/guest/language-switching.spec.js:21:9 › F-09.1: Language switch changes page content › language toggle links present in navbar (893ms)
+  ✓   51 [guest] › tests/Browser/guest/registration-extra.spec.js:10:9 › F-07.1: Registration index role selection › renders student and teacher registration links (569ms)
+  ✓   53 [guest] › tests/Browser/guest/registration-extra.spec.js:38:9 › F-07.5: Teacher registration form fields › renders all required inputs (551ms)
+  ✓   54 [guest] › tests/Browser/guest/registration-extra.spec.js:50:9 › F-07.5: Teacher registration form fields › renders submit button (474ms)
+  ✓   52 [guest] › tests/Browser/guest/registration-extra.spec.js:20:9 › F-07.4: Duplicate email validation › registering with existing email shows error (1.8s)
+  ✓   56 [guest] › tests/Browser/guest/route-protection.spec.js:9:9 › F-06.2: Admin route protection (unauthenticated) › visiting /admin/profile without auth redirects to /admin/login (516ms)
+  ✓   57 [guest] › tests/Browser/guest/route-smoke.spec.js:19:13 › F-11.1: Public guest routes return non-500 › Home page (/) returns non-500 (881ms)
+  ✓   55 [guest] › tests/Browser/guest/registration-extra.spec.js:59:9 › F-07.6: Successful teacher registration › valid teacher form redirects to /register/teacher/success (1.8s)
+  ✓   59 [guest] › tests/Browser/guest/route-smoke.spec.js:19:13 › F-11.1: Public guest routes return non-500 › Inquiries form (/inquiries) returns non-500 (777ms)
+  ✓   58 [guest] › tests/Browser/guest/route-smoke.spec.js:19:13 › F-11.1: Public guest routes return non-500 › Course listing (/classes) returns non-500 (1.1s)
+  ✓   60 [guest] › tests/Browser/guest/route-smoke.spec.js:19:13 › F-11.1: Public guest routes return non-500 › Registration index (/register) returns non-500 (524ms)
+  ✓   61 [guest] › tests/Browser/guest/route-smoke.spec.js:19:13 › F-11.1: Public guest routes return non-500 › Student registration (/register/student) returns non-500 (559ms)
+  ✓   62 [guest] › tests/Browser/guest/route-smoke.spec.js:19:13 › F-11.1: Public guest routes return non-500 › Teacher registration (/register/teacher) returns non-500 (559ms)
+  ✓   63 [guest] › tests/Browser/guest/route-smoke.spec.js:19:13 › F-11.1: Public guest routes return non-500 › Portal login (/portal/login) returns non-500 (514ms)
+  ✓   64 [guest] › tests/Browser/guest/route-smoke.spec.js:19:13 › F-11.1: Public guest routes return non-500 › Admin login (/admin/login) returns non-500 (489ms)
+  ✓   65 [guest] › tests/Browser/guest/route-smoke.spec.js:19:13 › F-11.1: Public guest routes return non-500 › Forgot password (/forgot-password) returns non-500 (486ms)
+  ✓   66 [student] › tests/Browser/auth/ada-conversion-failure.spec.js:93:9 › ADA conversion unavailable (TS-01.08 through TS-01.11) › TS-01.08: JPY price is visible on the course listing page (1.0s)
+  ✓   67 [student] › tests/Browser/auth/ada-conversion-failure.spec.js:105:9 › ADA conversion unavailable (TS-01.08 through TS-01.11) › TS-01.09: ADA equivalent price is NOT shown on the course listing page (1.2s)
+  -   69 [student] › tests/Browser/auth/ada-price-freshness.spec.js:41:9 › TS-01.06: ADA price live refresh › ADA price updates in-place when market rate changes
+  ✓   68 [student] › tests/Browser/auth/ada-conversion-failure.spec.js:118:9 › ADA conversion unavailable (TS-01.08 through TS-01.11) › TS-01.10 and TS-01.11: ADA button is disabled, CC button is enabled on General course detail (2.6s)
+  ✓   71 [student] › tests/Browser/auth/login.spec.js:13:9 › Login page rendering › renders email input (579ms)
+  ✓   72 [student] › tests/Browser/auth/login.spec.js:20:9 › Login page rendering › renders password input (491ms)
+  ✓   73 [student] › tests/Browser/auth/login.spec.js:27:9 › Login page rendering › renders submit button (459ms)
+  -   70 [student] › tests/Browser/auth/ada-price-freshness.spec.js:95:9 › TS-01.07: ADA price drift warning › warning text appears when ADA rate drifts beyond 5% threshold
+  ✓   74 [student] › tests/Browser/auth/login.spec.js:34:9 › Login page rendering › has forgot-password link (559ms)
+  ✓   75 [student] › tests/Browser/auth/login.spec.js:42:9 › Login page rendering › has register link (545ms)
+  ✓   76 [student] › tests/Browser/auth/login.spec.js:57:9 › Successful login › student login -> URL changes away from /portal/login (1.1s)
+  ✓   77 [student] › tests/Browser/auth/login.spec.js:65:9 › Successful login › teacher login -> URL changes away from /portal/login (1.3s)
+  ✓   78 [student] › tests/Browser/auth/login.spec.js:80:9 › Authenticated access › authenticated user can navigate to /mypage/profile without redirect (619ms)
+  ✓   79 [student] › tests/Browser/auth/login.spec.js:94:9 › Login failures › invalid credentials -> error message visible (998ms)
+  ✓   80 [student] › tests/Browser/auth/login.spec.js:107:9 › Login failures › empty email -> validation error visible (664ms)
+  ✓   81 [student] › tests/Browser/auth/login.spec.js:133:9 › Route protection › unauthenticated GET /mypage -> redirected to /portal/login (586ms)
+  ✓   82 [student] › tests/Browser/auth/logout.spec.js:20:5 › logged-in user can logout (3.2s)
+  ✓   84 [student] › tests/Browser/auth/registration.spec.js:14:9 › Registration form rendering › renders first_name input (499ms)
+  ✓   85 [student] › tests/Browser/auth/registration.spec.js:21:9 › Registration form rendering › renders last_name input (492ms)
+  ✓   86 [student] › tests/Browser/auth/registration.spec.js:28:9 › Registration form rendering › renders country_id as native <select> (selectOption compatible) (510ms)
+  ✓   87 [student] › tests/Browser/auth/registration.spec.js:37:9 › Registration form rendering › renders email input (528ms)
+  ✓   83 [student] › tests/Browser/auth/logout.spec.js:42:5 › after logout, /mypage redirects to login (4.7s)
+  ✓   88 [student] › tests/Browser/auth/registration.spec.js:44:9 › Registration form rendering › renders password input (609ms)
+  ✓   89 [student] › tests/Browser/auth/registration.spec.js:51:9 › Registration form rendering › renders password_confirmation input (607ms)
+  ✓   91 [student] › tests/Browser/auth/registration.spec.js:91:9 › Validation errors › password mismatch -> error message visible (1.6s)
+  ✓   90 [student] › tests/Browser/auth/registration.spec.js:65:9 › Successful registration › fills form with unique email, submits -> redirected to /email/verify (1.9s)
+  ✓   92 [student] › tests/Browser/auth/registration.spec.js:112:9 › Validation errors › submitting empty form -> validation errors visible (727ms)
+  ✓   93 [student] › tests/Browser/auth/route-protection.spec.js:10:9 › F-06.3: Admin route protection (authenticated non-admin) › student visiting /admin/profile is redirected away from admin (810ms)
+  ✓   94 [student] › tests/Browser/auth/route-protection.spec.js:19:9 › F-06.4: Teacher route protection (authenticated non-teacher) › student visiting /mypage/class-application is redirected away (832ms)
+  ✓   96 [student] › tests/Browser/auth/student-courses.spec.js:13:9 › F-06: Student Certificates Page › F-06.1: page loads without server error (603ms)
+  ✓   97 [student] › tests/Browser/auth/student-courses.spec.js:20:9 › F-06: Student Certificates Page › F-06.2: displays rewards table or empty-state card (569ms)
+  ✓   98 [student] › tests/Browser/auth/student-courses.spec.js:43:9 › F-07: Student Badges Page › F-07.1: page loads without server error (493ms)
+  ✓   99 [student] › tests/Browser/auth/student-courses.spec.js:50:9 › F-07: Student Badges Page › F-07.2: displays badges/rewards or empty-state card (494ms)
+  ✓  100 [student] › tests/Browser/auth/student-courses.spec.js:179:9 › F-09: Course Browsing as Authenticated Student › F-09.1: /classes listing displays filter panel and course cards when authenticated (867ms)
+  ✓   95 [student] › tests/Browser/auth/stripe-unavailable.spec.js:80:9 › Stripe unavailable (TS-04.06 / TS-04.07) › TS-04.06/07: CC button disabled and ADA button present when Stripe unavailable (4.0s)
+  ✓  101 [student] › tests/Browser/auth/student-courses.spec.js:191:9 › F-09: Course Browsing as Authenticated Student › F-09.2: course detail page shows booking/purchase actions for authenticated student (2.1s)
+  ✓  102 [student] › tests/Browser/auth/student-courses.spec.js:117:9 › F-08: Course Attendance Flow › F-08.1: attend page loads and shows stepper for a booked schedule (530ms)
+  ✓  104 [student] › tests/Browser/auth/student-courses.spec.js:129:9 › F-08: Course Attendance Flow › F-08.2: watch page renders for a video/live class (612ms)
+  ✓  105 [student] › tests/Browser/auth/student-history.spec.js:13:9 › F-03: Course History › F-03.1: page loads without errors (693ms)
+  -  103 [student] › tests/Browser/auth/student-courses.spec.js:141:9 › F-08: Course Attendance Flow › F-08.3: exam page renders if accessible
+  ✓  106 [student] › tests/Browser/auth/student-history.spec.js:20:9 › F-03: Course History › F-03.2: displays records or empty-state message (656ms)
+  ✓  107 [student] › tests/Browser/auth/student-courses.spec.js:162:9 › F-08: Course Attendance Flow › F-08.4: feedback page renders if accessible (689ms)
+  ✓  108 [student] › tests/Browser/auth/student-history.spec.js:35:9 › F-03: Course History › F-03.3: records show class name and status indicator (660ms)
+  ✓  109 [student] › tests/Browser/auth/student-history.spec.js:59:9 › F-04: Purchase History › F-04.1: page loads without errors (541ms)
+  ✓  110 [student] › tests/Browser/auth/student-history.spec.js:66:9 › F-04: Purchase History › F-04.2: displays records or empty-state message (549ms)
+  ✓  111 [student] › tests/Browser/auth/student-history.spec.js:93:9 › F-05: Wallet History › F-05.1: page loads without errors (558ms)
+  ✓  112 [student] › tests/Browser/auth/student-history.spec.js:100:9 › F-05: Wallet History › F-05.2: displays records or empty-state message (565ms)
+  ✓  113 [student] › tests/Browser/auth/student-mypage.spec.js:9:9 › F-01: MyPage Navigation › F-01.1: /mypage redirects authenticated student to /mypage/profile (667ms)
+  ✓  114 [student] › tests/Browser/auth/student-mypage.spec.js:15:9 › F-01: MyPage Navigation › F-01.2: MyPage sidebar shows all student navigation sections (757ms)
+  ✓  115 [student] › tests/Browser/auth/student-mypage.spec.js:25:9 › F-01: MyPage Navigation › F-01.3: Profile page loads at /mypage/profile (680ms)
+  ✓  116 [student] › tests/Browser/auth/student-mypage.spec.js:32:9 › F-01: MyPage Navigation › F-01.3: Class History page loads at /mypage/class-history (653ms)
+  ✓  117 [student] › tests/Browser/auth/student-mypage.spec.js:39:9 › F-01: MyPage Navigation › F-01.3: Purchase History page loads at /mypage/purchase-history (542ms)
+  ✓  118 [student] › tests/Browser/auth/student-mypage.spec.js:46:9 › F-01: MyPage Navigation › F-01.3: Badges page loads at /mypage/badges (558ms)
+  ✓  119 [student] › tests/Browser/auth/student-mypage.spec.js:55:9 › F-11: Student Route Smoke Tests › /mypage/profile renders without server error (634ms)
+  ✓  120 [student] › tests/Browser/auth/student-mypage.spec.js:62:9 › F-11: Student Route Smoke Tests › /mypage/class-history renders without server error (661ms)
+  ✓  121 [student] › tests/Browser/auth/student-mypage.spec.js:69:9 › F-11: Student Route Smoke Tests › /mypage/purchase-history renders without server error (546ms)
+  ✓  122 [student] › tests/Browser/auth/student-mypage.spec.js:76:9 › F-11: Student Route Smoke Tests › /mypage/wallet-history renders without server error (542ms)
+  ✓  123 [student] › tests/Browser/auth/student-mypage.spec.js:83:9 › F-11: Student Route Smoke Tests › /mypage/certificates renders without server error (567ms)
+  ✓  124 [student] › tests/Browser/auth/student-mypage.spec.js:90:9 › F-11: Student Route Smoke Tests › /mypage/badges renders without server error (576ms)
+  ✓  126 [student] › tests/Browser/auth/student-mypage.spec.js:104:9 › F-11: Student Route Smoke Tests › /classes/1 returns non-500 response (404 acceptable if course absent) (599ms)
+  ✓  125 [student] › tests/Browser/auth/student-mypage.spec.js:97:9 › F-11: Student Route Smoke Tests › /classes renders without server error (988ms)
+  ✓  127 [student] › tests/Browser/auth/student-profile.spec.js:10:9 › F-02: Profile Management › F-02.1: profile page loads with pre-populated fields (691ms)
+  ✓  129 [student] › tests/Browser/auth/student-profile.spec.js:66:9 › F-02: Profile Management › F-02.3: password change section visible with current/new/confirm fields (672ms)
+  ✓  130 [student] › tests/Browser/auth/student-profile.spec.js:83:9 › F-02: Profile Management › F-02.4: mismatched password confirmation shows validation error (1.0s)
+  ✓  128 [student] › tests/Browser/auth/student-profile.spec.js:28:9 › F-02: Profile Management › F-02.2: editing first name and submitting shows success toast and persists on reload (2.9s)
+  ✓  131 [student] › tests/Browser/student/route-smoke.spec.js:22:13 › F-08: Route Smoke Test — Student › MyPage profile returns non-500 (616ms)
+  ✓  132 [student] › tests/Browser/student/route-smoke.spec.js:22:13 › F-08: Route Smoke Test — Student › Purchase history returns non-500 (570ms)
+  ✓  133 [student] › tests/Browser/student/route-smoke.spec.js:22:13 › F-08: Route Smoke Test — Student › Certificates returns non-500 (574ms)
+  ✓  134 [student] › tests/Browser/student/route-smoke.spec.js:22:13 › F-08: Route Smoke Test — Student › Badges returns non-500 (550ms)
+  ✓  135 [student] › tests/Browser/student/route-smoke.spec.js:22:13 › F-08: Route Smoke Test — Student › Course listing returns non-500 (1.0s)
+  ✓  136 [student] › tests/Browser/student/wallet-cip30.spec.js:57:9 › CIP-30 Wallet (mock Eternl) › connect wallet — shows balance and stake key (850ms)
+  ✓  137 [student] › tests/Browser/student/wallet-cip30.spec.js:73:9 › CIP-30 Wallet (mock Eternl) › verify wallet ownership — signature flow (928ms)
+  ✓  138 [student] › tests/Browser/student/wallet-cip30.spec.js:102:9 › CIP-30 Wallet (mock Eternl) › mint reward via CIP-30 — double-signed certificate (764ms)
+  ✓  139 [teacher] › tests/Browser/teacher/class-applications.spec.js:10:9 › F-01: Class Applications › F-01.1: class applications list page loads without errors (664ms)
+  ✓  140 [teacher] › tests/Browser/teacher/class-applications.spec.js:29:9 › F-01: Class Applications › F-01.2: create class application form renders required fields (695ms)
+  ✓  142 [teacher] › tests/Browser/teacher/class-applications.spec.js:104:9 › F-01: Class Applications › F-01.4: submitting incomplete application shows validation errors (796ms)
+  ✓  143 [teacher] › tests/Browser/teacher/class-applications.spec.js:126:9 › F-01: Class Applications › F-01.5: class application detail page renders (977ms)
+  ✓  141 [teacher] › tests/Browser/teacher/class-applications.spec.js:45:9 › F-01: Class Applications › F-01.3: submitting a valid class application succeeds (2.8s)
+  ✓  144 [teacher] › tests/Browser/teacher/course-management.spec.js:61:9 › F-03: Course CRUD › F-03.1: edit course page renders for owned class (1.2s)
   -  146 [teacher] › tests/Browser/teacher/course-management.spec.js:95:9 › F-03: Course CRUD › F-03.3: create course page renders for approved application
-  ✓  147 [teacher] › tests/Browser/teacher/course-management.spec.js:122:9 › F-04: Exam Management › F-04.1: create exam page renders (1.1s)
-  ✓  148 [teacher] › tests/Browser/teacher/course-management.spec.js:136:9 › F-04: Exam Management › F-04.2: edit exam page renders pre-populated (1.4s)
-  ✓  149 [teacher] › tests/Browser/teacher/course-management.spec.js:159:9 › F-05: Schedule Management › F-05.1: create schedule page renders (871ms)
-  ✓  150 [teacher] › tests/Browser/teacher/course-management.spec.js:172:9 › F-05: Schedule Management › F-05.2: schedule detail page renders (1.5s)
-  ✘  137 [student] › tests/Browser/student/wallet-cip30.spec.js:73:9 › CIP-30 Wallet (mock Eternl) › verify wallet ownership — signature flow (30.1s)
-  ✓  151 [teacher] › tests/Browser/teacher/course-management.spec.js:187:9 › F-05: Schedule Management › F-05.3: enrolled students view within schedule (1.5s)
-  ✓  152 [teacher] › tests/Browser/teacher/manage-classes.spec.js:51:13 › F-02: Manage Classes Dashboard › Tab navigation (requires at least one class) › F-02.2: manage class tabs are visible (878ms)
-  ✓  153 [teacher] › tests/Browser/teacher/manage-classes.spec.js:12:9 › F-02: Manage Classes Dashboard › F-02.1: manage classes page loads without server error (755ms)
-  ✓  154 [teacher] › tests/Browser/teacher/manage-classes.spec.js:69:13 › F-02: Manage Classes Dashboard › Tab navigation (requires at least one class) › F-02.3: feedbacks tab renders without errors (744ms)
-  ✓  156 [teacher] › tests/Browser/teacher/manage-classes.spec.js:82:13 › F-02: Manage Classes Dashboard › Tab navigation (requires at least one class) › F-02.4: exams tab renders without errors (718ms)
-  ✓  155 [teacher] › tests/Browser/teacher/manage-classes.spec.js:95:13 › F-02: Manage Classes Dashboard › Tab navigation (requires at least one class) › F-02.5: schedules tab renders without errors (846ms)
-  ✘  157 [teacher] › tests/Browser/teacher/route-smoke.spec.js:25:13 › F-08: Route Smoke Test — Teacher › MyPage profile returns non-500 (701ms)
-  ✓  158 [teacher] › tests/Browser/teacher/manage-classes.spec.js:109:13 › F-02: Manage Classes Dashboard › Tab navigation (requires at least one class) › F-02.6: certificates tab renders without errors (763ms)
-  ✓  159 [teacher] › tests/Browser/teacher/route-smoke.spec.js:25:13 › F-08: Route Smoke Test — Teacher › Certificates returns non-500 (599ms)
-  ✓  160 [teacher] › tests/Browser/teacher/route-smoke.spec.js:25:13 › F-08: Route Smoke Test — Teacher › Badges returns non-500 (593ms)
-  ✓  161 [teacher] › tests/Browser/teacher/route-smoke.spec.js:25:13 › F-08: Route Smoke Test — Teacher › Purchase history returns non-500 (633ms)
-  ✓  162 [teacher] › tests/Browser/teacher/route-smoke.spec.js:25:13 › F-08: Route Smoke Test — Teacher › Manage classes returns non-500 (618ms)
-  ✓  163 [teacher] › tests/Browser/teacher/route-smoke.spec.js:25:13 › F-08: Route Smoke Test — Teacher › Teaching schedules returns non-500 (715ms)
-  ✓  164 [teacher] › tests/Browser/teacher/route-smoke.spec.js:25:13 › F-08: Route Smoke Test — Teacher › Course listing returns non-500 (1.0s)
-  ✓  165 [teacher] › tests/Browser/teacher/teaching-history.spec.js:13:9 › F-06: Teaching Schedules › F-06.1: teaching schedules page loads without errors (732ms)
+  ✓  147 [teacher] › tests/Browser/teacher/course-management.spec.js:122:9 › F-04: Exam Management › F-04.1: create exam page renders (960ms)
+  ✓  148 [teacher] › tests/Browser/teacher/course-management.spec.js:136:9 › F-04: Exam Management › F-04.2: edit exam page renders pre-populated (1.2s)
+  ✓  149 [teacher] › tests/Browser/teacher/course-management.spec.js:159:9 › F-05: Schedule Management › F-05.1: create schedule page renders (873ms)
+  ✓  150 [teacher] › tests/Browser/teacher/course-management.spec.js:172:9 › F-05: Schedule Management › F-05.2: schedule detail page renders (1.3s)
+  ✓  145 [teacher] › tests/Browser/teacher/course-management.spec.js:74:9 › F-03: Course CRUD › F-03.2: updating course description succeeds (5.7s)
+  ✓  152 [teacher] › tests/Browser/teacher/manage-classes.spec.js:12:9 › F-02: Manage Classes Dashboard › F-02.1: manage classes page loads without server error (590ms)
+  ✓  151 [teacher] › tests/Browser/teacher/course-management.spec.js:187:9 › F-05: Schedule Management › F-05.3: enrolled students view within schedule (1.4s)
+  ✓  153 [teacher] › tests/Browser/teacher/manage-classes.spec.js:51:13 › F-02: Manage Classes Dashboard › Tab navigation (requires at least one class) › F-02.2: manage class tabs are visible (819ms)
+  ✓  154 [teacher] › tests/Browser/teacher/manage-classes.spec.js:95:13 › F-02: Manage Classes Dashboard › Tab navigation (requires at least one class) › F-02.5: schedules tab renders without errors (802ms)
+  ✓  155 [teacher] › tests/Browser/teacher/manage-classes.spec.js:69:13 › F-02: Manage Classes Dashboard › Tab navigation (requires at least one class) › F-02.3: feedbacks tab renders without errors (720ms)
+  ✓  156 [teacher] › tests/Browser/teacher/manage-classes.spec.js:109:13 › F-02: Manage Classes Dashboard › Tab navigation (requires at least one class) › F-02.6: certificates tab renders without errors (773ms)
+  ✓  157 [teacher] › tests/Browser/teacher/manage-classes.spec.js:82:13 › F-02: Manage Classes Dashboard › Tab navigation (requires at least one class) › F-02.4: exams tab renders without errors (848ms)
+  ✓  159 [teacher] › tests/Browser/teacher/route-smoke.spec.js:25:13 › F-08: Route Smoke Test — Teacher › Purchase history returns non-500 (533ms)
+  ✓  158 [teacher] › tests/Browser/teacher/route-smoke.spec.js:25:13 › F-08: Route Smoke Test — Teacher › MyPage profile returns non-500 (660ms)
+  ✓  160 [teacher] › tests/Browser/teacher/route-smoke.spec.js:25:13 › F-08: Route Smoke Test — Teacher › Certificates returns non-500 (591ms)
+  ✓  161 [teacher] › tests/Browser/teacher/route-smoke.spec.js:25:13 › F-08: Route Smoke Test — Teacher › Badges returns non-500 (570ms)
+  ✓  162 [teacher] › tests/Browser/teacher/route-smoke.spec.js:25:13 › F-08: Route Smoke Test — Teacher › Manage classes returns non-500 (590ms)
+  ✓  163 [teacher] › tests/Browser/teacher/route-smoke.spec.js:25:13 › F-08: Route Smoke Test — Teacher › Teaching schedules returns non-500 (710ms)
+  ✓  165 [teacher] › tests/Browser/teacher/teaching-history.spec.js:13:9 › F-06: Teaching Schedules › F-06.1: teaching schedules page loads without errors (674ms)
+  ✓  164 [teacher] › tests/Browser/teacher/route-smoke.spec.js:25:13 › F-08: Route Smoke Test — Teacher › Course listing returns non-500 (925ms)
   ✓  166 [teacher] › tests/Browser/teacher/teaching-history.spec.js:53:9 › F-07: Certificate Management UI › F-07.1: certificate roster renders eligible students (1.2s)
-  ✓  167 [teacher] › tests/Browser/teacher/teaching-history.spec.js:72:9 › F-07: Certificate Management UI › F-07.2: airdrop button is visible on certificates tab (1.3s)
-  ✓  168 [admin] › tests/Browser/admin/inquiries-applications.spec.js:12:9 › F-03: Inquiries Management › F-03.1: inquiries list page loads (table or empty state) (793ms)
-  ✓  169 [admin] › tests/Browser/admin/inquiries-applications.spec.js:23:9 › F-03: Inquiries Management › F-03.2: inquiry detail page shows submitter info and message (1.2s)
-  ✓  170 [admin] › tests/Browser/admin/inquiries-applications.spec.js:60:9 › F-04: Class Applications Management › F-04.1: class applications list page loads (table or empty state) (729ms)
+  ✓  167 [teacher] › tests/Browser/teacher/teaching-history.spec.js:72:9 › F-07: Certificate Management UI › F-07.2: airdrop button is visible on certificates tab (1.2s)
+  ✓  168 [admin] › tests/Browser/admin/inquiries-applications.spec.js:12:9 › F-03: Inquiries Management › F-03.1: inquiries list page loads (table or empty state) (687ms)
+  ✓  169 [admin] › tests/Browser/admin/inquiries-applications.spec.js:23:9 › F-03: Inquiries Management › F-03.2: inquiry detail page shows submitter info and message (1.0s)
+  ✓  170 [admin] › tests/Browser/admin/inquiries-applications.spec.js:60:9 › F-04: Class Applications Management › F-04.1: class applications list page loads (table or empty state) (641ms)
   ✓  171 [admin] › tests/Browser/admin/inquiries-applications.spec.js:71:9 › F-04: Class Applications Management › F-04.2: class application detail page shows class name, teacher, and status (1.1s)
-  ✓  173 [admin] › tests/Browser/admin/navigation-smoke.spec.js:12:9 › F-14: Admin Navigation › F-14.1: admin sidebar shows all main navigation sections (667ms)
-  ✓  174 [admin] › tests/Browser/admin/navigation-smoke.spec.js:25:9 › F-14: Admin Navigation › F-14.1b: admin sidebar Settings submenu shows all settings sections (684ms)
-  ✓  172 [admin] › tests/Browser/admin/inquiries-applications.spec.js:100:9 › F-04: Class Applications Management › F-04.3: class application status can be updated (approve) (2.3s)
+  ✓  173 [admin] › tests/Browser/admin/navigation-smoke.spec.js:12:9 › F-14: Admin Navigation › F-14.1: admin sidebar shows all main navigation sections (655ms)
+  ✓  172 [admin] › tests/Browser/admin/inquiries-applications.spec.js:100:9 › F-04: Class Applications Management › F-04.3: class application status can be updated (approve) (1.8s)
+  ✓  174 [admin] › tests/Browser/admin/navigation-smoke.spec.js:25:9 › F-14: Admin Navigation › F-14.1b: admin sidebar Settings submenu shows all settings sections (622ms)
   ✓  175 [admin] › tests/Browser/admin/navigation-smoke.spec.js:37:9 › F-14: Admin Navigation › F-14.2: each main admin section is reachable via sidebar link (1.5s)
-  ✓  177 [admin] › tests/Browser/admin/navigation-smoke.spec.js:105:13 › F-15: Route Smoke Test — Admin › Profile returns non-500 (573ms)
+  ✓  177 [admin] › tests/Browser/admin/navigation-smoke.spec.js:105:13 › F-15: Route Smoke Test — Admin › Profile returns non-500 (588ms)
   ✓  178 [admin] › tests/Browser/admin/navigation-smoke.spec.js:105:13 › F-15: Route Smoke Test — Admin › Users returns non-500 (613ms)
-  ✓  179 [admin] › tests/Browser/admin/navigation-smoke.spec.js:105:13 › F-15: Route Smoke Test — Admin › Inquiries returns non-500 (621ms)
-  ✓  180 [admin] › tests/Browser/admin/navigation-smoke.spec.js:105:13 › F-15: Route Smoke Test — Admin › Class Applications returns non-500 (631ms)
-  ✓  181 [admin] › tests/Browser/admin/navigation-smoke.spec.js:105:13 › F-15: Route Smoke Test — Admin › Settings: Categories returns non-500 (598ms)
-  ✓  176 [admin] › tests/Browser/admin/navigation-smoke.spec.js:62:9 › F-14: Admin Navigation › F-14.2b: Settings submenu sections are reachable via sidebar (4.6s)
-  ✓  182 [admin] › tests/Browser/admin/navigation-smoke.spec.js:105:13 › F-15: Route Smoke Test — Admin › Settings: Class Types returns non-500 (651ms)
-  ✓  183 [admin] › tests/Browser/admin/navigation-smoke.spec.js:105:13 › F-15: Route Smoke Test — Admin › Settings: Classifications returns non-500 (716ms)
-  ✓  184 [admin] › tests/Browser/admin/navigation-smoke.spec.js:105:13 › F-15: Route Smoke Test — Admin › Settings: NFT returns non-500 (671ms)
-  ✓  186 [admin] › tests/Browser/admin/navigation-smoke.spec.js:105:13 › F-15: Route Smoke Test — Admin › Settings: General returns non-500 (584ms)
-  ✓  187 [admin] › tests/Browser/admin/navigation-smoke.spec.js:105:13 › F-15: Route Smoke Test — Admin › Wallet History returns non-500 (488ms)
-  ✓  188 [admin] › tests/Browser/admin/navigation-smoke.spec.js:105:13 › F-15: Route Smoke Test — Admin › Refunds returns non-500 (544ms)
-  ✓  189 [admin] › tests/Browser/admin/profile-users.spec.js:12:9 › F-01: Admin Profile › F-01.1: profile page loads with pre-populated form (594ms)
-  ✓  185 [admin] › tests/Browser/admin/navigation-smoke.spec.js:105:13 › F-15: Route Smoke Test — Admin › Settings: Translations returns non-500 (4.0s)
-  ✓  191 [admin] › tests/Browser/admin/profile-users.spec.js:81:9 › F-02: User Management › F-02.1: users list page loads with table (705ms)
+  ✓  179 [admin] › tests/Browser/admin/navigation-smoke.spec.js:105:13 › F-15: Route Smoke Test — Admin › Inquiries returns non-500 (556ms)
+  ✓  180 [admin] › tests/Browser/admin/navigation-smoke.spec.js:105:13 › F-15: Route Smoke Test — Admin › Class Applications returns non-500 (596ms)
+  ✓  181 [admin] › tests/Browser/admin/navigation-smoke.spec.js:105:13 › F-15: Route Smoke Test — Admin › Settings: Categories returns non-500 (603ms)
+  ✓  176 [admin] › tests/Browser/admin/navigation-smoke.spec.js:62:9 › F-14: Admin Navigation › F-14.2b: Settings submenu sections are reachable via sidebar (4.4s)
+  ✓  182 [admin] › tests/Browser/admin/navigation-smoke.spec.js:105:13 › F-15: Route Smoke Test — Admin › Settings: Class Types returns non-500 (586ms)
+  ✓  183 [admin] › tests/Browser/admin/navigation-smoke.spec.js:105:13 › F-15: Route Smoke Test — Admin › Settings: Classifications returns non-500 (606ms)
+  ✓  184 [admin] › tests/Browser/admin/navigation-smoke.spec.js:105:13 › F-15: Route Smoke Test — Admin › Settings: NFT returns non-500 (624ms)
+  ✓  186 [admin] › tests/Browser/admin/navigation-smoke.spec.js:105:13 › F-15: Route Smoke Test — Admin › Settings: General returns non-500 (593ms)
+  ✓  187 [admin] › tests/Browser/admin/navigation-smoke.spec.js:105:13 › F-15: Route Smoke Test — Admin › Wallet History returns non-500 (505ms)
+  ✓  188 [admin] › tests/Browser/admin/navigation-smoke.spec.js:105:13 › F-15: Route Smoke Test — Admin › Refunds returns non-500 (520ms)
+  ✓  189 [admin] › tests/Browser/admin/profile-users.spec.js:12:9 › F-01: Admin Profile › F-01.1: profile page loads with pre-populated form (608ms)
+  ✓  185 [admin] › tests/Browser/admin/navigation-smoke.spec.js:105:13 › F-15: Route Smoke Test — Admin › Settings: Translations returns non-500 (3.8s)
   ✓  190 [admin] › tests/Browser/admin/profile-users.spec.js:34:9 › F-01: Admin Profile › F-01.2: admin profile can be updated and persists on reload (1.9s)
-  ✓  193 [admin] › tests/Browser/admin/profile-users.spec.js:114:9 › F-02: User Management › F-02.3: create user page renders required form fields (635ms)
-  ✓  192 [admin] › tests/Browser/admin/profile-users.spec.js:94:9 › F-02: User Management › F-02.2: user detail page loads by clicking a row link (1.1s)
+  ✓  191 [admin] › tests/Browser/admin/profile-users.spec.js:81:9 › F-02: User Management › F-02.1: users list page loads with table (671ms)
+  ✓  193 [admin] › tests/Browser/admin/profile-users.spec.js:114:9 › F-02: User Management › F-02.3: create user page renders required form fields (603ms)
+  ✓  192 [admin] › tests/Browser/admin/profile-users.spec.js:94:9 › F-02: User Management › F-02.2: user detail page loads by clicking a row link (1.0s)
   ✓  194 [admin] › tests/Browser/admin/profile-users.spec.js:128:9 › F-02: User Management › F-02.4: creating user with valid data succeeds (1.3s)
-  ✓  195 [admin] › tests/Browser/admin/profile-users.spec.js:186:9 › F-02: User Management › F-02.5: creating user with duplicate email shows validation error (1.6s)
-  ✓  197 [admin] › tests/Browser/admin/settings-crud.spec.js:27:9 › F-05: Settings — Course Categories › F-05.1: categories settings page loads (662ms)
-  ✓  198 [admin] › tests/Browser/admin/settings-crud.spec.js:38:9 › F-05: Settings — Course Categories › F-05.2: creating a new category via dialog succeeds (1.2s)
-  ✓  199 [admin] › tests/Browser/admin/settings-crud.spec.js:60:9 › F-05: Settings — Course Categories › F-05.3: editing a category via dialog succeeds (1.3s)
-  ✓  200 [admin] › tests/Browser/admin/settings-crud.spec.js:91:9 › F-05: Settings — Course Categories › F-05.4: deleting a test-created category succeeds (1.3s)
-  ✓  201 [admin] › tests/Browser/admin/settings-crud.spec.js:123:9 › F-06: Settings — Course Types › F-06.1: course types settings page loads without errors (522ms)
-  ✓  202 [admin] › tests/Browser/admin/settings-crud.spec.js:140:9 › F-07: Settings — Classifications › F-07.1: classifications settings page loads (565ms)
-  ✓  203 [admin] › tests/Browser/admin/settings-crud.spec.js:151:9 › F-07: Settings — Classifications › F-07.2a: creating a new classification via dialog succeeds (1.2s)
-  ✓  204 [admin] › tests/Browser/admin/settings-crud.spec.js:178:9 › F-07: Settings — Classifications › F-07.2b: editing the classification via dialog succeeds (1.2s)
+  -  196 [admin] › tests/Browser/admin/profile-users.spec.js:224:9 › F-02: User Management › F-02.6: user status can be toggled
+  ✓  197 [admin] › tests/Browser/admin/settings-crud.spec.js:27:9 › F-05: Settings — Course Categories › F-05.1: categories settings page loads (559ms)
+  ✓  198 [admin] › tests/Browser/admin/settings-crud.spec.js:38:9 › F-05: Settings — Course Categories › F-05.2: creating a new category via dialog succeeds (1.1s)
+  ✓  199 [admin] › tests/Browser/admin/settings-crud.spec.js:60:9 › F-05: Settings — Course Categories › F-05.3: editing a category via dialog succeeds (1.2s)
+  ✓  200 [admin] › tests/Browser/admin/settings-crud.spec.js:91:9 › F-05: Settings — Course Categories › F-05.4: deleting a test-created category succeeds (1.2s)
+  ✓  201 [admin] › tests/Browser/admin/settings-crud.spec.js:123:9 › F-06: Settings — Course Types › F-06.1: course types settings page loads without errors (505ms)
+  ✓  202 [admin] › tests/Browser/admin/settings-crud.spec.js:140:9 › F-07: Settings — Classifications › F-07.1: classifications settings page loads (541ms)
+  ✓  203 [admin] › tests/Browser/admin/settings-crud.spec.js:151:9 › F-07: Settings — Classifications › F-07.2a: creating a new classification via dialog succeeds (1.5s)
+  ✓  204 [admin] › tests/Browser/admin/settings-crud.spec.js:178:9 › F-07: Settings — Classifications › F-07.2b: editing the classification via dialog succeeds (1.1s)
   ✓  205 [admin] › tests/Browser/admin/settings-crud.spec.js:208:9 › F-07: Settings — Classifications › F-07.2c: deleting the classification via dialog succeeds (1.2s)
-  ✓  206 [admin] › tests/Browser/admin/settings-crud.spec.js:247:9 › F-08: Settings — NFT Configuration › F-08.1: NFT settings page loads (682ms)
-  ✓  207 [admin] › tests/Browser/admin/settings-crud.spec.js:258:9 › F-08: Settings — NFT Configuration › F-08.2a: creating a new NFT config via dialog succeeds (1.7s)
-  ✓  208 [admin] › tests/Browser/admin/settings-crud.spec.js:288:9 › F-08: Settings — NFT Configuration › F-08.2b: editing the NFT config via dialog succeeds (1.2s)
-  ✓  209 [admin] › tests/Browser/admin/settings-crud.spec.js:322:9 › F-08: Settings — NFT Configuration › F-08.2c: deleting the NFT config via dialog succeeds (1.2s)
-  ✓  210 [admin] › tests/Browser/admin/settings-misc.spec.js:12:9 › F-09: Settings — Translations › F-09.1: translations settings page loads (3.7s)
-  ✘  196 [admin] › tests/Browser/admin/profile-users.spec.js:224:9 › F-02: User Management › F-02.6: user status can be toggled (30.0s)
-  ✓  211 [admin] › tests/Browser/admin/settings-misc.spec.js:23:9 › F-09: Settings — Translations › F-09.2: editing a translation succeeds and persists (12.9s)
-  ✓  212 [admin] › tests/Browser/admin/settings-misc.spec.js:76:9 › F-10: Settings — General › F-10.1: general settings page loads without errors (595ms)
-  ✓  214 [admin] › tests/Browser/admin/settings-misc.spec.js:148:9 › F-11: Wallet History › F-11.1: admin wallet history page loads with records or empty state (540ms)
-  ✓  215 [admin] › tests/Browser/admin/settings-misc.spec.js:165:9 › F-12: Refunds › F-12.1: refunds page loads with records or empty state (539ms)
-  ✓  216 [admin] › tests/Browser/admin/settings-misc.spec.js:185:9 › F-13: Admin Certificate Roster › F-13.1: admin can view certificate roster for a course (1.1s)
-  ✘  213 [admin] › tests/Browser/admin/settings-misc.spec.js:87:9 › F-10: Settings — General › F-10.2: updating a general setting succeeds and persists (6.8s)
+  ✘  195 [admin] › tests/Browser/admin/profile-users.spec.js:186:9 › F-02: User Management › F-02.5: creating user with duplicate email shows validation error (11.1s)
+  ✓  206 [admin] › tests/Browser/admin/settings-crud.spec.js:247:9 › F-08: Settings — NFT Configuration › F-08.1: NFT settings page loads (558ms)
+  ✓  207 [admin] › tests/Browser/admin/settings-crud.spec.js:258:9 › F-08: Settings — NFT Configuration › F-08.2a: creating a new NFT config via dialog succeeds (1.4s)
+  -  209 [admin] › tests/Browser/admin/settings-crud.spec.js:288:9 › F-08: Settings — NFT Configuration › F-08.2b: editing the NFT config via dialog succeeds
+  ✓  208 [admin] › tests/Browser/admin/profile-users.spec.js:186:9 › F-02: User Management › F-02.5: creating user with duplicate email shows validation error (retry #1) (1.8s)
+  -  210 [admin] › tests/Browser/admin/settings-crud.spec.js:322:9 › F-08: Settings — NFT Configuration › F-08.2c: deleting the NFT config via dialog succeeds
+  ✓  211 [admin] › tests/Browser/admin/settings-misc.spec.js:12:9 › F-09: Settings — Translations › F-09.1: translations settings page loads (3.7s)
+  ✓  213 [admin] › tests/Browser/admin/settings-misc.spec.js:76:9 › F-10: Settings — General › F-10.1: general settings page loads without errors (604ms)
+  ✓  214 [admin] › tests/Browser/admin/settings-misc.spec.js:87:9 › F-10: Settings — General › F-10.2: updating a general setting succeeds and persists (2.7s)
+  ✓  215 [admin] › tests/Browser/admin/settings-misc.spec.js:152:9 › F-11: Wallet History › F-11.1: admin wallet history page loads with records or empty state (528ms)
+  ✓  216 [admin] › tests/Browser/admin/settings-misc.spec.js:169:9 › F-12: Refunds › F-12.1: refunds page loads with records or empty state (528ms)
+  ✓  217 [admin] › tests/Browser/admin/settings-misc.spec.js:189:9 › F-13: Admin Certificate Roster › F-13.1: admin can view certificate roster for a course (1.1s)
+  ✓  212 [admin] › tests/Browser/admin/settings-misc.spec.js:23:9 › F-09: Settings — Translations › F-09.2: editing a translation succeeds and persists (12.8s)
 
 
-  1) [unauthenticated] › tests/Browser/course-browsing.spec.js:137:9 › Course Browsing - Filtering › typing search text and submitting adds search_text to URL 
-
-    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoContain[2m([22m[32mexpected[39m[2m) // indexOf[22m
-
-    Expected substring: [32m"search_text="[39m
-    Received string:    [31m"http://lbazaar.test:9200/classes"[39m
-
-      146 |         await waitForInertiaNavigation(page);
-      147 |
-    > 148 |         expect(page.url()).toContain('search_text=');
-          |                            ^
-      149 |     });
-      150 |
-      151 |     test('searching for nonexistent text shows empty state message', async ({ page }) => {
-        at /home/fence/src/cardano/lbazaar/tests/Browser/course-browsing.spec.js:148:28
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results/course-browsing-Course-Bro-bbd70-ing-adds-search-text-to-URL-unauthenticated/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: test-results/course-browsing-Course-Bro-bbd70-ing-adds-search-text-to-URL-unauthenticated/error-context.md
-
-  2) [unauthenticated] › tests/Browser/course-browsing.spec.js:161:9 › Course Browsing - Filtering › changing type filter adds type_id to URL 
-
-    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoContain[2m([22m[32mexpected[39m[2m) // indexOf[22m
-
-    Expected substring: [32m"type_id="[39m
-    Received string:    [31m"http://lbazaar.test:9200/classes"[39m
-
-      183 |         await waitForInertiaNavigation(page);
-      184 |
-    > 185 |         expect(page.url()).toContain('type_id=');
-          |                            ^
-      186 |     });
-      187 | });
-      188 |
-        at /home/fence/src/cardano/lbazaar/tests/Browser/course-browsing.spec.js:185:28
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results/course-browsing-Course-Bro-950e5--filter-adds-type-id-to-URL-unauthenticated/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: test-results/course-browsing-Course-Bro-950e5--filter-adds-type-id-to-URL-unauthenticated/error-context.md
-
-  3) [unauthenticated] › tests/Browser/course-browsing.spec.js:190:9 › Course Browsing - Course Detail Page › clicking view-more on a course card navigates to /classes/{id} 
-
-    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoMatch[2m([22m[32mexpected[39m[2m)[22m
-
-    Expected pattern: [32m/\/classes\/\d+/[39m
-    Received string:  [31m"http://lbazaar.test:9200/classes"[39m
-
-      207 |
-      208 |         // URL should match /classes/{numeric id}
-    > 209 |         expect(page.url()).toMatch(/\/classes\/\d+/);
-          |                            ^
-      210 |     });
-      211 |
-      212 |     test('detail page shows course title in h4', async ({ page }) => {
-        at /home/fence/src/cardano/lbazaar/tests/Browser/course-browsing.spec.js:209:28
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results/course-browsing-Course-Bro-ae4cf-rd-navigates-to-classes-id--unauthenticated/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: test-results/course-browsing-Course-Bro-ae4cf-rd-navigates-to-classes-id--unauthenticated/error-context.md
-
-  4) [unauthenticated] › tests/Browser/course-browsing.spec.js:234:9 › Course Browsing - Course Detail Page › detail page can be accessed directly by URL /classes/1 
-
-    [31mTest timeout of 30000ms exceeded.[39m
-
-    Error: page.waitForFunction: Test timeout of 30000ms exceeded.
-
-       at helpers/wait-for-app.js:10
-
-       8 | export const waitForApp = async (page) => {
-       9 |     await page.waitForSelector('#app', { state: 'attached' });
-    > 10 |     await page.waitForFunction(() => {
-         |                ^
-      11 |         const app = document.querySelector('#app');
-      12 |         return app && app.children.length > 0;
-      13 |     }, { timeout: 10000 });
-        at waitForApp (/home/fence/src/cardano/lbazaar/tests/Browser/helpers/wait-for-app.js:10:16)
-        at /home/fence/src/cardano/lbazaar/tests/Browser/course-browsing.spec.js:243:9
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results/course-browsing-Course-Bro-e9469-d-directly-by-URL-classes-1-unauthenticated/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-  5) [unauthenticated] › tests/Browser/course-browsing.spec.js:272:9 › Course Browsing - ADA Price on Detail Page (TS-01.02, TS-01.04) › detail page for General course shows JPY and ADA (~₳) price 
+  1) [admin] › tests/Browser/admin/profile-users.spec.js:186:9 › F-02: User Management › F-02.5: creating user with duplicate email shows validation error 
 
     Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
 
-    Locator: getByText(/¥[0-9]/)
-    Expected: visible
-    Error: strict mode violation: getByText(/¥[0-9]/) resolved to 3 elements:
-        1) <h6 class="MuiTypography-root MuiTypography-h6 css-2ulfj5-MuiTypography-root">¥300 (~₳7.54)</h6> aka getByRole('heading', { name: '¥300 (~₳7.54)' })
-        2) <h6 class="MuiTypography-root MuiTypography-h6 css-2ulfj5-MuiTypography-root">¥1,150 (~₳28.90)</h6> aka getByRole('heading', { name: '¥1,150 (~₳28.90)' })
-        3) <h6 class="MuiTypography-root MuiTypography-h6 css-2ulfj5-MuiTypography-root">¥450 (~₳11.31)</h6> aka getByRole('heading', { name: '¥450 (~₳11.31)' })
-
-    Call log:
-    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
-    [2m  - waiting for getByText(/¥[0-9]/)[22m
-
-
-      286 |         await waitForInertiaNavigation(page);
-      287 |
-    > 288 |         await expect(page.getByText(/¥[0-9]/)).toBeVisible();
-          |                                                ^
-      289 |         await expect(page.getByText(/~₳/)).toBeVisible();
-      290 |     });
-      291 | });
-        at /home/fence/src/cardano/lbazaar/tests/Browser/course-browsing.spec.js:288:48
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results/course-browsing-Course-Bro-5af8a-e-shows-JPY-and-ADA-₳-price-unauthenticated/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: test-results/course-browsing-Course-Bro-5af8a-e-shows-JPY-and-ADA-₳-price-unauthenticated/error-context.md
-
-  6) [guest] › tests/Browser/guest/forgot-password.spec.js:26:9 › F-10.2: Valid email shows success › submitting registered email shows success toast 
-
-    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
-
-    Locator: locator('[role="alert"]')
+    Locator: locator('text=/already been taken/i').first()
     Expected: visible
     Timeout: 10000ms
     Error: element(s) not found
 
     Call log:
     [2m  - Expect "toBeVisible" with timeout 10000ms[22m
-    [2m  - waiting for locator('[role="alert"]')[22m
+    [2m  - waiting for locator('text=/already been taken/i').first()[22m
 
 
-      29 |         await page.locator('input[name="email"]').fill('pw-student@example.com');
-      30 |         await page.locator('button[type="submit"]').click();
-    > 31 |         await expect(page.locator('[role="alert"]')).toBeVisible({ timeout: 10000 });
-         |                                                      ^
-      32 |     });
-      33 | });
-      34 |
-        at /home/fence/src/cardano/lbazaar/tests/Browser/guest/forgot-password.spec.js:31:54
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results/guest-forgot-password-F-10-5fa08-d-email-shows-success-toast-guest/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: test-results/guest-forgot-password-F-10-5fa08-d-email-shows-success-toast-guest/error-context.md
-
-  7) [student] › tests/Browser/auth/ada-conversion-failure.spec.js:60:9 › ADA conversion unavailable (TS-01.08 through TS-01.11) › TS-01.08: JPY price is visible on the course listing page 
-
-    Error: "route.fetch: Target page, context or browser has been closed
-    Call log:
-    [2m  - → GET https://staging-lebazaar.s3.ap-northeast-1.amazonaws.com/uploads/logo.png[22m
-    [2m    - user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36[22m
-    [2m    - accept: image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8[22m
-    [2m    - accept-encoding: gzip,deflate,br[22m
-    [2m    - accept-language: en-US[22m
-    [2m    - referer: http://lbazaar.test:9200/[22m
-    [2m    - sec-ch-ua: "Not:A-Brand";v="99", "HeadlessChrome";v="145", "Chromium";v="145"[22m
-    [2m    - sec-ch-ua-mobile: ?0[22m
-    [2m    - sec-ch-ua-platform: "Linux"[22m
-    " while running route callback.
-    Consider awaiting `await page.unrouteAll({ behavior: 'ignoreErrors' })`
-    before the end of the test to ignore remaining routes in flight.
-
-      21 | async function interceptAdaUnavailable(page) {
-      22 |     await page.route('**/*', async (route) => {
-    > 23 |         const response = await route.fetch();
-         |                                      ^
-      24 |         const contentType = response.headers()['content-type'] || '';
-      25 |         const isInertia = response.headers()['x-inertia'] === 'true'
-      26 |             || contentType.includes('application/json');
-        at /home/fence/src/cardano/lbazaar/tests/Browser/auth/ada-conversion-failure.spec.js:23:38
-
-    Error: browserContext.close: Target page, context or browser has been closed
-
-    Error Context: test-results/auth-ada-conversion-failur-9cf15--on-the-course-listing-page-student/error-context.md
-
-  8) [student] › tests/Browser/auth/ada-conversion-failure.spec.js:72:9 › ADA conversion unavailable (TS-01.08 through TS-01.11) › TS-01.09: ADA equivalent price is NOT shown on the course listing page 
-
-    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoHaveCount[2m([22m[32mexpected[39m[2m)[22m failed
-
-    Locator:  locator('text=/~₳[0-9]/')
-    Expected: [32m0[39m
-    Received: [31m3[39m
-    Timeout:  5000ms
-
-    Call log:
-    [2m  - Expect "toHaveCount" with timeout 5000ms[22m
-    [2m  - waiting for locator('text=/~₳[0-9]/')[22m
-    [2m    8 × locator resolved to 3 elements[22m
-    [2m      - unexpected value "3"[22m
-
-
-      76 |         // No ~₳ pattern should appear anywhere in the listing
-      77 |         const adaPrice = page.locator('text=/~₳[0-9]/');
-    > 78 |         await expect(adaPrice).toHaveCount(0);
-         |                                ^
-      79 |     });
-      80 |
-      81 |     // -------------------------------------------------------------------------
-        at /home/fence/src/cardano/lbazaar/tests/Browser/auth/ada-conversion-failure.spec.js:78:32
+      219 |         await expect(
+      220 |             page.locator('text=/already been taken/i').first()
+    > 221 |         ).toBeVisible({ timeout: 10000 });
+          |           ^
+      222 |     });
+      223 |
+      224 |     test('F-02.6: user status can be toggled', async ({ page }) => {
+        at /home/fence/src/cardano/lbazaar/tests/Browser/admin/profile-users.spec.js:221:11
 
     attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results/auth-ada-conversion-failur-91180--on-the-course-listing-page-student/test-failed-1.png
+    test-results/admin-profile-users-F-02-U-20509-mail-shows-validation-error-admin/test-failed-1.png
     ────────────────────────────────────────────────────────────────────────────────────────────────
 
-    Error Context: test-results/auth-ada-conversion-failur-91180--on-the-course-listing-page-student/error-context.md
-
-  9) [student] › tests/Browser/auth/ada-conversion-failure.spec.js:85:9 › ADA conversion unavailable (TS-01.08 through TS-01.11) › TS-01.10 and TS-01.11: ADA button is disabled, CC button is enabled on General course detail 
-
-    [31mTest timeout of 30000ms exceeded.[39m
-
-    Error: page.waitForFunction: Test timeout of 30000ms exceeded.
-
-       at helpers/wait-for-app.js:10
-
-       8 | export const waitForApp = async (page) => {
-       9 |     await page.waitForSelector('#app', { state: 'attached' });
-    > 10 |     await page.waitForFunction(() => {
-         |                ^
-      11 |         const app = document.querySelector('#app');
-      12 |         return app && app.children.length > 0;
-      13 |     }, { timeout: 10000 });
-        at waitForApp (/home/fence/src/cardano/lbazaar/tests/Browser/helpers/wait-for-app.js:10:16)
-        at waitForInertiaNavigation (/home/fence/src/cardano/lbazaar/tests/Browser/helpers/wait-for-app.js:22:5)
-        at /home/fence/src/cardano/lbazaar/tests/Browser/auth/ada-conversion-failure.spec.js:100:9
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results/auth-ada-conversion-failur-0da6b-ed-on-General-course-detail-student/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-  10) [student] › tests/Browser/auth/ada-price-freshness.spec.js:41:9 › TS-01.06: ADA price live refresh › ADA price updates in-place when market rate changes 
-
-    [31mTest timeout of 30000ms exceeded.[39m
-
-    Error: page.waitForFunction: Test timeout of 30000ms exceeded.
-
-       at helpers/wait-for-app.js:10
-
-       8 | export const waitForApp = async (page) => {
-       9 |     await page.waitForSelector('#app', { state: 'attached' });
-    > 10 |     await page.waitForFunction(() => {
-         |                ^
-      11 |         const app = document.querySelector('#app');
-      12 |         return app && app.children.length > 0;
-      13 |     }, { timeout: 10000 });
-        at waitForApp (/home/fence/src/cardano/lbazaar/tests/Browser/helpers/wait-for-app.js:10:16)
-        at waitForInertiaNavigation (/home/fence/src/cardano/lbazaar/tests/Browser/helpers/wait-for-app.js:22:5)
-        at navigateToFirstCourse (/home/fence/src/cardano/lbazaar/tests/Browser/auth/ada-price-freshness.spec.js:32:5)
-        at /home/fence/src/cardano/lbazaar/tests/Browser/auth/ada-price-freshness.spec.js:66:27
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results/auth-ada-price-freshness-T-e0aac-ce-when-market-rate-changes-student/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-  11) [student] › tests/Browser/auth/ada-price-freshness.spec.js:95:9 › TS-01.07: ADA price drift warning › warning text appears when ADA rate drifts beyond 5% threshold 
-
-    [31mTest timeout of 30000ms exceeded.[39m
-
-    Error: page.waitForFunction: Test timeout of 30000ms exceeded.
-
-       at helpers/wait-for-app.js:10
-
-       8 | export const waitForApp = async (page) => {
-       9 |     await page.waitForSelector('#app', { state: 'attached' });
-    > 10 |     await page.waitForFunction(() => {
-         |                ^
-      11 |         const app = document.querySelector('#app');
-      12 |         return app && app.children.length > 0;
-      13 |     }, { timeout: 10000 });
-        at waitForApp (/home/fence/src/cardano/lbazaar/tests/Browser/helpers/wait-for-app.js:10:16)
-        at waitForInertiaNavigation (/home/fence/src/cardano/lbazaar/tests/Browser/helpers/wait-for-app.js:22:5)
-        at navigateToFirstCourse (/home/fence/src/cardano/lbazaar/tests/Browser/auth/ada-price-freshness.spec.js:32:5)
-        at /home/fence/src/cardano/lbazaar/tests/Browser/auth/ada-price-freshness.spec.js:122:27
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results/auth-ada-price-freshness-T-7d5a3-e-drifts-beyond-5-threshold-student/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-  12) [student] › tests/Browser/auth/registration.spec.js:65:9 › Successful registration › fills form with unique email, submits -> redirected to /email/verify 
-
-    Error: [2mexpect([22m[31mpage[39m[2m).[22mtoHaveURL[2m([22m[32mexpected[39m[2m)[22m failed
-
-    Expected pattern: [32m/\/email\/verify/[39m
-    Received string:  [31m"http://lbazaar.test:9200/register/student"[39m
-    Timeout: 5000ms
-
-    Call log:
-    [2m  - Expect "toHaveURL" with timeout 5000ms[22m
-    [2m    9 × unexpected value "http://lbazaar.test:9200/register/student"[22m
-
-
-      79 |         await waitForInertiaNavigation(page);
-      80 |
-    > 81 |         await expect(page).toHaveURL(/\/email\/verify/);
-         |                            ^
-      82 |     });
-      83 | });
-      84 |
-        at /home/fence/src/cardano/lbazaar/tests/Browser/auth/registration.spec.js:81:28
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results/auth-registration-Successf-003b6--redirected-to-email-verify-student/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: test-results/auth-registration-Successf-003b6--redirected-to-email-verify-student/error-context.md
-
-  13) [student] › tests/Browser/auth/stripe-unavailable.spec.js:54:9 › Stripe unavailable (TS-04.06 / TS-04.07) › TS-04.06/07: CC button disabled and ADA button present when Stripe unavailable 
-
-    [31mTest timeout of 30000ms exceeded.[39m
-
-    Error: page.waitForFunction: Test timeout of 30000ms exceeded.
-
-       at helpers/wait-for-app.js:10
-
-       8 | export const waitForApp = async (page) => {
-       9 |     await page.waitForSelector('#app', { state: 'attached' });
-    > 10 |     await page.waitForFunction(() => {
-         |                ^
-      11 |         const app = document.querySelector('#app');
-      12 |         return app && app.children.length > 0;
-      13 |     }, { timeout: 10000 });
-        at waitForApp (/home/fence/src/cardano/lbazaar/tests/Browser/helpers/wait-for-app.js:10:16)
-        at waitForInertiaNavigation (/home/fence/src/cardano/lbazaar/tests/Browser/helpers/wait-for-app.js:22:5)
-        at /home/fence/src/cardano/lbazaar/tests/Browser/auth/stripe-unavailable.spec.js:69:9
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results/auth-stripe-unavailable-St-0433b-ent-when-Stripe-unavailable-student/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-  14) [student] › tests/Browser/auth/student-courses.spec.js:113:9 › F-08: Course Attendance Flow › F-08.1: attend page loads and shows stepper for a booked schedule 
-
-    [31m"beforeAll" hook timeout of 30000ms exceeded.[39m
-
-      74 |     let scheduleId = null;
-      75 |
-    > 76 |     test.beforeAll(async ({ browser }) => {
-         |          ^
-      77 |         const context = await browser.newContext({ storageState: STORAGE_STATE.student });
-      78 |         const page = await context.newPage();
-      79 |
-        at /home/fence/src/cardano/lbazaar/tests/Browser/auth/student-courses.spec.js:76:10
-
-    Error: browserContext.close: Target page, context or browser has been closed
-
-      107 |             }
-      108 |         } finally {
-    > 109 |             await context.close();
-          |             ^
-      110 |         }
-      111 |     });
-      112 |
-        at /home/fence/src/cardano/lbazaar/tests/Browser/auth/student-courses.spec.js:109:13
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results/auth-student-courses-F-08--fac57-epper-for-a-booked-schedule-student/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-  15) [student] › tests/Browser/auth/student-courses.spec.js:137:9 › F-08: Course Attendance Flow › F-08.3: exam page renders if accessible 
-
-    [31m"beforeAll" hook timeout of 30000ms exceeded.[39m
-
-      74 |     let scheduleId = null;
-      75 |
-    > 76 |     test.beforeAll(async ({ browser }) => {
-         |          ^
-      77 |         const context = await browser.newContext({ storageState: STORAGE_STATE.student });
-      78 |         const page = await context.newPage();
-      79 |
-        at /home/fence/src/cardano/lbazaar/tests/Browser/auth/student-courses.spec.js:76:10
-
-    Error: browserContext.close: Target page, context or browser has been closed
-
-      107 |             }
-      108 |         } finally {
-    > 109 |             await context.close();
-          |             ^
-      110 |         }
-      111 |     });
-      112 |
-        at /home/fence/src/cardano/lbazaar/tests/Browser/auth/student-courses.spec.js:109:13
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results/auth-student-courses-F-08--ef12f--page-renders-if-accessible-student/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-  16) [student] › tests/Browser/auth/student-courses.spec.js:187:9 › F-09: Course Browsing as Authenticated Student › F-09.2: course detail page shows booking/purchase actions for authenticated student 
-
-    [31mTest timeout of 30000ms exceeded.[39m
-
-    Error: page.waitForFunction: Test timeout of 30000ms exceeded.
-
-       at helpers/wait-for-app.js:10
-
-       8 | export const waitForApp = async (page) => {
-       9 |     await page.waitForSelector('#app', { state: 'attached' });
-    > 10 |     await page.waitForFunction(() => {
-         |                ^
-      11 |         const app = document.querySelector('#app');
-      12 |         return app && app.children.length > 0;
-      13 |     }, { timeout: 10000 });
-        at waitForApp (/home/fence/src/cardano/lbazaar/tests/Browser/helpers/wait-for-app.js:10:16)
-        at waitForInertiaNavigation (/home/fence/src/cardano/lbazaar/tests/Browser/helpers/wait-for-app.js:22:5)
-        at /home/fence/src/cardano/lbazaar/tests/Browser/auth/student-courses.spec.js:197:9
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results/auth-student-courses-F-09--84f19-s-for-authenticated-student-student/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-  17) [student] › tests/Browser/auth/student-mypage.spec.js:15:9 › F-01: MyPage Navigation › F-01.2: MyPage sidebar shows all student navigation sections 
-
-    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
-
-    Locator: getByText('Profile', { exact: true }).first()
-    Expected: visible
-    Timeout: 5000ms
-    Error: element(s) not found
-
-    Call log:
-    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
-    [2m  - waiting for getByText('Profile', { exact: true }).first()[22m
-
-
-      17 |         await waitForApp(page);
-      18 |
-    > 19 |         await expect(page.getByText('Profile', { exact: true }).first()).toBeVisible();
-         |                                                                          ^
-      20 |         await expect(page.getByText('Certificates', { exact: true }).first()).toBeVisible();
-      21 |         await expect(page.getByText('Class History', { exact: true }).first()).toBeVisible();
-      22 |         await expect(page.getByText('Purchase History', { exact: true }).first()).toBeVisible();
-        at /home/fence/src/cardano/lbazaar/tests/Browser/auth/student-mypage.spec.js:19:74
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results/auth-student-mypage-F-01-M-cf9f3-student-navigation-sections-student/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: test-results/auth-student-mypage-F-01-M-cf9f3-student-navigation-sections-student/error-context.md
-
-  18) [student] › tests/Browser/auth/student-mypage.spec.js:25:9 › F-01: MyPage Navigation › F-01.3: Profile page loads at /mypage/profile 
-
-    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBeLessThan[2m([22m[32mexpected[39m[2m)[22m
-
-    Expected: < [32m500[39m
-    Received:   [31m500[39m
-
-      25 |     test('F-01.3: Profile page loads at /mypage/profile', async ({ page }) => {
-      26 |         const response = await page.goto('/mypage/profile');
-    > 27 |         expect(response.status()).toBeLessThan(500);
-         |                                   ^
-      28 |         await waitForApp(page);
-      29 |         await expect(page).toHaveURL(/\/mypage\/profile/);
-      30 |     });
-        at /home/fence/src/cardano/lbazaar/tests/Browser/auth/student-mypage.spec.js:27:35
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results/auth-student-mypage-F-01-M-c594e-age-loads-at-mypage-profile-student/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: test-results/auth-student-mypage-F-01-M-c594e-age-loads-at-mypage-profile-student/error-context.md
-
-  19) [student] › tests/Browser/auth/student-mypage.spec.js:55:9 › F-11: Student Route Smoke Tests › /mypage/profile renders without server error 
-
-    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBeLessThan[2m([22m[32mexpected[39m[2m)[22m
-
-    Expected: < [32m500[39m
-    Received:   [31m500[39m
-
-      55 |     test('/mypage/profile renders without server error', async ({ page }) => {
-      56 |         const response = await page.goto('/mypage/profile');
-    > 57 |         expect(response.status()).toBeLessThan(500);
-         |                                   ^
-      58 |         await waitForApp(page);
-      59 |         await expect(page).toHaveURL(/\/mypage\/profile/);
-      60 |     });
-        at /home/fence/src/cardano/lbazaar/tests/Browser/auth/student-mypage.spec.js:57:35
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results/auth-student-mypage-F-11-S-49c57-enders-without-server-error-student/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: test-results/auth-student-mypage-F-11-S-49c57-enders-without-server-error-student/error-context.md
-
-  20) [student] › tests/Browser/auth/student-mypage.spec.js:104:9 › F-11: Student Route Smoke Tests › /classes/1 returns non-500 response (404 acceptable if course absent) 
-
-    [31mTest timeout of 30000ms exceeded.[39m
-
-    Error: page.waitForFunction: Test timeout of 30000ms exceeded.
-
-       at helpers/wait-for-app.js:10
-
-       8 | export const waitForApp = async (page) => {
-       9 |     await page.waitForSelector('#app', { state: 'attached' });
-    > 10 |     await page.waitForFunction(() => {
-         |                ^
-      11 |         const app = document.querySelector('#app');
-      12 |         return app && app.children.length > 0;
-      13 |     }, { timeout: 10000 });
-        at waitForApp (/home/fence/src/cardano/lbazaar/tests/Browser/helpers/wait-for-app.js:10:16)
-        at /home/fence/src/cardano/lbazaar/tests/Browser/auth/student-mypage.spec.js:107:9
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results/auth-student-mypage-F-11-S-f5fdb-cceptable-if-course-absent--student/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-  21) [student] › tests/Browser/auth/student-profile.spec.js:10:9 › F-02: Profile Management › F-02.1: profile page loads with pre-populated fields 
-
-    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
-
-    Locator: locator('input[name="first_name"]')
-    Expected: visible
-    Timeout: 5000ms
-    Error: element(s) not found
-
-    Call log:
-    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
-    [2m  - waiting for locator('input[name="first_name"]')[22m
-
-
-      18 |         const emailInput     = page.locator('input[name="email"]');
-      19 |
-    > 20 |         await expect(firstNameInput).toBeVisible();
-         |                                      ^
-      21 |         await expect(lastNameInput).toBeVisible();
-      22 |         await expect(emailInput).toBeVisible();
-      23 |
-        at /home/fence/src/cardano/lbazaar/tests/Browser/auth/student-profile.spec.js:20:38
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results/auth-student-profile-F-02--dea70-s-with-pre-populated-fields-student/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: test-results/auth-student-profile-F-02--dea70-s-with-pre-populated-fields-student/error-context.md
-
-  22) [student] › tests/Browser/auth/student-profile.spec.js:28:9 › F-02: Profile Management › F-02.2: editing first name and submitting shows success toast and persists on reload 
-
-    [31mTest timeout of 30000ms exceeded.[39m
-
-    Error: locator.inputValue: Test timeout of 30000ms exceeded.
-    Call log:
-    [2m  - waiting for locator('input[name="first_name"]')[22m
-
-
-      33 |
-      34 |         // Capture original value for restoration (SC-05)
-    > 35 |         const originalFirstName = await firstNameInput.inputValue();
-         |                                                        ^
-      36 |         const testFirstName = `${originalFirstName}_e2e`;
-      37 |
-      38 |         // Edit the field
-        at /home/fence/src/cardano/lbazaar/tests/Browser/auth/student-profile.spec.js:35:56
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results/auth-student-profile-F-02--8f82d-oast-and-persists-on-reload-student/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: test-results/auth-student-profile-F-02--8f82d-oast-and-persists-on-reload-student/error-context.md
-
-  23) [student] › tests/Browser/auth/student-profile.spec.js:66:9 › F-02: Profile Management › F-02.3: password change section visible with current/new/confirm fields 
-
-    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
-
-    Locator: locator('input[name="current_password"]')
-    Expected: visible
-    Timeout: 5000ms
-    Error: element(s) not found
-
-    Call log:
-    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
-    [2m  - waiting for locator('input[name="current_password"]')[22m
-
-
-      72 |         const confirmPasswordInput   = page.locator('input[name="new_password_confirmation"]');
-      73 |
-    > 74 |         await expect(currentPasswordInput).toBeVisible();
-         |                                            ^
-      75 |         await expect(newPasswordInput).toBeVisible();
-      76 |         await expect(confirmPasswordInput).toBeVisible();
-      77 |
-        at /home/fence/src/cardano/lbazaar/tests/Browser/auth/student-profile.spec.js:74:44
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results/auth-student-profile-F-02--68c7b--current-new-confirm-fields-student/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: test-results/auth-student-profile-F-02--68c7b--current-new-confirm-fields-student/error-context.md
-
-  24) [student] › tests/Browser/auth/student-profile.spec.js:83:9 › F-02: Profile Management › F-02.4: mismatched password confirmation shows validation error 
-
-    [31mTest timeout of 30000ms exceeded.[39m
-
-    Error: locator.fill: Test timeout of 30000ms exceeded.
-    Call log:
-    [2m  - waiting for locator('input[name="current_password"]')[22m
-
-
-      86 |
-      87 |         // Fill with intentionally mismatched confirmation (alpha_num only on new_password!)
-    > 88 |         await page.locator('input[name="current_password"]').fill('Test1234!');
-         |                                                              ^
-      89 |         await page.locator('input[name="new_password"]').fill('NewPass99');
-      90 |         await page.locator('input[name="new_password_confirmation"]').fill('DifferentPass99');
-      91 |
-        at /home/fence/src/cardano/lbazaar/tests/Browser/auth/student-profile.spec.js:88:62
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results/auth-student-profile-F-02--83b03-tion-shows-validation-error-student/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: test-results/auth-student-profile-F-02--83b03-tion-shows-validation-error-student/error-context.md
-
-  25) [student] › tests/Browser/student/route-smoke.spec.js:22:13 › F-08: Route Smoke Test — Student › MyPage profile returns non-500 
-
-    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBeLessThan[2m([22m[32mexpected[39m[2m)[22m
-
-    Expected: < [32m500[39m
-    Received:   [31m500[39m
-
-      22 |         test(`${route.name} returns non-500`, async ({ page }) => {
-      23 |             const response = await page.goto(route.path);
-    > 24 |             expect(response.status()).toBeLessThan(500);
-         |                                       ^
-      25 |             await waitForApp(page);
-      26 |         });
-      27 |     }
-        at /home/fence/src/cardano/lbazaar/tests/Browser/student/route-smoke.spec.js:24:39
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results/student-route-smoke-F-08-R-b510d-age-profile-returns-non-500-student/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: test-results/student-route-smoke-F-08-R-b510d-age-profile-returns-non-500-student/error-context.md
-
-  26) [student] › tests/Browser/student/wallet-cip30.spec.js:57:9 › CIP-30 Wallet (mock Eternl) › connect wallet — shows balance and stake key 
-
-    [31mTest timeout of 30000ms exceeded.[39m
-
-    Error: locator.click: Test timeout of 30000ms exceeded.
-    Call log:
-    [2m  - waiting for getByRole('button', { name: 'eternl' })[22m
-
-
-      62 |
-      63 |         // Click the Eternl wallet button to connect
-    > 64 |         await page.getByRole('button', { name: 'eternl' }).click()
-         |                                                            ^
-      65 |
-      66 |         // Wait for wallet info to load (balance display)
-      67 |         await expect(page.getByText('₳')).toBeVisible({ timeout: 10_000 })
-        at /home/fence/src/cardano/lbazaar/tests/Browser/student/wallet-cip30.spec.js:64:60
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results/student-wallet-cip30-CIP-3-7a4fc-shows-balance-and-stake-key-student/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: test-results/student-wallet-cip30-CIP-3-7a4fc-shows-balance-and-stake-key-student/error-context.md
-
-  27) [student] › tests/Browser/student/wallet-cip30.spec.js:73:9 › CIP-30 Wallet (mock Eternl) › verify wallet ownership — signature flow 
-
-    [31mTest timeout of 30000ms exceeded.[39m
-
-    Error: locator.click: Test timeout of 30000ms exceeded.
-    Call log:
-    [2m  - waiting for getByRole('button', { name: 'eternl' })[22m
-
-
-      87 |
-      88 |         // Connect wallet first
-    > 89 |         await page.getByRole('button', { name: 'eternl' }).click()
-         |                                                            ^
-      90 |         await expect(page.getByText('₳')).toBeVisible({ timeout: 10_000 })
-      91 |
-      92 |         // Click the verify button (TaskAltIcon — the checkmark icon button)
-        at /home/fence/src/cardano/lbazaar/tests/Browser/student/wallet-cip30.spec.js:89:60
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results/student-wallet-cip30-CIP-3-9378a--ownership-—-signature-flow-student/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: test-results/student-wallet-cip30-CIP-3-9378a--ownership-—-signature-flow-student/error-context.md
-
-  28) [teacher] › tests/Browser/teacher/route-smoke.spec.js:25:13 › F-08: Route Smoke Test — Teacher › MyPage profile returns non-500 
-
-    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBeLessThan[2m([22m[32mexpected[39m[2m)[22m
-
-    Expected: < [32m500[39m
-    Received:   [31m500[39m
-
-      25 |         test(`${route.name} returns non-500`, async ({ page }) => {
-      26 |             const response = await page.goto(route.path);
-    > 27 |             expect(response.status()).toBeLessThan(500);
-         |                                       ^
-      28 |             await waitForApp(page);
-      29 |         });
-      30 |     }
-        at /home/fence/src/cardano/lbazaar/tests/Browser/teacher/route-smoke.spec.js:27:39
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results/teacher-route-smoke-F-08-R-825d9-age-profile-returns-non-500-teacher/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: test-results/teacher-route-smoke-F-08-R-825d9-age-profile-returns-non-500-teacher/error-context.md
-
-  29) [admin] › tests/Browser/admin/profile-users.spec.js:224:9 › F-02: User Management › F-02.6: user status can be toggled 
-
-    [31mTest timeout of 30000ms exceeded.[39m
-
-    Error: locator.innerText: Test timeout of 30000ms exceeded.
-    Call log:
-    [2m  - waiting for locator('table tbody tr').first().locator('td:nth-child(4)')[22m
-
-
-      267 |         const updatedRow = page.locator('table tbody tr').first();
-      268 |         const statusCellAfter = updatedRow.locator('td:nth-child(4)');
-    > 269 |         const statusAfter = await statusCellAfter.innerText();
-          |                                                   ^
-      270 |         expect(statusAfter.toLowerCase()).not.toBe(statusBefore.toLowerCase());
-      271 |     });
-      272 | });
-        at /home/fence/src/cardano/lbazaar/tests/Browser/admin/profile-users.spec.js:269:51
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results/admin-profile-users-F-02-U-7a4eb--user-status-can-be-toggled-admin/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: test-results/admin-profile-users-F-02-U-7a4eb--user-status-can-be-toggled-admin/error-context.md
-
-  30) [admin] › tests/Browser/admin/settings-misc.spec.js:87:9 › F-10: Settings — General › F-10.2: updating a general setting succeeds and persists 
-
-    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoHaveValue[2m([22m[32mexpected[39m[2m)[22m failed
-
-    Locator:  locator('table tbody tr').first().locator('input').first()
-    Expected: [32m"inquiry@l-e-bazaar.com[7m_pw[27m"[39m
-    Received: [31m"inquiry@l-e-bazaar.com"[39m
-    Timeout:  5000ms
-
-    Call log:
-    [2m  - Expect "toHaveValue" with timeout 5000ms[22m
-    [2m  - waiting for locator('table tbody tr').first().locator('input').first()[22m
-    [2m    9 × locator resolved to <input id=":r5:" type="text" aria-invalid="false" value="inquiry@l-e-bazaar.com" name="general_settings.inquiry-receiver-email" class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall css-1n4twyu-MuiInputBase-input-MuiOutlinedInput-input"/>[22m
-    [2m      - unexpected value "inquiry@l-e-bazaar.com"[22m
-
-
-      122 |         await waitForApp(page);
-      123 |         const reloadedInput = page.locator('table tbody tr').first().locator('input').first();
-    > 124 |         await expect(reloadedInput).toHaveValue(testValue);
-          |                                     ^
-      125 |
-      126 |         // Restore original value
-      127 |         await reloadedInput.click();
-        at /home/fence/src/cardano/lbazaar/tests/Browser/admin/settings-misc.spec.js:124:37
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results/admin-settings-misc-F-10-S-9a0ff-tting-succeeds-and-persists-admin/test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: test-results/admin-settings-misc-F-10-S-9a0ff-tting-succeeds-and-persists-admin/error-context.md
-
-  30 failed
-    [unauthenticated] › tests/Browser/course-browsing.spec.js:137:9 › Course Browsing - Filtering › typing search text and submitting adds search_text to URL 
-    [unauthenticated] › tests/Browser/course-browsing.spec.js:161:9 › Course Browsing - Filtering › changing type filter adds type_id to URL 
-    [unauthenticated] › tests/Browser/course-browsing.spec.js:190:9 › Course Browsing - Course Detail Page › clicking view-more on a course card navigates to /classes/{id} 
-    [unauthenticated] › tests/Browser/course-browsing.spec.js:234:9 › Course Browsing - Course Detail Page › detail page can be accessed directly by URL /classes/1 
-    [unauthenticated] › tests/Browser/course-browsing.spec.js:272:9 › Course Browsing - ADA Price on Detail Page (TS-01.02, TS-01.04) › detail page for General course shows JPY and ADA (~₳) price 
-    [guest] › tests/Browser/guest/forgot-password.spec.js:26:9 › F-10.2: Valid email shows success › submitting registered email shows success toast 
-    [student] › tests/Browser/auth/ada-conversion-failure.spec.js:60:9 › ADA conversion unavailable (TS-01.08 through TS-01.11) › TS-01.08: JPY price is visible on the course listing page 
-    [student] › tests/Browser/auth/ada-conversion-failure.spec.js:72:9 › ADA conversion unavailable (TS-01.08 through TS-01.11) › TS-01.09: ADA equivalent price is NOT shown on the course listing page 
-    [student] › tests/Browser/auth/ada-conversion-failure.spec.js:85:9 › ADA conversion unavailable (TS-01.08 through TS-01.11) › TS-01.10 and TS-01.11: ADA button is disabled, CC button is enabled on General course detail 
-    [student] › tests/Browser/auth/ada-price-freshness.spec.js:41:9 › TS-01.06: ADA price live refresh › ADA price updates in-place when market rate changes 
-    [student] › tests/Browser/auth/ada-price-freshness.spec.js:95:9 › TS-01.07: ADA price drift warning › warning text appears when ADA rate drifts beyond 5% threshold 
-    [student] › tests/Browser/auth/registration.spec.js:65:9 › Successful registration › fills form with unique email, submits -> redirected to /email/verify 
-    [student] › tests/Browser/auth/stripe-unavailable.spec.js:54:9 › Stripe unavailable (TS-04.06 / TS-04.07) › TS-04.06/07: CC button disabled and ADA button present when Stripe unavailable 
-    [student] › tests/Browser/auth/student-courses.spec.js:113:9 › F-08: Course Attendance Flow › F-08.1: attend page loads and shows stepper for a booked schedule 
-    [student] › tests/Browser/auth/student-courses.spec.js:137:9 › F-08: Course Attendance Flow › F-08.3: exam page renders if accessible 
-    [student] › tests/Browser/auth/student-courses.spec.js:187:9 › F-09: Course Browsing as Authenticated Student › F-09.2: course detail page shows booking/purchase actions for authenticated student 
-    [student] › tests/Browser/auth/student-mypage.spec.js:15:9 › F-01: MyPage Navigation › F-01.2: MyPage sidebar shows all student navigation sections 
-    [student] › tests/Browser/auth/student-mypage.spec.js:25:9 › F-01: MyPage Navigation › F-01.3: Profile page loads at /mypage/profile 
-    [student] › tests/Browser/auth/student-mypage.spec.js:55:9 › F-11: Student Route Smoke Tests › /mypage/profile renders without server error 
-    [student] › tests/Browser/auth/student-mypage.spec.js:104:9 › F-11: Student Route Smoke Tests › /classes/1 returns non-500 response (404 acceptable if course absent) 
-    [student] › tests/Browser/auth/student-profile.spec.js:10:9 › F-02: Profile Management › F-02.1: profile page loads with pre-populated fields 
-    [student] › tests/Browser/auth/student-profile.spec.js:28:9 › F-02: Profile Management › F-02.2: editing first name and submitting shows success toast and persists on reload 
-    [student] › tests/Browser/auth/student-profile.spec.js:66:9 › F-02: Profile Management › F-02.3: password change section visible with current/new/confirm fields 
-    [student] › tests/Browser/auth/student-profile.spec.js:83:9 › F-02: Profile Management › F-02.4: mismatched password confirmation shows validation error 
-    [student] › tests/Browser/student/route-smoke.spec.js:22:13 › F-08: Route Smoke Test — Student › MyPage profile returns non-500 
-    [student] › tests/Browser/student/wallet-cip30.spec.js:57:9 › CIP-30 Wallet (mock Eternl) › connect wallet — shows balance and stake key 
-    [student] › tests/Browser/student/wallet-cip30.spec.js:73:9 › CIP-30 Wallet (mock Eternl) › verify wallet ownership — signature flow 
-    [teacher] › tests/Browser/teacher/route-smoke.spec.js:25:13 › F-08: Route Smoke Test — Teacher › MyPage profile returns non-500 
-    [admin] › tests/Browser/admin/profile-users.spec.js:224:9 › F-02: User Management › F-02.6: user status can be toggled 
-    [admin] › tests/Browser/admin/settings-misc.spec.js:87:9 › F-10: Settings — General › F-10.2: updating a general setting succeeds and persists 
-  1 skipped
-  2 did not run
-  183 passed (8.2m)
+    Error Context: test-results/admin-profile-users-F-02-U-20509-mail-shows-validation-error-admin/error-context.md
+
+  1 flaky
+    [admin] › tests/Browser/admin/profile-users.spec.js:186:9 › F-02: User Management › F-02.5: creating user with duplicate email shows validation error 
+  7 skipped
+  208 passed (2.2m)
