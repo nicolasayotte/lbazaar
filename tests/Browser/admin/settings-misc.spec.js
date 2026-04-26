@@ -96,9 +96,13 @@ test.describe('F-10: Settings — General', () => {
         const firstInput = rows.first().locator('input').first();
         const inputType = await firstInput.getAttribute('type');
         const originalValue = await firstInput.inputValue();
+        // For email inputs the suffix must stay inside the local-part (before @) so
+        // server-side `email` validation does not reject the value.
         const testValue = inputType === 'number'
             ? String(Number(originalValue) + 1)
-            : originalValue + '_pw';
+            : originalValue.includes('@')
+                ? originalValue.replace('@', '_pw@')
+                : originalValue + '_pw';
 
         await firstInput.click();
         await page.keyboard.press('Control+a');
