@@ -4,7 +4,9 @@ export default defineConfig({
     testDir: './tests/Browser',
     fullyParallel: true,
     forbidOnly: !!process.env.CI,
-    retries: process.env.CI ? 2 : 0,
+    // Retry once even locally — auth setup and a few flows are sensitive to
+    // parallel worker contention with Vite hot-reload + MySQL queries.
+    retries: process.env.CI ? 2 : 1,
     workers: process.env.CI ? 1 : 2,
     reporter: 'html',
     use: {
