@@ -166,11 +166,6 @@ describe('Certificates', () => {
             expect(screen.getByTestId('certificate-table')).toBeInTheDocument();
         });
 
-        it('renders the wallet connector', () => {
-            renderWithStore(<Certificates />);
-            expect(screen.getByTestId('wallet-connector')).toBeInTheDocument();
-        });
-
         it('shows select all eligible button when eligible students exist', () => {
             renderWithStore(<Certificates />);
             expect(screen.getByText(/Select All Eligible/i)).toBeInTheDocument();
@@ -204,27 +199,26 @@ describe('Certificates', () => {
     });
 
     describe('Airdrop flow', () => {
-        it('airdrop button is disabled when no wallet connected', () => {
+        it('airdrop button is disabled when no students selected', () => {
             renderWithStore(<Certificates />);
             const airdropBtn = screen.getByText(/Airdrop/i).closest('button');
             expect(airdropBtn).toBeDisabled();
         });
 
-        it('opens fee dialog when airdrop button clicked with wallet + selection', async () => {
+        it('posts fee estimate request when airdrop clicked with selection', async () => {
+            const axios = (await import('axios')).default;
             renderWithStore(<Certificates />);
 
-            // Connect wallet
-            fireEvent.click(screen.getByTestId('mock-connect-wallet'));
-
-            // Select a student
             fireEvent.click(screen.getByText(/Select All Eligible/i));
 
-            // Click airdrop
             const airdropBtn = screen.getByText(/Airdrop/i).closest('button');
             fireEvent.click(airdropBtn);
 
             await waitFor(() => {
-                expect(screen.getByTestId('fee-dialog')).toBeInTheDocument();
+                expect(axios.post).toHaveBeenCalledWith(
+                    expect.stringMatching(/\/api\/certificates\/courses\/\d+\/estimate-fee/),
+                    expect.objectContaining({ student_ids: [1] }),
+                );
             });
         });
     });
