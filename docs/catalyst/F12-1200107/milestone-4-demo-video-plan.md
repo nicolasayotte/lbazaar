@@ -10,18 +10,30 @@
 
 Have these ready in separate browser windows/tabs to avoid login screens mid-recording:
 
-1. **Student account** — logged in, has at least one course completion eligible for reward
-2. **Teacher account** — logged in, owns a course with rewards configured
-3. **Admin account** — logged in, ready for refund/airdrop scenarios
+1. **Student account** — `demo-student@lebazaar.com` / `Demo1234!`
+2. **Teacher account** — `demo-teacher@lebazaar.com` / `Demo1234!`
+3. **Admin account** — `demo-admin@lebazaar.com` / `Demo1234!`
 4. **Cardano wallet** — Eternl (or Nami) on Preprod with at least 50 tADA
 5. **Stripe test card** — `4242 4242 4242 4242`, any future expiry, any CVC
 6. **Cardanoscan Preprod** tab — `https://preprod.cardanoscan.io/` for showing on-chain confirmations
 
+**Seeded demo data** (`sail artisan db:seed --class=DemoVideoSeeder` — idempotent, re-run any time):
+
+| Course | Price | NFT cert | Token reward | Student state |
+|---|---|---|---|---|
+| Demo ADA Course | ¥6,500 | enabled (100 tokens) | 100 tokens | enrolled, not completed |
+| Demo Stripe Course | ¥5,800 | — | — | enrolled, not completed |
+| Demo Reward Course | ¥7,000 | enabled | 100 tokens | **completed, both rewards eligible** |
+
+- Story 1 (ADA payment): use **Demo ADA Course** — shows a real JPY→ADA conversion (~100 ADA at ¥65/ADA)
+- Story 2 (Stripe payment): use **Demo Stripe Course**
+- Stories 3–6 (rewards): use **Demo Reward Course** for teacher config; student's completion is pre-seeded with `certificate_status = eligible` and `token_reward_status = eligible`
+
 **Seed data checklist:**
-- [ ] One paid course priced in JPY (~5000–10000 ¥) with NFT certificate enabled
-- [ ] One paid course with token reward configured (e.g. 100 tokens)
-- [ ] Test student already enrolled but not yet completed in some courses
-- [ ] Test student already completed in one course (to demo reward minting)
+- [x] One paid course priced in JPY (~¥6500) with NFT certificate enabled → Demo ADA Course
+- [x] One paid course with token reward configured (100 tokens) → Demo ADA Course / Demo Reward Course
+- [x] Test student enrolled but not yet completed → Demo ADA Course + Demo Stripe Course
+- [x] Test student completed with both rewards eligible → Demo Reward Course
 
 **Recording:**
 - Use OBS or QuickTime; 1080p, 30fps; mic check.
@@ -140,12 +152,6 @@ Show: GitHub repo URL, deployed staging URL.
 
 ## Editing Checklist
 
-- [ ] Trim wallet pop-up wait times (cut to 1–2s)
-- [ ] Add captions/lower-thirds for each user story title
-- [ ] Highlight tx hashes on screen (zoom/box overlay)
-- [ ] Background music: low/none — voiceover should be primary
-- [ ] Outro: show repo + Catalyst project ID on screen
-- [ ] Upload as **unlisted** first → review internally → flip to public
 - [ ] Add chapter markers per user story in YouTube description
 
 ---

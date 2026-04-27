@@ -21,15 +21,18 @@ class CoursePurchaseService
     protected $walletService;
     protected $userRepository;
     protected RewardInvalidationService $rewardInvalidationService;
+    protected ExchangeRateService $exchangeRateService;
 
     public function __construct(
         WalletService $walletService,
         UserRepository $userRepository,
-        RewardInvalidationService $rewardInvalidationService
+        RewardInvalidationService $rewardInvalidationService,
+        ExchangeRateService $exchangeRateService
     ) {
         $this->walletService = $walletService;
         $this->userRepository = $userRepository;
         $this->rewardInvalidationService = $rewardInvalidationService;
+        $this->exchangeRateService = $exchangeRateService;
     }
 
     /**
@@ -402,17 +405,20 @@ class CoursePurchaseService
     }
 
     /**
-     * Convert JPY to ADA using exchange rate from settings
+     * Convert JPY to ADA using the unified exchange-rate source (CoinGecko live,
+     * cached, with Setting('ada-to-jpy') as fallback). Rounds to 6 decimals so
+     * the result has lovelace precision for on-chain transaction building.
+     *
+     * Throws when no rate is available from any source.
      */
     public function convertJpyToAda(float $jpyAmount): float
     {
-        $adaToJpy = Setting::where('slug', 'ada-to-jpy')->first();
+        $rate = $this->exchangeRateService->getAdaJpyRate();
 
-        if (!$adaToJpy) {
+        if ($rate <= 0) {
             throw new Exception('ADA to JPY conversion rate not configured');
         }
 
-        $rate = floatval($adaToJpy->value);
         return round($jpyAmount / $rate, 6);
     }
 
