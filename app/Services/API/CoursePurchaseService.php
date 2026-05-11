@@ -72,6 +72,7 @@ class CoursePurchaseService
         }
 
         $adaTotalAmount = $this->convertJpyToAda((float) $schedule->course->getRawOriginal('price'));
+        $lovelaceTotal = (int) round($adaTotalAmount * 1_000_000);
         $adminCommissionSetting = Setting::where('slug', 'admin-commission')->first();
         $adminCommissionPercent = $adminCommissionSetting ? floatval($adminCommissionSetting->value) : 20;
 
@@ -81,7 +82,7 @@ class CoursePurchaseService
             $userWallet->stake_key_hash,
             $userWallet->address,
             $cborUtxos,
-            (string) $adaTotalAmount,
+            (string) $lovelaceTotal,
             $teacherWalletAddr,
             $adminWalletAddr,
             (string) $adminCommissionPercent

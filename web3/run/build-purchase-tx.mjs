@@ -20,7 +20,7 @@ const ttl = 5;
 
 /**
  * Build unsigned purchase transaction with two outputs (teacher + admin)
- * Usage: node build-purchase-tx.mjs stakeKeyHash hexChangeAddr cborUtxos coursePrice teacherWalletAddr adminWalletAddr adminCommissionPercent
+ * Usage: node build-purchase-tx.mjs stakeKeyHash hexChangeAddr cborUtxos coursePriceLovelace teacherWalletAddr adminWalletAddr adminCommissionPercent
  * @params {string, string, string, string, string, string, string}
  * @output {string} cborTx
  */
@@ -40,7 +40,7 @@ const main = async () => {
     const stakeKeyHash = args[2];
     const changeAddrBech32 = args[3];
     const cborUtxos = args[4].split(',');
-    const coursePrice = BigInt(args[5]) * BigInt(1_000_000);
+    const coursePrice = BigInt(args[5]);
     const teacherWalletAddr = args[6];
     const adminWalletAddr = args[7];
     const adminCommissionPercent = parseFloat(args[8]);

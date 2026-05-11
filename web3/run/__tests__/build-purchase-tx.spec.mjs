@@ -135,7 +135,7 @@ describe('build-purchase-tx.mjs', () => {
         'test-stake-hash',
         '01abc123', // hexChangeAddr
         'cbor-utxo-1', // cborUtxos
-        '100', // coursePrice in ADA
+        '100000000', // coursePrice in lovelace (100 ADA)
         'addr_test1teacher', // teacherWalletAddr
         'addr_test1admin', // adminWalletAddr
         '20' // adminCommissionPercent
@@ -168,7 +168,7 @@ describe('build-purchase-tx.mjs', () => {
         'test-stake-hash',
         '01abc123',
         'cbor-utxo-1',
-        '50', // coursePrice in ADA
+        '50000000', // coursePrice in lovelace (50 ADA)
         'addr_test1teacher',
         'addr_test1admin',
         '15.5' // adminCommissionPercent (15.5%)
@@ -201,7 +201,7 @@ describe('build-purchase-tx.mjs', () => {
         'test-stake-hash',
         '01abc123',
         'cbor-utxo-1',
-        '100',
+        '100000000', // coursePrice in lovelace
         'addr_test1teacher',
         'addr_test1admin',
         '20'
@@ -227,7 +227,7 @@ describe('build-purchase-tx.mjs', () => {
         'test-stake-hash',
         '01abc123',
         'cbor-utxo-1',
-        '100',
+        '100000000', // coursePrice in lovelace
         'addr_test1teacher',
         'addr_test1admin',
         '20'
@@ -268,7 +268,7 @@ describe('build-purchase-tx.mjs', () => {
         'test-stake-hash',
         '01abc123',
         'cbor-utxo-1',
-        '100',
+        '100000000', // coursePrice in lovelace
         'addr_test1teacher',
         'addr_test1admin',
         '20'
@@ -303,7 +303,7 @@ describe('build-purchase-tx.mjs', () => {
         'test-stake-hash',
         '01abc123',
         'cbor-utxo-1',
-        '100',
+        '100000000', // coursePrice in lovelace
         'addr_test1teacher',
         'addr_test1admin',
         '20'
@@ -335,7 +335,7 @@ describe('build-purchase-tx.mjs', () => {
         'test-stake-hash',
         '01abc123',
         'cbor-utxo-1',
-        '100',
+        '100000000', // coursePrice in lovelace
         'addr_test1teacher',
         'addr_test1admin',
         '20'
@@ -371,7 +371,7 @@ describe('build-purchase-tx.mjs', () => {
         'test-stake-hash',
         '01abc123',
         'cbor-utxo-1',
-        '100',
+        '100000000', // coursePrice in lovelace
         'addr_test1teacher',
         'addr_test1admin',
         '20'
@@ -407,7 +407,7 @@ describe('build-purchase-tx.mjs', () => {
         'test-stake-hash',
         '01abc123',
         'cbor-utxo-1',
-        '100',
+        '100000000', // coursePrice in lovelace
         'addr_test1teacher',
         'addr_test1admin',
         '20'
@@ -442,7 +442,7 @@ describe('build-purchase-tx.mjs', () => {
         'test-stake-hash',
         '01abc123',
         'cbor-utxo-1',
-        '100',
+        '100000000', // coursePrice in lovelace
         'addr_test1teacher',
         'addr_test1admin',
         '20'
@@ -471,7 +471,7 @@ describe('build-purchase-tx.mjs', () => {
         'test-stake-hash',
         '01abc123',
         'cbor-utxo-1',
-        '100',
+        '100000000', // coursePrice in lovelace
         'addr_test1teacher',
         'addr_test1admin',
         '20'

@@ -20,7 +20,7 @@ const ttl = 5;
 
 /**
  * Main calling function via the command line
- * Usage: node build-feed-tx.js cBorChangeAddr [cborUtxo1,cborUtxo2,...] adaAmount
+ * Usage: node build-feed-tx.js stakeKeyHash hexChangeAddr [cborUtxo1,cborUtxo2,...] lovelaceAmount
  * @params {string, string, string[], string}
  * @output {string} cborTx
  */
@@ -41,7 +41,7 @@ const main = async () => {
     const stakeKeyHash = args[2];
     const hexChangeAddr = args[3];
     const cborUtxos = args[4].split(',');
-    const adaAmount = BigInt(args[5]) * BigInt(1_000_000);
+    const adaAmount = BigInt(args[5]);
 
     const minUTXOVal = new Value(minAda + maxTxFee + minChangeAmt + adaAmount);
 
@@ -76,7 +76,7 @@ const main = async () => {
     // Set metadata message
     tx.addMetadata(
       674,
-      JSON.stringify({ msg: `Buying ${adaAmount / 10} tokens for ${stakeKeyHash}`.match(/(.{1,64})/g) }),
+      JSON.stringify({ msg: `Buying ${adaAmount / BigInt(10)} tokens for ${stakeKeyHash}`.match(/(.{1,64})/g) }),
     );
 
     // Set a valid time interval

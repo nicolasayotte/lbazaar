@@ -349,6 +349,54 @@ class CoursePurchaseServiceTest extends TestCase
         $this->assertStringContainsString("'30'", $capturedCommand);
     }
 
+    public function test_build_passes_integer_lovelace_to_web3_script_for_fractional_ada_price()
+    {
+        // Regression: BigInt(args[5]) in build-purchase-tx.mjs crashes when
+        // given a string like "29.953917". The PHP service must convert the
+        // ADA float (rounded to 6 decimals) into an integer lovelace string
+        // before invoking the web3 script.
+        //
+        // We mock convertJpyToAda directly to guarantee a fractional value
+        // regardless of the underlying ExchangeRateService source.
+        $service = Mockery::mock(CoursePurchaseService::class, [$this->walletService, $this->userRepository, app(RewardInvalidationService::class), app(ExchangeRateService::class)])
+            ->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        $service->shouldReceive('convertJpyToAda')->andReturn(29.953917);
+
+        $capturedCommand = null;
+        $service->shouldReceive('runCommand')
+            ->once()
+            ->with(Mockery::on(function ($cmd) use (&$capturedCommand) {
+                $capturedCommand = $cmd;
+                return true;
+            }))
+            ->andReturn(json_encode([
+                'status' => 200,
+                'cborTx' => 'test_cbor_tx_data',
+                'teacherAmount' => 23963134,
+                'adminAmount' => 5990783,
+            ]));
+
+        request()->merge(['cborUtxos' => 'test_cbor_utxos']);
+
+        $result = $service->buildPurchaseTransaction($this->schedule, $this->student);
+
+        $this->assertTrue($result['success']);
+        // The price arg passed to the web3 script must be integer lovelace —
+        // never an ADA float like '29.953917'. round(29.953917 * 1_000_000) = 29953917.
+        $this->assertStringContainsString(
+            "'29953917'",
+            $capturedCommand,
+            'Course price must be passed to build-purchase-tx.mjs as integer lovelace'
+        );
+        $this->assertDoesNotMatchRegularExpression(
+            "/'[0-9]+\\.[0-9]+'/",
+            $capturedCommand,
+            'No fractional numeric argument may appear in the web3 command'
+        );
+    }
+
     public function test_build_defaults_commission_when_not_configured()
     {
         Setting::where('slug', 'admin-commission')->delete();

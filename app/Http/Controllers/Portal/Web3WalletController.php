@@ -309,12 +309,13 @@ class Web3WalletController extends Controller
             $points = $request->input('points');
             $adaToPoints = Setting::where('slug', 'ada-to-points')->first()->value;
             $adaAmount = $points * $adaToPoints;
-             
+            $lovelaceAmount = (int) round($adaAmount * 1_000_000);
+
             $cmd = '(cd ../web3/;node ./run/build-feed-tx.mjs '
                         .escapeshellarg($skateKeyHash).' '
                         .escapeshellarg($changeAddr).' '
                         .escapeshellarg($strUtxos).' '
-                        .escapeshellarg($adaAmount).') 2>> ../storage/logs/web3.log'; 
+                        .escapeshellarg((string) $lovelaceAmount).') 2>> ../storage/logs/web3.log';
             
             $response = exec($cmd);
             $responseJSON = json_decode($response, false);
