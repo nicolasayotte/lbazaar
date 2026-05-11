@@ -13,6 +13,7 @@ use App\Models\CourseType;
 use App\Models\Role;
 use App\Models\Setting;
 use App\Models\Status;
+use App\Models\StripePayment;
 use App\Models\User;
 use App\Models\UserWallet;
 use Illuminate\Database\Seeder;
@@ -155,7 +156,7 @@ class DemoVideoSeeder extends Seeder
             );
 
             // Student completed, both rewards eligible
-            CourseHistory::updateOrCreate(
+            $rewardHistory = CourseHistory::updateOrCreate(
                 ['user_id' => $student->id, 'course_schedule_id' => $rewardSchedule->id],
                 [
                     'course_id'                      => $rewardCourse->id,
@@ -168,6 +169,20 @@ class DemoVideoSeeder extends Seeder
                     'enrolled_token_reward_enabled'  => true,
                     'enrolled_token_reward_amount'   => 100,
                     'token_reward_status'            => 'eligible',
+                ]
+            );
+
+            // A successful Stripe payment for the completed Demo Reward Course
+            // — gives the admin refund panel one refundable row to demo against.
+            StripePayment::updateOrCreate(
+                ['stripe_payment_intent_id' => 'pi_demo_reward_course_succeeded'],
+                [
+                    'user_id'           => $student->id,
+                    'course_id'         => $rewardCourse->id,
+                    'course_history_id' => $rewardHistory->id,
+                    'amount'            => 7000,
+                    'currency'          => 'jpy',
+                    'status'            => 'succeeded',
                 ]
             );
         });

@@ -68,5 +68,12 @@ export default defineConfig({
             },
             dependencies: ['admin-setup'],
         },
+        // Milestone 4 demo-video story specs. Each test logs in inline as a
+        // demo-* account (seeded by DemoVideoSeeder) so storageState is empty.
+        {
+            name: 'demo',
+            testMatch: '**/demo/**/*.spec.js',
+            use: { browserName: 'chromium' },
+        },
     ],
 });

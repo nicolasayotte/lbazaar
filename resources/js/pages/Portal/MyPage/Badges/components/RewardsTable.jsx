@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { OpenInNew } from '@mui/icons-material'
 import {
     Alert,
+    Box,
     Button,
     Chip,
     CircularProgress,
@@ -15,6 +16,7 @@ import {
     TableHead,
     TableRow,
     Tooltip,
+    Typography,
 } from '@mui/material'
 import EmptyCard from '../../../../../components/common/EmptyCard'
 import { usePage } from '@inertiajs/inertia-react'
