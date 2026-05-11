@@ -64,7 +64,7 @@ class StudentMintController extends Controller
             }
 
             $explorerBase = config('services.cardano.explorer_url');
-            $explorerUrl  = ($txHash && $explorerBase) ? $explorerBase . '/tx/' . $txHash : null;
+            $explorerUrl  = ($txHash && $explorerBase) ? $explorerBase . '/transaction/' . $txHash : null;
 
             return response()->json([
                 'success'      => true,
@@ -136,7 +136,7 @@ class StudentMintController extends Controller
 
         $explorerBase = config('services.cardano.explorer_url');
         $txHash       = $result['transaction_id'] ?? null;
-        $explorerUrl  = ($txHash && $explorerBase) ? $explorerBase . '/tx/' . $txHash : null;
+        $explorerUrl  = ($txHash && $explorerBase) ? $explorerBase . '/transaction/' . $txHash : null;
 
         return response()->json([
             'success'      => true,
@@ -200,7 +200,7 @@ class StudentMintController extends Controller
 
         $explorerBase = config('services.cardano.explorer_url');
         $txHash       = $result['transaction_id'] ?? null;
-        $explorerUrl  = ($txHash && $explorerBase) ? $explorerBase . '/tx/' . $txHash : null;
+        $explorerUrl  = ($txHash && $explorerBase) ? $explorerBase . '/transaction/' . $txHash : null;
 
         return response()->json([
             'success'      => true,
@@ -460,7 +460,7 @@ class StudentMintController extends Controller
         }
 
         $explorerBase = config('services.cardano.explorer_url');
-        $explorerUrl  = ($txHash && $explorerBase) ? $explorerBase . '/tx/' . $txHash : null;
+        $explorerUrl  = ($txHash && $explorerBase) ? $explorerBase . '/transaction/' . $txHash : null;
 
         return response()->json([
             'success'      => true,

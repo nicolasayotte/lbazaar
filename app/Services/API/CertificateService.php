@@ -789,7 +789,7 @@ class CertificateService
 
             if ($certificateTransaction) {
                 // Certificate already minted
-                $explorerUrl = config('services.cardano.explorer_url') . '/tx/' . $certificateTransaction->tx_id;
+                $explorerUrl = config('services.cardano.explorer_url') . '/transaction/' . $certificateTransaction->tx_id;
 
                 return [
                     'success' => true,
@@ -1075,7 +1075,7 @@ class CertificateService
                     $certTxHash = $certTx ? $certTx->tx_id : ($history->certificate_tx_hash ?? null);
                     $explorerUrl = null;
                     if ($certTxHash) {
-                        $explorerUrl = config('services.cardano.explorer_url') . '/tx/' . $certTxHash;
+                        $explorerUrl = config('services.cardano.explorer_url') . '/transaction/' . $certTxHash;
                     }
                     $nftMetadata = null;
                     if ($certTx && $certTx->metadata) {
@@ -1109,7 +1109,7 @@ class CertificateService
                     $tokenTxHash = $history->token_reward_tx_hash ?? null;
                     $tokenExplorerUrl = null;
                     if ($tokenTxHash) {
-                        $tokenExplorerUrl = config('services.cardano.explorer_url') . '/tx/' . $tokenTxHash;
+                        $tokenExplorerUrl = config('services.cardano.explorer_url') . '/transaction/' . $tokenTxHash;
                     }
 
                     $rewards[] = [
@@ -1374,7 +1374,7 @@ class CertificateService
 
             // Build explorer URL if certificate is minted
             if (in_array($certificateStatus, ['minted', 'self_minted']) && $courseHistory->certificate_tx_hash) {
-                $explorerUrl = config('services.cardano.explorer_url') . '/tx/' . $courseHistory->certificate_tx_hash;
+                $explorerUrl = config('services.cardano.explorer_url') . '/transaction/' . $courseHistory->certificate_tx_hash;
             }
 
             return [
@@ -1435,7 +1435,7 @@ class CertificateService
                 $certStatus   = $courseHistory->certificate_status ?? 'not_eligible';
                 $certTxHash   = $courseHistory->certificate_tx_hash;
                 $certExplorer = ($certTxHash && $explorerBase)
-                    ? $explorerBase . '/tx/' . $certTxHash
+                    ? $explorerBase . '/transaction/' . $certTxHash
                     : null;
 
                 $certData = [
@@ -1451,7 +1451,7 @@ class CertificateService
                 $tokenStatus  = $courseHistory->token_reward_status ?? 'not_eligible';
                 $tokenTxHash  = $courseHistory->token_reward_tx_hash;
                 $tokenExplorer = ($tokenTxHash && $explorerBase)
-                    ? $explorerBase . '/tx/' . $tokenTxHash
+                    ? $explorerBase . '/transaction/' . $tokenTxHash
                     : null;
 
                 $tokenData = [

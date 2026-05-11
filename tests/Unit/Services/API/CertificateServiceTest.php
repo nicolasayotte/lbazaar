@@ -1322,7 +1322,7 @@ class CertificateServiceTest extends TestCase
         $this->assertEquals('https://example.com/cert.jpg', $certificate['certificate_image_url']);
 
         // Explorer URL comes from config + tx_hash
-        $expectedExplorerUrl = config('services.cardano.explorer_url') . '/tx/tx456def';
+        $expectedExplorerUrl = config('services.cardano.explorer_url') . '/transaction/tx456def';
         $this->assertEquals($expectedExplorerUrl, $certificate['certificate_explorer_url']);
     }
 
@@ -1590,7 +1590,7 @@ class CertificateServiceTest extends TestCase
         $this->assertEquals('minted', $result['status']);
         $this->assertEquals($txHash, $result['tx_hash']);
         $this->assertNotNull($result['explorer_url']);
-        $this->assertStringContainsString('/tx/' . $txHash, $result['explorer_url']);
+        $this->assertStringContainsString('/transaction/' . $txHash, $result['explorer_url']);
         $this->assertStringContainsString('cardanoscan.io', $result['explorer_url']);
         $this->assertEquals($mintedAt->toDateTimeString(), $result['minted_at']->toDateTimeString());
     }
@@ -1625,7 +1625,7 @@ class CertificateServiceTest extends TestCase
         );
 
         $this->assertNotNull($result);
-        $this->assertEquals($expectedBaseUrl . '/tx/' . $txHash, $result['explorer_url']);
+        $this->assertEquals($expectedBaseUrl . '/transaction/' . $txHash, $result['explorer_url']);
     }
 
     public function test_get_certificate_data_for_completion_returns_pending_status()

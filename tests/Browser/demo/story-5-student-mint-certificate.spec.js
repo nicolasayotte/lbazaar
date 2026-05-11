@@ -44,7 +44,7 @@ const BUILD_MINT_TX_RESPONSE = {
 const SUBMIT_MINT_TX_RESPONSE = {
     success: true,
     tx_hash: '00'.repeat(32),
-    explorer_url: 'https://preprod.cardanoscan.io/tx/' + '00'.repeat(32),
+    explorer_url: 'https://preprod.cardanoscan.io/transaction/' + '00'.repeat(32),
 }
 
 async function setupMintMocks(page) {

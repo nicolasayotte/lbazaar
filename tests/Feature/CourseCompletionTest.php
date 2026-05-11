@@ -255,7 +255,7 @@ class CourseCompletionTest extends TestCase
 
         // Get expected URL from config
         $expectedBaseUrl = config('services.cardano.explorer_url');
-        $expectedUrl = $expectedBaseUrl . '/tx/' . $txHash;
+        $expectedUrl = $expectedBaseUrl . '/transaction/' . $txHash;
 
         $response->assertStatus(200);
         $response->assertInertia(fn ($page) => $page

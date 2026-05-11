@@ -149,7 +149,7 @@ class CourseHistory extends Model
             return null;
         }
 
-        return config('services.cardano.explorer_url') . '/tx/' . $this->certificate_tx_hash;
+        return config('services.cardano.explorer_url') . '/transaction/' . $this->certificate_tx_hash;
     }
 
     /**

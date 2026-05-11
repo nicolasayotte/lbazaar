@@ -51,7 +51,7 @@ class PurchaseHistoryService
                     'status'       => $h->payment_status,
                     'tx_hash'      => $txHash,
                     'receipt_url'  => null,
-                    'explorer_url' => $txHash ? $explorerUrl . '/tx/' . $txHash : null,
+                    'explorer_url' => $txHash ? $explorerUrl . '/transaction/' . $txHash : null,
                 ];
             });
     }

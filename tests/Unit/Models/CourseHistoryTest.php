@@ -242,7 +242,7 @@ class CourseHistoryTest extends TestCase
         $explorerUrl = $history->certificate_explorer_url;
         $this->assertNotNull($explorerUrl);
         $this->assertStringContainsString($txHash, $explorerUrl);
-        $this->assertStringContainsString('/tx/', $explorerUrl);
+        $this->assertStringContainsString('/transaction/', $explorerUrl);
     }
 
     /** @test */

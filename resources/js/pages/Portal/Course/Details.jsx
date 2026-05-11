@@ -729,7 +729,7 @@ const Details = () => {
                                         </Typography>
                                         <Typography variant="body2">
                                             <a
-                                                href={`${explorerUrl}/tx/${pendingPayment.payment_tx_hash}`}
+                                                href={`${explorerUrl}/transaction/${pendingPayment.payment_tx_hash}`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                             >

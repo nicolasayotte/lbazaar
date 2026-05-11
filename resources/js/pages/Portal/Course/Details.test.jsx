@@ -251,7 +251,7 @@ describe('Details — pending payment UI (Task 10)', () => {
         render(<Details />);
         const link = screen.getByRole('link', { name: 'View transaction on explorer' });
         expect(link).toBeInTheDocument();
-        expect(link).toHaveAttribute('href', 'https://preprod.cardanoscan.io/tx/abcdef1234567890');
+        expect(link).toHaveAttribute('href', 'https://preprod.cardanoscan.io/transaction/abcdef1234567890');
     });
 
     it('TS-10.03: hides Buy with ADA button when pendingPayment is set', () => {
@@ -399,7 +399,7 @@ describe('T2: Wallet disconnect — pending tx resilience message', () => {
         expect(screen.getAllByRole('progressbar').length).toBeGreaterThanOrEqual(1);
         const link = screen.getByRole('link', { name: 'View transaction on explorer' });
         expect(link).toBeInTheDocument();
-        expect(link).toHaveAttribute('href', 'https://preprod.cardanoscan.io/tx/abc123');
+        expect(link).toHaveAttribute('href', 'https://preprod.cardanoscan.io/transaction/abc123');
     });
 });
 
