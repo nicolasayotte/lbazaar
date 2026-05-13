@@ -37,6 +37,11 @@ class DemoVideoSeeder extends Seeder
 {
     private const PASSWORD = 'Demo1234!';
 
+    // Placeholder IPFS image for demo certificates. The `ipfs://` prefix is
+    // stripped at metadata-build time; using a syntactically valid CID keeps
+    // wallets and explorers happy when they fetch the NFT image.
+    private const DEMO_CERTIFICATE_IMAGE_URL = 'ipfs://QmfKyJ4tuvHowwKQCbCHj4L5T3fSj8cjs7Aau8V7BWv226';
+
     public function run(): void
     {
         DB::transaction(function () {
@@ -93,6 +98,7 @@ class DemoVideoSeeder extends Seeder
                 'certificate_enabled'        => true,
                 'certificate_name'           => 'Blockchain Fundamentals Certificate',
                 'certificate_description'    => 'Awarded for completing the Demo ADA Course',
+                'certificate_image_url'      => self::DEMO_CERTIFICATE_IMAGE_URL,
                 'token_reward_enabled'       => true,
                 'token_reward_amount'        => 100,
             ]);
@@ -141,6 +147,7 @@ class DemoVideoSeeder extends Seeder
                 'certificate_enabled'        => true,
                 'certificate_name'           => 'Smart Contract Developer Certificate',
                 'certificate_description'    => 'Awarded for completing the Demo Reward Course',
+                'certificate_image_url'      => self::DEMO_CERTIFICATE_IMAGE_URL,
                 'token_reward_enabled'       => true,
                 'token_reward_amount'        => 100,
             ]);
@@ -159,16 +166,17 @@ class DemoVideoSeeder extends Seeder
             $rewardHistory = CourseHistory::updateOrCreate(
                 ['user_id' => $student->id, 'course_schedule_id' => $rewardSchedule->id],
                 [
-                    'course_id'                      => $rewardCourse->id,
-                    'completed_at'                   => '2024-09-30 17:00:00',
-                    'is_cancelled'                   => false,
-                    'enrolled_certificate_enabled'   => true,
-                    'enrolled_certificate_name'      => $rewardCourse->certificate_name,
+                    'course_id'                        => $rewardCourse->id,
+                    'completed_at'                     => '2024-09-30 17:00:00',
+                    'is_cancelled'                     => false,
+                    'enrolled_certificate_enabled'     => true,
+                    'enrolled_certificate_name'        => $rewardCourse->certificate_name,
                     'enrolled_certificate_description' => $rewardCourse->certificate_description,
-                    'certificate_status'             => 'eligible',
-                    'enrolled_token_reward_enabled'  => true,
-                    'enrolled_token_reward_amount'   => 100,
-                    'token_reward_status'            => 'eligible',
+                    'enrolled_certificate_image_url'   => $rewardCourse->certificate_image_url,
+                    'certificate_status'               => 'eligible',
+                    'enrolled_token_reward_enabled'    => true,
+                    'enrolled_token_reward_amount'     => 100,
+                    'token_reward_status'              => 'eligible',
                 ]
             );
 
