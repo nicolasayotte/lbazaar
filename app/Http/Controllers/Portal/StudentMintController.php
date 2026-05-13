@@ -286,7 +286,24 @@ class StudentMintController extends Controller
 
         $nftName   = 'Cert-' . $course->id . '-' . $student->id;
         $serialNum = (string) now()->timestamp;
-        $imageUrl  = Nft::where('name', 'Certificate')->first()?->image_url ?? '';
+
+        // Resolve image URL with the same fallback chain as the admin airdrop flow:
+        // enrollment-time snapshot → course-level → global Certificate NFT default.
+        $imageUrl = $courseHistory->effectiveCertificateImageUrl()
+            ?? $course->certificate_image_url
+            ?? Nft::where('name', 'Certificate')->first()?->image_url
+            ?? '';
+
+        if ($imageUrl === '') {
+            Log::warning('build-mint-tx certificate: no image URL configured', [
+                'course_id'  => $course->id,
+                'student_id' => $student->id,
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Certificate image is not configured. Please contact the instructor.',
+            ], 422);
+        }
 
         $metadata = $this->certificateService->createCertificateMetadata(
             $course,
