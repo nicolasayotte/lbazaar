@@ -1,24 +1,140 @@
 
 [1m[46m RUN [49m[22m [36mv4.1.1 [39m[90m/home/fence/src/cardano/lbazaar/web3[39m
 
- [32m✓[39m run/__tests__/build-feed-tx.spec.mjs[2m > [22mbuild-feed-tx.mjs[2m > [22mbuilds a feed tx with the owner wallet output set to the provided lovelace amount[32m 11[2mms[22m[39m
- [32m✓[39m run/__tests__/build-feed-tx.spec.mjs[2m > [22mbuild-feed-tx.mjs[2m > [22maccepts an integer lovelace argument without crashing[32m 2[2mms[22m[39m
- [32m✓[39m run/__tests__/build-feed-tx.spec.mjs[2m > [22mbuild-feed-tx.mjs[2m > [22mreturns 501 when the stake key does not match the change address[32m 2[2mms[22m[39m
- [32m✓[39m run/__tests__/build-feed-tx.spec.mjs[2m > [22mbuild-feed-tx.mjs[2m > [22mreturns 501 when coin selection fails (insufficient funds)[32m 2[2mms[22m[39m
- [32m✓[39m run/__tests__/build-purchase-tx.spec.mjs[2m > [22mbuild-purchase-tx.mjs[2m > [22mCommission Calculation[2m > [22mcalculates admin commission correctly[32m 11[2mms[22m[39m
- [32m✓[39m run/__tests__/build-purchase-tx.spec.mjs[2m > [22mbuild-purchase-tx.mjs[2m > [22mCommission Calculation[2m > [22mhandles fractional commission percentages[32m 2[2mms[22m[39m
- [32m✓[39m run/__tests__/build-purchase-tx.spec.mjs[2m > [22mbuild-purchase-tx.mjs[2m > [22mTransaction Outputs[2m > [22mcreates two transaction outputs[32m 2[2mms[22m[39m
- [32m✓[39m run/__tests__/build-purchase-tx.spec.mjs[2m > [22mbuild-purchase-tx.mjs[2m > [22mTransaction Outputs[2m > [22mcreates outputs with correct addresses and amounts[32m 2[2mms[22m[39m
- [32m✓[39m run/__tests__/build-purchase-tx.spec.mjs[2m > [22mbuild-purchase-tx.mjs[2m > [22mError Handling - Insufficient Funds[2m > [22mreturns 501 when insufficient funds[32m 3[2mms[22m[39m
- [32m✓[39m run/__tests__/build-purchase-tx.spec.mjs[2m > [22mbuild-purchase-tx.mjs[2m > [22mError Handling - General Errors[2m > [22mreturns 500 on other errors[32m 2[2mms[22m[39m
- [32m✓[39m run/__tests__/build-purchase-tx.spec.mjs[2m > [22mbuild-purchase-tx.mjs[2m > [22mSuccess Response[2m > [22mreturns cborTx on success[32m 3[2mms[22m[39m
- [32m✓[39m run/__tests__/build-purchase-tx.spec.mjs[2m > [22mbuild-purchase-tx.mjs[2m > [22mMetadata[2m > [22madds transaction metadata with course purchase message[32m 3[2mms[22m[39m
- [32m✓[39m run/__tests__/build-purchase-tx.spec.mjs[2m > [22mbuild-purchase-tx.mjs[2m > [22mStake Key Validation[2m > [22mvalidates stake key hash matches change address[32m 2[2mms[22m[39m
- [32m✓[39m run/__tests__/build-purchase-tx.spec.mjs[2m > [22mbuild-purchase-tx.mjs[2m > [22mNetwork Configuration[2m > [22muses testnet configuration when NETWORK is not mainnet[32m 2[2mms[22m[39m
- [32m✓[39m run/__tests__/build-purchase-tx.spec.mjs[2m > [22mbuild-purchase-tx.mjs[2m > [22mSigners[2m > [22madds both owner and user wallet as signers[32m 2[2mms[22m[39m
+ [32m✓[39m common/__tests__/minting-policy-parameters.spec.mjs[2m > [22mHelios program parameter contract[2m > [22mdiscovers parameter assignments via static scan[32m 1[2mms[22m[39m
+ [32m✓[39m common/__tests__/minting-policy-parameters.spec.mjs[2m > [22mHelios program parameter contract[2m > [22mevery parameter key is declared by the .hl script it targets[32m 1[2mms[22m[39m
+[90mstderr[2m | common/__tests__/network.spec.mjs[2m > [22m[2mnetwork utilities[2m > [22m[2mthrows when network is invalid
+[22m[39mgetNetworkParams: network not set or invalid: invalidnet
 
-[2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
-[2m      Tests [22m [1m[32m15 passed[39m[22m[90m (15)[39m
-[2m   Start at [22m 00:12:09
-[2m   Duration [22m 186ms[2m (transform 98ms, setup 32ms, import 81ms, tests 57ms, environment 0ms)[22m
+ [32m✓[39m common/__tests__/network.spec.mjs[2m > [22mnetwork utilities[2m > [22mreturns network parameters for allowed network[32m 15[2mms[22m[39m
+ [32m✓[39m common/__tests__/network.spec.mjs[2m > [22mnetwork utilities[2m > [22mthrows when network is invalid[32m 2[2mms[22m[39m
+[90mstderr[2m | common/__tests__/utils.spec.mjs[2m > [22m[2mutils helpers[2m > [22m[2mgetTokenNamesAddrs collects token names and addresses for matching policy hash
+[22m[39mmph.hex:  hash-2
+tokenMph.hex:  hash-2
+
+ [32m✓[39m common/__tests__/certificate-metadata.spec.mjs[2m > [22mcertificate-metadata helpers[2m > [22mbuildCertificateMetadata uses actual template and replaces placeholders correctly[32m 4[2mms[22m[39m
+ [32m✓[39m common/__tests__/certificate-metadata.spec.mjs[2m > [22mcertificate-metadata helpers[2m > [22mbuildCertificateMetadata falls back to defaults when fields missing[32m 1[2mms[22m[39m
+ [32m✓[39m common/__tests__/certificate-metadata.spec.mjs[2m > [22mcertificate-metadata helpers[2m > [22mbuildTicketMetadata uses actual template and replaces placeholders correctly[32m 1[2mms[22m[39m
+ [32m✓[39m common/__tests__/certificate-metadata.spec.mjs[2m > [22mcertificate-metadata helpers[2m > [22mbuildTicketMetadata falls back to defaults when fields missing[32m 0[2mms[22m[39m
+ [32m✓[39m common/__tests__/certificate-metadata.spec.mjs[2m > [22mcertificate-metadata helpers[2m > [22mbuildCIP25Metadata wraps certificate metadata with policy in Helios map format[32m 1[2mms[22m[39m
+ [32m✓[39m common/__tests__/certificate-metadata.spec.mjs[2m > [22mcertificate-metadata helpers[2m > [22mbuildCustomMetadata returns descriptive messages in Helios map format[32m 0[2mms[22m[39m
+ [32m✓[39m common/__tests__/minting-policy.spec.mjs[2m > [22mminting-policy helpers[2m > [22mcalculateMintingPolicyHash uses single-signature policy[32m 17[2mms[22m[39m
+ [32m✓[39m common/__tests__/minting-policy.spec.mjs[2m > [22mminting-policy helpers[2m > [22mcalculateMintingPolicyHash throws when OWNER_PKH is missing[32m 2[2mms[22m[39m
+ [32m✓[39m common/__tests__/minting-policy.spec.mjs[2m > [22mminting-policy helpers[2m > [22mcalculateMintingPolicyHash throws when CERTIFICATE_LOCK_DATE is missing[32m 1[2mms[22m[39m
+ [32m✓[39m common/__tests__/minting-policy.spec.mjs[2m > [22mminting-policy helpers[2m > [22mgetMintingPolicyHash returns the single-signature hash[32m 1[2mms[22m[39m
+ [32m✓[39m common/__tests__/utils.spec.mjs[2m > [22mutils helpers[2m > [22mtoSchema recursively converts objects and arrays to Helios schema[32m 2[2mms[22m[39m
+ [32m✓[39m common/__tests__/utils.spec.mjs[2m > [22mutils helpers[2m > [22mgetTokenNamesAddrs collects token names and addresses for matching policy hash[32m 1[2mms[22m[39m
+ [32m✓[39m run/__tests__/certificate-tx-utils.spec.mjs[2m > [22mCertificate Transaction Utilities[2m > [22mMock Data Generators[2m > [22mcreateMockCertificateMetadata creates valid metadata[32m 2[2mms[22m[39m
+ [32m✓[39m run/__tests__/certificate-tx-utils.spec.mjs[2m > [22mCertificate Transaction Utilities[2m > [22mMock Data Generators[2m > [22mcreateMockCertificateMetadata accepts overrides[32m 0[2mms[22m[39m
+ [32m✓[39m run/__tests__/certificate-tx-utils.spec.mjs[2m > [22mCertificate Transaction Utilities[2m > [22mMock Data Generators[2m > [22mcreateMockArgv generates correct arguments for direct minting script[32m 0[2mms[22m[39m
+ [32m✓[39m run/__tests__/certificate-tx-utils.spec.mjs[2m > [22mCertificate Transaction Utilities[2m > [22mMock Data Generators[2m > [22mcreateMockEnv provides all required environment variables[32m 0[2mms[22m[39m
+ [32m✓[39m run/__tests__/certificate-tx-utils.spec.mjs[2m > [22mCertificate Transaction Utilities[2m > [22mMock Data Generators[2m > [22mcreateMockEnv accepts overrides[32m 0[2mms[22m[39m
+ [32m✓[39m run/__tests__/certificate-tx-utils.spec.mjs[2m > [22mCertificate Transaction Utilities[2m > [22mToken Name Generation[2m > [22mgetExpectedTokenNames generates correct reference token[32m 0[2mms[22m[39m
+ [32m✓[39m run/__tests__/certificate-tx-utils.spec.mjs[2m > [22mCertificate Transaction Utilities[2m > [22mToken Name Generation[2m > [22mgetExpectedTokenNames generates correct certificate token[32m 0[2mms[22m[39m
+ [32m✓[39m run/__tests__/certificate-tx-utils.spec.mjs[2m > [22mCertificate Transaction Utilities[2m > [22mToken Name Generation[2m > [22mhandles different course names and serial numbers[32m 0[2mms[22m[39m
+ [32m✓[39m run/__tests__/certificate-tx-utils.spec.mjs[2m > [22mCertificate Transaction Utilities[2m > [22mResponse Validation[2m > [22mvalidateSuccessResponse checks required fields[32m 1[2mms[22m[39m
+ [32m✓[39m run/__tests__/certificate-tx-utils.spec.mjs[2m > [22mCertificate Transaction Utilities[2m > [22mResponse Validation[2m > [22mvalidateSuccessResponse validates specific fields[32m 0[2mms[22m[39m
+ [32m✓[39m run/__tests__/certificate-tx-utils.spec.mjs[2m > [22mCertificate Transaction Utilities[2m > [22mResponse Validation[2m > [22mvalidateErrorResponse checks error structure[32m 0[2mms[22m[39m
+ [32m✓[39m run/__tests__/certificate-tx-utils.spec.mjs[2m > [22mCertificate Transaction Utilities[2m > [22mResponse Validation[2m > [22mvalidateErrorResponse can check specific error messages[32m 0[2mms[22m[39m
+ [32m✓[39m run/__tests__/certificate-tx-utils.spec.mjs[2m > [22mCertificate Transaction Utilities[2m > [22mNetwork Configuration[2m > [22mprovides mainnet configuration[32m 0[2mms[22m[39m
+ [32m✓[39m run/__tests__/certificate-tx-utils.spec.mjs[2m > [22mCertificate Transaction Utilities[2m > [22mNetwork Configuration[2m > [22mprovides preprod configuration[32m 0[2mms[22m[39m
+ [32m✓[39m run/__tests__/certificate-tx-utils.spec.mjs[2m > [22mCertificate Transaction Utilities[2m > [22mNetwork Configuration[2m > [22mmainnet and preprod have different URLs[32m 0[2mms[22m[39m
+ [32m✓[39m run/__tests__/certificate-tx-utils.spec.mjs[2m > [22mCertificate Transaction Utilities[2m > [22mValidation Patterns[2m > [22mcardanoAddress pattern matches valid testnet addresses[32m 0[2mms[22m[39m
+ [32m✓[39m run/__tests__/certificate-tx-utils.spec.mjs[2m > [22mCertificate Transaction Utilities[2m > [22mValidation Patterns[2m > [22mcardanoAddress pattern matches valid mainnet addresses[32m 0[2mms[22m[39m
+ [32m✓[39m run/__tests__/certificate-tx-utils.spec.mjs[2m > [22mCertificate Transaction Utilities[2m > [22mValidation Patterns[2m > [22mtransactionHash pattern matches valid hashes[32m 0[2mms[22m[39m
+ [32m✓[39m run/__tests__/certificate-tx-utils.spec.mjs[2m > [22mCertificate Transaction Utilities[2m > [22mValidation Patterns[2m > [22mpolicyId pattern matches valid policy IDs[32m 0[2mms[22m[39m
+ [32m✓[39m run/__tests__/certificate-tx-utils.spec.mjs[2m > [22mCertificate Transaction Utilities[2m > [22mValidation Patterns[2m > [22mipfsHash pattern matches valid IPFS hashes[32m 0[2mms[22m[39m
+ [32m✓[39m run/__tests__/certificate-tx-utils.spec.mjs[2m > [22mCertificate Transaction Utilities[2m > [22mValidation Patterns[2m > [22massetNameHex pattern matches hexadecimal strings[32m 0[2mms[22m[39m
+ [32m✓[39m run/__tests__/certificate-tx-utils.spec.mjs[2m > [22mCertificate Transaction Utilities[2m > [22mEnvironment Variable Defaults[2m > [22mprovides sensible ADA amount defaults[32m 0[2mms[22m[39m
+ [32m✓[39m run/__tests__/certificate-tx-utils.spec.mjs[2m > [22mCertificate Transaction Utilities[2m > [22mEnvironment Variable Defaults[2m > [22mdefaults to preprod network[32m 0[2mms[22m[39m
+ [32m✓[39m run/__tests__/certificate-tx-utils.spec.mjs[2m > [22mCertificate Transaction Utilities[2m > [22mEnvironment Variable Defaults[2m > [22mprovides default TTL[32m 0[2mms[22m[39m
+ [32m✓[39m run/__tests__/certificate-tx-utils.spec.mjs[2m > [22mCertificate Transaction Utilities[2m > [22mToken Name Format Validation[2m > [22mreference token uses (100) prefix[32m 0[2mms[22m[39m
+ [32m✓[39m run/__tests__/certificate-tx-utils.spec.mjs[2m > [22mCertificate Transaction Utilities[2m > [22mToken Name Format Validation[2m > [22mcertificate token uses (222) prefix[32m 0[2mms[22m[39m
+ [32m✓[39m run/__tests__/certificate-tx-utils.spec.mjs[2m > [22mCertificate Transaction Utilities[2m > [22mToken Name Format Validation[2m > [22mtokens use pipe separator[32m 0[2mms[22m[39m
+ [32m✓[39m run/__tests__/certificate-tx-utils.spec.mjs[2m > [22mCertificate Transaction Utilities[2m > [22mToken Name Format Validation[2m > [22mtokens preserve name and serial number[32m 0[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-feed-tx.spec.mjs[2m > [22mbuild-feed-tx.mjs[2m > [22mbuilds a feed tx with the owner wallet output set to the provided lovelace amount[32m 17[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-feed-tx.spec.mjs[2m > [22mbuild-feed-tx.mjs[2m > [22maccepts an integer lovelace argument without crashing[32m 10[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-feed-tx.spec.mjs[2m > [22mbuild-feed-tx.mjs[2m > [22mreturns 501 when the stake key does not match the change address[32m 4[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-feed-tx.spec.mjs[2m > [22mbuild-feed-tx.mjs[2m > [22mreturns 501 when coin selection fails (insufficient funds)[32m 2[2mms[22m[39m
+ [32m✓[39m run/__tests__/check-tx-confirmations.spec.mjs[2m > [22mcheck-tx-confirmations.mjs[2m > [22mArgument Validation[2m > [22mreturns status 400 when txId argument is missing[32m 26[2mms[22m[39m
+ [32m✓[39m run/__tests__/check-tx-confirmations.spec.mjs[2m > [22mcheck-tx-confirmations.mjs[2m > [22mSuccessful Confirmation Check[2m > [22mreturns status 200 with confirmations, txBlockHeight, and tipHeight[32m 3[2mms[22m[39m
+ [32m✓[39m run/__tests__/check-tx-confirmations.spec.mjs[2m > [22mcheck-tx-confirmations.mjs[2m > [22mSuccessful Confirmation Check[2m > [22mcalculates confirmations as tipHeight minus txBlockHeight[32m 3[2mms[22m[39m
+ [32m✓[39m run/__tests__/check-tx-confirmations.spec.mjs[2m > [22mcheck-tx-confirmations.mjs[2m > [22mTransaction Not Found[2m > [22mreturns status 404 when Blockfrost reports the transaction does not exist[32m 9[2mms[22m[39m
+ [32m✓[39m run/__tests__/check-tx-confirmations.spec.mjs[2m > [22mcheck-tx-confirmations.mjs[2m > [22mBlockfrost API Error[2m > [22mreturns status 500 with error message on unexpected API failure[32m 3[2mms[22m[39m
+ [32m✓[39m run/__tests__/check-tx-confirmations.spec.mjs[2m > [22mcheck-tx-confirmations.mjs[2m > [22mBlockfrost API Error[2m > [22mconverts non-Error thrown values to string in the error field[32m 2[2mms[22m[39m
+ [32m✓[39m run/__tests__/check-tx-confirmations.spec.mjs[2m > [22mcheck-tx-confirmations.mjs[2m > [22mBlockFrostAPI Instantiation[2m > [22minitialises BlockFrostAPI with the BLOCKFROST_API_KEY env variable[32m 3[2mms[22m[39m
+ [32m✓[39m run/__tests__/submit-purchase-tx.spec.mjs[2m > [22msubmit-purchase-tx.mjs[2m > [22mPayment Verification[2m > [22mverifies teacher payment exists in outputs[32m 21[2mms[22m[39m
+ [32m✓[39m run/__tests__/submit-purchase-tx.spec.mjs[2m > [22msubmit-purchase-tx.mjs[2m > [22mPayment Verification[2m > [22mverifies admin payment exists in outputs[32m 2[2mms[22m[39m
+ [32m✓[39m run/__tests__/submit-purchase-tx.spec.mjs[2m > [22msubmit-purchase-tx.mjs[2m > [22mPayment Verification[2m > [22mreturns error when teacher payment not found[32m 2[2mms[22m[39m
+ [32m✓[39m run/__tests__/submit-purchase-tx.spec.mjs[2m > [22msubmit-purchase-tx.mjs[2m > [22mPayment Verification[2m > [22mreturns error when admin payment not found[32m 1[2mms[22m[39m
+ [32m✓[39m run/__tests__/submit-purchase-tx.spec.mjs[2m > [22msubmit-purchase-tx.mjs[2m > [22mTransaction Submission[2m > [22mreturns txId on successful submission[32m 12[2mms[22m[39m
+ [32m✓[39m run/__tests__/submit-purchase-tx.spec.mjs[2m > [22msubmit-purchase-tx.mjs[2m > [22mTransaction Submission[2m > [22mreturns 500 on submission error[32m 2[2mms[22m[39m
+ [32m✓[39m run/__tests__/submit-purchase-tx.spec.mjs[2m > [22msubmit-purchase-tx.mjs[2m > [22mAmount Conversion[2m > [22mconverts lovelace to ADA in response[32m 1[2mms[22m[39m
+ [32m✓[39m run/__tests__/submit-purchase-tx.spec.mjs[2m > [22msubmit-purchase-tx.mjs[2m > [22mAmount Conversion[2m > [22mconverts whole ADA amounts correctly[32m 1[2mms[22m[39m
+ [32m✓[39m run/__tests__/submit-purchase-tx.spec.mjs[2m > [22msubmit-purchase-tx.mjs[2m > [22mSignature Handling[2m > [22madds user signature to transaction[32m 1[2mms[22m[39m
+ [32m✓[39m run/__tests__/submit-purchase-tx.spec.mjs[2m > [22msubmit-purchase-tx.mjs[2m > [22mResponse Format[2m > [22mincludes timestamp in success response[32m 2[2mms[22m[39m
+ [32m✓[39m run/__tests__/submit-purchase-tx.spec.mjs[2m > [22msubmit-purchase-tx.mjs[2m > [22mResponse Format[2m > [22mincludes timestamp in error response[32m 1[2mms[22m[39m
+ [32m✓[39m run/__tests__/submit-purchase-tx.spec.mjs[2m > [22msubmit-purchase-tx.mjs[2m > [22mTransaction Reconstruction[2m > [22mreconstructs transaction from CBOR[32m 4[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-purchase-tx.spec.mjs[2m > [22mbuild-purchase-tx.mjs[2m > [22mCommission Calculation[2m > [22mcalculates admin commission correctly[32m 49[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-purchase-tx.spec.mjs[2m > [22mbuild-purchase-tx.mjs[2m > [22mCommission Calculation[2m > [22mhandles fractional commission percentages[32m 4[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-purchase-tx.spec.mjs[2m > [22mbuild-purchase-tx.mjs[2m > [22mTransaction Outputs[2m > [22mcreates two transaction outputs[32m 3[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-purchase-tx.spec.mjs[2m > [22mbuild-purchase-tx.mjs[2m > [22mTransaction Outputs[2m > [22mcreates outputs with correct addresses and amounts[32m 4[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-purchase-tx.spec.mjs[2m > [22mbuild-purchase-tx.mjs[2m > [22mError Handling - Insufficient Funds[2m > [22mreturns 501 when insufficient funds[32m 3[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-purchase-tx.spec.mjs[2m > [22mbuild-purchase-tx.mjs[2m > [22mError Handling - General Errors[2m > [22mreturns 500 on other errors[32m 10[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-purchase-tx.spec.mjs[2m > [22mbuild-purchase-tx.mjs[2m > [22mSuccess Response[2m > [22mreturns cborTx on success[32m 3[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-purchase-tx.spec.mjs[2m > [22mbuild-purchase-tx.mjs[2m > [22mMetadata[2m > [22madds transaction metadata with course purchase message[32m 4[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-purchase-tx.spec.mjs[2m > [22mbuild-purchase-tx.mjs[2m > [22mStake Key Validation[2m > [22mvalidates stake key hash matches change address[32m 3[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-purchase-tx.spec.mjs[2m > [22mbuild-purchase-tx.mjs[2m > [22mNetwork Configuration[2m > [22muses testnet configuration when NETWORK is not mainnet[32m 4[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-purchase-tx.spec.mjs[2m > [22mbuild-purchase-tx.mjs[2m > [22mSigners[2m > [22madds both owner and user wallet as signers[32m 3[2mms[22m[39m
+ [32m✓[39m run/__tests__/derive-certificate-mph.spec.mjs[2m > [22mnft-minting-policy with lock date[2m > [22mcompiles with OWNER_PKH and LOCK_DATE parameters[32m 39[2mms[22m[39m
+ [32m✓[39m run/__tests__/derive-certificate-mph.spec.mjs[2m > [22mnft-minting-policy with lock date[2m > [22mproduces deterministic MPH for the same parameters[32m 22[2mms[22m[39m
+ [32m✓[39m run/__tests__/derive-certificate-mph.spec.mjs[2m > [22mnft-minting-policy with lock date[2m > [22mdifferent lock dates produce different policy IDs[32m 13[2mms[22m[39m
+ [32m✓[39m run/__tests__/derive-certificate-mph.spec.mjs[2m > [22mnft-minting-policy with lock date[2m > [22mdifferent owner PKHs produce different policy IDs[32m 11[2mms[22m[39m
+ [32m✓[39m run/__tests__/derive-certificate-mph.spec.mjs[2m > [22mnft-minting-policy with lock date[2m > [22mpolicy hash is exactly 56 hex characters (28 bytes)[32m 5[2mms[22m[39m
+ [32m✓[39m run/__tests__/derive-certificate-mph.spec.mjs[2m > [22mnft-minting-policy with lock date[2m > [22mbackwards compatibility: policy includes OWNER_PKH check[32m 0[2mms[22m[39m
+ [32m✓[39m run/__tests__/derive-certificate-mph.spec.mjs[2m > [22mnft-minting-policy with lock date[2m > [22mcontract includes time range check against LOCK_DATE[32m 0[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-student-certificate-tx.spec.mjs[2m > [22mbuild-student-certificate-tx.mjs[2m > [22mSuccess Response[2m > [22mreturns status 200 with cborTx, nftName, serialNum, mph, recipientAddress, metadata[32m 36[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-student-certificate-tx.spec.mjs[2m > [22mbuild-student-certificate-tx.mjs[2m > [22mError Handling - Missing Required Parameters[2m > [22mreturns status 500 with "Missing required parameters" when args are absent[32m 20[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-student-certificate-tx.spec.mjs[2m > [22mbuild-student-certificate-tx.mjs[2m > [22mError Handling - Missing CERTIFICATE_LOCK_DATE[2m > [22mreturns status 500 with env var error when CERTIFICATE_LOCK_DATE is absent[32m 12[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-student-certificate-tx.spec.mjs[2m > [22mbuild-student-certificate-tx.mjs[2m > [22mError Handling - Empty UTXOs Array[2m > [22mreturns status 500 with "No UTXOs provided" when UTXO file is empty array[32m 8[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-student-certificate-tx.spec.mjs[2m > [22mbuild-student-certificate-tx.mjs[2m > [22mError Handling - Invalid Lock Date Format[2m > [22mreturns status 500 with "Invalid CERTIFICATE_LOCK_DATE format" for unparseable date[32m 7[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-student-certificate-tx.spec.mjs[2m > [22mbuild-student-certificate-tx.mjs[2m > [22mToken Naming[2m > [22muses (100) prefix for reference token and (222) prefix for actual token[32m 8[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-student-certificate-tx.spec.mjs[2m > [22mbuild-student-certificate-tx.mjs[2m > [22mTransaction Outputs[2m > [22mcreates two outputs: one to student, one to owner[32m 7[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-student-token-tx.spec.mjs[2m > [22mbuild-student-token-tx.mjs[2m > [22mSuccess Response[2m > [22mreturns status 200 with cborTx, tokenName, quantity, mph, and recipientAddress[32m 110[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-student-token-tx.spec.mjs[2m > [22mbuild-student-token-tx.mjs[2m > [22mError Handling - Missing Parameters[2m > [22mreturns status 500 with error message when required args are missing[32m 4[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-student-token-tx.spec.mjs[2m > [22mbuild-student-token-tx.mjs[2m > [22mError Handling - Missing CERTIFICATE_LOCK_DATE[2m > [22mreturns status 500 when CERTIFICATE_LOCK_DATE env var is not set[32m 3[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-student-token-tx.spec.mjs[2m > [22mbuild-student-token-tx.mjs[2m > [22mError Handling - Zero Quantity[2m > [22mreturns status 500 with "Quantity must be a positive integer" for quantity 0[32m 2[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-student-token-tx.spec.mjs[2m > [22mbuild-student-token-tx.mjs[2m > [22mError Handling - Empty UTXOs[2m > [22mreturns status 500 with "No UTXOs provided" when UTXO file contains empty array[32m 10[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-student-token-tx.spec.mjs[2m > [22mbuild-student-token-tx.mjs[2m > [22mMetadata Extraction[2m > [22mextracts numeric course ID from "Token-42" token name into metadata[32m 12[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-student-token-tx.spec.mjs[2m > [22mbuild-student-token-tx.mjs[2m > [22mMetadata Extraction[2m > [22muses raw token name in metadata when name does not match Token-<n> pattern[32m 8[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-student-token-tx.spec.mjs[2m > [22mbuild-student-token-tx.mjs[2m > [22mTransaction Outputs[2m > [22mcreates exactly one output directed to the student[32m 9[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-student-token-tx.spec.mjs[2m > [22mbuild-student-token-tx.mjs[2m > [22mSigners[2m > [22madds owner PKH as a signer[32m 10[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-student-token-tx.spec.mjs[2m > [22mbuild-student-token-tx.mjs[2m > [22mAddress Handling[2m > [22muses Address.fromBech32 for addresses starting with "addr"[32m 8[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-student-token-tx.spec.mjs[2m > [22mbuild-student-token-tx.mjs[2m > [22mAddress Handling[2m > [22muses Address.fromHex for non-bech32 hex addresses[32m 7[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-student-certificate-tx.spec.mjs[2m > [22mbuild-student-certificate-tx.mjs[2m > [22mMetadata[2m > [22madds CIP-25 metadata with label 721[32m 8[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-student-certificate-tx.spec.mjs[2m > [22mbuild-student-certificate-tx.mjs[2m > [22mSigners[2m > [22madds owner PKH as signer for minting policy requirement[32m 7[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-student-certificate-tx.spec.mjs[2m > [22mbuild-student-certificate-tx.mjs[2m > [22mAddress Format[2m > [22muses Address.fromBech32 when address starts with "addr"[32m 9[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-student-certificate-tx.spec.mjs[2m > [22mbuild-student-certificate-tx.mjs[2m > [22mAddress Format[2m > [22muses Address.fromHex when address does not start with "addr"[32m 6[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-student-certificate-tx.spec.mjs[2m > [22mbuild-student-certificate-tx.mjs[2m > [22mCoin Selection[2m > [22mprefers token-free UTxOs over token-laden UTxOs even when listed last[32m 7[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-student-certificate-tx.spec.mjs[2m > [22mbuild-student-certificate-tx.mjs[2m > [22mCoin Selection[2m > [22mreturns status 500 with insufficient-funds error when total ADA is below threshold[32m 6[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-student-certificate-tx.spec.mjs[2m > [22mbuild-student-certificate-tx.mjs[2m > [22mChange Splitting[2m > [22msplits pre-existing tokens into multiple change outputs to the student[32m 6[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-student-certificate-tx.spec.mjs[2m > [22mbuild-student-certificate-tx.mjs[2m > [22mChange Splitting[2m > [22mdoes not add extra change outputs when selected UTxOs carry no tokens[32m 6[2mms[22m[39m
+ [32m✓[39m run/__tests__/build-student-certificate-tx.spec.mjs[2m > [22mbuild-student-certificate-tx.mjs[2m > [22mChange Splitting[2m > [22mreturns status 500 when too many tokens for available ADA to split safely[32m 9[2mms[22m[39m
+ [32m✓[39m run/__tests__/blockfrost-connectivity.integration.spec.mjs[2m > [22mBlockfrost Preprod Connectivity[2m > [22mhealth endpoint returns is_healthy: true[32m 187[2mms[22m[39m
+[90mstdout[2m | run/__tests__/check-network-health.spec.mjs[2m > [22m[2mcheck-network-health diagnosis[2m > [22m[2mlogs raw latestBlock.time and computed block age
+[22m[39mlatestBlock.time (raw): [33m1778729630[39m
+Date.now()/1000 (now):  [33m1778729666[39m
+block age (seconds):    [33m36[39m
+block age (minutes):    0.6
+block height:           [33m4706782[39m
+block hash:             b067aad937f8e9c41a31c9513d9fd026ee7309dd8592ba58362bdd10ff24ecf6
+
+ [32m✓[39m run/__tests__/check-network-health.spec.mjs[2m > [22mcheck-network-health diagnosis[2m > [22mlogs raw latestBlock.time and computed block age[33m 304[2mms[22m[39m
+ [32m✓[39m run/__tests__/blockfrost-connectivity.integration.spec.mjs[2m > [22mBlockfrost Preprod Connectivity[2m > [22mlatest epoch data is valid[32m 103[2mms[22m[39m
+ [32m✓[39m run/__tests__/blockfrost-connectivity.integration.spec.mjs[2m > [22mBlockfrost Preprod Connectivity[2m > [22mgenesis parameters confirm preprod network[32m 104[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m15 passed[39m[22m[90m (15)[39m
+[2m      Tests [22m [1m[32m116 passed[39m[22m[90m (116)[39m
+[2m   Start at [22m 23:34:25
+[2m   Duration [22m 650ms[2m (transform 900ms, setup 283ms, import 1.14s, tests 1.46s, environment 2ms)[22m
 
