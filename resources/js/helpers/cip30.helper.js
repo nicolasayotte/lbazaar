@@ -12,22 +12,22 @@
  */
 export const encodeCip30LovelaceAmount = (lovelace) => {
     const n = BigInt(lovelace);
-    if (n < 0n) throw new Error('lovelace must be non-negative');
+    if (n < BigInt(0)) throw new Error('lovelace must be non-negative');
 
     const toHex = (bytes) =>
         bytes.map((b) => b.toString(16).padStart(2, '0')).join('');
 
-    if (n < 24n) {
+    if (n < BigInt(24)) {
         return toHex([Number(n)]);
     }
-    if (n < 256n) {
+    if (n < BigInt(256)) {
         return toHex([0x18, Number(n)]);
     }
-    if (n < 65536n) {
+    if (n < BigInt(65536)) {
         const v = Number(n);
         return toHex([0x19, (v >> 8) & 0xff, v & 0xff]);
     }
-    if (n < 4294967296n) {
+    if (n < BigInt(4294967296)) {
         const v = Number(n);
         return toHex([
             0x1a,
@@ -39,8 +39,9 @@ export const encodeCip30LovelaceAmount = (lovelace) => {
     }
     // uint64
     const bytes = [0x1b];
+    const mask = BigInt(0xff);
     for (let i = 7; i >= 0; i--) {
-        bytes.push(Number((n >> BigInt(i * 8)) & 0xffn));
+        bytes.push(Number((n >> BigInt(i * 8)) & mask));
     }
     return toHex(bytes);
 };

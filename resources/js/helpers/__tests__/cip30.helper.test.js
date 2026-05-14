@@ -35,6 +35,25 @@ describe('cip30.helper', () => {
             expect(encodeCip30LovelaceAmount(1_000_000_000_000n)).toBe('1b000000e8d4a51000');
         });
 
+        it('encodes max uint64 with all bytes set', () => {
+            // 2^64 - 1 — exercises every byte position of the mask/shift loop
+            expect(encodeCip30LovelaceAmount(18446744073709551615n)).toBe(
+                '1bffffffffffffffff',
+            );
+        });
+
+        it('encodes uint64 values with non-zero high bytes', () => {
+            // Alternating high bytes — verifies the mask isolates each byte
+            // without bleed from adjacent bytes.
+            expect(encodeCip30LovelaceAmount(0xff00ff00ff00ff00n)).toBe(
+                '1bff00ff00ff00ff00',
+            );
+            // Walking-1 in the top byte — must not leak into lower bytes.
+            expect(encodeCip30LovelaceAmount(0x0100000000000000n)).toBe(
+                '1b0100000000000000',
+            );
+        });
+
         it('accepts both Number and BigInt inputs', () => {
             expect(encodeCip30LovelaceAmount(100_000_000)).toBe(
                 encodeCip30LovelaceAmount(100_000_000n),
