@@ -94,11 +94,42 @@ const main = async () => {
       throw new Error('No UTXOs provided from student wallet');
     }
 
+    // Coin selection: prefer clean (low-token) UTxOs and stop once we have enough ADA.
+    // Pulling every UTxO in (the old behavior) sweeps unrelated NFTs into a single change
+    // output that blows past the Conway `maxValueSize` (5000 bytes) — Cardano rejects with
+    // OutputTooBigUTxO. By selecting the smallest sufficient set we usually avoid dragging
+    // in token-laden UTxOs at all.
+    // 4 ADA for the two fixed outputs + fee + change buffer = comfortably 10 ADA.
+    const REQUIRED_LOVELACE = 10_000_000n;
+    const sortedUtxos = [...studentUtxos].sort((a, b) => {
+      const ta = a.value.assets.nTokenTypes;
+      const tb = b.value.assets.nTokenTypes;
+      if (ta !== tb) return ta - tb;
+      const dl = b.value.lovelace - a.value.lovelace;
+      return dl > 0n ? 1 : dl < 0n ? -1 : 0;
+    });
+    const selectedUtxos = [];
+    let selectedLovelace = 0n;
+    for (const u of sortedUtxos) {
+      selectedUtxos.push(u);
+      selectedLovelace += u.value.lovelace;
+      if (selectedLovelace >= REQUIRED_LOVELACE) break;
+    }
+    if (selectedLovelace < REQUIRED_LOVELACE) {
+      throw new Error(
+        `Insufficient student funds: have ${selectedLovelace} lovelace across ${studentUtxos.length} UTxOs, need at least ${REQUIRED_LOVELACE}`,
+      );
+    }
+    const carriedTokenTypes = selectedUtxos.reduce((n, u) => n + u.value.assets.nTokenTypes, 0);
+    console.error(
+      `Coin selection: picked ${selectedUtxos.length}/${studentUtxos.length} UTxOs, ${selectedLovelace} lovelace, ${carriedTokenTypes} pre-existing token types`,
+    );
+
     // Build transaction
     const tx = new Tx();
 
-    // Add student UTXOs as inputs (student pays)
-    tx.addInputs(studentUtxos);
+    // Add selected student UTXOs as inputs (student pays)
+    tx.addInputs(selectedUtxos);
 
     // Attach minting script
     tx.attachScript(compiled);
@@ -145,6 +176,41 @@ const main = async () => {
     // Custom metadata (label 674)
     const customMetadata = buildCustomMetadata(metadata);
     tx.addMetadata(674, customMetadata);
+
+    // If selected UTxOs carry pre-existing tokens (e.g. unrelated NFTs in the student's
+    // wallet), split them across multiple change outputs back to the student. A single
+    // change output containing all of them exceeds `maxValueSize` (5000 bytes) and the
+    // node rejects the tx with OutputTooBigUTxO.
+    if (carriedTokenTypes > 0) {
+      const MAX_TOKENS_PER_CHANGE_OUTPUT = 25;
+      const CHANGE_OUTPUT_MIN_ADA = 5_000_000n; // ~25 tokens of avg size need ~4.3 ADA min
+
+      const flatTokens = [];
+      for (const u of selectedUtxos) {
+        for (const mph of u.value.assets.mintingPolicies) {
+          for (const [name, qty] of u.value.assets.getTokens(mph)) {
+            flatTokens.push({ mph, name: name.bytes, qty });
+          }
+        }
+      }
+      const numChunks = Math.ceil(flatTokens.length / MAX_TOKENS_PER_CHANGE_OUTPUT);
+      const requiredChunkAda = BigInt(numChunks) * CHANGE_OUTPUT_MIN_ADA;
+      if (selectedLovelace < requiredChunkAda + 6_000_000n) {
+        throw new Error(
+          `Wallet has too many pre-existing tokens (${flatTokens.length}) for available ADA ` +
+          `(${selectedLovelace} lovelace). Need ~${requiredChunkAda + 6_000_000n} lovelace to split ` +
+          `change into ${numChunks} outputs under the 5000-byte value-size limit.`,
+        );
+      }
+      for (let i = 0; i < flatTokens.length; i += MAX_TOKENS_PER_CHANGE_OUTPUT) {
+        const chunkAssets = new Assets();
+        for (const { mph, name, qty } of flatTokens.slice(i, i + MAX_TOKENS_PER_CHANGE_OUTPUT)) {
+          chunkAssets.addComponent(mph, name, qty);
+        }
+        tx.addOutput(new TxOutput(studentAddr, new Value(CHANGE_OUTPUT_MIN_ADA, chunkAssets)));
+      }
+      console.error(`Split ${flatTokens.length} pre-existing tokens into ${numChunks} change outputs`);
+    }
 
     // Finalize with student as change address
     const networkParamsFile = await getNetworkParams(network);

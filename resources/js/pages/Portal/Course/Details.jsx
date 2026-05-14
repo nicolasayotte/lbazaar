@@ -10,6 +10,7 @@ import { getRoute } from "../../../helpers/routes.helper"
 import { Inertia } from "@inertiajs/inertia"
 import { actions } from "../../../store/slices/ToasterSlice"
 import { formatDualPrice, formatJpy, parseJpy } from "../../../helpers/currency.helper"
+import { encodeCip30LovelaceAmount } from "../../../helpers/cip30.helper"
 import CourseScheduleList from "./components/CourseScheduleList";
 import { grey } from "@mui/material/colors";
 import Course from "../../../components/cards/Course";
@@ -173,7 +174,12 @@ const Details = () => {
             setPurchaseStep('building')
 
             // Get UTXOs and change address from wallet
-            const cborUtxos = await walletAPI.getUtxos()
+            // Pass an amount hint so the wallet returns enough UTxOs to cover the
+            // purchase plus headroom for change-output splitting if the address holds
+            // unrelated NFTs. Without a hint many wallets return only a default
+            // subset, which can be ADA-poor even when the wallet is well-funded.
+            const amountHint = encodeCip30LovelaceAmount(100_000_000) // 100 ADA
+            const cborUtxos = await walletAPI.getUtxos(amountHint)
             const changeAddress = await walletAPI.getChangeAddress()
 
             // Build transaction via backend

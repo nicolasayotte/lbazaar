@@ -50,16 +50,40 @@ const mockAddress = {
   })),
 };
 
-const mockTxInput = {
-  fromFullCbor: vi.fn(() => ({
+const makeMockUtxo = ({ lovelace = 5_000_000n, tokens = [] } = {}) => {
+  // tokens: [{ mphHex, name (string), qty (bigint) }]
+  const byMph = new Map();
+  for (const t of tokens) {
+    if (!byMph.has(t.mphHex)) byMph.set(t.mphHex, []);
+    byMph.get(t.mphHex).push([{ bytes: Buffer.from(t.name, 'utf-8') }, t.qty]);
+  }
+  return {
     txHash: 'test-tx-hash',
     outputIndex: 0,
-    value: { lovelace: 5000000n },
-  })),
+    value: {
+      lovelace,
+      assets: {
+        nTokenTypes: tokens.length,
+        mintingPolicies: [...byMph.keys()].map((hex) => ({ hex })),
+        getTokens: (mph) => byMph.get(mph.hex) || [],
+      },
+    },
+  };
+};
+
+const mockTxInput = {
+  fromFullCbor: vi.fn(() => makeMockUtxo()),
 };
 
 const mockAssets = vi.fn(function(tokens) {
-  return { tokens };
+  const components = [];
+  return {
+    tokens,
+    components,
+    addComponent: vi.fn(function(mph, name, qty) {
+      components.push({ mph, name, qty });
+    }),
+  };
 });
 
 const mockValue = vi.fn(function(amount, assets) {
@@ -457,6 +481,159 @@ describe('build-student-certificate-tx.mjs', () => {
       await freshImport();
 
       expect(mockAddress.fromHex).toHaveBeenCalledWith('01abcdef1234');
+
+      mockStdoutWrite.mockRestore();
+      mockConsoleError.mockRestore();
+    });
+  });
+
+  // ─── Coin Selection ────────────────────────────────────────────────────────
+
+  describe('Coin Selection', () => {
+    it('prefers token-free UTxOs over token-laden UTxOs even when listed last', async () => {
+      process.argv = SUCCESS_ARGV;
+      // 3 UTxOs: pollutedHuge (100 tokens, 30 ADA) listed first, but the two clean ones
+      // listed after should be picked because they have 0 tokens and together cover 10 ADA.
+      const pollutedHuge = makeMockUtxo({
+        lovelace: 30_000_000n,
+        tokens: Array.from({ length: 100 }, (_, i) => ({
+          mphHex: 'polluted-mph', name: `tok${i}`, qty: 1n,
+        })),
+      });
+      const clean1 = makeMockUtxo({ lovelace: 6_000_000n, tokens: [] });
+      const clean2 = makeMockUtxo({ lovelace: 5_000_000n, tokens: [] });
+      mockTxInput.fromFullCbor
+        .mockReturnValueOnce(pollutedHuge)
+        .mockReturnValueOnce(clean1)
+        .mockReturnValueOnce(clean2);
+
+      mockReadFile
+        .mockResolvedValueOnce('spending(validator policy_content)')
+        .mockResolvedValueOnce(JSON.stringify(['cbor1', 'cbor2', 'cbor3']));
+
+      const mockStdoutWrite = vi.spyOn(process.stdout, 'write').mockImplementation(() => true);
+      const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      await freshImport();
+
+      const response = JSON.parse(mockStdoutWrite.mock.calls[0][0]);
+      expect(response.status).toBe(200);
+      // addInputs called once with the selected subset; should be the two clean UTxOs only.
+      expect(mockTx.addInputs).toHaveBeenCalledTimes(1);
+      const passedInputs = mockTx.addInputs.mock.calls[0][0];
+      expect(passedInputs).toHaveLength(2);
+      expect(passedInputs).toContain(clean1);
+      expect(passedInputs).toContain(clean2);
+      expect(passedInputs).not.toContain(pollutedHuge);
+
+      mockStdoutWrite.mockRestore();
+      mockConsoleError.mockRestore();
+    });
+
+    it('returns status 500 with insufficient-funds error when total ADA is below threshold', async () => {
+      process.argv = SUCCESS_ARGV;
+      mockTxInput.fromFullCbor
+        .mockReturnValueOnce(makeMockUtxo({ lovelace: 2_000_000n, tokens: [] }))
+        .mockReturnValueOnce(makeMockUtxo({ lovelace: 1_500_000n, tokens: [] }));
+
+      mockReadFile
+        .mockResolvedValueOnce('spending(validator policy_content)')
+        .mockResolvedValueOnce(JSON.stringify(['cbor1', 'cbor2']));
+
+      const mockStdoutWrite = vi.spyOn(process.stdout, 'write').mockImplementation(() => true);
+      const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      await freshImport();
+
+      const response = JSON.parse(mockStdoutWrite.mock.calls[0][0]);
+      expect(response.status).toBe(500);
+      expect(response.error).toMatch(/Insufficient student funds/);
+
+      mockStdoutWrite.mockRestore();
+      mockConsoleError.mockRestore();
+    });
+  });
+
+  // ─── Change Splitting ──────────────────────────────────────────────────────
+
+  describe('Change Splitting', () => {
+    it('splits pre-existing tokens into multiple change outputs to the student', async () => {
+      process.argv = SUCCESS_ARGV;
+      // One ADA-rich UTxO that also carries 60 tokens — exceeds 25-tokens-per-chunk cap,
+      // so expect 3 extra change outputs (ceil(60/25) = 3) on top of the 2 fixed outputs.
+      const richPolluted = makeMockUtxo({
+        lovelace: 40_000_000n,
+        tokens: Array.from({ length: 60 }, (_, i) => ({
+          mphHex: 'mph-x', name: `tok${i}`, qty: 1n,
+        })),
+      });
+      mockTxInput.fromFullCbor.mockReturnValueOnce(richPolluted);
+
+      mockReadFile
+        .mockResolvedValueOnce('spending(validator policy_content)')
+        .mockResolvedValueOnce(JSON.stringify(['cbor1']));
+
+      const mockStdoutWrite = vi.spyOn(process.stdout, 'write').mockImplementation(() => true);
+      const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      await freshImport();
+
+      const response = JSON.parse(mockStdoutWrite.mock.calls[0][0]);
+      expect(response.status).toBe(200);
+      // 2 fixed outputs (cert to student, ref to owner) + 3 token-chunk change outputs
+      expect(mockTx.addOutput).toHaveBeenCalledTimes(5);
+
+      mockStdoutWrite.mockRestore();
+      mockConsoleError.mockRestore();
+    });
+
+    it('does not add extra change outputs when selected UTxOs carry no tokens', async () => {
+      process.argv = SUCCESS_ARGV;
+      mockTxInput.fromFullCbor
+        .mockReturnValueOnce(makeMockUtxo({ lovelace: 6_000_000n, tokens: [] }))
+        .mockReturnValueOnce(makeMockUtxo({ lovelace: 5_000_000n, tokens: [] }));
+
+      mockReadFile
+        .mockResolvedValueOnce('spending(validator policy_content)')
+        .mockResolvedValueOnce(JSON.stringify(['cbor1', 'cbor2']));
+
+      const mockStdoutWrite = vi.spyOn(process.stdout, 'write').mockImplementation(() => true);
+      const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      await freshImport();
+
+      const response = JSON.parse(mockStdoutWrite.mock.calls[0][0]);
+      expect(response.status).toBe(200);
+      // Only the 2 fixed outputs.
+      expect(mockTx.addOutput).toHaveBeenCalledTimes(2);
+
+      mockStdoutWrite.mockRestore();
+      mockConsoleError.mockRestore();
+    });
+
+    it('returns status 500 when too many tokens for available ADA to split safely', async () => {
+      process.argv = SUCCESS_ARGV;
+      // 200 tokens → ceil(200/25) = 8 chunks × 5 ADA each = 40 ADA required for chunks +
+      // 6 ADA reserve. Wallet has only 11 ADA — insufficient.
+      mockTxInput.fromFullCbor.mockReturnValueOnce(makeMockUtxo({
+        lovelace: 11_000_000n,
+        tokens: Array.from({ length: 200 }, (_, i) => ({
+          mphHex: 'mph-y', name: `t${i}`, qty: 1n,
+        })),
+      }));
+
+      mockReadFile
+        .mockResolvedValueOnce('spending(validator policy_content)')
+        .mockResolvedValueOnce(JSON.stringify(['cbor1']));
+
+      const mockStdoutWrite = vi.spyOn(process.stdout, 'write').mockImplementation(() => true);
+      const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      await freshImport();
+
+      const response = JSON.parse(mockStdoutWrite.mock.calls[0][0]);
+      expect(response.status).toBe(500);
+      expect(response.error).toMatch(/too many pre-existing tokens/);
 
       mockStdoutWrite.mockRestore();
       mockConsoleError.mockRestore();

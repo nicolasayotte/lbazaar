@@ -14,6 +14,7 @@ import FormDialog from "../../components/common/FormDialog"
 import routes from "../../helpers/routes.helper"
 import axios from "axios"
 import WalletConnector from "../../components/cards/WalletConnector"
+import { encodeCip30LovelaceAmount } from "../../helpers/cip30.helper"
 
 const CourseCompleteConfirmation = () => {
 
@@ -84,9 +85,14 @@ const CourseCompleteConfirmation = () => {
         if (walletAPI) {
             try {
                 // 1. Get wallet data
+                // Pass an amount hint so the wallet returns enough UTxOs to cover the
+                // mint plus headroom for change-output splitting if the address holds
+                // unrelated NFTs. Without a hint many wallets return only a default
+                // subset, which can be ADA-poor even when the wallet is well-funded.
                 setMintStep('Building transaction...')
                 const changeAddr = await walletAPI.getChangeAddress()
-                const utxos = await walletAPI.getUtxos()
+                const amountHint = encodeCip30LovelaceAmount(100_000_000) // 100 ADA
+                const utxos = await walletAPI.getUtxos(amountHint)
 
                 if (!utxos || utxos.length === 0) {
                     throw new Error('No UTXOs available in your wallet. Please ensure you have funds.')
