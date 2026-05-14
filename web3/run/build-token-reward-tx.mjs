@@ -35,6 +35,7 @@ const main = async () => {
     const mph = args[5];
 
     const ownerPkh = process.env.OWNER_PKH;
+    const lockDate = process.env.CERTIFICATE_LOCK_DATE;
     const minAda = BigInt(process.env.MIN_ADA);
     const maxTxFee = BigInt(process.env.MAX_TX_FEE);
     const minChangeAmt = BigInt(process.env.MIN_CHANGE_AMT);
@@ -42,10 +43,18 @@ const main = async () => {
     if (!recipientAddress || !tokenName || !quantityStr || !mph) {
       throw new Error('Missing required parameters: recipientAddress tokenName quantity mph');
     }
+    if (!lockDate) {
+      throw new Error('CERTIFICATE_LOCK_DATE env var required');
+    }
 
     const quantity = BigInt(quantityStr);
     if (quantity < 1n) {
       throw new Error('Quantity must be a positive integer');
+    }
+
+    const lockTimestamp = new Date(lockDate).getTime();
+    if (isNaN(lockTimestamp)) {
+      throw new Error('Invalid CERTIFICATE_LOCK_DATE format');
     }
 
     // Set validity interval
@@ -64,7 +73,7 @@ const main = async () => {
     const nftMintingProgram = Program.new(nftMintingPolicyScript);
 
     nftMintingProgram.parameters = { ['OWNER_PKH']: ownerPkh };
-    nftMintingProgram.parameters = { ['VERSION']: '1.0' };
+    nftMintingProgram.parameters = { ['LOCK_DATE']: BigInt(lockTimestamp) };
 
     const compiledNftMintingProgram = nftMintingProgram.compile(optimize);
     const nftTokenMPH = compiledNftMintingProgram.mintingPolicyHash;

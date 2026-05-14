@@ -36,15 +36,24 @@ const main = async () => {
     const quantityStr    = args[5];
 
     const ownerPkh = process.env.OWNER_PKH;
+    const lockDate = process.env.CERTIFICATE_LOCK_DATE;
     const minAda   = BigInt(process.env.MIN_ADA);
 
     if (!studentAddress || !utxoFilePath || !tokenName || !quantityStr) {
       throw new Error('Missing required parameters: studentAddress utxoFilePath tokenName quantity');
     }
+    if (!lockDate) {
+      throw new Error('CERTIFICATE_LOCK_DATE env var required');
+    }
 
     const quantity = BigInt(quantityStr);
     if (quantity < 1n) {
       throw new Error('Quantity must be a positive integer');
+    }
+
+    const lockTimestamp = new Date(lockDate).getTime();
+    if (isNaN(lockTimestamp)) {
+      throw new Error('Invalid CERTIFICATE_LOCK_DATE format');
     }
 
     // Validity interval
@@ -63,7 +72,7 @@ const main = async () => {
     const program    = Program.new(policyFile.toString());
 
     program.parameters = { ['OWNER_PKH']: ownerPkh };
-    program.parameters = { ['VERSION']: '1.0' };
+    program.parameters = { ['LOCK_DATE']: BigInt(lockTimestamp) };
 
     const compiled    = program.compile(optimize);
     const nftTokenMPH = compiled.mintingPolicyHash;

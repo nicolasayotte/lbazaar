@@ -45,6 +45,14 @@ const main = async () => {
     const network = process.env.NETWORK;
     config.IS_TESTNET = network === 'mainnet' ? false : true;
     const ownerPkh = process.env.OWNER_PKH;
+    const lockDate = process.env.CERTIFICATE_LOCK_DATE;
+    if (!lockDate) {
+      throw new Error('CERTIFICATE_LOCK_DATE env var required');
+    }
+    const lockTimestamp = new Date(lockDate).getTime();
+    if (isNaN(lockTimestamp)) {
+      throw new Error('Invalid CERTIFICATE_LOCK_DATE format');
+    }
     const minAda = BigInt(process.env.MIN_ADA); // minimum lovelace needed to send an NFT
     const maxTxFee = BigInt(process.env.MAX_TX_FEE);
     const minChangeAmt = BigInt(process.env.MIN_CHANGE_AMT);
@@ -91,7 +99,7 @@ const main = async () => {
     const nftMintingPolicyScript = nftMintingPolicyFile.toString();
     const nftMintingProgram = Program.new(nftMintingPolicyScript);
     nftMintingProgram.parameters = { ['OWNER_PKH']: ownerPkh };
-    nftMintingProgram.parameters = { ['VERSION']: '1.0' };
+    nftMintingProgram.parameters = { ['LOCK_DATE']: BigInt(lockTimestamp) };
     const compiledNftMintingProgram = nftMintingProgram.compile(optimize);
     const nftTokenMPH = compiledNftMintingProgram.mintingPolicyHash;
 

@@ -1,25 +1,30 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import realFs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const flushPromises = () => new Promise(r => setTimeout(r, 0));
+const flushPromises = () => new Promise((r) => setTimeout(r, 0));
 
-// Mock Helios library
-const mockMintRedeemer = { _toUplcData: vi.fn(() => 'mock-redeemer-data') };
-const MockMintClass = vi.fn(function() { return mockMintRedeemer; });
+// Load the real Helios minting policy at test load time so the mocked
+// fs.readFile can return the actual `.hl` source. This lets us use the real
+// `Program` class (via vi.importActual below), which means a future typo like
+// `program.parameters = { VERSION: '1.0' }` is caught here at unit-test time
+// — not in production. See `common/__tests__/minting-policy-parameters.spec.mjs`
+// for the project-wide contract test that polices this across all scripts.
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const POLICY_HL = realFs.readFileSync(
+  path.resolve(__dirname, '../../contracts/nft-minting-policy.hl'),
+  'utf8',
+);
 
-const mockProgram = {
-  parameters: {},
-  compile: vi.fn(() => ({
-    mintingPolicyHash: { hex: 'mock-mph-hex' },
-  })),
-  types: {
-    Redeemer: {
-      Mint: MockMintClass,
-    },
-  },
-};
+// Valid 28-byte hex string so real Helios accepts it as a ByteArray for
+// OWNER_PKH (the previous `'owner-pkh-test'` is not valid hex and the real
+// parameter setter rejects it).
+const OWNER_PKH_HEX = '00'.repeat(28);
 
-const mockProgramNew = vi.fn(() => mockProgram);
-
+// Mock everything in @hyperionbt/helios EXCEPT Program. Real Program enforces
+// parameter-name validation; the rest stays mocked so this test doesn't depend
+// on real CBOR/value plumbing.
 const mockTx = {
   addInputs: vi.fn().mockReturnThis(),
   attachScript: vi.fn().mockReturnThis(),
@@ -65,27 +70,32 @@ const mockNetworkParams = vi.fn(function (params) {
   return { params };
 });
 
-vi.mock('@hyperionbt/helios', () => ({
-  Address: mockAddress,
-  Assets: mockAssets,
-  bytesToHex: vi.fn(() => 'mock-cbor-hex'),
-  hexToBytes: vi.fn((hex) => new Uint8Array([0x00])),
-  NetworkParams: mockNetworkParams,
-  Program: { new: mockProgramNew },
-  PubKeyHash: mockPubKeyHash,
-  textToBytes: vi.fn((text) => new TextEncoder().encode(text)),
-  Tx: vi.fn(function() { return mockTx; }),
-  TxInput: mockTxInput,
-  TxOutput: mockTxOutput,
-  Value: mockValue,
-}));
+vi.mock('@hyperionbt/helios', async () => {
+  const actual = await vi.importActual('@hyperionbt/helios');
+  return {
+    Address: mockAddress,
+    Assets: mockAssets,
+    bytesToHex: vi.fn(() => 'mock-cbor-hex'),
+    hexToBytes: vi.fn(() => new Uint8Array([0x00])),
+    NetworkParams: mockNetworkParams,
+    Program: actual.Program, // REAL — validates parameter names against the .hl
+    PubKeyHash: mockPubKeyHash,
+    textToBytes: vi.fn((text) => new TextEncoder().encode(text)),
+    Tx: vi.fn(function () {
+      return mockTx;
+    }),
+    TxInput: mockTxInput,
+    TxOutput: mockTxOutput,
+    Value: mockValue,
+  };
+});
 
 const mockSignTx = vi.fn(() => ({
   toCbor: () => new Uint8Array([0x84]),
 }));
 
 const mockGetNetworkParams = vi.fn(async () =>
-  JSON.stringify({ protocolParams: { minFeeA: 44, minFeeB: 155381 } })
+  JSON.stringify({ protocolParams: { minFeeA: 44, minFeeB: 155381 } }),
 );
 
 vi.mock('fs/promises', () => ({
@@ -105,7 +115,7 @@ vi.mock('../../common/network.mjs', () => ({
 const setupFsReadFile = async () => {
   const { default: fs } = await import('fs/promises');
   fs.readFile
-    .mockResolvedValueOnce('spending validator src') // policy file
+    .mockResolvedValueOnce(POLICY_HL) // real policy source, parsed by real Helios
     .mockResolvedValueOnce('["cbor-utxo-1","cbor-utxo-2"]'); // utxo file
 };
 
@@ -116,7 +126,6 @@ describe('build-student-token-tx.mjs', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    // Reset mock implementations that need to persist per-test
     mockTx.addInputs.mockReturnThis();
     mockTx.attachScript.mockReturnThis();
     mockTx.mintTokens.mockReturnThis();
@@ -127,13 +136,11 @@ describe('build-student-token-tx.mjs', () => {
     mockTx.addMetadata.mockReturnThis();
     mockTx.finalize.mockResolvedValue(undefined);
 
-    mockProgram.compile.mockReturnValue({ mintingPolicyHash: { hex: 'mock-mph-hex' } });
-    mockMintRedeemer._toUplcData.mockReturnValue('mock-redeemer-data');
-
     process.env = {
       ...originalEnv,
       NETWORK: 'preprod',
-      OWNER_PKH: 'owner-pkh-test',
+      OWNER_PKH: OWNER_PKH_HEX,
+      CERTIFICATE_LOCK_DATE: '2099-12-31T23:59:59Z',
       MIN_ADA: '2000000',
       TTL_MINUTES: '30',
     };
@@ -172,7 +179,8 @@ describe('build-student-token-tx.mjs', () => {
       expect(typeof response.cborTx).toBe('string');
       expect(response.tokenName).toBe('Token-42');
       expect(response.quantity).toBe('10');
-      expect(response.mph).toBe('mock-mph-hex');
+      expect(typeof response.mph).toBe('string');
+      expect(response.mph).toMatch(/^[0-9a-f]+$/i);
       expect(response.recipientAddress).toBe('addr_test1student');
 
       mockStdoutWrite.mockRestore();
@@ -182,7 +190,6 @@ describe('build-student-token-tx.mjs', () => {
 
   describe('Error Handling - Missing Parameters', () => {
     it('returns status 500 with error message when required args are missing', async () => {
-      // Provide only studentAddress, omit everything else
       process.argv = ['node', 'build-student-token-tx.mjs', 'addr_test1student'];
 
       const mockStdoutWrite = vi.spyOn(process.stdout, 'write').mockImplementation(() => true);
@@ -202,9 +209,36 @@ describe('build-student-token-tx.mjs', () => {
     });
   });
 
+  describe('Error Handling - Missing CERTIFICATE_LOCK_DATE', () => {
+    it('returns status 500 when CERTIFICATE_LOCK_DATE env var is not set', async () => {
+      delete process.env.CERTIFICATE_LOCK_DATE;
+
+      process.argv = [
+        'node',
+        'build-student-token-tx.mjs',
+        'addr_test1student',
+        '/tmp/utxos.json',
+        'Token-42',
+        '10',
+      ];
+
+      const mockStdoutWrite = vi.spyOn(process.stdout, 'write').mockImplementation(() => true);
+      const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      await import('../build-student-token-tx.mjs?t=' + Date.now());
+      await flushPromises();
+
+      const response = JSON.parse(mockStdoutWrite.mock.calls[0][0]);
+      expect(response.status).toBe(500);
+      expect(response.error).toMatch(/CERTIFICATE_LOCK_DATE/);
+
+      mockStdoutWrite.mockRestore();
+      mockConsoleError.mockRestore();
+    });
+  });
+
   describe('Error Handling - Zero Quantity', () => {
     it('returns status 500 with "Quantity must be a positive integer" for quantity 0', async () => {
-      // fs.readFile is not called before the quantity check, but mock anyway
       const { default: fs } = await import('fs/promises');
       fs.readFile.mockResolvedValue('[]');
 
@@ -238,7 +272,7 @@ describe('build-student-token-tx.mjs', () => {
     it('returns status 500 with "No UTXOs provided" when UTXO file contains empty array', async () => {
       const { default: fs } = await import('fs/promises');
       fs.readFile
-        .mockResolvedValueOnce('spending validator src') // policy file
+        .mockResolvedValueOnce(POLICY_HL) // real policy source
         .mockResolvedValueOnce('[]'); // empty utxo list
 
       process.argv = [
@@ -344,10 +378,8 @@ describe('build-student-token-tx.mjs', () => {
       await flushPromises();
 
       expect(mockTx.addOutput).toHaveBeenCalledTimes(1);
-      // The TxOutput constructor receives student address as first arg
       expect(mockTxOutput).toHaveBeenCalledTimes(1);
       const [outputAddr] = mockTxOutput.mock.calls[0];
-      // fromBech32 was called for the bech32 address
       expect(outputAddr).toEqual(expect.objectContaining({ type: 'bech32-address' }));
 
       mockStdoutWrite.mockRestore();
@@ -374,8 +406,8 @@ describe('build-student-token-tx.mjs', () => {
       await import('../build-student-token-tx.mjs?t=' + Date.now());
       await flushPromises();
 
-      expect(mockPubKeyHash.fromHex).toHaveBeenCalledWith('owner-pkh-test');
-      expect(mockTx.addSigner).toHaveBeenCalledWith('pkh:owner-pkh-test');
+      expect(mockPubKeyHash.fromHex).toHaveBeenCalledWith(OWNER_PKH_HEX);
+      expect(mockTx.addSigner).toHaveBeenCalledWith(`pkh:${OWNER_PKH_HEX}`);
 
       mockStdoutWrite.mockRestore();
       mockConsoleError.mockRestore();
@@ -414,7 +446,7 @@ describe('build-student-token-tx.mjs', () => {
       process.argv = [
         'node',
         'build-student-token-tx.mjs',
-        '01deadbeef1234567890abcdef', // hex address (does not start with "addr")
+        '01deadbeef1234567890abcdef',
         '/tmp/utxos.json',
         'Token-42',
         '10',

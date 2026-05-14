@@ -44,11 +44,13 @@ describe('minting-policy helpers', () => {
     vi.resetModules();
     vi.clearAllMocks();
     process.env.OWNER_PKH = 'owner-hash';
+    process.env.CERTIFICATE_LOCK_DATE = '2099-12-31T23:59:59Z';
     mockReadFile.mockResolvedValue('single-policy-script');
   });
 
   afterEach(() => {
     delete process.env.OWNER_PKH;
+    delete process.env.CERTIFICATE_LOCK_DATE;
   });
 
   it('calculateMintingPolicyHash uses single-signature policy', async () => {
@@ -65,6 +67,13 @@ describe('minting-policy helpers', () => {
     const module = await import('../minting-policy.mjs');
 
     await expect(module.calculateMintingPolicyHash()).rejects.toThrow('OWNER_PKH environment variable is required');
+  });
+
+  it('calculateMintingPolicyHash throws when CERTIFICATE_LOCK_DATE is missing', async () => {
+    delete process.env.CERTIFICATE_LOCK_DATE;
+    const module = await import('../minting-policy.mjs');
+
+    await expect(module.calculateMintingPolicyHash()).rejects.toThrow('CERTIFICATE_LOCK_DATE environment variable is required');
   });
 
   it('getMintingPolicyHash returns the single-signature hash', async () => {

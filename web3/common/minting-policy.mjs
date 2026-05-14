@@ -16,9 +16,17 @@ export const SOUL_BOUND = true;
 export async function calculateMintingPolicyHash() {
   try {
     const ownerPkh = process.env.OWNER_PKH;
+    const lockDate = process.env.CERTIFICATE_LOCK_DATE;
 
     if (!ownerPkh) {
       throw new Error('OWNER_PKH environment variable is required');
+    }
+    if (!lockDate) {
+      throw new Error('CERTIFICATE_LOCK_DATE environment variable is required');
+    }
+    const lockTimestamp = new Date(lockDate).getTime();
+    if (isNaN(lockTimestamp)) {
+      throw new Error('Invalid CERTIFICATE_LOCK_DATE format');
     }
 
     // Load and compile the NFT minting policy
@@ -27,7 +35,7 @@ export async function calculateMintingPolicyHash() {
     const nftMintingProgram = Program.new(nftMintingPolicyScript);
 
     nftMintingProgram.parameters = { ['OWNER_PKH']: ownerPkh };
-    nftMintingProgram.parameters = { ['VERSION']: '1.0' };
+    nftMintingProgram.parameters = { ['LOCK_DATE']: BigInt(lockTimestamp) };
 
     const compiledNftMintingProgram = nftMintingProgram.compile(optimize);
     return compiledNftMintingProgram.mintingPolicyHash.hex;

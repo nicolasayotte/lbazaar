@@ -11,12 +11,20 @@ const main = async () => {
     // Set the Helios compiler optimizer flag
     const optimize = process.env.OPTIMIZE === 'true';
     const ownerPkh = process.env.OWNER_PKH;
+    const lockDate = process.env.CERTIFICATE_LOCK_DATE;
+    if (!lockDate) {
+      throw new Error('CERTIFICATE_LOCK_DATE env var required');
+    }
+    const lockTimestamp = new Date(lockDate).getTime();
+    if (isNaN(lockTimestamp)) {
+      throw new Error('Invalid CERTIFICATE_LOCK_DATE format');
+    }
 
     const nftMintingPolicyFile = await fs.readFile('./contracts/nft-minting-policy.hl', 'utf8');
     const nftMintingPolicyScript = nftMintingPolicyFile.toString();
     const nftMintingProgram = Program.new(nftMintingPolicyScript);
     nftMintingProgram.parameters = { ['OWNER_PKH']: ownerPkh };
-    nftMintingProgram.parameters = { ['VERSION']: '1.0' };
+    nftMintingProgram.parameters = { ['LOCK_DATE']: BigInt(lockTimestamp) };
     const compiledNftMintingProgram = nftMintingProgram.compile(optimize);
     const nftTokenMPH = compiledNftMintingProgram.mintingPolicyHash;
 
