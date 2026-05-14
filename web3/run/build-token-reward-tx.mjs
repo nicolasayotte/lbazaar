@@ -16,6 +16,7 @@ import {
 import fs from 'fs/promises';
 import { getNetworkParams } from '../common/utils.mjs';
 import { execSync } from 'child_process';
+import { toHeliosMetadata } from '../common/certificate-metadata.mjs';
 
 const network = process.env.NETWORK || 'preprod';
 const optimize = false;
@@ -140,13 +141,13 @@ const main = async () => {
     const courseIdMatch = tokenName.match(/^Token-(\d+)$/);
     const courseId = courseIdMatch ? courseIdMatch[1] : tokenName;
 
-    tx.addMetadata(674, {
+    tx.addMetadata(674, toHeliosMetadata({
       msg: [
         'Token reward',
         `Course: ${courseId}`,
         `Quantity: ${quantityStr}`
       ]
-    });
+    }));
 
     // Finalize the transaction
     const networkParamsFile = await getNetworkParams(network);

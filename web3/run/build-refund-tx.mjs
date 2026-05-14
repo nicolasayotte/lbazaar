@@ -13,6 +13,7 @@ import {
 import { BlockFrostAPI } from '@blockfrost/blockfrost-js';
 import { getAccountAddr, signTx, submitTx } from '../common/sign-tx.mjs';
 import { getNetworkParams } from '../common/network.mjs';
+import { toHeliosMetadata } from '../common/certificate-metadata.mjs';
 
 /**
  * Build, sign and submit a plain ADA refund transaction from the platform wallet
@@ -99,9 +100,9 @@ const main = async () => {
     tx.validTo(after);
 
     // Attach refund metadata
-    tx.addMetadata(674, {
+    tx.addMetadata(674, toHeliosMetadata({
       msg: [`ADA refund ${args[3]} ADA`.substring(0, 64)],
-    });
+    }));
 
     // Finalize: change returns to platform wallet
     const networkParamsRaw = await getNetworkParams(network);

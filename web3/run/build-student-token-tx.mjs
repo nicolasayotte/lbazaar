@@ -15,6 +15,7 @@ import {
 import fs from 'fs/promises';
 import { getNetworkParams } from '../common/network.mjs';
 import { signTx } from '../common/sign-tx.mjs';
+import { toHeliosMetadata } from '../common/certificate-metadata.mjs';
 
 const network = process.env.NETWORK || 'preprod';
 const optimize = false;
@@ -116,9 +117,9 @@ const main = async () => {
     // Label 674 metadata
     const courseIdMatch = tokenName.match(/^Token-(\d+)$/);
     const courseId      = courseIdMatch ? courseIdMatch[1] : tokenName;
-    tx.addMetadata(674, {
+    tx.addMetadata(674, toHeliosMetadata({
       msg: ['Token reward', `Course: ${courseId}`, `Quantity: ${quantityStr}`],
-    });
+    }));
 
     // Finalize with student as change address
     const networkParamsFile = await getNetworkParams(network);

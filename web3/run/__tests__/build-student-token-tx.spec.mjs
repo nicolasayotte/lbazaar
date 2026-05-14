@@ -322,11 +322,12 @@ describe('build-student-token-tx.mjs', () => {
 
       expect(mockTx.addMetadata).toHaveBeenCalledTimes(1);
       const [label, metadata] = mockTx.addMetadata.mock.calls[0];
+      const msgEntry = metadata.map.find(([k]) => k === 'msg');
 
       expect(label).toBe(674);
-      expect(metadata.msg).toContain('Course: 42');
-      expect(metadata.msg).toContain('Token reward');
-      expect(metadata.msg).toContain('Quantity: 10');
+      expect(msgEntry[1]).toContain('Course: 42');
+      expect(msgEntry[1]).toContain('Token reward');
+      expect(msgEntry[1]).toContain('Quantity: 10');
 
       mockStdoutWrite.mockRestore();
       mockConsoleError.mockRestore();
@@ -351,7 +352,8 @@ describe('build-student-token-tx.mjs', () => {
       await flushPromises();
 
       const [, metadata] = mockTx.addMetadata.mock.calls[0];
-      expect(metadata.msg).toContain('Course: Participation-Badge');
+      const msgEntry = metadata.map.find(([k]) => k === 'msg');
+      expect(msgEntry[1]).toContain('Course: Participation-Badge');
 
       mockStdoutWrite.mockRestore();
       mockConsoleError.mockRestore();
