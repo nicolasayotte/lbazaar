@@ -6,6 +6,7 @@ import {
   NetworkParams,
   Value,
   TxOutput,
+  TxOutputId,
   Tx,
   UTxO,
 } from '@hyperionbt/helios';
@@ -71,7 +72,7 @@ const main = async () => {
         if (!output) {
           throw new Error(`Output index ${u.output_index} not found in tx ${u.tx_hash}`);
         }
-        return new UTxO(u.tx_hash, u.output_index, output);
+        return new UTxO(new TxOutputId(`${u.tx_hash}#${u.output_index}`), output);
       }),
     );
 

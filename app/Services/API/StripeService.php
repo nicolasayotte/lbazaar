@@ -472,19 +472,28 @@ class StripeService
             // Use pass-by-reference to get refund ID out of transaction closure
             $refundId = null;
 
+            // Demo seed (DemoVideoSeeder) inserts payment intents prefixed `pi_demo_`
+            // that don't exist on Stripe. Short-circuit the API call so the demo
+            // refund flow completes; production payment intents never use this prefix.
+            $isDemoPayment = str_starts_with($payment->stripe_payment_intent_id, 'pi_demo_');
+
             // Execute Stripe refund and database update atomically
-            DB::transaction(function () use ($payment, $options, &$refundId) {
-                // Create Stripe refund INSIDE transaction for atomicity
-                $refund = Refund::create([
-                    'payment_intent' => $payment->stripe_payment_intent_id,
-                ]);
-                $refundId = $refund->id;
+            DB::transaction(function () use ($payment, $options, $isDemoPayment, &$refundId) {
+                if ($isDemoPayment) {
+                    $refundId = 're_demo_' . substr(hash('sha256', $payment->stripe_payment_intent_id), 0, 16);
+                } else {
+                    // Create Stripe refund INSIDE transaction for atomicity
+                    $refund = Refund::create([
+                        'payment_intent' => $payment->stripe_payment_intent_id,
+                    ]);
+                    $refundId = $refund->id;
+                }
 
                 // Update payment status
                 $payment->update([
                     'status' => 'refunded',
                     'metadata' => array_merge($payment->metadata ?? [], [
-                        'refund_id' => $refund->id,
+                        'refund_id' => $refundId,
                         'refunded_at' => now()->toISOString(),
                     ]),
                 ]);
