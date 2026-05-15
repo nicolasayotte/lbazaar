@@ -1,42 +1,11 @@
-Course Purchase Service (Tests\Unit\Services\API\CoursePurchaseService)
- [x] Converts jpy to ada correctly
- [x] Converts larger jpy amount
- [x] Throws exception when exchange rate not configured
- [x] Conversion rounds to six decimals
- [x] Build fails without connected wallet
- [x] Build fails without stake key hash
- [x] Build fails without teacher wallet
- [x] Build fails without admin wallet
- [x] Builds purchase transaction successfully
- [x] Build returns insufficient funds flag
- [x] Build returns web3 error
- [x] Build uses correct commission setting
- [x] Build passes integer lovelace to web3 script for fractional ada price
- [x] Build defaults commission when not configured
- [x] Submits signed transaction successfully
- [x] Submit returns web3 error
- [x] Submit creates wallet transaction with course history reference
- [x] Confirms purchase via webhook
- [x] Confirm ignores already confirmed
- [x] Confirm returns not found for nonexistent tx
- [x] Confirm is idempotent
- [x] Build web3 command escapes arguments
- [x] Build web3 command no arguments
- [x] Build catches exceptions
- [x] Submit catches exceptions
- [x] Get tx status returns pending when confirmations below required
- [x] Get tx status returns confirmed when confirmations at or above required
- [x] Get tx status returns not found on 404
- [x] Get tx status returns error on script error
- [x] Get tx status returns error on exception
- [x] Get tx confirmations returns count
- [x] Get tx confirmations throws on not found
- [x] Get tx confirmations throws on script error
- [x] Fail purchase transitions to failed status
- [x] Fail purchase is idempotent
- [x] Build stores quote in cache with expiry
- [x] Submit returns quote expired when cache missing
- [x] Submit blocks concurrent pending payment
- [x] Submit clears cache on success
- [x] Submit purchase transaction snapshots reward config
+Admin Refund Controller (Tests\Feature\Http\Controllers\API\AdminRefundController)
+ [x] Stripe refund requires authentication
+ [x] Stripe refund requires admin role
+ [x] Stripe refund returns 404 for unknown payment intent
+ [x] Stripe refund returns 200 on success
+ [x] Ada refund requires authentication
+ [x] Ada refund requires admin role
+ [x] Ada refund returns 404 for unknown course history
+ [x] Ada refund returns 200 on success
+ [x] Ada refund returns has rewards flag without force
 
