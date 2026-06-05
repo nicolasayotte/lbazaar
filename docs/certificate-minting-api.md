@@ -136,6 +136,12 @@ If the student doesn't have a linked wallet:
 
 Each certificate NFT includes:
 
+### Standard: CIP-25 (not CIP-68)
+
+Certificate metadata follows **CIP-25** — the metadata lives in the **transaction metadata under label `721`** (see `web3/common/certificate-metadata.mjs` and `tx.addMetadata(721, ...)` in `web3/run/build-certificate-tx.mjs`). This is a deliberate design choice for this milestone, not CIP-68.
+
+> **Note on the `(100)`/`(222)` asset-name prefixes.** We adopt CIP-68's *asset-name labelling convention* (a `(100)` reference token and a `(222)` user token) so the two tokens are cleanly distinguishable on-chain and the platform can hold a reference token for verification/revocation. **We do not, however, store metadata in the reference token's datum** — that datum-based metadata model is the defining feature of CIP-68, and it is intentionally *not* used here. Seeing the `(100)`/`(222)` prefixes can give the impression of CIP-68, but the certificate is CIP-25: metadata is attached to the minting transaction under label `721`. A future milestone may migrate to full CIP-68 (datum-stored, updatable metadata); it is out of scope for Milestone 4.
+
 ### Token Names
 - **User Token**: `(222){course_title}-{student_id}|{timestamp}` - sent to student
 - **Reference Token**: `(100){course_title}-{student_id}|{timestamp}` - kept by platform
