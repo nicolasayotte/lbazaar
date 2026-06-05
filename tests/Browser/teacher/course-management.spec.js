@@ -93,10 +93,14 @@ test.describe('F-03: Course CRUD', () => {
     });
 
     test('F-03.3: create course page renders for approved application', async ({ page }) => {
-        await page.goto('/mypage/class-application');
+        // Filter to approved applications so the seeded approved fixtures aren't pushed
+        // off page 1 by the pending applications other tests submit (the list paginates,
+        // created_at:desc). Approved + no-course apps expose a create link.
+        await page.goto('/mypage/class-application?status=approved');
         await waitForApp(page);
 
         const createLinks = page.locator('a[href*="/classes/"][href$="/create"]');
+        await createLinks.first().waitFor({ state: 'attached', timeout: 5000 }).catch(() => {});
         const count = await createLinks.count();
         test.skip(count === 0, 'No approved class applications found — skipping');
 

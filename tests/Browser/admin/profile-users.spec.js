@@ -206,6 +206,17 @@ test.describe('F-02: User Management', () => {
             await roleSelect.selectOption({ label: firstRealRole });
         }
 
+        // country_id is required — select it so the ONLY validation error is the
+        // duplicate email. Otherwise the response also carries a country error and
+        // the assertion on "already been taken" becomes order/timing-sensitive (flaky).
+        const countrySelect = page.locator('select[name="country_id"]');
+        const countryValues = await countrySelect.locator('option').evaluateAll(
+            opts => opts.map(o => o.value).filter(v => v !== '')
+        );
+        if (countryValues.length) {
+            await countrySelect.selectOption(countryValues[0]);
+        }
+
         const responsePromise = page.waitForResponse(resp =>
             resp.url().includes('/admin/users') && resp.request().method() === 'POST'
         );

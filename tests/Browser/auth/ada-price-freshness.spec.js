@@ -22,7 +22,13 @@ async function navigateToFirstCourse(page) {
     await page.goto('/classes');
     await waitForApp(page);
 
-    const courseLink = page.locator('.MuiCard-root a[href*="/classes/"]').first();
+    // Prefer a paid General course whose card shows a dual JPY+ADA price (~₳), since
+    // only those expose the "Buy with ADA" button on the detail page. Fall back to the
+    // first card if none advertise an ADA price.
+    const adaCardLink = page.locator('.MuiCard-root').filter({ hasText: /~₳/ })
+        .locator('a[href*="/classes/"]').first();
+    const anyCardLink = page.locator('.MuiCard-root a[href*="/classes/"]').first();
+    const courseLink = (await adaCardLink.count()) > 0 ? adaCardLink : anyCardLink;
     if (await courseLink.count() === 0) return null;
 
     const href = await courseLink.getAttribute('href');

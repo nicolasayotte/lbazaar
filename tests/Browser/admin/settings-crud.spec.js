@@ -280,9 +280,12 @@ test.describe.serial('F-08: Settings — NFT Configuration', () => {
         // In environments with valid Cardano keys the NFT row appears.
         // In test environments get-mph.mjs returns an error; the page redirects back
         // with a validation error alert instead of inserting a row — accept either outcome.
+        // Success shows BOTH the new row and a success snackbar (.MuiAlert-root);
+        // if get-mph.mjs fails, only an error alert shows. Either way at least one
+        // matches — trailing .first() keeps the .or() from tripping strict mode.
         const nftRow = page.locator('table td').filter({ hasText: testNftName }).first();
         const errorAlert = page.locator('.MuiAlert-root').first();
-        await expect(nftRow.or(errorAlert)).toBeVisible({ timeout: 5000 });
+        await expect(nftRow.or(errorAlert).first()).toBeVisible({ timeout: 5000 });
     });
 
     test('F-08.2b: editing the NFT config via dialog succeeds', async ({ page }) => {

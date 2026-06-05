@@ -141,17 +141,25 @@ test.describe('F-08: Course Attendance Flow', () => {
     test('F-08.3: exam page renders if accessible', async ({ page }) => {
         test.skip(!courseId || !scheduleId, 'No ongoing booked schedule found in seed data');
 
-        // Discover exam ID from the attend page
+        // Discover the exam ID from the attend page. Attend.jsx renders exam steps
+        // as <Link as="span"> (a <span>, no <a href>), so a DOM href selector never
+        // matches — read the published exam id from the Inertia page props instead.
         await page.goto(`/classes/${courseId}/attend/${scheduleId}`);
         await waitForApp(page);
 
-        const examLink = page.locator('a[href*="/exams/"]').first();
-        if (await examLink.count() === 0) {
-            test.skip(true, 'No exam link found on attend page');
+        const examId = await page.evaluate(() => {
+            const el = document.getElementById('app');
+            if (!el) return null;
+            const data = JSON.parse(el.getAttribute('data-page') || '{}');
+            const exams = (data?.props?.course?.exams || []).filter(e => e.published_at != null);
+            return exams.length ? exams[0].id : null;
+        });
+        if (!examId) {
+            test.skip(true, 'No published exam in seed data for the booked schedule');
             return;
         }
 
-        const examHref = await examLink.getAttribute('href');
+        const examHref = `/classes/${courseId}/attend/${scheduleId}/exams/${examId}`;
         const response = await page.goto(examHref);
         const status = response.status();
         test.skip(status === 404 || status === 401, 'Exam page not accessible');
