@@ -14,6 +14,16 @@ abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication, DatabaseTransactions;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Feature tests assert the Inertia page/props contract, not the compiled
+        // asset bundle. Disabling Vite removes the incidental dependency on a built
+        // public/build/manifest.json (absent in CI, where assets aren't built).
+        $this->withoutVite();
+    }
+
     /**
      * Retry a callback that may fail with "MySQL server has gone away" under
      * parallel workers. When 2006 occurs inside a DatabaseTransactions test,
