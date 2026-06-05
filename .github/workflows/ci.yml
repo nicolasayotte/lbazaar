@@ -1,0 +1,142 @@
+# CI — automated test suite for Le Bazaar
+#
+# Three jobs: JS frontend unit tests, web3 Node unit tests, PHP/Laravel unit+feature tests.
+#
+# INTENTIONALLY EXCLUDED: Playwright E2E tests (tests/Browser/).
+# Those require a fully booted Laravel app, seeded database, and browser binaries.
+# They are a documented follow-up for a dedicated E2E CI job.
+
+name: CI
+
+on:
+  push:
+    branches: [main, dev, staging]
+  pull_request:
+
+jobs:
+
+  # ---------------------------------------------------------------------------
+  # Job 1: Frontend JS unit tests (Vitest + jsdom, no database)
+  # ---------------------------------------------------------------------------
+  js-unit:
+    name: JS Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Run vitest directly so output goes to the Actions console.
+      # The package.json "test" script redirects stdout to a log file, which
+      # would hide failures from the Actions UI and create a diff in the repo.
+      - name: Run tests
+        run: npx vitest run --reporter=dot
+
+  # ---------------------------------------------------------------------------
+  # Job 2: web3 Node unit tests (Vitest + node environment, no database)
+  # ---------------------------------------------------------------------------
+  web3-unit:
+    name: web3 Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: web3/package-lock.json
+
+      - name: Install web3 dependencies
+        working-directory: web3
+        run: npm ci
+
+      # Run vitest directly (not `npm test`) for the same reason as js-unit:
+      # the package.json script uses `node --env-file=../.env` (no .env in CI)
+      # and redirects output to a log file. vitest.setup.mjs already provides
+      # all required env var defaults, so no .env file is needed here.
+      - name: Run tests
+        working-directory: web3
+        run: npx vitest run --reporter=dot
+
+  # ---------------------------------------------------------------------------
+  # Job 3: PHPUnit — Unit + Feature tests (requires MySQL)
+  # ---------------------------------------------------------------------------
+  #
+  # DB_HOST note: phpunit.xml sets <env name="DB_HOST" value="mysql"/> without
+  # force="true". In GitHub Actions, service containers are reachable from the
+  # runner at 127.0.0.1 (not by hostname alias). Setting DB_HOST=127.0.0.1 in
+  # the job env: block overrides phpunit.xml because Laravel's env() reads
+  # process environment variables first, and non-forced phpunit.xml <env> tags
+  # only apply when the variable is not already set in the OS environment.
+  php-unit:
+    name: PHP Unit & Feature Tests
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: testing
+          MYSQL_USER: sail
+          MYSQL_PASSWORD: password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -u root --password=password"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_DATABASE: testing
+      DB_USERNAME: sail
+      DB_PASSWORD: password
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP 8.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, bcmath, pdo_mysql, xml, tokenizer, ctype, fileinfo, dom, curl, zip, gd
+          coverage: none
+
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Copy .env
+        run: cp .env.example .env
+
+      - name: Generate application key
+        run: php artisan key:generate
+
+      - name: Run database migrations
+        run: php artisan migrate --force
+
+      # Run PHPUnit directly (not `sail composer test` which needs Docker).
+      # Use --testsuite=Unit,Feature to exclude Integration tests, which make
+      # live Blockfrost/Cardano network calls and require additional secrets.
+      - name: Run tests
+        run: vendor/bin/phpunit --testsuite=Unit,Feature
