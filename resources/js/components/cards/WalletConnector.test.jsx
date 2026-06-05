@@ -107,7 +107,18 @@ beforeEach(() => {
     mockWalletAPI.getChangeAddress.mockResolvedValue('deadbeef')
 
     window.cardano = {
-        eternl: { enable: vi.fn().mockResolvedValue(mockWalletAPI) },
+        eternl: {
+            enable: vi.fn().mockResolvedValue(mockWalletAPI),
+            apiVersion: '0.1.0',
+            name: 'Eternl',
+            icon: 'data:image/png;base64,eternl',
+        },
+        lace: {
+            enable: vi.fn().mockResolvedValue(mockWalletAPI),
+            apiVersion: '0.1.0',
+            name: 'Lace',
+            icon: 'data:image/png;base64,lace',
+        },
     }
 
     axios.get.mockResolvedValue({ data: { loggedIn: true } })
@@ -134,8 +145,8 @@ afterEach(() => {
 // Helper: connect the wallet so event listeners get registered
 // ---------------------------------------------------------------------------
 async function connectWallet({ getByLabelText, rerender }) {
-    // Step 1: Click eternl button to set whichWalletSelected
-    fireEvent.click(getByLabelText('eternl'))
+    // Step 1: Click Eternl button to set whichWalletSelected (aria-label uses wallet.name)
+    fireEvent.click(getByLabelText('Eternl'))
 
     // Step 2: Wait for enable() flow to call onWalletAPI
     await waitFor(() => expect(mockOnWalletAPI).toHaveBeenCalledWith(mockWalletAPI))
@@ -191,8 +202,8 @@ describe('F-12.3: CIP-30 event listener registration', () => {
             />
         )
 
-        // Click eternl, wait for onWalletAPI called with walletAPINoExp
-        fireEvent.click(getByLabelText('eternl'))
+        // Click Eternl (aria-label uses wallet.name), wait for onWalletAPI called with walletAPINoExp
+        fireEvent.click(getByLabelText('Eternl'))
         await waitFor(() => expect(mockOnWalletAPI).toHaveBeenCalledWith(walletAPINoExp))
 
         // Rerender with the no-experimental walletAPI
@@ -335,6 +346,75 @@ describe('F-12.3: CIP-30 event listener registration', () => {
 
         expect(mockExperimental.off).toHaveBeenCalledWith('accountChange', expect.any(Function))
         expect(mockExperimental.off).toHaveBeenCalledWith('networkChange', expect.any(Function))
+    })
+
+})
+
+// ---------------------------------------------------------------------------
+// CIP-30 dynamic wallet detection
+// ---------------------------------------------------------------------------
+describe('F-12.4: CIP-30 dynamic wallet detection', () => {
+
+    it('1. Renders buttons for all installed CIP-30 wallets (not a fixed list)', () => {
+        render(
+            <WalletConnector
+                walletAPI={undefined}
+                onWalletAPI={mockOnWalletAPI}
+                onStakeKeyHash={mockOnStakeKeyHash}
+            />
+        )
+
+        // Both wallets from beforeEach mock should render
+        expect(screen.getByLabelText('Eternl')).toBeTruthy()
+        expect(screen.getByLabelText('Lace')).toBeTruthy()
+    })
+
+    it('2. Does not render buttons for non-CIP-30 entries on window.cardano', () => {
+        // Add a non-wallet key (missing apiVersion) — should be filtered out
+        window.cardano.getBalance = () => {}
+
+        render(
+            <WalletConnector
+                walletAPI={undefined}
+                onWalletAPI={mockOnWalletAPI}
+                onStakeKeyHash={mockOnStakeKeyHash}
+            />
+        )
+
+        // Only the two real wallets should render
+        expect(screen.getAllByRole('button').filter(b => b.getAttribute('aria-label') === 'getBalance')).toHaveLength(0)
+        expect(screen.getByLabelText('Eternl')).toBeTruthy()
+        expect(screen.getByLabelText('Lace')).toBeTruthy()
+    })
+
+    it('3. Shows no-wallet message when window.cardano is empty', () => {
+        window.cardano = {}
+
+        render(
+            <WalletConnector
+                walletAPI={undefined}
+                onWalletAPI={mockOnWalletAPI}
+                onStakeKeyHash={mockOnStakeKeyHash}
+            />
+        )
+
+        expect(screen.getByText('Not found')).toBeTruthy()
+    })
+
+    it('4. Connecting a dynamically detected wallet calls enable() and onWalletAPI', async () => {
+        const { getByLabelText, rerender } = render(
+            <WalletConnector
+                walletAPI={undefined}
+                onWalletAPI={mockOnWalletAPI}
+                onStakeKeyHash={mockOnStakeKeyHash}
+            />
+        )
+
+        // Connect via Lace (not in the old hardcoded list)
+        fireEvent.click(getByLabelText('Lace'))
+
+        await waitFor(() => expect(window.cardano.lace.enable).toHaveBeenCalled())
+        await waitFor(() => expect(mockOnWalletAPI).toHaveBeenCalledWith(mockWalletAPI))
     })
 
 })

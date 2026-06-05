@@ -14,6 +14,38 @@ import FlintLogo from '../../../img/flint-logo.svg'
 import NamiLogo from '../../../img/nami-logo.svg'
 import axios from "axios"
 
+// Fallback icons for known wallets when wallet.icon is absent
+const fallbackIcons = {
+    eternl: EternlLogo,
+    flint:  FlintLogo,
+    nami:   NamiLogo,
+}
+
+/**
+ * Enumerates installed CIP-30 wallets from window.cardano.
+ * A valid CIP-30 wallet exposes both .enable (function) and .apiVersion (string).
+ * Returns an array of { key, name, icon } objects.
+ */
+const getInstalledWallets = () => {
+    const cardano = window?.cardano
+    if (!cardano) return []
+    return Object.keys(cardano)
+        .filter(key => {
+            const w = cardano[key]
+            return w && typeof w === 'object'
+                && typeof w.enable === 'function'
+                && typeof w.apiVersion === 'string'
+        })
+        .map(key => {
+            const w = cardano[key]
+            return {
+                key,
+                name: w.name || key,
+                icon: w.icon || fallbackIcons[key] || null,
+            }
+        })
+}
+
 const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
 
     const dispatch = useDispatch()
@@ -31,12 +63,8 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
 
     const [loggedIn, setLoggedIn] = useState(false)
     const [walletIsEnabled, setWalletIsEnabled] = useState(false)
-    const [whichWalletSelected, setWhichWalletSelected] = 
-                                                useState({
-                                                    name : '', 
-                                                    src : '',
-                                                    w : 0,
-                                                    h :0} | undefined)
+    // { key, name, icon } — key matches the window.cardano[key] entry
+    const [whichWalletSelected, setWhichWalletSelected] = useState(undefined)
     const [walletBalance, setWalletBalance] = useState(undefined)
     const [walletVerify, setWalletVerify] = useState(false)
     const [changeAddr, setChangeAddr] = useState(undefined)
@@ -53,13 +81,10 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
     useEffect(() => {
         const saved = localStorage.getItem('lbazaar_wallet')
         if (saved && !whichWalletSelected) {
-            const walletConfigs = {
-                eternl: { name: 'eternl', src: EternlLogo, w: 25, h: 25 },
-                flint:  { name: 'flint',  src: FlintLogo,  w: 30, h: 30 },
-                nami:   { name: 'nami',   src: NamiLogo,   w: 25, h: 25 },
-            }
-            if (walletConfigs[saved] && window?.cardano?.[saved]) {
-                setWhichWalletSelected(walletConfigs[saved])
+            const installed = getInstalledWallets()
+            const match = installed.find(w => w.key === saved)
+            if (match) {
+                setWhichWalletSelected(match)
             }
         }
     }, [])
@@ -117,10 +142,10 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
             clearInterval(heartbeatRef.current)
             return
         }
-        const walletName = whichWalletSelected.name
+        const walletKey = whichWalletSelected.key
         const runHeartbeat = async () => {
             try {
-                if (!window?.cardano?.[walletName]) {
+                if (!window?.cardano?.[walletKey]) {
                     handleHeartbeatDisconnect('disconnected')
                     return
                 }
@@ -189,28 +214,29 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
         handleOnDialogClose()
     }
 
-    const WalletIconButton = ({ name, src, w, h }) => {
-        
+    const WalletIconButton = ({ wallet }) => {
+
         const handleWalletSelect = () => {
-           
-            setWhichWalletSelected({name, src, w, h})
+            setWhichWalletSelected(wallet)
         }
 
         return (
             <IconButton
-                aria-label={name}
+                aria-label={wallet.name}
                 color="primary"
                 onClick={handleWalletSelect}>
-                <img src={src} alt={name} width={w} height={h}/>
+                {wallet.icon
+                    ? <img src={wallet.icon} alt={wallet.name} width={25} height={25}/>
+                    : <span style={{ fontSize: 14, fontWeight: 'bold' }}>{wallet.name.slice(0,1).toUpperCase()}</span>
+                }
             </IconButton>
         )
       }
 
-    const WalletIconButtonMobile = ({ name, src, w, h }) => {
-        
+    const WalletIconButtonMobile = ({ wallet }) => {
+
         const handleWalletSelect = () => {
-           
-            setWhichWalletSelected({name, src, w, h})
+            setWhichWalletSelected(wallet)
         }
 
         const redirectMobile = () => {
@@ -224,49 +250,47 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                 method: 'get',
                 action: 'mobile'
             }))
-            
+
         }
-   
+
         if (!!window?.cardano?.flint) {
             return (
                 <IconButton
-                    aria-label={name}
+                    aria-label={wallet.name}
                     color="primary"
                     onClick={handleWalletSelect}>
-                    <img src={src} alt={name} width={w} height={h}/>
+                    {wallet.icon
+                        ? <img src={wallet.icon} alt={wallet.name} width={25} height={25}/>
+                        : <span style={{ fontSize: 14, fontWeight: 'bold' }}>{wallet.name.slice(0,1).toUpperCase()}</span>
+                    }
                 </IconButton>
             )
-        } else 
+        } else
         return(
             <IconButton
-                    aria-label={name}
+                    aria-label={wallet.name}
                     color="primary"
                     onClick={redirectMobile}>
-                    <img src={src} alt={name} width={w} height={h}/>
+                    {wallet.icon
+                        ? <img src={wallet.icon} alt={wallet.name} width={25} height={25}/>
+                        : <span style={{ fontSize: 14, fontWeight: 'bold' }}>{wallet.name.slice(0,1).toUpperCase()}</span>
+                    }
             </IconButton>
         )
       }
 
     const checkIfWalletFound = async () => {
 
-        let walletFound = false
-        
-        if (whichWalletSelected) {
-            const walletChoice = whichWalletSelected.name
-            if (walletChoice === "eternl") {
-                walletFound = !!window?.cardano?.eternl
-            } else if (walletChoice === "flint") {
-                walletFound = !!window?.cardano?.flint
-            } else if (walletChoice === "nami") {
-                walletFound = !!window?.cardano?.nami
-            } 
+        if (!whichWalletSelected) return false
 
-            if (!walletFound) {
-                dispatch(actions.error({
-                    message: translatables.wallet_error.not_found
-                }))
-            }
+        const walletFound = !!window?.cardano?.[whichWalletSelected.key]
+
+        if (!walletFound) {
+            dispatch(actions.error({
+                message: translatables.wallet_error.not_found
+            }))
         }
+
         return walletFound
     }
 
@@ -302,8 +326,8 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
 
     const enableWallet = async () => {
 
-        const checkNetwork = async (walletAPI) => {
-            const networkId = await walletAPI.getNetworkId()
+        const checkNetwork = async (enabledAPI) => {
+            const networkId = await enabledAPI.getNetworkId()
             if (networkId !== expectedNetworkId) {
                 const networkName = expectedNetworkId === 1 ? 'Mainnet' : 'Testnet/Preprod'
                 dispatch(actions.error({
@@ -318,31 +342,12 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
 
         try {
             setWalletDisconnected(false)
-            const walletChoice = whichWalletSelected.name
-            if (walletChoice === "eternl") {
-                const walletAPI = await window.cardano.eternl.enable()
-                if (!await checkNetwork(walletAPI)) return false
-                localStorage.setItem('lbazaar_wallet', walletChoice)
-                onWalletAPI(walletAPI)
-                return true
-            } else if (walletChoice === "flint") {
-                const walletAPI = await window.cardano.flint.enable()
-                if (!await checkNetwork(walletAPI)) return false
-                localStorage.setItem('lbazaar_wallet', walletChoice)
-                onWalletAPI(walletAPI)
-                return true
-            } else if (walletChoice === "nami") {
-                const walletAPI = await window.cardano.nami.enable()
-                if (!await checkNetwork(walletAPI)) return false
-                localStorage.setItem('lbazaar_wallet', walletChoice)
-                onWalletAPI(walletAPI)
-                return true
-            } else {
-                dispatch(actions.error({
-                    message: translatables.wallet_error.not_connected
-                }))
-                return false
-            }
+            const walletKey = whichWalletSelected.key
+            const api = await window.cardano[walletKey].enable()
+            if (!await checkNetwork(api)) return false
+            localStorage.setItem('lbazaar_wallet', walletKey)
+            onWalletAPI(api)
+            return true
 
         } catch (err) {
 
@@ -533,10 +538,13 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                     <Stack direction="column" alignItems="left" spacing={1}>
                         <Box display="flex" alignItems="center">
                             <Icon>
-                                <img src={whichWalletSelected.src} alt={whichWalletSelected.name} width={whichWalletSelected.w} height={whichWalletSelected.h}/> 
+                                {whichWalletSelected.icon
+                                    ? <img src={whichWalletSelected.icon} alt={whichWalletSelected.name} width={25} height={25}/>
+                                    : <span style={{ fontSize: 14, fontWeight: 'bold' }}>{whichWalletSelected.name.slice(0,1).toUpperCase()}</span>
+                                }
                             </Icon>
                             <Typography variant="h5" color="BlackText">
-                            &nbsp;{translatables.texts.wallet_connected}   
+                            &nbsp;{translatables.texts.wallet_connected}
                             </Typography>
                         </Box>
                         <Box display="flex" alignItems="center" paddingLeft={0.5}>
@@ -547,7 +555,7 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
                                 </Typography>
                                 }
                         </Box>
-                        {whichWalletSelected.name == "eternl" && 
+                        {whichWalletSelected.key === "eternl" &&
                             <Box textAlign="center" display="flex" justifyContent="left" alignItems="center">
                                 <Checkbox
                                     name="hwWallet"
@@ -600,44 +608,64 @@ const WalletConnector = ({onStakeKeyHash, walletAPI, onWalletAPI}) => {
             )}
             <BrowserView>
             {!walletIsEnabled && <Card>
-                <CardContent>  
+                <CardContent>
                     <Stack direction="row" alignItems="left" spacing={1}>
                         <Box display="flex" alignItems="flex-end">
-                            <Typography variant="h5" children={translatables.texts.wallet_connect} color="BlackText" /> 
+                            <Typography variant="h5" children={translatables.texts.wallet_connect} color="BlackText" />
                         </Box>
                     </Stack>
                 </CardContent>
                 <Stack direction="column" alignItems="left" spacing={1} ml={1} mb={1}>
-                        <Box display="flex" alignItems="center" ml={0.5}>
-                            <WalletIconButton name="eternl" src={EternlLogo} w={25} h={25}/>
-                            <Typography color="BlackText">{translatables.wallets.eternl}</Typography>
-                        </Box>
-                        <Box display="flex" alignItems="center" ml={0}>
-                            <WalletIconButton name="flint" src={FlintLogo} w={30} h={30}/>
-                            <Typography color="BlackText">{translatables.wallets.flint}</Typography>
-                        </Box>
-                        <Box display="flex" alignItems="center" ml={0} paddingLeft={0.3}>
-                            <WalletIconButton name="nami" src={NamiLogo} w={25} h={25}/>
-                            <Typography color="BlackText">{translatables.wallets.nami}</Typography>
-                        </Box>
+                    {(() => {
+                        const installed = getInstalledWallets()
+                        if (installed.length === 0) {
+                            return (
+                                <Box ml={0.5} mb={1}>
+                                    <Typography color="text.secondary">
+                                        {translatables?.wallet_error?.not_found ?? 'No Cardano wallet found. Please install a CIP-30 compatible wallet.'}
+                                    </Typography>
+                                </Box>
+                            )
+                        }
+                        return installed.map(wallet => (
+                            <Box key={wallet.key} display="flex" alignItems="center" ml={0.5}>
+                                <WalletIconButton wallet={wallet}/>
+                                <Typography color="BlackText">{wallet.name}</Typography>
+                            </Box>
+                        ))
+                    })()}
                 </Stack>
-            </Card> 
+            </Card>
             }
             </BrowserView>
             <MobileView>
                 {!walletIsEnabled && <Card>
-                    <CardContent>  
+                    <CardContent>
                         <Stack direction="row" alignItems="left" spacing={1}>
                             <Box display="flex" alignItems="flex-end">
-                                <Typography variant="h5" children={translatables.texts.wallet_connect} color="BlackText" /> 
+                                <Typography variant="h5" children={translatables.texts.wallet_connect} color="BlackText" />
                             </Box>
                         </Stack>
                     </CardContent>
                     <Stack direction="column" alignItems="left" spacing={1} ml={1} mb={1}>
-                            <Box display="flex" alignItems="center" ml={0}>
-                                <WalletIconButtonMobile name="flint" src={FlintLogo} w={30} h={30}/>
-                                <Typography color="BlackText">{translatables.wallets.flint}</Typography>
-                            </Box>
+                        {(() => {
+                            const installed = getInstalledWallets()
+                            if (installed.length === 0) {
+                                return (
+                                    <Box ml={0.5} mb={1}>
+                                        <Typography color="text.secondary">
+                                            {translatables?.wallet_error?.not_found ?? 'No Cardano wallet found. Please install a CIP-30 compatible wallet.'}
+                                        </Typography>
+                                    </Box>
+                                )
+                            }
+                            return installed.map(wallet => (
+                                <Box key={wallet.key} display="flex" alignItems="center" ml={0}>
+                                    <WalletIconButtonMobile wallet={wallet}/>
+                                    <Typography color="BlackText">{wallet.name}</Typography>
+                                </Box>
+                            ))
+                        })()}
                     </Stack>
                 </Card>}
             </MobileView>
