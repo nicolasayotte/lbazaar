@@ -31,7 +31,7 @@ class CourseUpdateRequest extends FormRequest
             'id'   => 'required',
             'title'   => 'required',
             'description'   => 'required',
-            'language'   => 'required',
+            'language'   => 'required|string|in:' . implode(',', config('languages')),
             'course_category_id'   => 'required',
             'imageThumbnail.*' => 'mimes:jpg,jpeg,png',
             'imageThumbnail' => 'max:1',
@@ -43,4 +43,11 @@ class CourseUpdateRequest extends FormRequest
           'imageThumbnail.max' => 'Only 1 image are allowed'
         ];
       }
+
+    public function attributes()
+    {
+        return array_map('strtolower', [
+            'language' => getTranslation('texts.language'),
+        ]);
+    }
 }

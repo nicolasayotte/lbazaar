@@ -12,7 +12,7 @@ import { Inertia } from "@inertiajs/inertia"
 
 const Create = () => {
 
-    const { courseApplication, translatables, categories, nft, course, packages } = usePage().props
+    const { courseApplication, translatables, categories, nft, course, packages, languages } = usePage().props
 
     const formatOptions = {
         'live': 'Live',
@@ -42,6 +42,7 @@ const Create = () => {
         certificate_image_url: initialData?.certificate_image_url ?? '',
         token_reward_enabled: initialData?.token_reward_enabled ?? false,
         token_reward_amount: initialData?.token_reward_amount ?? '',
+        language: initialData?.language ?? '',
     })
 
     const [imgPreview, setImgPreview] = useState(course && course.image_thumbnail ? course.image_thumbnail : null)
@@ -230,6 +231,24 @@ const Create = () => {
                                                     <Input
                                                         {...params}
                                                         label={translatables.texts.category}
+                                                        errors={errors}
+                                                    />
+                                                }
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <Autocomplete
+                                                options={languages || []}
+                                                fullWidth
+                                                size="small"
+                                                value={data.language || null}
+                                                onChange={(e, newValue) => setData('language', newValue || '')}
+                                                renderInput={params =>
+                                                    <Input
+                                                        {...params}
+                                                        label={translatables.texts.language}
+                                                        name="language"
+                                                        required
                                                         errors={errors}
                                                     />
                                                 }

@@ -45,6 +45,7 @@ class CourseRequest extends FormRequest
             'certificate_image_url'    => 'nullable|url|max:2048',
             'token_reward_enabled'     => 'boolean',
             'token_reward_amount'      => 'required_if:token_reward_enabled,1,true|nullable|integer|min:1|max:1000000',
+            'language'                 => 'required|string|in:' . implode(',', config('languages')),
         ];
 
         return $rules;
@@ -68,6 +69,7 @@ class CourseRequest extends FormRequest
             'certificate_name'         => getTranslation('texts.certificate_name'),
             'certificate_description'  => getTranslation('texts.certificate_description'),
             'token_reward_amount'      => getTranslation('texts.token_reward_amount'),
+            'language'                 => getTranslation('texts.language'),
         ];
 
         return array_map('strtolower', $attributes);

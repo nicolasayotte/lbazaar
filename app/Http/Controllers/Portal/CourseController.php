@@ -83,7 +83,7 @@ class CourseController extends Controller
     public function index(SearchClassRequest $request)
     {
 
-        $languages = $this->courseRepository->getLanguages();
+        $languages = array_map(fn($l) => ['id' => $l, 'name' => $l], config('languages'));
         $types = $this->courseTypeRepository->getAll();
         $categories = $this->courseCategoryRepository->getAll();
         $nfts = $this->nftRepository->getAll();
@@ -397,7 +397,8 @@ class CourseController extends Controller
             'categories'        => $this->courseCategoryRepository->getDropdownData(),
             'nft'               => $this->nftRepository->getNftById($nftId),
             'title'             => getTranslation('title.class.create'),
-            'packages'          => $this->coursePackageRepository->getByUserId(auth()->user()->id)
+            'packages'          => $this->coursePackageRepository->getByUserId(auth()->user()->id),
+            'languages'         => config('languages'),
         ])->withViewData([
             'title'             => getTranslation('title.class.create')
         ]);
@@ -426,7 +427,8 @@ class CourseController extends Controller
             'nft'        => $this->nftRepository->getNftById($nftId),
             'categories' => $this->courseCategoryRepository->getDropdownData(),
             'title'      => getTranslation('texts.edit_class'),
-            'packages'   => $this->coursePackageRepository->getByUserId(auth()->user()->id)
+            'packages'   => $this->coursePackageRepository->getByUserId(auth()->user()->id),
+            'languages'  => config('languages'),
         ])->withViewData([
             'title'      => getTranslation('texts.edit_class')
         ]);
