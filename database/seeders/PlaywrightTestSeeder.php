@@ -119,6 +119,23 @@ class PlaywrightTestSeeder extends Seeder
                 $admin->attachRole('admin');
             }
 
+            // Dedicated throwaway user for F-02.6 (admin "user status can be toggled").
+            // Named "E2E Test" so the admin keyword search finds it, and a NON-fixture
+            // user (not used for any login storageState) so toggling its is_enabled does
+            // not break the pw-admin/teacher/student login fixtures. Makes F-02.6 pass
+            // deterministically instead of depending on F-02.4 having run first.
+            $toggleTarget = $this->upsertUser(
+                ['email' => 'pw-toggle-target@example.com'],
+                [
+                    'first_name' => 'E2E Test',
+                    'last_name' => 'Toggle Target',
+                    'country_id' => $country->id,
+                ]
+            );
+            if (! $toggleTarget->hasRole('student')) {
+                $toggleTarget->attachRole('student');
+            }
+
             // ── Wallets ─────────────────────────────────────────────
             UserWallet::firstOrCreate(
                 ['user_id' => $student->id],

@@ -180,6 +180,29 @@ class DemoVideoSeeder extends Seeder
                 ]
             );
 
+            // ── Demo Available Application (approved, no course) ─────────────────
+            // Allows demo-teacher to navigate to /classes/{id}/create and create a
+            // new class from scratch. CourseController::create() calls
+            // findOneApproved() which requires approved_at != NULL && no Course.
+            // updateOrCreate (not firstOrCreate) so a prior partial run that left
+            // approved_at NULL is corrected — otherwise findOneApproved() 404s and
+            // the demo create-class link silently breaks.
+            $demoApplication = CourseApplication::updateOrCreate(
+                ['professor_id' => $teacher->id, 'title' => 'Demo Available Application'],
+                [
+                    'course_type_id'    => $generalType->id,
+                    'description'       => 'Approved application available for demo course creation',
+                    'price'             => 5000,
+                    'points_earned'     => 0,
+                    'max_participant'   => 50,
+                    'is_live'           => false,
+                    'approved_at'       => now(),
+                    'length'            => '02:00:00',
+                    'lecture_frequency' => 'weekly',
+                ]
+            );
+            $demoApplication->categories()->syncWithoutDetaching([$category->id]);
+
             // A successful Stripe payment for the completed Demo Reward Course
             // — gives the admin refund panel one refundable row to demo against.
             StripePayment::updateOrCreate(
