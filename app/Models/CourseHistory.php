@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\NftTransactions;
 use App\Models\Nft;
+use App\Models\StripePayment;
 
 class CourseHistory extends Model
 {
@@ -57,6 +58,12 @@ class CourseHistory extends Model
         'enrolled_token_reward_amount' => 'integer',
     ];
 
+    /**
+     * Append paid_with_money so it is included in all serialisations
+     * (e.g. auth.user.courseHistories passed to Inertia pages).
+     */
+    protected $appends = ['paid_with_money'];
+
     public function courseSchedule()
     {
         return $this->belongsTo(CourseSchedule::class);
@@ -70,6 +77,39 @@ class CourseHistory extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function stripePayment()
+    {
+        return $this->hasOne(StripePayment::class);
+    }
+
+    /**
+     * True when this booking was paid with real money (ADA on-chain or Stripe).
+     *
+     * ADA: payment_status is set, OR payment_ada_amount > 0, OR payment_tx_hash present.
+     * Stripe: a linked StripePayment record exists.
+     *
+     * This flag is appended to all serialisations so the frontend can decide
+     * whether to show a self-cancel button or an admin-refund notice.
+     */
+    public function getPaidWithMoneyAttribute(): bool
+    {
+        // ADA payment indicators — no extra query needed
+        if (
+            $this->payment_status !== null ||
+            (float) ($this->payment_ada_amount ?? 0) > 0 ||
+            $this->payment_tx_hash !== null
+        ) {
+            return true;
+        }
+
+        // Stripe payment — use loaded relation when available to avoid N+1
+        if ($this->relationLoaded('stripePayment')) {
+            return $this->stripePayment !== null;
+        }
+
+        return StripePayment::where('course_history_id', $this->id)->exists();
     }
 
     /**

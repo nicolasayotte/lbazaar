@@ -1,5 +1,6 @@
 import { usePage, Link } from "@inertiajs/inertia-react"
 import { Paper, Table, TableBody, TableContainer, TableHead, TableCell, TableRow, Stack, IconButton, Tooltip, Typography, Grid } from "@mui/material"
+import InfoIcon from "@mui/icons-material/Info"
 import routes, { getRoute } from "../../../../helpers/routes.helper"
 import { PeopleAlt, BookmarkAdd as BookCourse, BookmarkRemove as CancelBook, ContentPasteGo as AttendClass, VideoCameraFront as Live, PlayCircle as OnDemand } from "@mui/icons-material"
 
@@ -17,6 +18,8 @@ const CourseScheduleTable = ({ id, data, handleOnCancelBook, handleOnBook }) => 
         let userBookedCourses = isLoggedIn ? auth.user.course_histories.filter(filterCancelledBookings) : []
         let isBooked = userBookedCourses.filter(booking => booking.course_schedule_id === row.id).length > 0
         let isFullyBooked = row.course_history.filter(filterCancelledBookings).length == row.max_participant
+        const userBooking = userBookedCourses.find(booking => booking.course_schedule_id === row.id)
+        const paidWithMoney = userBooking?.paid_with_money ?? false
 
         const Participants = () => (
             <Grid container spacing={1} alignItems={'center'}>
@@ -64,11 +67,21 @@ const CourseScheduleTable = ({ id, data, handleOnCancelBook, handleOnBook }) => 
                                         </IconButton>
                                     </Link>
                                 </Tooltip>
-                                <Tooltip title={`${translatables.texts.cancel_class_booking}`}>
-                                    <IconButton size="small" onClick={() => handleOnCancelBook(row.id)}>
+                                {paidWithMoney ? (
+                                    <Tooltip title="Refunds for paid bookings are handled by support — please contact an administrator.">
+                                        <span>
+                                            <IconButton size="small" disabled>
+                                                <InfoIcon color="disabled" />
+                                            </IconButton>
+                                        </span>
+                                    </Tooltip>
+                                ) : (
+                                    <Tooltip title={`${translatables.texts.cancel_class_booking}`}>
+                                        <IconButton size="small" onClick={() => handleOnCancelBook(row.id)}>
                                             <CancelBook sx={{ color: '#dc143c' }} />
-                                    </IconButton>
-                                </Tooltip>
+                                        </IconButton>
+                                    </Tooltip>
+                                )}
                              </>
                         )}
                         { !isBooked && !isFullyBooked && (

@@ -41,7 +41,7 @@ class HandleInertiaRequests extends Middleware
 
         return array_merge(parent::share($request), [
             'isLoggedIn'    => fn () => @$request->user() ? true : false,
-            'auth.user'     => fn () => @$request->user() ? @$request->user()->load('roles', 'userWallet', 'courseHistories', 'badges') : null,
+            'auth.user'     => fn () => @$request->user() ? @$request->user()->load('roles', 'userWallet', 'courseHistories.stripePayment', 'badges') : null,
             'translatables' => $translationRepository->getTranslations(),
             'locale'        => app()->getLocale(),
             'flash' => [

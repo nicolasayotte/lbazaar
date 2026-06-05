@@ -25,6 +25,9 @@ const CourseScheduleList = ({ data, handleOnBook, handleOnCancelBook }) => {
 
         const isBooked = userBookedCourses.filter(booking => booking.course_schedule_id === row.id).length > 0
 
+        const userBooking = userBookedCourses.find(booking => booking.course_schedule_id === row.id)
+        const paidWithMoney = userBooking?.paid_with_money ?? false
+
         const isLive = row.course.is_live
 
         const isFullyBooked = isLive ? row.course_history.filter(booking => booking.is_cancelled != true).length == row.course.max_participant : false
@@ -136,6 +139,18 @@ const CourseScheduleList = ({ data, handleOnBook, handleOnCancelBook }) => {
 
             // Cancel Button
             if (isBooked && row.status == 'Upcoming') {
+                if (paidWithMoney) {
+                    return (
+                        <Button
+                            fullWidth
+                            variant="outlined"
+                            disabled
+                            size="large"
+                        >
+                            Refunds for paid bookings are handled by support — please contact an administrator.
+                        </Button>
+                    )
+                }
                 return (
                     <Button
                         fullWidth
