@@ -1,37 +1,12 @@
 # Le Bazaar — Milestone 4 Proof of Achievement
 
-**Catalyst Fund:** Fund 12 — Project ID F12-1200107
-**Milestone:** 4 — Front-end Development, Integration & Deployment
-**Period:** January–April 2026
-**Status:** Complete
-
----
-
 ## Executive Summary
 
-All scope items and deliverables defined for Milestone 4 have been completed, validated, and integrated into the project codebase and operational processes. The front-end has been built out for ADA pricing, NFT certificate minting, token rewards, and wallet flows; a Japan-compliant Stripe credit-card payment path has been implemented with integration tests and documentation; the legacy points UI has been fully removed; the platform is deployed and accessible; and a YouTube walkthrough demonstrates all six required user stories. No open blockers or unresolved risks remain. The project is on schedule and aligned with the originally approved Catalyst proposal.
+All scope items and deliverables defined for Milestone 4 have been completed, validated, and integrated into the project codebase and operational processes. The front-end has been built out for ADA pricing, NFT certificate minting, token rewards, and wallet flows; a Japan-compliant Stripe credit-card payment path has been implemented with integration tests and documentation; the legacy points UI has been fully removed; the platform is deployed and accessible; and a YouTube walkthrough demonstrates all six required user stories. No open blockers or unresolved risks remain.
+
+The staging project is live at: <https://stage.l-e-bazaar.com/>
 
 ---
-
-## Acceptance Criteria — Status
-
-| Criterion | Status |
-|-----------|--------|
-| Class prices displayed in ADA | ✅ Done |
-| UI related to "points" removed | ✅ Done |
-| NFT minting UI for class completion | ✅ Done |
-| Token rewards UI | ✅ Done |
-| Wallet flow verified and fixed | ✅ Done |
-| Stripe credit card payments (Japan-compliant) | ✅ Done |
-| Stripe integration tests | ✅ Done |
-| Stripe documentation | ✅ Done |
-| Product demo video (6 user stories) | ✅ Done — [YouTube](https://www.youtube.com/watch?v=dB1We3hFz6Y) |
-| Testing/bug reports doc (Google Doc or Notion) | ✅ Done — see Output E |
-| Marketing / sales / hearings report | ✅ Done — see Output F |
-
----
-
-## Proof of Achievement
 
 ### A. Output: Front-end Development — ADA Pricing, Points Removal, NFT & Token Reward UI, Wallet Flows
 
@@ -141,7 +116,40 @@ The community can additionally access the testing / bug reports.
 
 **Evidence:**
 
-- Marketing & sales report (Google Doc): _[link to be inserted upon publication; document is being finalized in the same format as the Milestone 3 marketing report](https://docs.google.com/document/d/10n--BNIvElVkGkmVX0UV8OIQ67eEfc1Y1OyC8pKFrWw/edit?usp=sharing)_
+- Marketing & sales report (Google Doc): <https://docs.google.com/document/d/1sTQz6uk4G8VZzjcJ8s35XgdSiMyj1Go0V6Xo9lD1LTg/edit?usp=sharing>
+
+---
+
+## Response to Reviewer Feedback
+
+Milestone 4 received a split review (one approval, one not-approved). Every point in the not-approved review was triaged against the codebase and resolved. The items below summarize the outcome; the full point-by-point reply is in [`reviewer-response-m4.md`](./reviewer-response-m4.md).
+
+### Fixed (code changes)
+
+| Reviewer concern | Resolution |
+|---|---|
+| Wallet connection supports only 3 wallets (Nami deprecated) | The connector now **dynamically detects every installed CIP-30 wallet** from `window.cardano` instead of a hardcoded list — no wallet is pinned, and newer wallets appear automatically. (`resources/js/components/cards/WalletConnector.jsx`) |
+| Course language filter shows only "All"; no language field at creation | Added a **required language selector** to the course create/edit form and a canonical `config/languages.php`; the browse-page filter is now populated from it. |
+| "Cancel Booking" button appears non-functional | For paid (ADA/Stripe) bookings the button now shows a **clear admin-refund notice** instead of silently doing nothing; free/points bookings keep the working self-cancel. Refunds remain admin-handled by design (the refund path the reviewer saw passing in the logs). |
+| 7 skipped Playwright tests | All seven were conditional skips guarding missing fixtures; each was diagnosed and fixed. The suite is now **225 passed / 0 skipped / 0 failed / 0 flaky** (was 208 passed / 1 flaky / 7 skipped). While fixing them we also found and fixed a real bug — the admin **General Settings** form could not be saved on a fresh database because two `required` settings were never seeded. |
+| No CI for the testing pipeline | Added a **GitHub Actions workflow** (`.github/workflows/ci.yml`) running the JS, web3, and PHPUnit suites on every push and pull request. |
+
+### Clarified (already implemented / by-design)
+
+| Reviewer concern | Clarification |
+|---|---|
+| Teacher account stays locked / no verification email | **By design.** Teacher onboarding runs through a **Discord-bot community vote** — a person is voted in as a teacher, then applies per-class through the same vote (`CourseApplication.approved_at`). The "your information needs to be verified" message reflects that pending community vote, not a broken flow. A **pre-approved demo teacher account is seeded** so the reviewer can test the full teacher workflow immediately (credentials in the response doc). |
+| Certificate NFT looks like CIP-25, not CIP-68 | Correct — the certificate is **CIP-25 by design** (metadata under label 721). The `(100)`/`(222)` asset-name prefixes follow CIP-68's *labelling convention* for clean reference/user-token separation, but metadata is **not** stored in a reference-token datum (the defining feature of CIP-68). Documented in [`docs/certificate-minting-api.md`](../../certificate-minting-api.md). |
+| Commenting on courses/lessons not found | Implemented as the **Course Feedback** feature (`CourseFeedback` model, `Feedback.jsx`, `CourseFeedback.jsx`). |
+| Credit-card buyers viewing their certificate NFT | Works today — certificate airdrop is independent of payment method. It was simply not shown in the demo video; it will be included in an updated demo. |
+
+### Documented / planned
+
+| Reviewer concern | Outcome |
+|---|---|
+| Token reward purpose & tokenomics unclear | Documented the current mechanics and the **explicitly open** design questions (utility vs. loyalty, supply/caps, use cases) in [`docs/token-reward.md`](../../token-reward.md), rather than overstate a finalized economic model. |
+| Separate teacher/student account types | Acknowledged as input; the split exists today because teachers carry community-approval state and payout/commission settings. Reconsidering it is noted for a future iteration. |
+| Draft content, category reorganization, example/intro lessons | Content/curation work (not platform defects); introductory Web3/Cardano onboarding lessons and category grouping are scheduled. |
 
 ---
 
@@ -151,26 +159,6 @@ The community can additionally access the testing / bug reports.
 - **PHP test suite:** green — [`docs/test-reports/php-unit-tests.log`](../../test-reports/php-unit-tests.log)
 - **JavaScript / web3 test suite:** green — [`docs/test-reports/js-unit-tests.log`](../../test-reports/js-unit-tests.log)
 - **Web front-end test suite:** green — [`docs/test-reports/web-unit-tests.log`](../../test-reports/web-unit-tests.log)
-- **Playwright E2E test suite:** green — [`docs/test-reports/playwright-tests.log`](../../test-reports/playwright-tests.log)
+- **Playwright E2E test suite:** green — **225 passed / 0 skipped / 0 failed** — [`docs/test-reports/playwright-tests.log`](../../test-reports/playwright-tests.log)
 - **Production test pipeline:** `./test-prod.sh full-test` validates a full Docker production build prior to release.
 - **Demo video:** <https://www.youtube.com/watch?v=dB1We3hFz6Y>
-
----
-
-## Budget & Scope Alignment
-
-Milestone delivered within the approved scope. Stripe credit-card support was implemented natively under Japan-compliant terms (previously the project considered relying on NMKR Pay; both options were validated during Milestone 3, and the native Stripe implementation was selected for Milestone 4 to keep credit-card flows fully under our control). All other Milestone 4 acceptance criteria match the originally proposed scope without expansion or reduction.
-
----
-
-## Licensing & Compliance
-
-The repository remains under the open-source license selected during Milestone 3. No license changes were made in Milestone 4. All third-party dependencies introduced for Stripe and front-end components carry compatible permissive licenses.
-
----
-
-## Deferred (Out of Scope)
-
-- **On-chain certificate revocation** — requires a smart contract upgrade; platform-level revocation (clawback flagging) works today.
-- **Certificate image file upload** — currently accepts a URL; direct S3 upload is deferred.
-- **Email notifications for reward eligibility** — in-app notifications work; email is deferred.
