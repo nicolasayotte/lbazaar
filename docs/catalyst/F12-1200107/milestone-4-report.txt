@@ -1,0 +1,192 @@
+LE BAZAAR — MILESTONE 4 PROOF OF ACHIEVEMENT
+
+
+EXECUTIVE SUMMARY
+
+All scope items and deliverables defined for Milestone 4 have been completed, validated, and integrated into the project codebase and operational processes. The front-end has been built out for ADA pricing, NFT certificate minting, token rewards, and wallet flows; a Japan-compliant Stripe credit-card payment path has been implemented with integration tests and documentation; the legacy points UI has been fully removed; the platform is deployed and accessible; and a YouTube walkthrough demonstrates all six required user stories. No open blockers or unresolved risks remain.
+
+The staging project is live at: https://stage.l-e-bazaar.com/
+
+
+------------------------------------------------------------
+
+A. OUTPUT: FRONT-END DEVELOPMENT — ADA PRICING, POINTS REMOVAL, NFT & TOKEN REWARD UI, WALLET FLOWS
+
+Acceptance Criteria:
+
+- Class prices are displayed in ADA (not points or fiat).
+- All UI related to "points" has been removed.
+- The NFT minting UI for class completion matches the designed mockups.
+- The token rewards UI matches the designed mockups.
+- The wallet flow (CIP-30 connect, sign, disconnect/reconnect) is verified and fixed.
+
+Evidence:
+
+- Source code (release tag): https://github.com/nicolasayotte/lbazaar/releases/tag/catalyst%2Ff12%2Fm4
+- YouTube product demo (all 6 user stories): https://www.youtube.com/watch?v=dB1We3hFz6Y
+- Acceptance-criteria checklist (in-repo): docs/catalyst/F12-1200107/milestone-4-checklist.md
+- Architecture & flows: docs/architecture.md, docs/data-flows.md
+
+
+------------------------------------------------------------
+
+B. OUTPUT: STRIPE CREDIT CARD PAYMENTS — JAPAN-COMPLIANT INTEGRATION, TESTS, AND DOCUMENTATION
+
+Acceptance Criteria:
+
+- Students can buy classes using a credit card via Stripe.
+- The Stripe integration is Japan-compliant.
+- The Stripe payment flow has integration tests.
+- The Stripe integration is documented.
+
+Evidence:
+
+- Source code (release tag): https://github.com/nicolasayotte/lbazaar/releases/tag/catalyst%2Ff12%2Fm4
+- YouTube demo segment — "Buy with Credit Card": https://www.youtube.com/watch?v=dB1We3hFz6Y
+- Stripe documentation (in-repo): docs/integrations.md
+- Integration tests (in-repo): tests/Feature/StripePaymentTest.php and related Playwright suites under tests/Browser/
+
+
+------------------------------------------------------------
+
+C. OUTPUT: INTEGRATION TESTING, MANUAL TESTING, END-TO-END TESTING, AND BUG FIXING
+
+Acceptance Criteria:
+
+- Integration tests passing.
+- End-to-end (Playwright) tests passing.
+- Manual test pass executed against the deployed environment.
+- Bugs surfaced during testing are tracked and resolved.
+
+Evidence:
+
+- PHP unit & feature test report: docs/test-reports/php-unit-tests.log
+- JavaScript / web3 unit test report: docs/test-reports/js-unit-tests.log
+- Web front-end unit test report: docs/test-reports/web-unit-tests.log
+- Playwright end-to-end test report: docs/test-reports/playwright-tests.log
+- Milestone 4 changelog (bug fixes and feature changes): docs/catalyst/F12-1200107/milestone-4-changelog.md
+- Production validation pipeline: ./test-prod.sh full-test (see docs/deployment.md)
+
+
+------------------------------------------------------------
+
+D. OUTPUT: DEPLOYMENT AND DOCUMENTATION
+
+Acceptance Criteria:
+
+- The application is deployed to an accessible environment.
+- Documentation is updated to reflect Milestone 4 scope (architecture, integrations, deployment, gotchas).
+
+Evidence:
+
+- Deployment guide: docs/deployment.md
+- Documentation index: docs/index.md
+- Updated architecture, patterns, data flows, integrations, authentication, API, certificate-minting-API, and gotchas documents under docs/
+- Release tag: https://github.com/nicolasayotte/lbazaar/releases/tag/catalyst%2Ff12%2Fm4
+
+
+------------------------------------------------------------
+
+E. OUTPUT: PRODUCT DEMO VIDEO AND TESTING/BUG REPORTS
+
+Acceptance Criteria: the product demo video covers all six user experiences:
+
+1. Students can buy classes with ADA.
+2. Students can buy classes using a credit card via Stripe.
+3. Students can receive NFTs as completion of the class (if teachers set it).
+4. Students can receive tokens as a reward of completion of the class (if teachers set it).
+5. Teachers can set the NFT as completion rewards.
+6. Teachers can set token rewards.
+
+The community can additionally access the testing / bug reports.
+
+Evidence:
+
+- YouTube walkthrough — all 6 user stories: https://www.youtube.com/watch?v=dB1We3hFz6Y
+- Demo video plan (chapter mapping to user stories): docs/catalyst/F12-1200107/milestone-4-demo-video-plan.md
+- Test reports (in-repo, publicly accessible via the open-source release): docs/test-reports/
+- Bug-fix changelog: docs/catalyst/F12-1200107/milestone-4-changelog.md
+
+
+------------------------------------------------------------
+
+F. OUTPUT: SALES, MARKETING, AND HEARINGS REPORT
+
+Acceptance Criteria: the marketing report, while preserving the privacy of third-party organizations, includes:
+
+- A summary of events attended (dates, times, photos) — at least 2 events per month.
+- An anonymized report on which local authorities were approached and what response was received.
+- A community-accessible publication of the school survey (without naming the schools).
+- The names of municipalities and schools that allowed test lessons to be conducted.
+- At least one additional local-government-related organization using the platform and watching a test class on Web3.
+- At least one additional school holding a test class on Web3 or SDG-related material.
+
+Evidence:
+
+- Marketing & sales report (Google Doc): https://docs.google.com/document/d/1sTQz6uk4G8VZzjcJ8s35XgdSiMyj1Go0V6Xo9lD1LTg/edit?usp=sharing
+
+
+------------------------------------------------------------
+
+RESPONSE TO REVIEWER FEEDBACK
+
+Milestone 4 received a split review (one approval, one not-approved). Every point in the not-approved review was triaged against the codebase and resolved. The items below summarize the outcome; the full point-by-point reply is in docs/catalyst/F12-1200107/reviewer-response-m4.md.
+
+Fixed (code changes):
+
+1. Reviewer concern: Wallet connection supports only 3 wallets (Nami deprecated).
+   Resolution: The connector now dynamically detects every installed CIP-30 wallet from window.cardano instead of a hardcoded list — no wallet is pinned, and newer wallets appear automatically. (resources/js/components/cards/WalletConnector.jsx)
+
+2. Reviewer concern: Course language filter shows only "All"; no language field at creation.
+   Resolution: Added a required language selector to the course create/edit form and a canonical config/languages.php; the browse-page filter is now populated from it.
+
+3. Reviewer concern: "Cancel Booking" button appears non-functional.
+   Resolution: For paid (ADA/Stripe) bookings the button now shows a clear admin-refund notice instead of silently doing nothing; free/points bookings keep the working self-cancel. Refunds remain admin-handled by design (the refund path the reviewer saw passing in the logs).
+
+4. Reviewer concern: 7 skipped Playwright tests.
+   Resolution: All seven were conditional skips guarding missing fixtures; each was diagnosed and fixed. The suite is now 225 passed / 0 skipped / 0 failed / 0 flaky (was 208 passed / 1 flaky / 7 skipped). While fixing them we also found and fixed a real bug — the admin General Settings form could not be saved on a fresh database because two required settings were never seeded.
+
+5. Reviewer concern: No CI for the testing pipeline.
+   Resolution: Added a GitHub Actions workflow (.github/workflows/ci.yml) running the JS, web3, and PHPUnit suites on every push and pull request.
+
+Clarified (already implemented / by-design):
+
+1. Reviewer concern: Teacher account stays locked / no verification email.
+   Clarification: By design. Teacher onboarding runs through a Discord-bot community vote — a person is voted in as a teacher, then applies per-class through the same vote (CourseApplication.approved_at). The "your information needs to be verified" message reflects that pending community vote, not a broken flow. A pre-approved demo teacher account is seeded so the reviewer can test the full teacher workflow immediately - testing credentials (temporary)
+
+   email: demo-teacher@lebazaar.com
+   password: Demo1234!
+
+2. Reviewer concern: Certificate NFT looks like CIP-25, not CIP-68.
+   Clarification: Correct — the certificate is CIP-25 by design (metadata under label 721). The (100)/(222) asset-name prefixes follow CIP-68's labelling convention for clean reference/user-token separation, but metadata is not stored in a reference-token datum (the defining feature of CIP-68).
+   Purpose of the paired token: the two tokens are a revocation scheme. Each certificate mint produces a (222) user token, which is airdropped to the student as the certificate they hold, and a (100) reference token, which is retained in the platform wallet. To revoke a certificate, the platform burns its (100) reference token and writes a CIP-25 metadata update (revoked: true, with timestamp) under label 721. The student's (222) token remains in their wallet, but the on-chain reference token and updated metadata record the certificate as revoked. The pairing therefore gives the platform a burnable, on-chain handle to mark revocation without requiring the holder's signature. Documented in docs/certificate-minting-api.md.
+
+3. Reviewer concern: Commenting on courses/lessons not found.
+   Clarification: Implemented as the Course Feedback feature (CourseFeedback model, Feedback.jsx, CourseFeedback.jsx) it basically is a simple extension that allows commenting on each lessons instead of only on the whole course (as before).
+
+4. Reviewer concern: Credit-card buyers viewing their certificate NFT.
+   Clarification: Works today — certificate airdrop is independent of payment method. Each user as a custodial wallet by default if they do not link a non-custodial wallet: this is where the certificates get sent.
+
+Documented / planned:
+
+1. Reviewer concern: Token reward purpose & tokenomics unclear.
+   Outcome: Documented the current mechanics and the explicitly open design questions (utility vs. loyalty, supply/caps, use cases) in docs/token-reward.md, rather than overstate a finalized economic model.
+
+2. Reviewer concern: Separate teacher/student account types.
+   Outcome: Acknowledged as input; the split exists today because teachers carry community-approval state and payout/commission settings. Teacher accounts have numerous extra features compared to student accounts.
+
+3. Reviewer concern: Draft content, category reorganization, example/intro lessons.
+   Outcome: We will definitely consider making a Web3 / Cardano class as a demo.
+
+
+------------------------------------------------------------
+
+VERIFICATION & EVIDENCE
+
+- Release tag: catalyst/f12/m4 — https://github.com/nicolasayotte/lbazaar/releases/tag/catalyst%2Ff12%2Fm4
+- PHP test suite: green — docs/test-reports/php-unit-tests.log
+- JavaScript / web3 test suite: green — docs/test-reports/js-unit-tests.log
+- Web front-end test suite: green — docs/test-reports/web-unit-tests.log
+- Playwright E2E test suite: green — 225 passed / 0 skipped / 0 failed — docs/test-reports/playwright-tests.log
+- Production test pipeline: ./test-prod.sh full-test validates a full Docker production build prior to release.
+- Demo video: https://www.youtube.com/watch?v=dB1We3hFz6Y
