@@ -30,7 +30,8 @@ class CourseRequest extends FormRequest
         $rules = [
             'title'                    => 'required',
             'description'              => 'required',
-            'category'                 => 'required',
+            'categories'               => 'required|array|min:1',
+            'categories.*'             => 'string',
             'course_type_id'           => 'required',
             'max_participant'          => 'integer|required|min:0',
             'format'                   => 'required',
@@ -59,7 +60,7 @@ class CourseRequest extends FormRequest
     public function attributes()
     {
         $attributes = [
-            'category'                 => getTranslation('texts.category'),
+            'categories'               => getTranslation('texts.category'),
             'course_type_id'           => getTranslation('texts.type'),
             'image_thumbnail'          => getTranslation('texts.class_image'),
             'zoom_link'                => getTranslation('texts.class_url'),

@@ -205,7 +205,10 @@ class CourseRepository extends BaseRepository
     {
         $inputs = $request->all();
 
-        $inputs['course_category_id'] = CourseCategory::firstOrCreate(['name' => $inputs['category']])->id;
+        $firstCategory = is_array($inputs['categories'] ?? null) ? ($inputs['categories'][0] ?? null) : null;
+        $inputs['course_category_id'] = $firstCategory
+            ? CourseCategory::firstOrCreate(['name' => $firstCategory])->id
+            : null;
         $isLive = $inputs['format'] == Course::LIVE ? true : false;
         $inputs['course_application_id'] = $courseApplication->id;
         $inputs['professor_id'] = auth()->user()->id;
@@ -233,7 +236,13 @@ class CourseRepository extends BaseRepository
             $inputs['video_link'] = null;
         }
 
-        $course = $this->create($inputs);
+        $course = $this->create(Arr::except($inputs, ['categories']));
+
+        // sync many-to-many categories
+        $categoryIds = collect($request->get('categories', []))
+            ->map(fn($name) => CourseCategory::firstOrCreate(['name' => $name])->id)
+            ->toArray();
+        $course->categories()->sync($categoryIds);
 
         return $course;
     }
@@ -270,7 +279,7 @@ class CourseRepository extends BaseRepository
             $inputs['video_path'] = Asset::upload($request->file('video_path'));
         }
 
-        $course->update(Arr::except($inputs, ['category']));
+        $course->update(Arr::except($inputs, ['category', 'categories']));
 
         // —— new: sync MANY categories ——
         $categoryIds = collect($request->get('categories', []))

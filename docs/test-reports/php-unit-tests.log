@@ -1,11 +1,33 @@
-Admin Refund Controller (Tests\Feature\Http\Controllers\API\AdminRefundController)
- [x] Stripe refund requires authentication
- [x] Stripe refund requires admin role
- [x] Stripe refund returns 404 for unknown payment intent
- [x] Stripe refund returns 200 on success
- [x] Ada refund requires authentication
- [x] Ada refund requires admin role
- [x] Ada refund returns 404 for unknown course history
- [x] Ada refund returns 200 on success
- [x] Ada refund returns has rewards flag without force
+Course Controller (Tests\Feature\Http\Controllers\API\CourseController)
+ [x] Ada price endpoint is public
+ [x] Ada price endpoint returns unavailable when rate fails
+ [x] Ada price endpoint returns price when rate available
+ [x] Ada price endpoint returns 404 for nonexistent course
+
+Course Controller Attend (Tests\Feature\Http\Controllers\Portal\CourseControllerAttend)
+ [x] Attend blocked when payment pending
+ [x] Attend blocked when payment failed
+ [x] Attend allowed when payment confirmed
+ [x] Attend allowed for free course with null payment status
+
+Course Controller Price (Tests\Feature\Http\Controllers\Portal\CourseControllerPrice)
+ [x] Courses index includes price in ada when exchange rate available
+ [x] Course details includes price in ada when exchange rate available
+ [x] Courses index handles null price in ada without crash
+ [x] Course details handles null price in ada without crash
+ [x] Is booked true when payment status is null
+ [x] Is booked true when payment status is confirmed
+ [x] Is booked false when payment status is pending
+ [x] Is booked false when payment status is failed
+ [x] Pending payment is null when unauthenticated
+ [x] Pending payment is null when no pending history exists
+ [x] Pending payment returned when pending history exists
+ [x] Course details stripe available true
+ [x] Course details stripe available false
+ [x] Course details is teacher true when user is professor
+ [x] Course details is teacher false when user is student
+ [x] Course details is teacher false when unauthenticated
+ [x] Course details network status healthy
+ [x] Course details network status degraded
+ [x] Course details network status unreachable disables ada
 
