@@ -11,48 +11,35 @@ obvious), and **Documented / planned** (business-model and outreach items, answe
 honest current status rather than overstated claims). Where the answer is a real-world
 artifact, we point to the Marketing & Sales report (Google Doc) already linked in the PoA.
 
-Before that, we'd like to raise one point respectfully — in good faith and, we believe,
-in the interest of both sides and the wider Catalyst process.
+Before the point-by-point answers, a short note on how we've mapped your feedback to this
+milestone's acceptance criteria.
 
 ---
 
-## A note on milestone scope and approval
+## How this response maps to the milestone's acceptance criteria
 
-This proposal is milestone-based. Each milestone carries a defined set of deliverables and
-acceptance criteria, agreed at the outset in the Statement of Milestones. Milestone 4's
-criteria are the six Outputs (**A–F**) enumerated in the Proof of Achievement, and the
-evidence for each has been provided and is, we believe, complete. This milestone also
-already received **one approval** in the first review; the present response is to a single
-not-approved review.
+Milestone 4's acceptance criteria are the six Outputs (**A–F**) enumerated in the Proof of
+Achievement, and evidence for each has been provided. Against those criteria, your
+feedback identified two genuine in-scope gaps, and we have acted on both:
 
-We genuinely value the product feedback in your review — much of it reflects exactly where
-we want to take the platform, and we have **added those items to our roadmap**: richer
-multi-lesson/package discovery UX, a teacher earnings view, an ADA opt-out for teachers, a
-fuller governance dashboard with live metrics, and a finalized token economic model. We
-will pursue them, and your review has made the roadmap better.
-
-At the same time, several of these suggestions describe capabilities **beyond this
-milestone's acceptance criteria**, and in one case (a finalized token economic model)
-**gated by external regulatory constraints in Japan that we cannot responsibly pre-empt**. Using newly-introduced product requirements as
-conditions for approving an already-delivered milestone extends the project's timeline
-without a corresponding change to the agreed scope or budget. A milestone that is
-functionally complete, held open for out-of-scope additions, ultimately works against the
-project's success — and against the contributors and community waiting on it.
-
-We therefore respectfully ask that the milestone be assessed against **its stated
-acceptance criteria**. Where your feedback identifies a genuine *in-scope* gap, we have
-owned it without reservation and acted on it:
-
-- the **Edit Class defect** — a real bug, now root-caused and scheduled (Output C,
-  bug-fixing); and
+- the **Edit Class defect** — a real bug (Output C, bug-fixing), now root-caused, **fixed,
+  and deployed**; and
 - the **§F outreach criteria** — the additional local-government-related organization and
   school test classes, which are carried out and evidenced in the Marketing report.
 
-For everything that falls outside the agreed criteria, we will gladly carry it forward,
-and we'd welcome a short call to align on what belongs in the **final** milestone versus
-the longer-term roadmap. Once Milestone 4's acceptance criteria are met — together with the
-bug fix and the detailed walkthrough video you recommended — we hope we can converge on
-approval so the project can keep moving on schedule.
+Much of the remaining feedback reflects exactly where we want to take the platform, and we
+have **added those items to our roadmap**: richer multi-lesson/package discovery UX, a
+teacher earnings view, an ADA opt-out for teachers, a fuller governance dashboard with
+live metrics, and a finalized token economic model. Your review has made the roadmap
+better. One of these — the finalized token economic model — is additionally **gated by
+external regulatory constraints in Japan that we cannot responsibly pre-empt** (see §2).
+
+Because those items go beyond Milestone 4's stated acceptance criteria, we have treated
+them as roadmap commitments rather than blockers for this PoA, and we'd welcome a short
+call to align on what belongs in the **final** milestone versus the longer-term roadmap.
+With the in-scope gaps closed and the walkthrough video you recommended committed for the
+final milestone, we hope we can converge on approval so the project keeps moving on
+schedule.
 
 ---
 
@@ -105,6 +92,12 @@ plural input, and replaced the misleading tests with ones that submit the **real
 payload. **This fix has now landed.** We treated the misleading test as part of the fix so
 this class of "green CI, broken UI" cannot recur — the new tests now pass on the same
 payload shape the UI actually sends.
+
+One related clarification: the **price** field on the edit form is intentionally
+read-only — a class's price is set in the class application and fixed once the community
+approves the class (the community votes on a class *as priced*). The form previously gave
+no hint of this, which could read as another defect; it now displays an explanatory note
+on the price field.
 
 ### 1c. "Only one video / one lesson per course" — multi-lesson IS supported (via Course Packages)
 
