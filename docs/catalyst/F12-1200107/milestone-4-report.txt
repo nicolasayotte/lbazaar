@@ -137,30 +137,129 @@ Milestone 4 received a split review (one approval, one not-approved). Two rounds
 
 ----
 
-ROUND 2 — ADDITIONAL ITEMS ADDRESSED
+ROUND 2 — ITEMS ADDRESSED
 
-Fixed (code changes):
+Walkthrough video: A detailed end-to-end walkthrough video demonstrating teacher and
+student journeys will be prepared and delivered as part of the final milestone.
 
-1. Reviewer concern: "Edit Class" changes not reflected after save.
-   Resolution: Root-caused as a validation mismatch — the course form sends a plural
-   `categories` array (introduced with multi-category support) but the server still
-   required the legacy singular `category` field. On create the singular value was
-   present in the application data and validated by accident; on edit the course object
-   has no singular `category`, validation failed, and the form silently bounced back.
-   The automated tests gave false confidence because they submitted a hand-built payload
-   containing the singular field that the real UI no longer sends.
-   Fix: aligned CourseRequest validation to the plural `categories` field, reconciled
-   the create path, and replaced the misleading tests with ones that submit the real
-   frontend payload shape. Fix deployed to staging. (app/Http/Requests/CourseRequest.php,
-   app/Repositories/CourseRepository.php, tests/Feature/Http/Controllers/Portal/CourseRewardConfigTest.php)
+1a. JPY→ADA conversion mechanism and ADA opt-out for teachers.
 
-Clarified (already implemented / by-design):
+    The conversion mechanism is now fully documented. Teachers set a class price in JPY
+    (the single source-of-truth). ADA is derived for display and at checkout via the
+    CoinGecko API (cached 10 min, with a DB-setting fallback rate). At checkout, the ADA
+    amount is locked for a 5-minute quote window; the course page live-polls the rate and
+    shows a drift warning if it moves more than 5%, prompting the student to re-confirm.
+    Prices are shown dually everywhere (e.g. ¥10,000 (~₳100)). Full detail is in
+    docs/integrations.md (§9 CoinGecko Exchange Rate API) and docs/data-flows.md
+    (§ ADA payment flow). Every paid class already exposes both a "Buy with ADA" and a
+    "Pay with Credit Card" path, so students of crypto-averse teachers can pay entirely
+    by card today. A per-class payment-method toggle (card only / ADA only / both) is
+    added to the roadmap for a future milestone.
 
-1. Reviewer concern: Price field appeared non-editable / unclear.
-   Clarification: A class's price is set in the class application and is intentionally
-   fixed after community approval (the community votes on a class as priced). The field
-   was previously read-only with no explanation, which could read as a defect. The edit
-   form now displays an explanatory note on the price field in both English and Japanese.
+1b. "Edit Class" changes not reflected after save — fixed and deployed.
+
+    Root-caused as a validation mismatch: the course form sends a plural `categories`
+    array (introduced with multi-category support) but the server still required the
+    legacy singular `category` field. On create the singular value was present in the
+    application data and slipped through; on edit the course object has no singular
+    `category`, validation failed silently, and the form appeared to do nothing. The
+    automated tests gave false confidence because they submitted a hand-built payload
+    containing the singular field that the real UI no longer sends. Fix: aligned
+    CourseRequest validation to the plural `categories` field, reconciled the create
+    path, and replaced the misleading tests with ones that submit the real frontend
+    payload shape. Fix is deployed to staging. (app/Http/Requests/CourseRequest.php,
+    app/Repositories/CourseRepository.php, tests/Feature/.../CourseRewardConfigTest.php)
+
+    Related clarification: the price field on the edit form is intentionally read-only
+    — a class's price is set in the class application and fixed once the community
+    approves it (the community votes on a class as priced). The field previously gave no
+    indication of this; it now displays an explanatory note in English and Japanese.
+
+1c. One video / one lesson per course — multi-lesson is supported via Course Packages.
+
+    The platform is not limited to a single lesson. A single Course record is one unit
+    of content, but teachers compose multi-lesson curricula via Course Packages: a
+    teacher creates a package and groups multiple courses (lessons) under it
+    (CoursePackage → many Course, junction table course_package_courses). On a course's
+    detail and attendance pages, students see all sibling lessons in the same package and
+    a "complete the classes to earn the badge" progression. A live Course also supports
+    many CourseSchedules, making recurring/multi-session classes a first-class concept.
+    There is not yet a dedicated "browse packages" page or a bundled package checkout —
+    those gaps are acknowledged and on the roadmap. The walkthrough video for the final
+    milestone will demonstrate building and consuming a multi-lesson package explicitly.
+
+1d. Teacher payout configuration — payouts are automatic; visibility UI is the gap.
+
+    There is no manual wallet-configuration screen because payouts require none: each
+    user is automatically assigned a custodial Cardano wallet derived deterministically
+    from their user ID (get-custodial-address.mjs). When a student buys with ADA, a
+    single on-chain transaction splits the payment — the teacher's custodial address
+    receives their share and the platform receives its commission — with no intermediary
+    holding funds. The split is governed by an admin commission setting (default 20%
+    platform / 80% teacher). For credit-card (Stripe) sales, the platform collects the
+    full card payment and teacher settlement is handled off-platform; per-teacher
+    automated card payout (e.g. Stripe Connect) is not yet implemented. What is
+    genuinely absent is teacher-facing visibility: there is no earnings or balance
+    dashboard yet. A teacher earnings/payout view is added to the roadmap. The payout
+    and commission mechanics are documented in docs/data-flows.md.
+
+2.  Economic model, token utility, and revenue model.
+
+    Token reward: the mechanics are fully built and tested (per-course opt-in fungible
+    mint on completion, metadata, invalidation on refund — see docs/token-reward.md).
+    The economic model is deliberately deferred: defining monetary utility for the token
+    in Japan raises real regulatory questions (classification, obligations). Rather than
+    ship a tokenomics design that may need to be unwound, the model is held open until
+    the regulatory path is clear. The token currently functions as a completion-reward
+    primitive with no promised monetary value. docs/token-reward.md states the
+    implemented mechanics and the explicitly open design questions.
+
+    Revenue model: the platform takes a commission on sales (default 20% platform / 80%
+    teacher), applied on-chain for ADA payments and via the platform account for card
+    payments. This is documented in docs/data-flows.md.
+
+3.  Discord community governance — scope, direction, and evidence.
+
+    The governance layer is implemented and the Discord bot is operational. The two
+    decisions currently governed by the community are: (a) who becomes a teacher — a
+    prospective teacher's application creates a vote in the community channel, and
+    passing the vote grants teacher status; and (b) which classes get published — a
+    teacher applies per class through the same voting mechanism
+    (CourseApplication.approved_at) before a class can go live. Both are enforced in
+    code; the "your information needs to be verified" state a reviewer sees is a pending
+    community vote, not a broken flow. The vote-passing threshold is itself a governance
+    parameter (vote-passing-percentage). Future candidate decisions include featured /
+    curated content and categories, and dispute / quality signals on courses. For the
+    final milestone we will provide: the Discord server invite, current member count, an
+    activity snapshot, examples of real teacher/class governance votes, and feedback
+    from partners and interview participants on the governance model.
+
+4.  Test classes — local-government-related organization and school.
+
+    Both acceptance criteria were met during this milestone and are evidenced in the
+    Marketing & Sales report (Google Doc linked in the PoA, §"Sales, Marketing &
+    Hearings", dated May 24, 2026).
+
+    Additional school(s) holding Web3 / SDG-related test classes: more than 10 test
+    classes were conducted on the platform during this milestone period. Partners include
+    Seitoku Gakuen and Seifukan (high school) — continuing partners from Milestone 3
+    with ongoing test-class use — and Seisen University (Prof. Kanekiyo, President
+    Yamamoto), where the platform was introduced and demonstrated with discussions toward
+    a formal collaboration.
+
+    Additional local-government-related organization: Akariyu Suzuran (灯湯すずらん),
+    Chino City — a Lake Shirakaba-area community facility supported by Chino City as
+    part of regional-revitalization initiatives, prepared as a regional implementation
+    site (facility opens June 2026; detail to be reported at close-out). IBM Regional DX
+    Center Nagano — established under a tripartite agreement among IBM Japan, Nagano
+    Prefecture, and Nagano City ("Smart City NAGANO"); attended and discussed platform
+    synergies for regional/education DX. KIBOTCHA (Higashimatsushima) — a
+    disaster-prevention community facility; discussions on bringing SDG-aligned
+    disaster-preparedness education content onto the platform.
+
+    The Marketing report also includes an anonymized user survey (20+ respondents:
+    university and high-school teachers and students, a regional-government affiliate,
+    NPO, and business-association members).
 
 ----
 
