@@ -517,6 +517,7 @@ return [
         'payment_confirmed' => '支払い確認済み',
         'points_to_convert_to_nft'=> 'ポイントNFT変換',
         'price'=> 'ポイント',
+        'price_locked_hint'=> '価格はクラス申請時に設定され、コミュニティ承認後は変更できません。',
         'pricing_information'=> 'ポイント上布',
         'processing'=> '処理中',
         'profile'=> 'プロファイル',

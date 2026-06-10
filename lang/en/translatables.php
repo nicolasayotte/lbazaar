@@ -510,6 +510,7 @@ return [
         'points' => 'Points',
         'points_to_convert_to_nft' => 'Points to convert to NFT',
         'price' => 'Price',
+        'price_locked_hint' => 'The price is set in the class application and fixed once the class is approved by the community.',
         'pricing_information' => 'Pricing Information',
         'processing' => 'Processing...',
         'profile' => 'Profile',

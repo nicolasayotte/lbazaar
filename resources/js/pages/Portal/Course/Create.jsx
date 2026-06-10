@@ -462,6 +462,7 @@ const Create = () => {
                                                 inputProps={{ readOnly: true }}
                                                 InputLabelProps={{ shrink: true }}
                                                 disabled
+                                                helperText={translatables.texts.price_locked_hint}
                                             />
                                         </Grid>
                                     </Grid>
